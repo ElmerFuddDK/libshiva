@@ -52,7 +52,7 @@ short RFTSQLiteStatement_impl::GetValue(const char*& text, int& len, int columnI
 {
 	if (columnIdx < sqlite3_column_count(m_Statement) && columnIdx >= 0)
 	{
-		len = sqlite3_column_count(m_Statement);
+		len = sqlite3_column_bytes(m_Statement, columnIdx);
 		text = (const char*) sqlite3_column_text(m_Statement, columnIdx);
 		return RFTSQLiteWrapper::SQLite_OK;
 	}
