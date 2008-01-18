@@ -10,8 +10,11 @@
 #ifdef _MANAGED
 #  pragma managed(push, off)
 #endif
+#ifndef APIENTRY 
+#  define APIENTRY WINAPI
+#endif
 
-BOOL APIENTRY DllMain( HMODULE hModule,
+BOOL APIENTRY DllMain( HANDLE hModule,
                        DWORD  ul_reason_for_call,
                        LPVOID lpReserved
 					 )
