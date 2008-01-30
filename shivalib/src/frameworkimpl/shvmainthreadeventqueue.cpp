@@ -1,0 +1,150 @@
+/*
+ *   Copyright (C) 2008 by Lars Eriksen
+ *
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU Library General Public License as
+ *   published by the Free Software Foundation; either version 2 of the
+ *   License, or (at your option) any later version with the following
+ *   exeptions:
+ *
+ *   1) Static linking to the library does not constitute derivative work
+ *      and does not require the author to provide source code for the
+ *      application.
+ *      Compiling applications with the source code directly linked in is
+ *      Considered static linking as well.
+ *
+ *   2) You do not have to provide a copy of the license with programs
+ *      that are linked against this code.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Library General Public
+ *   License along with this program; if not, write to the
+ *   Free Software Foundation, Inc.,
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
+#include "stdafx.h"
+#include "../../../include/platformspc.h"
+
+#include "../../../include/frameworkimpl/shvmainthreadeventqueue.h"
+#include "../../../include/framework/shvmainthreadeventdispatcher.h"
+
+//-=========================================================================================================
+// SHVMainThreadEventQueue class - Interface for the main event queue
+//-=========================================================================================================
+
+/*************************************
+ * Constructor
+ *************************************/
+/// Constructor
+SHVMainThreadEventQueue::SHVMainThreadEventQueue(SHVMainThreadEventDispatcher* dispatcher) : Modules(*this)
+{
+	Dispatcher = dispatcher;
+	Dispatcher->SetEventQueue(this);
+	RunReturnVal = Modules.Initialize();
+	Running = SHVBool::False;
+}
+
+/*************************************
+ * SHVMainThreadEventQueue
+ *************************************/
+SHVMainThreadEventQueue::~SHVMainThreadEventQueue()
+{
+	delete Dispatcher;
+}
+
+/*************************************
+ * Run
+ *************************************/
+/// Runs the application
+/**
+ * This method will run the application by first calling InitializeEventLoop to initialize
+ * platformspecific data before starting. After this the event queue should be considered
+ * active.\n
+ * It starts the module list, wich activates the event system. Upon success the event loop
+ * Is started by calling the pure virtual RunEventLoop.\n
+ * When the event queue exits then the application is finished, and SHVModule::Destroy have
+ * been called on all modules. It then cleans up and returns the RunReturnVal that is either
+ * true or an error message from any of the above.
+ */
+SHVBool SHVMainThreadEventQueue::Run()
+{
+	RunReturnVal = SHVBool::True;
+	ThreadID = SHVThreadBase::GetCurrentThreadID();
+	
+	// initialize data for the event loop
+	RunReturnVal = Dispatcher->InitializeEventLoop();
+	
+	if (RunReturnVal)
+		RunReturnVal = GetModuleList().Start();
+	
+	if (RunReturnVal)
+	{
+		Running = SHVBool::True;
+	
+		// Now for the main event! ... loop
+		Dispatcher->RunEventLoop();
+	}
+
+	GetModuleList().DestroyModules();
+	
+	return RunReturnVal;
+}
+
+
+/*************************************
+ * EnqueueEvent
+ *************************************/
+void SHVMainThreadEventQueue::EnqueueEvent(SHVEvent* event, SHVEventSubscriberBase* subscriber)
+{
+	EventList.EnqueueEvent(Modules,event,subscriber);
+}
+
+/*************************************
+ * SignalDispatcher
+ *************************************/
+void SHVMainThreadEventQueue::SignalDispatcher()
+{
+	Dispatcher->SignalDispatcher();
+}
+
+/*************************************
+ * GetThreadID
+ *************************************/
+SHVThreadBase::ThreadID SHVMainThreadEventQueue::GetThreadID()
+{
+	return ThreadID;
+}
+
+/*************************************
+ * LockEvent
+ *************************************/
+SHVBool SHVMainThreadEventQueue::LockEvent()
+{
+	return EventList.LockEvent();
+}
+
+/*************************************
+ * UnlockEvent
+ *************************************/
+void SHVMainThreadEventQueue::UnlockEvent()
+{
+	EventList.UnlockEvent();
+}
+
+/*************************************
+ * OnEvent
+ *************************************/
+void SHVMainThreadEventQueue::OnEvent(SHVEvent* event)
+{
+	if (SHVEvent::Equals(event,SHVMainThreadEventQueue::EventInternalStop))
+	{
+		Running = SHVBool::False;
+		Dispatcher->StopEventLoop(event->GetSubID() ? SHVBool::True : SHVBool::False);
+	}
+}
