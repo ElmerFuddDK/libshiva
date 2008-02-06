@@ -45,7 +45,7 @@ public:
 
 protected:
 	///\cond INTERNAL
-	inline SHVGUIManager(SHVModuleList& modules) : SHVModule(modules,"ControlFactory") {}
+	inline SHVGUIManager(SHVModuleList& modules) : SHVModule(modules,"GUIManager") {}
 	///\endcond
 };
 
