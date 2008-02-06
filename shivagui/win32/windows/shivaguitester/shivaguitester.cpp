@@ -9,6 +9,8 @@
 
 #include "../../../include/shvguimanager.h"
 
+#include "modules/shvcontroltester.h"
+
 int APIENTRY _tWinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      LPTSTR    lpCmdLine,
@@ -30,6 +32,8 @@ SHVDll guilib;
 	SHVMainThreadEventQueue mainqueue((SHVMainThreadEventDispatcher*)guilib.CreateObjectInt(NULL,SHVDll::ClassTypeMainThreadDispatcher));
 
 		mainqueue.GetModuleList().GetConfig(SHVModuleList::CfgGUI).SetPtr(SHVGUIManager::CfgInstanceHandle,hInstance);
+
+		mainqueue.GetModuleList().AddModule(new SHVControlTester(mainqueue.GetModuleList()));
 
 		return mainqueue.Run();
 	}
