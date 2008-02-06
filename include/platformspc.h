@@ -15,6 +15,10 @@
 # define NULL 0
 #endif
 
+#if defined(_DEBUG) && !defined(DEBUG)
+# define DEBUG
+#endif
+
 
 // include main platform headers
 
@@ -56,6 +60,7 @@
 # define SHVAPI
 #endif
 
+#include "utils/shvassert.h"
 #include "shvtypes.h"
 
 #endif

@@ -1,9 +1,7 @@
 #if !defined(__SHIVA_MFC) // include this if you have an MFC project
-# ifndef ASSERT
-#  define ASSERT(x)
-# endif
-# ifndef VERIFY
-#  define VERIFY(x) x
+# ifdef DEBUG
+#  include <crtdbg.h>
+#  define BREAKPOINT (_CrtDbgBreak(), 0)
 # endif
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>

@@ -202,6 +202,10 @@
 				Name="utils"
 				>
 				<File
+					RelativePath="..\src\utils\shvassert.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\utils\shvbuffer.cpp"
 					>
 				</File>
@@ -371,6 +375,10 @@
 					Name="utils"
 					>
 					<File
+						RelativePath="..\..\include\utils\shvassert.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\utils\shvbuffer.h"
 						>
 					</File>
@@ -520,6 +528,10 @@
 					</File>
 					<File
 						RelativePath="..\..\include\framework\shvmodulebase.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\framework\shvmodulefactory.h"
 						>
 					</File>
 					<File
