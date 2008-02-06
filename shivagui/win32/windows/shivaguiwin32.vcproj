@@ -218,11 +218,19 @@
 					>
 				</File>
 				<File
+					RelativePath="..\gui\shvcontrolimplementerlabelwin32.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\gui\shvcontrolimplementermainwindowwin32.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\gui\shvcontrolimplementerwin32base.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\gui\shvcontrollabel.cpp"
 					>
 				</File>
 				<File
@@ -307,11 +315,19 @@
 						>
 					</File>
 					<File
+						RelativePath="..\gui\shvcontrolimplementerlabelwin32.h"
+						>
+					</File>
+					<File
 						RelativePath="..\gui\shvcontrolimplementermainwindowwin32.h"
 						>
 					</File>
 					<File
 						RelativePath="..\gui\shvcontrolimplementerwin32.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\shvcontrollabel.h"
 						>
 					</File>
 					<File
