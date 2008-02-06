@@ -39,14 +39,17 @@
 bool SHVAPI SHVAssert::ReportError(const char* fileName, int lineNo)
 {
 #ifdef __SHIVA_WIN32
+# ifdef DEBUG
 	// we remove WM_QUIT because if it is in the queue then the message box
 	// won't display
 	MSG msg;
 	BOOL bQuit = PeekMessage(&msg, NULL, WM_QUIT, WM_QUIT, PM_REMOVE);
 	BOOL bResult = _CrtDbgReport(_CRT_ASSERT, fileName, lineNo, NULL, NULL);
+
 	if (bQuit)
 		PostQuitMessage((int)msg.wParam);
 	return (bResult ? true : false);
+# endif
 #else
 	fprintf(stderr,"ASSERTION FAILED IN %s, LINE %d\n",fileName,lineNo);
 	return false;
