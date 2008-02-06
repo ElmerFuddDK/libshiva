@@ -3,6 +3,7 @@
 
 
 #include "shvcontrolimplementerwin32base.h"
+#include "../../include/shvguimanager.h"
 #include "../../include/shvcontrol.h"
 #include "../../include/shvcontrolimplementer.h"
 
@@ -26,6 +27,9 @@ public:
 
 	inline static HWND GetHandle(SHVControl* control);
 	inline static HWND GetHandle(SHVControlImplementer* implementer);
+
+	inline static SHVConfig& GetGUIConfig(SHVControl* control);
+	inline static HINSTANCE GetInstance(SHVControl* control);
 
 };
 
@@ -54,6 +58,22 @@ HWND Win32::GetHandle(SHVControl* control)
 HWND Win32::GetHandle(SHVControlImplementer* implementer)
 {
 	return ((SHVControlImplementerWin32Base*)implementer->GetNative())->GetHandle();
+}
+
+/*************************************
+ * GetGUIConfig
+ *************************************/
+SHVConfig& Win32::GetGUIConfig(SHVControl* control)
+{
+	return control->GetModuleList().GetConfig(SHVModuleList::CfgGUI);
+}
+
+/*************************************
+ * GetInstance
+ *************************************/
+HINSTANCE Win32::GetInstance(SHVControl* control)
+{
+	return (HINSTANCE)GetGUIConfig(control).FindPtr(SHVGUIManager::CfgInstanceHandle).ToPtr();
 }
 
 #endif
