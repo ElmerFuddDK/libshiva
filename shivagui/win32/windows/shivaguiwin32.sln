@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shivaguiwin32", "shivaguiwin32.vcproj", "{A390E445-CC85-4439-821B-3057BCA5D4AB}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shivaguitester", "shivaguitester\shivaguitester.vcproj", "{72D9BB2A-9354-4261-9B5C-A18CB0749BF0}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A390E445-CC85-4439-821B-3057BCA5D4AB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A390E445-CC85-4439-821B-3057BCA5D4AB}.Debug|Win32.Build.0 = Debug|Win32
+		{A390E445-CC85-4439-821B-3057BCA5D4AB}.Release|Win32.ActiveCfg = Release|Win32
+		{A390E445-CC85-4439-821B-3057BCA5D4AB}.Release|Win32.Build.0 = Release|Win32
+		{72D9BB2A-9354-4261-9B5C-A18CB0749BF0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{72D9BB2A-9354-4261-9B5C-A18CB0749BF0}.Debug|Win32.Build.0 = Debug|Win32
+		{72D9BB2A-9354-4261-9B5C-A18CB0749BF0}.Release|Win32.ActiveCfg = Release|Win32
+		{72D9BB2A-9354-4261-9B5C-A18CB0749BF0}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

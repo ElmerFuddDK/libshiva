@@ -1,0 +1,173 @@
+#ifndef __SHIVA_GUI_CONTROLBASE_H
+#define __SHIVA_GUI_CONTROLBASE_H
+
+#include "../../include/framework/shvmodulelist.h"
+#include "../../include/utils/shvrefobject.h"
+#include "../../include/utils/shvstring.h"
+#include "shvcontroldata.h"
+#include "shvcontrolimplementer.h"
+#include "utils/shvrect.h"
+
+
+// forward declare
+class SHVControlContainer;
+class SHVGUIManager;
+
+//-=========================================================================================================
+/// SHVControl - base control interface
+/**
+ * This class is the basis of all controls in SHIVA.
+ */
+
+class SHVControl : public SHVRefObject
+{
+public:
+
+
+	// defines and constants
+	enum Types {
+		TypeLabel,
+		TypeButton,
+		TypeEdit,
+		TypeList,
+		TypeGrid,
+		TypeCustom,
+		TypeContainer = 0xFF
+	};
+
+	enum SubTypes {
+		SubTypeDefault
+	};
+
+	enum Flags {
+		FlagVisible = 1,
+		FlagDisabled = 2
+	};
+
+
+	// Destructor
+	virtual ~SHVControl();
+
+
+	virtual int GetType() = 0;
+
+	inline SHVBool IsCreated();
+	inline SHVBool SetParent(SHVControlContainer* parent);
+	inline SHVControlContainer* GetParent();
+
+	virtual SHVBool GetData(SHVControlData* data) = 0;
+	virtual SHVBool SetData(SHVControlData* data) = 0;
+
+	// Properties
+	inline SHVRect GetRect();
+	virtual void SetRect(const SHVRect& rect);
+
+	inline SHVBool SetFlag(int flag, bool enable);
+	inline bool GetFlag(int flag);
+
+	// obtain pointer to the implementor
+	inline SHVControlImplementer* GetImplementor();
+
+	// Get module list
+	SHVModuleList& GetModuleList();
+
+
+protected:
+	// Create the internal control - before parent is set
+	virtual SHVBool CreateInternal(SHVControlContainer* newParent);
+
+
+	inline SHVControl(SHVGUIManager* manager, SHVControlImplementer* implementor);
+
+
+	SHVGUIManager* GUIManager;
+	SHVControlImplementerRef Implementor;
+
+
+private:
+	///\cond INTERNAL
+	virtual SHVBool SetParentInternal(SHVControlContainer* parent);
+
+	SHVControlContainer* Parent;
+	///\endcond
+};
+typedef SHVRefObjectContainer<SHVControl> SHVControlRef;
+
+
+
+// ============================================ implementation ============================================ //
+
+/*************************************
+ * Constructor
+ *************************************/
+SHVControl::SHVControl(SHVGUIManager* manager, SHVControlImplementer* implementor) : GUIManager(manager), Implementor(implementor)
+{
+	Parent = NULL;
+}
+
+/*************************************
+ * IsCreated
+ *************************************/
+SHVBool SHVControl::IsCreated()
+{
+	return ( GetImplementor() ? GetImplementor()->IsCreated() : SHVBool::False );
+}
+
+/*************************************
+ * SetParent
+ *************************************/
+SHVBool SHVControl::SetParent(SHVControlContainer* parent)
+{
+	return SetParentInternal(parent);
+}
+
+/*************************************
+ * GetParent
+ *************************************/
+SHVControlContainer* SHVControl::GetParent()
+{
+	return Parent;
+}
+
+/*************************************
+ * GetRect
+ *************************************/
+SHVRect SHVControl::GetRect()
+{
+	if (GetImplementor())
+		return GetImplementor()->GetRect(this);
+
+	return SHVRect();
+}
+
+/*************************************
+ * SetFlag
+ *************************************/
+SHVBool SHVControl::SetFlag(int flag, bool enable)
+{
+	if (GetImplementor())
+		return GetImplementor()->SetFlag(this, flag, enable);
+
+	return SHVBool::False;
+}
+
+/*************************************
+ * GetFlag
+ *************************************/
+bool SHVControl::GetFlag(int flag)
+{
+	if (GetImplementor())
+		return GetImplementor()->GetFlag(this, flag);
+
+	return false;
+}
+
+/*************************************
+ * GetImplementor
+ *************************************/
+SHVControlImplementer* SHVControl::GetImplementor()
+{
+	return Implementor;
+}
+
+#endif
