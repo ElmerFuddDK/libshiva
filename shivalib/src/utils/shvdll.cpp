@@ -43,8 +43,8 @@
  *************************************/
 SHVDll::SHVDll() : SHVDllBase()
 {
-	CreateClassInt = NULL;
-	CreateClassString = NULL;
+	CreateObjectIntPtr = NULL;
+	CreateObjectStringPtr = NULL;
 }
 
 /*************************************
@@ -82,11 +82,11 @@ SHVBool retVal = SHVDllBase::Load(libFile);
 	if (retVal)
 	{
 #ifdef __SHVDLLBASE_TEXTMODE
-		retVal = retVal && Resolve((void**)&CreateClassInt,_T("CreateClassInt"));
-		retVal = retVal && Resolve((void**)&CreateClassString,_T("CreateClassString"));
+		retVal = retVal && Resolve((void**)&CreateObjectIntPtr,SHIVALIB_CREATEOBJECTINTSYMBOL);
+		retVal = retVal && Resolve((void**)&CreateObjectStringPtr,SHIVALIB_CREATEOBJECTSTRINGSYMBOL);
 #else
-		retVal = retVal && Resolve((void**)&CreateClassInt,1);
-		retVal = retVal && Resolve((void**)&CreateClassString,2);
+		retVal = retVal && Resolve((void**)&CreateObjectIntPtr,SHIVALIB_CREATEOBJECTINTOCTAL);
+		retVal = retVal && Resolve((void**)&CreateObjectStringPtr,SHIVALIB_CREATEOBJECTSTRINGOCTAL);
 #endif
 		if (!retVal)
 			Unload();
@@ -101,31 +101,35 @@ SHVBool retVal = SHVDllBase::Load(libFile);
 void SHVDll::Unload()
 {
 	SHVDllBase::Unload();
-	CreateClassInt = NULL;
-	CreateClassString = NULL;
+	CreateObjectIntPtr = NULL;
+	CreateObjectStringPtr = NULL;
 }
 
 /*************************************
- * CreateClass
+ * CreateObjectInt
  *************************************/
-void* SHVDll::CreateClass(int classType)
+void* SHVDll::CreateObjectInt(SHVModuleList* list, int classType)
 {
 void* retVal = NULL;
 
 	if (IsLoaded())
 	{
-		retVal = CreateClassInt(classType);
+		retVal = CreateObjectIntPtr(list, classType);
 	}
 
 	return retVal;
 }
-void* SHVDll::CreateClass(const SHVStringC classType)
+
+/*************************************
+ * CreateObjectString
+ *************************************/
+void* SHVDll::CreateObjectString(SHVModuleList* list, const SHVStringC classType)
 {
 void* retVal = NULL;
 
 	if (IsLoaded())
 	{
-		retVal = CreateClassString(classType.GetBufferConst());
+		retVal = CreateObjectStringPtr(list, classType.GetBufferConst());
 	}
 
 	return retVal;

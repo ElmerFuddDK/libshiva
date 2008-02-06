@@ -167,7 +167,7 @@ SHVBool SHVDllBase::Resolve(void** symbol, const SHVStringC name)
 {
 SHVBool retVal(SHVBool::False);
 
-	symbol = NULL;
+	*symbol = NULL;
 
 	if (IsLoaded())
 	{

@@ -4,6 +4,14 @@
 #include "shvdllbase.h"
 
 
+#define SHIVALIB_CREATEOBJECTINTSYMBOL _T("CreateObjectInt")
+#define SHIVALIB_CREATEOBJECTSTRINGSYMBOL _T("CreateObjectInt")
+#define SHIVALIB_CREATEOBJECTINTOCTAL 1
+#define SHIVALIB_CREATEOBJECTSTRINGOCTAL 2
+
+// forward declare
+class SHVModuleList;
+
 //-=========================================================================================================
 /// SHVDll class - Load and use SHIVA libraries
 /**
@@ -23,6 +31,12 @@ class SHVAPI SHVDll : SHVDllBase
 public:
 
 
+	enum ClassTypes {
+		ClassTypeMainThreadDispatcher,
+		ClassTypeModuleFactory
+	};
+
+
 	// constructor
 	SHVDll();
 	~SHVDll();
@@ -39,17 +53,17 @@ public:
 
 
 	// Create class functions
-	void* CreateClass(int classType);
-	void* CreateClass(const SHVStringC classType);
+	void* CreateObjectInt(SHVModuleList* list, int classType);
+	void* CreateObjectString(SHVModuleList* list, const SHVStringC classType);
 
 
 private:
 	///\cond INTERNAL
-	typedef void* (*SHVCreateClassIntFunc)(int classType);
-	typedef void* (*SHVCreateClassStringFunc)(const SHVTChar* classType);
+	typedef void* (*SHVCreateObjectIntFunc)(SHVModuleList* list, int classType);
+	typedef void* (*SHVCreateObjectStringFunc)(SHVModuleList* list, const SHVTChar* classType);
 
-	SHVCreateClassIntFunc CreateClassInt;
-	SHVCreateClassStringFunc CreateClassString;
+	SHVCreateObjectIntFunc CreateObjectIntPtr;
+	SHVCreateObjectStringFunc CreateObjectStringPtr;
 	///\endcond
 };
 
