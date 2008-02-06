@@ -11,7 +11,7 @@
  */
 
 template< class T, int GrowSize = 10 >
-class SHVAPI SHVVector : SHVVectorBase
+class SHVVector : SHVVectorBase
 {
 public:
 

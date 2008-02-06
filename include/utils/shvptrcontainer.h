@@ -42,7 +42,7 @@ SHVPtrContainer<SHVChar> ptr1;
  */
 
 template <class T>
-class SHVAPI SHVPtrContainer
+class SHVPtrContainer
 {
 public:
 
