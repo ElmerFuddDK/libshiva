@@ -52,17 +52,18 @@ public:
 	virtual int GetType() = 0;
 
 	inline SHVBool IsCreated();
-	inline SHVBool SetParent(SHVControlContainer* parent);
+	inline SHVControl* SetParent(SHVControlContainer* parent, int flags = FlagVisible);
 	inline SHVControlContainer* GetParent();
 
 	virtual SHVBool GetData(SHVControlData* data) = 0;
 	virtual SHVBool SetData(SHVControlData* data) = 0;
 
+
 	// Properties
 	inline SHVRect GetRect();
 	virtual void SetRect(const SHVRect& rect);
 
-	inline SHVBool SetFlag(int flag, bool enable);
+	inline SHVBool SetFlag(int flag, bool enable = true);
 	inline bool GetFlag(int flag);
 
 	// obtain pointer to the implementor
@@ -70,11 +71,12 @@ public:
 
 	// Get module list
 	SHVModuleList& GetModuleList();
+	inline SHVGUIManager* GetManager();
 
 
 protected:
 	// Create the internal control - before parent is set
-	virtual SHVBool CreateInternal(SHVControlContainer* newParent);
+	virtual SHVBool CreateInternal(SHVControlContainer* newParent, int flags);
 
 
 	inline SHVControl(SHVGUIManager* manager, SHVControlImplementer* implementor);
@@ -86,7 +88,7 @@ protected:
 
 private:
 	///\cond INTERNAL
-	virtual SHVBool SetParentInternal(SHVControlContainer* parent);
+	virtual void SetParentInternal(SHVControlContainer* parent, int flags);
 
 	SHVControlContainer* Parent;
 	///\endcond
@@ -116,9 +118,10 @@ SHVBool SHVControl::IsCreated()
 /*************************************
  * SetParent
  *************************************/
-SHVBool SHVControl::SetParent(SHVControlContainer* parent)
+SHVControl* SHVControl::SetParent(SHVControlContainer* parent, int flags)
 {
-	return SetParentInternal(parent);
+	SetParentInternal(parent,flags);
+	return this;
 }
 
 /*************************************
@@ -168,6 +171,14 @@ bool SHVControl::GetFlag(int flag)
 SHVControlImplementer* SHVControl::GetImplementor()
 {
 	return Implementor;
+}
+
+/*************************************
+ * GetManager
+ *************************************/
+SHVGUIManager* SHVControl::GetManager()
+{
+	return GUIManager;
 }
 
 #endif

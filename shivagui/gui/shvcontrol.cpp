@@ -14,6 +14,7 @@
  *************************************/
 SHVControl::~SHVControl()
 {
+	GetImplementor()->Destroy(this);
 	Implementor = NULL;
 }
 
@@ -38,35 +39,42 @@ SHVModuleList& SHVControl::GetModuleList()
  * CreateInternal
  *************************************/
 /// Create the internal control - before parent is set
-SHVBool SHVControl::CreateInternal(SHVControlContainer* newParent)
+SHVBool SHVControl::CreateInternal(SHVControlContainer* newParent, int flags)
 {
-	return GetImplementor()->Create(this, newParent->GetImplementor());
+	return GetImplementor()->Create(this, newParent->GetImplementor(), flags);
 }
 
 ///\cond INTERNAL
 /*************************************
  * SetParentInternal
  *************************************/
-SHVBool SHVControl::SetParentInternal(SHVControlContainer* parent)
+void SHVControl::SetParentInternal(SHVControlContainer* parent, int flags)
 {
-SHVBool retVal(SHVBool::True);
+SHVBool ok(SHVBool::True);
+
+	SHVASSERT(parent != Parent);
 
 	if (parent == Parent)
-		return retVal;
+	{
+		SetFlag(flags);
+		return;
+	}
 
 	if (GetImplementor() && GetImplementor()->IsCreated())
 	{
 		if (parent)
-			retVal = GetImplementor()->Reparent(this, parent->GetImplementor());
+			ok = GetImplementor()->Reparent(this, parent->GetImplementor(), flags);
 		else
-			retVal = GetImplementor()->Destroy(this);
+			ok = GetImplementor()->Destroy(this);
 	}
 	else if (parent)
 	{
-		retVal = CreateInternal(parent);
+		ok = CreateInternal(parent, flags);
 	}
 
-	if (retVal)
+	SHVASSERT(ok);
+
+	if (ok)
 	{
 	SHVControlRef selfRef(this); // ensures the validity of our object during the parenting thingy
 
@@ -78,7 +86,5 @@ SHVBool retVal(SHVBool::True);
 
 		Parent = parent;
 	}
-
-	return retVal;
 }
 ///\endcond

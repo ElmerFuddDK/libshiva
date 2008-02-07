@@ -31,12 +31,15 @@ public:
 
 
 	// Control factory
-	virtual SHVControl* CreateControl(int controlType, int controlSubType);
-	virtual SHVControl* CreateControl(const SHVString8C& controlName);
+	virtual SHVControl* NewControl(int controlType, int controlSubType);
+	virtual SHVControl* NewControl(const SHVString8C& controlName);
 
 
 	virtual SHVModuleList& GetModuleList();
 	virtual SHVConfig& GetConfig();
+
+	virtual SHVControlContainer* GetMainWindow();
+	inline void SetMainWindow(SHVControlContainer* mainWindow);
 
 
 protected:
@@ -52,7 +55,19 @@ protected:
 	
 	SHVHashTable<ControlPair,SHVControlCreatorBaseRef> ControlsByType;
 	SHVHashTable<SHVString8,SHVControlCreatorBaseRef,const SHVString8C> ControlsByName;
+	SHVControlContainerRef MainWindow;
 	///\endcond
 };
+
+
+// ============================================ implementation ============================================ //
+
+/*************************************
+ * SetMainWindow
+ *************************************/
+void SHVGUIManagerImpl::SetMainWindow(SHVControlContainer* mainWindow)
+{
+	MainWindow = mainWindow;
+}
 
 #endif

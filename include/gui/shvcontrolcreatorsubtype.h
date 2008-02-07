@@ -1,5 +1,5 @@
-#ifndef __SHIVA_GUI_CONTROLCREATOR_H
-#define __SHIVA_GUI_CONTROLCREATOR_H
+#ifndef __SHIVA_GUI_CONTROLCREATORSUBTYPE_H
+#define __SHIVA_GUI_CONTROLCREATORSUBTYPE_H
 
 #include "shvguimanager.h"
 
@@ -10,13 +10,13 @@
  * Use this template class to register a control creating function on an object as a control factory.
  */
 
-template<class C, class I>
-class SHVControlCreator : public SHVControlCreatorBase
+template<class C, class I, int SubType>
+class SHVControlCreatorSubType : public SHVControlCreatorBase
 {
 public:
 
 	// constructor
-	SHVControlCreator();
+	SHVControlCreatorSubType();
 
 	// creation method
 	virtual SHVControl* New(SHVGUIManager* manager);
@@ -29,17 +29,17 @@ public:
 /*************************************
  * Constructor
  *************************************/
-template<class C, class I>
-SHVControlCreator<C,I>::SHVControlCreator()
+template<class C, class I, int SubType>
+SHVControlCreatorSubType<C,I,SubType>::SHVControlCreatorSubType()
 {}
 
 /*************************************
  * New
  *************************************/
-template<class C, class I>
-SHVControl* SHVControlCreator<C,I>::New(SHVGUIManager* manager)
+template<class C, class I, int SubType>
+SHVControl* SHVControlCreatorSubType<C,I,SubType>::New(SHVGUIManager* manager)
 {
-	return new C(manager,new I());
+	return new C(manager,new I(SubType));
 }
 
 #endif

@@ -23,13 +23,16 @@ public:
 	virtual void PostRegister();
 	virtual void Unregister();
 
+	virtual void OnEvent(SHVEvent* event);
+
 private:
 
-	SHVGUIManager* GUIManager;
-	SHVControlRef Label;
-	SHVControlRef EditBox;
-	SHVControlRef Button;
+	void OnResizeMainWnd(SHVControlContainer* container, SHVControlLayout* layout);
 
+	SHVGUIManager* GUIManager;
+	SHVControlLabelRef Label;
+	SHVControlEditRef EditBox;
+	SHVControlButtonRef Button;
 };
 
 #endif

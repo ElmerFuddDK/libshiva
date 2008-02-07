@@ -34,6 +34,12 @@
 #include "shvguimanagerwin32.h"
 #include "shvwin32.h"
 
+#include "shvcontrolimplementerlabelwin32.h"
+#include "shvcontrolimplementereditwin32.h"
+#include "shvcontrolimplementerbuttonwin32.h"
+#include "../../include/shvcontrolcreator.h"
+#include "../../include/shvcontrolcreatorsubtype.h"
+
 
 //=========================================================================================================
 // SHVGUIManagerWin32 - Module for registering control types, and instantiating them
@@ -44,6 +50,16 @@
  *************************************/
 SHVGUIManagerWin32::SHVGUIManagerWin32(SHVModuleList& modules) : SHVGUIManagerImpl(modules)
 {
+	RegisterFactory(SHVControl::TypeLabel,SHVControlLabel::SubTypeDefault,
+		new SHVControlCreator<SHVControlLabel,SHVControlImplementerLabelWin32>());
+
+	RegisterFactory(SHVControl::TypeEdit,SHVControlEdit::SubTypeSingleLine,
+		new SHVControlCreatorSubType<SHVControlEdit,SHVControlImplementerEditWin32,SHVControlEdit::SubTypeSingleLine>());
+	RegisterFactory(SHVControl::TypeEdit,SHVControlEdit::SubTypeMultiLine,
+		new SHVControlCreatorSubType<SHVControlEdit,SHVControlImplementerEditWin32,SHVControlEdit::SubTypeMultiLine>());
+
+	RegisterFactory(SHVControl::TypeButton,SHVControlButton::SubTypeDefault,
+		new SHVControlCreator<SHVControlButton,SHVControlImplementerButtonWin32>());
 }
 
 /*************************************

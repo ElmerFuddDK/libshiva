@@ -77,6 +77,8 @@ HINSTANCE hInstance = (HINSTANCE)Queue->GetModuleList().GetConfig(SHVModuleList:
 	GUIManager = new SHVGUIManagerWin32(Queue->GetModuleList());
 	MainWindow = new SHVControlContainer(GUIManager,new SHVControlImplementerMainWindowWin32(hInstance,this));
 
+	GUIManager->SetMainWindow(MainWindow);
+
 	retVal = Queue->GetModuleList().AddModule(GUIManager);
 
 	return ( retVal && MainWindow->Create() );
@@ -100,6 +102,8 @@ MSG msg;
 			DispatchMessage(&msg);
 		}
 	}
+
+	MainWindow->Clear();
 }
 
 /*************************************

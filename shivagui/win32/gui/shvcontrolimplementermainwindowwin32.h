@@ -32,7 +32,7 @@ public:
 	// From SHVControlImplementer
 	virtual int GetSubType(SHVControl* owner);
 
-	virtual SHVBool Create(SHVControl* owner, SHVControlImplementer* parent);
+	virtual SHVBool Create(SHVControl* owner, SHVControlImplementer* parent, int flags);
 
 
 	// From SHVControlImplementerContainer

@@ -214,7 +214,47 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\gui\shvcontrolbutton.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\gui\shvcontrolcontainer.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\gui\shvcontroledit.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\gui\shvcontrollabel.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\gui\shvguimanagerimpl.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="utils"
+				>
+				<File
+					RelativePath="..\..\utils\shvrect.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\utils\shvregion.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="win32gui"
+				>
+				<File
+					RelativePath="..\gui\shvcontrolimplementerbuttonwin32.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\gui\shvcontrolimplementereditwin32.cpp"
 					>
 				</File>
 				<File
@@ -230,14 +270,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\gui\shvcontrollabel.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\gui\shvguimanagerimpl.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\gui\shvguimanagerwin32.cpp"
 					>
 				</File>
@@ -245,12 +277,8 @@
 					RelativePath="..\gui\shvmainthreadeventdispatcherwin32.cpp"
 					>
 				</File>
-			</Filter>
-			<Filter
-				Name="utils"
-				>
 				<File
-					RelativePath="..\..\utils\shvrect.cpp"
+					RelativePath="..\gui\shvwin32.cpp"
 					>
 				</File>
 			</Filter>
@@ -265,14 +293,42 @@
 				>
 			</File>
 			<Filter
-				Name="gui"
+				Name="win32gui"
 				>
+				<File
+					RelativePath="..\gui\shvcontrolimplementerbuttonwin32.h"
+					>
+				</File>
+				<File
+					RelativePath="..\gui\shvcontrolimplementereditwin32.h"
+					>
+				</File>
+				<File
+					RelativePath="..\gui\shvcontrolimplementerlabelwin32.h"
+					>
+				</File>
+				<File
+					RelativePath="..\gui\shvcontrolimplementermainwindowwin32.h"
+					>
+				</File>
+				<File
+					RelativePath="..\gui\shvcontrolimplementerwin32.h"
+					>
+				</File>
+				<File
+					RelativePath="..\gui\shvguimanagerwin32.h"
+					>
+				</File>
 				<File
 					RelativePath="..\gui\shvmainthreadeventdispatcherwin32.h"
 					>
 				</File>
 				<File
 					RelativePath="..\gui\shvmainwindowwin32.h"
+					>
+				</File>
+				<File
+					RelativePath="..\gui\shvwin32.h"
 					>
 				</File>
 			</Filter>
@@ -288,82 +344,6 @@
 					</File>
 				</Filter>
 				<Filter
-					Name="gui"
-					>
-					<File
-						RelativePath="..\..\include\shvcontrol.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\include\shvcontrolcontainer.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\include\shvcontrolcreator.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\include\shvcontrolcreatorbase.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\include\shvcontroldata.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\include\shvcontrolimplementer.h"
-						>
-					</File>
-					<File
-						RelativePath="..\gui\shvcontrolimplementerlabelwin32.h"
-						>
-					</File>
-					<File
-						RelativePath="..\gui\shvcontrolimplementermainwindowwin32.h"
-						>
-					</File>
-					<File
-						RelativePath="..\gui\shvcontrolimplementerwin32.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\include\shvcontrollabel.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\include\shvcontrollayout.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\include\shvguimanager.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\gui\shvguimanagerimpl.h"
-						>
-					</File>
-					<File
-						RelativePath="..\gui\shvguimanagerwin32.h"
-						>
-					</File>
-					<File
-						RelativePath="..\gui\shvwin32.h"
-						>
-					</File>
-					<Filter
-						Name="utils"
-						>
-						<File
-							RelativePath="..\..\include\utils\shvrect.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\include\utils\shvregion.h"
-							>
-						</File>
-					</Filter>
-				</Filter>
-				<Filter
 					Name="utils"
 					>
 					<File
@@ -376,6 +356,74 @@
 					</File>
 					<File
 						RelativePath="..\..\..\include\utils\shvrefobject.h"
+						>
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="gui"
+				>
+				<File
+					RelativePath="..\..\include\shvcontrol.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\shvcontrolbutton.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\shvcontrolcontainer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\shvcontrolcreator.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\shvcontrolcreatorbase.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\shvcontrolcreatorsubtype.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\shvcontroldata.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\shvcontroledit.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\shvcontrolimplementer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\shvcontrollabel.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\shvcontrollayout.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\shvguimanager.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\gui\shvguimanagerimpl.h"
+					>
+				</File>
+				<Filter
+					Name="utils"
+					>
+					<File
+						RelativePath="..\..\include\utils\shvrect.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\utils\shvregion.h"
 						>
 					</File>
 				</Filter>

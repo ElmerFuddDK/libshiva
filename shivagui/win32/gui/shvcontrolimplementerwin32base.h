@@ -26,13 +26,13 @@ public:
 
 
 	virtual SHVBool IsCreated();
-	virtual SHVBool Reparent(SHVControl* owner, SHVControlImplementer* parent);
+	virtual SHVBool Reparent(SHVControl* owner, SHVControlImplementer* parent, int flags);
 	virtual SHVBool Destroy(SHVControl* owner);
 
 	virtual SHVRect GetRect(SHVControl* owner);
 	virtual void SetRect(SHVControl* owner, const SHVRect& rect);
 
-	virtual SHVBool SetFlag(SHVControl* owner, int flag, bool enable);
+	virtual SHVBool SetFlag(SHVControl* owner, int flag, bool enable = true);
 	virtual bool GetFlag(SHVControl* owner, int flag);
 
 

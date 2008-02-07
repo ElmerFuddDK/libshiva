@@ -3,6 +3,10 @@
 
 #include "../../include/framework/shvmodule.h"
 #include "shvcontrolcreatorbase.h"
+#include "shvcontrolcontainer.h"
+#include "shvcontroledit.h"
+#include "shvcontrollabel.h"
+#include "shvcontrolbutton.h"
 
 
 
@@ -21,6 +25,8 @@ public:
 	// enums
 	enum {
 		CfgInstanceHandle,
+		CfgRegionHorizMargin,
+		CfgRegionVertMargin,
 		CfgNativeOptions = 100
 	};
 
@@ -35,18 +41,52 @@ public:
 
 
 	// Control factory
-	virtual SHVControl* CreateControl(int controlType, int controlSubType) = 0;
-	virtual SHVControl* CreateControl(const SHVString8C& controlName) = 0;
+	virtual SHVControl* NewControl(int controlType, int controlSubType) = 0;
+	virtual SHVControl* NewControl(const SHVString8C& controlName) = 0;
 
 
 	virtual SHVModuleList& GetModuleList() = 0;
 	virtual SHVConfig& GetConfig() = 0;
 
+	virtual SHVControlContainer* GetMainWindow() = 0;
+
+	inline SHVControlEdit* NewEdit(int subType = SHVControlEdit::SubTypeDefault);
+	inline SHVControlLabel* NewLabel(int subType = SHVControlLabel::SubTypeDefault);
+	inline SHVControlButton* NewButton(int subType = SHVControlButton::SubTypeDefault);
 
 protected:
 	///\cond INTERNAL
 	inline SHVGUIManager(SHVModuleList& modules) : SHVModule(modules,"GUIManager") {}
 	///\endcond
 };
+
+
+
+// ============================================= implementation ============================================= //
+
+/*************************************
+ * CreateEdit
+ *************************************/
+SHVControlEdit* SHVGUIManager::NewEdit(int subType)
+{
+	return (SHVControlEdit*)NewControl(SHVControl::TypeEdit,subType);
+}
+
+/*************************************
+ * CreateLabel
+ *************************************/
+SHVControlLabel* SHVGUIManager::NewLabel(int subType)
+{
+	return (SHVControlLabel*)NewControl(SHVControl::TypeLabel,subType);
+}
+
+/*************************************
+ * NewButton
+ *************************************/
+SHVControlButton* SHVGUIManager::NewButton(int subType)
+{
+	return (SHVControlButton*)NewControl(SHVControl::TypeButton,subType);
+}
+
 
 #endif

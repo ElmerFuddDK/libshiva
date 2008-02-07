@@ -1,0 +1,47 @@
+#ifndef __SHIVA_WIN32GUI_SHVCONTROLIMPLEMENTEREDIT_H
+#define __SHIVA_WIN32GUI_SHVCONTROLIMPLEMENTEREDIT_H
+
+
+#include "../../include/shvcontroledit.h"
+#include "shvcontrolimplementerwin32.h"
+
+#ifndef __SHIVA_WIN32
+# error This code only works for win32
+#elif defined(__SHIVA_MFC)
+# error This code does not work in MFC mode
+#endif
+
+
+//-=========================================================================================================
+/// SHVControlImplementerEditWin32 - Edit box implementation
+/**
+ */
+
+class SHVControlImplementerEditWin32 : public SHVControlImplementerWin32<SHVControlImplementerEdit>
+{
+public:
+
+
+	SHVControlImplementerEditWin32(int subType = SHVControlEdit::SubTypeSingleLine);
+
+
+	// From SHVControlImplementer
+	virtual int GetSubType(SHVControl* owner);
+
+	virtual SHVBool Create(SHVControl* owner, SHVControlImplementer* parent, int flags);
+
+
+	// From SHVControlImplementerContainer
+	virtual SHVStringBuffer GetText();
+	virtual void SetText(const SHVStringC& text);
+
+	virtual int GetLimit();
+	virtual void SetLimit(int limit);
+
+private:
+	///\cond INTERNAL
+	int SubType;
+	///\endcond
+};
+
+#endif

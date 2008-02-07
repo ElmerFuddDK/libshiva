@@ -26,8 +26,8 @@ public:
 	virtual int GetSubType(SHVControl* owner) = 0;
 
 	virtual SHVBool IsCreated() = 0;
-	virtual SHVBool Create(SHVControl* owner, SHVControlImplementer* parent) = 0;
-	virtual SHVBool Reparent(SHVControl* owner, SHVControlImplementer* parent) = 0;
+	virtual SHVBool Create(SHVControl* owner, SHVControlImplementer* parent, int flags) = 0;
+	virtual SHVBool Reparent(SHVControl* owner, SHVControlImplementer* parent, int flags) = 0;
 	virtual SHVBool Destroy(SHVControl* owner) = 0;
 
 	virtual SHVRect GetRect(SHVControl* owner) = 0;

@@ -13,12 +13,8 @@
  *************************************/
 SHVControlContainer::~SHVControlContainer()
 {
-	for (size_t i=CalculateControlCount();i;)
-	{
-		((SHVControl*)Controls[--i])->DestroyRef();
-	}
-
-	Controls.Clear();
+	Clear();
+	GetImplementor()->Destroy(this);
 }
 
 /*************************************
@@ -37,7 +33,7 @@ SHVBool SHVControlContainer::Create()
 	SHVASSERT(GetImplementor()->GetSubType(this) == SHVControlContainer::SubTypeMainWindow || 
 		GetImplementor()->GetSubType(this) == SHVControlContainer::SubTypeDialog);
 
-	return GetImplementor()->Create(this, NULL);
+	return GetImplementor()->Create(this, NULL, SHVControl::FlagVisible);
 }
 
 /*************************************
@@ -65,6 +61,7 @@ SHVControlDataRowRef dataRow = data->GetRow();
 	if (!dataRow.IsNull())
 	{
 		SetTitle(dataRow->GetValue());
+		return SHVBool::True;
 	}
 
 	return SHVBool::False;
@@ -86,6 +83,18 @@ void SHVControlContainer::SetLayoutEngine(SHVControlLayout* engine)
 SHVControlLayout* SHVControlContainer::GetLayoutEngine()
 {
 	return LayoutEngine;
+}
+
+/*************************************
+ * Clear
+ *************************************/
+void SHVControlContainer::Clear()
+{
+	for (size_t controls = CalculateControlCount(); controls;)
+	{
+		// Setting parent to NULL will destroy the internal control and remove it from us
+		GetControl(--controls)->SetParent(NULL);
+	}
 }
 
 /*************************************

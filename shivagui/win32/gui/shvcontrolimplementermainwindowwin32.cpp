@@ -65,7 +65,7 @@ int SHVControlImplementerMainWindowWin32::GetSubType(SHVControl* owner)
 /*************************************
  * Create(parent)
  *************************************/
-SHVBool SHVControlImplementerMainWindowWin32::Create(SHVControl* owner, SHVControlImplementer* parent)
+SHVBool SHVControlImplementerMainWindowWin32::Create(SHVControl* owner, SHVControlImplementer* parent, int flags)
 {
 SHVBool retVal(parent == NULL && !IsCreated());
 
@@ -87,9 +87,9 @@ SHVBool retVal(parent == NULL && !IsCreated());
 #endif
 
 #ifdef __SHIVA_WINCE
-	DWORD styles = WS_VISIBLE;
+	DWORD styles = Win32::MapFlags(flags);
 #else
-	DWORD styles = WS_OVERLAPPEDWINDOW;
+	DWORD styles = WS_OVERLAPPEDWINDOW|Win32::MapFlags(flags);
 #endif
 		SetHandle(::CreateWindow(SHVWIN32CLASS_MAINWND, _T(""), styles,
 			CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL));
@@ -207,6 +207,7 @@ SHVControlImplementerMainWindowWin32* self = (owner ? (SHVControlImplementerMain
 		}
 		break;
 	case WM_DESTROY:
+		owner->Clear();
 		PostQuitMessage(0);
 		break;
 	case WM_SIZE:

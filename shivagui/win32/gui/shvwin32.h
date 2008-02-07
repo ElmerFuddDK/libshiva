@@ -31,6 +31,8 @@ public:
 	inline static SHVConfig& GetGUIConfig(SHVControl* control);
 	inline static HINSTANCE GetInstance(SHVControl* control);
 
+	static int MapFlags(int shivaflags);
+
 };
 
 

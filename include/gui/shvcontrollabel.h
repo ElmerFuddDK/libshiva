@@ -16,11 +16,17 @@ class SHVControlImplementerLabel;
 class SHVControlLabel: public SHVControl
 {
 public:
+
+	inline SHVControlLabel(SHVGUIManager* manager, SHVControlImplementer* implementor);
+
 	virtual int GetType();
+
+	inline SHVControlLabel* SetParent(SHVControlContainer* parent, int flags = FlagVisible);
 
 	virtual SHVBool GetData(SHVControlData* data);
 	virtual SHVBool SetData(SHVControlData* data);
-	inline void SetText(const SHVStringC& text);
+
+	inline SHVControlLabel* SetText(const SHVStringC& text);
 	inline SHVStringBuffer GetText();
 
 	inline SHVControlImplementerLabel* GetImplementor();
@@ -44,6 +50,27 @@ public:
 };
 
 
+
+// ============================================= implementation ============================================= //
+
+
+/*************************************
+ * Constructor
+ *************************************/
+SHVControlLabel::SHVControlLabel(SHVGUIManager* manager, SHVControlImplementer* implementor)
+  : SHVControl(manager,implementor)
+{}
+
+
+/*************************************
+ * SetParent
+ *************************************/
+SHVControlLabel* SHVControlLabel::SetParent(SHVControlContainer* parent, int flags)
+{
+	SHVControl::SetParent(parent,flags);
+	return this;
+}
+
 /*************************************
  * GetText
  *************************************/
@@ -55,9 +82,10 @@ SHVStringBuffer SHVControlLabel::GetText()
 /*************************************
  * SetText
  *************************************/
-void SHVControlLabel::SetText(const SHVStringC& title)
+SHVControlLabel* SHVControlLabel::SetText(const SHVStringC& title)
 {
 	GetImplementor()->SetText(title);
+	return this;
 }
 
 

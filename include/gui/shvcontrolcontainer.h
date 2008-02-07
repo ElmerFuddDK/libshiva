@@ -58,6 +58,7 @@ public:
 	
 
 	// control handling
+	virtual void Clear();
 	virtual SHVBool ContainsControl(SHVControl* cntrl);
 	inline void ResizeControls();
 	inline size_t CalculateControlCount();

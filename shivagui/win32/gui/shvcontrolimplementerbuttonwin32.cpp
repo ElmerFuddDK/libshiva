@@ -30,27 +30,34 @@
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
 
-#include "shvcontrolimplementerlabelwin32.h"
+#include "shvcontrolimplementerbuttonwin32.h"
 #include "shvwin32.h"
 
 
 /*************************************
  * Constructor
  *************************************/
-SHVControlImplementerLabelWin32::SHVControlImplementerLabelWin32() : SHVControlImplementerWin32<SHVControlImplementerLabel>()
+SHVControlImplementerButtonWin32::SHVControlImplementerButtonWin32() : SHVControlImplementerWin32<SHVControlImplementerButton>()
 {
 }
 
 /*************************************
  * Create
  *************************************/
-SHVBool SHVControlImplementerLabelWin32::Create(SHVControl* owner, SHVControlImplementer* parent, int flags)
+SHVBool SHVControlImplementerButtonWin32::Create(SHVControl* owner, SHVControlImplementer* parent, int flags)
 {
 	if (!IsCreated() && parent && parent->IsCreated())
 	{
-		SetHandle(CreateWindow(_T("STATIC"), _T(""), WS_CHILD|Win32::MapFlags(flags),
+		SetHandle(CreateWindow(_T("BUTTON"), _T(""), WS_CHILD|WS_TABSTOP|Win32::MapFlags(flags),
 			0, 0, 0, 0, Win32::GetHandle(parent), NULL, Win32::GetInstance(owner), NULL));
-	
+
+		if (IsCreated())
+		{
+			OrigProc =  (WNDPROC)GetWindowLongPtr(GetHandle(),GWLP_WNDPROC);
+			SetWindowLongPtr(GetHandle(),GWLP_USERDATA,(LONG_PTR)owner);
+			SetWindowLongPtr(GetHandle(),GWLP_WNDPROC,(LONG_PTR)&SHVControlImplementerButtonWin32::WndProc);
+		}
+		
 		return IsCreated();
 	}
 	
@@ -60,7 +67,7 @@ SHVBool SHVControlImplementerLabelWin32::Create(SHVControl* owner, SHVControlImp
 /*************************************
  * GetSubType
  *************************************/
-int SHVControlImplementerLabelWin32::GetSubType(SHVControl* owner)
+int SHVControlImplementerButtonWin32::GetSubType(SHVControl* owner)
 {
 	return SHVControl::SubTypeDefault;
 }
@@ -68,7 +75,7 @@ int SHVControlImplementerLabelWin32::GetSubType(SHVControl* owner)
 /*************************************
  * GetText
  *************************************/
-SHVStringBuffer SHVControlImplementerLabelWin32::GetText()
+SHVStringBuffer SHVControlImplementerButtonWin32::GetText()
 {
 SHVString retVal;
 
@@ -83,9 +90,30 @@ SHVString retVal;
 /*************************************
  * SetText
  *************************************/
-void SHVControlImplementerLabelWin32::SetText(const SHVStringC& text)
+void SHVControlImplementerButtonWin32::SetText(const SHVStringC& text)
 {
 	SHVASSERT(IsCreated());
 
 	SetWindowText(GetHandle(),text.GetSafeBuffer());
 }
+
+///\cond INTERNAL
+/*************************************
+ * WndProc
+ *************************************/
+LRESULT CALLBACK SHVControlImplementerButtonWin32::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+SHVControlButton* owner = (SHVControlButton*)GetWindowLongPtr(hWnd,GWLP_USERDATA);
+SHVControlImplementerButtonWin32* self = (owner ? (SHVControlImplementerButtonWin32*)owner->GetImplementor() : NULL);
+
+	switch (message) 
+	{
+	case BM_SETSTATE:
+		if (wParam)
+			owner->PerformClicked();
+	default:
+		return CallWindowProc(self->OrigProc,hWnd, message, wParam, lParam);
+	}
+	return 0;
+}
+///\endcond

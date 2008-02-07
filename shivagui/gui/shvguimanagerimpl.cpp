@@ -87,7 +87,7 @@ SHVBool retVal(SHVBool::True);
 /*************************************
  * CreateControl
  *************************************/
-SHVControl* SHVGUIManagerImpl::CreateControl(int controlType, int controlSubType)
+SHVControl* SHVGUIManagerImpl::NewControl(int controlType, int controlSubType)
 {
 SHVControl* retVal;
 SHVControlCreatorBaseRef* creator;
@@ -99,7 +99,7 @@ SHVControlCreatorBaseRef* creator;
 	
 	return retVal;
 }
-SHVControl* SHVGUIManagerImpl::CreateControl(const SHVString8C& controlName)
+SHVControl* SHVGUIManagerImpl::NewControl(const SHVString8C& controlName)
 {
 SHVControl* retVal;
 SHVControlCreatorBaseRef* creator;
@@ -125,3 +125,12 @@ SHVConfig& SHVGUIManagerImpl::GetConfig()
 {
 	return Modules.GetConfig(SHVModuleList::CfgGUI);
 }
+
+/*************************************
+ * GetMainWindow
+ *************************************/
+SHVControlContainer* SHVGUIManagerImpl::GetMainWindow()
+{
+	return MainWindow;
+}
+

@@ -27,8 +27,8 @@ public:
 	virtual int GetSubType(SHVControl* owner);
 
 	virtual SHVBool IsCreated();
-	virtual SHVBool Create(SHVControl* owner, SHVControlImplementer* parent) = 0;
-	virtual SHVBool Reparent(SHVControl* owner, SHVControlImplementer* parent);
+	virtual SHVBool Create(SHVControl* owner, SHVControlImplementer* parent, int flags) = 0;
+	virtual SHVBool Reparent(SHVControl* owner, SHVControlImplementer* parent, int flags);
 	virtual SHVBool Destroy(SHVControl* owner);
 
 	virtual SHVRect GetRect(SHVControl* owner);
@@ -80,9 +80,9 @@ SHVBool SHVControlImplementerWin32<T>::IsCreated()
  * Reparent
  *************************************/
 template <class T>
-SHVBool SHVControlImplementerWin32<T>::Reparent(SHVControl* owner, SHVControlImplementer* parent)
+SHVBool SHVControlImplementerWin32<T>::Reparent(SHVControl* owner, SHVControlImplementer* parent, int flags)
 {
-	return SHVControlImplementerWin32Base::Reparent(owner, parent);
+	return SHVControlImplementerWin32Base::Reparent(owner, parent, flags);
 }
 
 /*************************************

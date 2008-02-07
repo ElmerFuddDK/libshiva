@@ -1,10 +1,11 @@
 #ifndef __SHIVA_GUI_REGION_H
 #define __SHIVA_GUI_REGION_H
 
-#include "shvcontrolcontainerbase.h"
+#include "../shvcontrolcontainer.h"
 #include "shvrect.h"
 
 
+// forward declare
 class SHVRegionAction;
 
 
@@ -16,7 +17,6 @@ class SHVRegionAction;
 
 class SHVRegion
 {
-friend class SHVRegionAction;
 public:
 
 
@@ -34,7 +34,7 @@ public:
 
 
 	// default constructor
-	SHVRegion(SHVControlContainerBase* container, SHVConfig& guiConfig);
+	SHVRegion(SHVControlContainer* container);
 
 
 	// operators
@@ -52,14 +52,15 @@ public:
 
 
 	// Start placing a window
-	inline SHVRegionAction Move(SHVControlBase* wnd);
+	inline SHVRegionAction Move(SHVControl* wnd);
 
 
 private:
+friend class SHVRegionAction;
+
 	///\cond INTERNAL
-	SHVControlContainerBaseRef Container;
-	SHVConfig& GuiConfig;
-	SHVControlBase* Wnd;
+	SHVControlContainerRef Container;
+	SHVControl* Wnd;
 	int HorizMargin, VertMargin;
 	SHVRect Rect;
 	#ifdef __SHIVA_WIN32
@@ -93,17 +94,17 @@ public:
 	SHVRegionAction& Left(int leftMargin = -1, int topMargin = -1);
 	SHVRegionAction& Right(int leftMargin = -1, int topMargin = -1);
 
-	SHVRegionAction& AlignLeftRight(SHVControlBase* left = NULL, SHVControlBase* right = NULL, int alignment = SHVRegion::AlignLeft, int margin = -1);
-	SHVRegionAction& FillLeftRight(SHVControlBase* left = NULL, SHVControlBase* right = NULL, int margin = -1);
+	SHVRegionAction& AlignLeftRight(SHVControl* left = NULL, SHVControl* right = NULL, int alignment = SHVRegion::AlignLeft, int margin = -1);
+	SHVRegionAction& FillLeftRight(SHVControl* left = NULL, SHVControl* right = NULL, int margin = -1);
 
 
 private:
 	///\cond INTERNAL
 	SHVRegion& Region;
-	SHVControlBase* Wnd;
+	SHVControl* Wnd;
 	bool Initialized;
 	SHVRect WindowRect;
-	SHVRegionAction(SHVRegion& region, SHVControlBase* wnd);
+	SHVRegionAction(SHVRegion& region, SHVControl* wnd);
 	bool Initialize();
 	///\endcond
 };
@@ -129,7 +130,7 @@ private:
 	}
 \endcode
  */
-SHVRegionAction SHVRegion::Move(SHVControlBase* wnd)
+SHVRegionAction SHVRegion::Move(SHVControl* wnd)
 {
 	return SHVRegionAction(*this,wnd);
 }

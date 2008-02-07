@@ -21,8 +21,8 @@ SHVControlImplementerWin32Base::SHVControlImplementerWin32Base()
  *************************************/
 SHVControlImplementerWin32Base::~SHVControlImplementerWin32Base()
 {
-	Destroy(NULL);
- }
+	SHVASSERT(!IsCreated());
+}
 
 /*************************************
  * IsCreated
@@ -35,13 +35,14 @@ SHVBool SHVControlImplementerWin32Base::IsCreated()
 /*************************************
  * Reparent
  *************************************/
-SHVBool SHVControlImplementerWin32Base::Reparent(SHVControl* owner, SHVControlImplementer* parent)
+SHVBool SHVControlImplementerWin32Base::Reparent(SHVControl* owner, SHVControlImplementer* parent, int flags)
 {
 HWND prevParent;
 
 	SHVASSERT(IsCreated() && parent->IsCreated());
 
 	prevParent = ::SetParent(Window,Win32::GetHandle(parent));
+	SetFlag(owner, flags);
 
 	return prevParent != NULL;
 }
@@ -68,12 +69,21 @@ SHVBool retVal(IsCreated());
 SHVRect SHVControlImplementerWin32Base::GetRect(SHVControl* owner)
 {
 RECT nativeRect;
+POINT topleft, bottomright;
 
-	SHVASSERT(IsCreated());
+	SHVASSERT(IsCreated() && owner && owner->GetImplementor()->GetNative() == this);
 
 	::GetWindowRect(Window,&nativeRect);
 
-	return SHVRect(nativeRect.left,nativeRect.top,nativeRect.right,nativeRect.bottom);
+	topleft.x = nativeRect.left;
+	topleft.y = nativeRect.top;
+	bottomright.x = nativeRect.right;
+	bottomright.y = nativeRect.bottom;
+
+	ScreenToClient(Win32::GetHandle(owner->GetParent()),&topleft);
+	ScreenToClient(Win32::GetHandle(owner->GetParent()),&bottomright);
+
+	return SHVRect(topleft.x,topleft.y,bottomright.x,bottomright.y);
 }
 
 /*************************************
