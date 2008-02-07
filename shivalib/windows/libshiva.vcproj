@@ -310,6 +310,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\framework\shveventsubscriberbase.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\framework\shveventsubscriptionlist.cpp"
 					>
 				</File>

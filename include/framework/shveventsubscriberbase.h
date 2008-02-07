@@ -17,6 +17,7 @@ class SHVAPI SHVEventSubscriberBase : public SHVRefObject
 public:
 
 	virtual SHVEventQueue* Emit(SHVModuleList& modules, SHVEvent* event) = 0;
+	void EmitNow(SHVModuleList& modules, SHVEvent* event);
 	virtual void Perform(SHVEvent* event) = 0;
 
 };
@@ -26,7 +27,6 @@ typedef SHVRefObjectContainer<SHVEventSubscriberBase> SHVEventSubscriberBaseRef;
 
 
 // ============================================== documentation ============================================= //
-
 
 /** \fn SHVEventQueue* SHVEventSubscriberBase::Emit(SHVModuleList& modules, SHVEvent* event)
  \brief Is called when dispatching an event - enqueues or performs the event
