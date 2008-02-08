@@ -5,7 +5,8 @@
 #include "../../include/utils/shvstring.h"
 #include "utils/shvrect.h"
 
-
+// forward declares
+class SHVControlData;
 
 //-=========================================================================================================
 /// SHVControlData - interface for data binding to controls
@@ -22,6 +23,8 @@ public:
 
 	virtual SHVStringBuffer GetValue(const SHVStringC col) = 0;
 	virtual SHVBool SetValue(const SHVStringC value, const SHVStringC col) = 0;
+	virtual SHVControlData* GetSubData(int entityIndex) = 0;
+	virtual SHVControlData* GetSubData(SHVStringC entityName) = 0;
 };
 typedef SHVRefObjectContainer<SHVControlDataRow> SHVControlDataRowRef;
 
