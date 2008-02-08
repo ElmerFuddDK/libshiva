@@ -28,6 +28,10 @@ public:
 		SubTypeMainWindow,
 		SubTypeDialog,
 	};
+	enum EventTypes
+	{
+		EventPreDestroy
+	};
 
 
 	// construcor
@@ -64,6 +68,10 @@ public:
 	inline size_t CalculateControlCount();
 	inline SHVControl* GetControl(size_t index);
 
+	// event handling
+	virtual SHVBool PreDestroy();
+	virtual void SubscribePreDestroy(SHVEventSubscriberBase* subs);
+
 
 	// obtain pointer to the implementor
 	inline SHVControlImplementerContainer* GetImplementor();
@@ -79,6 +87,7 @@ friend class SHVControl;
 	///\cond INTERNAL
 	SHVControlLayoutRef LayoutEngine;
 	SHVVectorBase Controls;
+	SHVEventSubscriberBaseRef PreDestroySubscriber;
 	enum { ControlGrowSize = 10 };
 	///\endcond
 };

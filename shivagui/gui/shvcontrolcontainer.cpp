@@ -2,7 +2,7 @@
 #include "../../include/platformspc.h"
 
 #include "../include/shvcontrolcontainer.h"
-
+#include "../../include/framework/shveventstructs.h"
 
 //=========================================================================================================
 // SHVControlContainer - base control container class
@@ -111,6 +111,29 @@ SHVBool retVal(SHVBool::False);
 	}
 
 	return retVal;
+}
+
+/*************************************
+ * ContainsControl
+ *************************************/
+SHVBool SHVControlContainer::PreDestroy()
+{
+	if (!PreDestroySubscriber.IsNull())
+	{
+		SHVEventDataBool allowPredestroy(SHVBool::True);
+		PreDestroySubscriber->EmitNow(GetModuleList(),new SHVEventData<SHVEventDataBool>(allowPredestroy, NULL, EventPreDestroy));
+		return allowPredestroy.GetValue();
+	}
+	else
+		return SHVBool(SHVBool::True);
+}
+
+/*************************************
+ * ContainsControl
+ *************************************/
+void SHVControlContainer::SubscribePreDestroy(SHVEventSubscriberBase* subs)
+{
+	PreDestroySubscriber = subs;
 }
 
 /*************************************
