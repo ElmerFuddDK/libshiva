@@ -41,7 +41,7 @@ void SHVMyOtherModule::OnEvent(SHVEvent* event)
  */
 
 template<class T, class C = const T&>
-class SHVAPI SHVEventData : public SHVEvent
+class SHVEventData : public SHVEvent
 {
 public:
 	SHVEventData(SHVEventTarget* caller, SHVInt id, SHVInt subid = SHVInt(), SHVRefObject* obj = NULL);
@@ -91,7 +91,7 @@ void SHVMyOtherModule::OnEvent(SHVEvent* event)
  */
 
 template<class T, class C = const T&>
-class SHVAPI SHVEventStringData : public SHVEventString
+class SHVEventStringData : public SHVEventString
 {
 public:
 	SHVEventStringData(SHVEventTarget* caller, const SHVChar* name, SHVInt id = SHVInt(), SHVInt subid = SHVInt(), SHVRefObject* obj = NULL);
