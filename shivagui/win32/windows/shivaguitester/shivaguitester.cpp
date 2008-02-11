@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "../../../../include/platformspc.h"
+#include "../../../../include/shvversion.h"
 
 #include "../../../../include/frameworkimpl/shvmainthreadeventqueue.h"
 #include "../../../../include/utils/shvdll.h"
@@ -20,6 +21,12 @@ SHVDll guilib;
 
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
+
+	if (!SHVModuleList::CheckVersion(__SHIVA_VERSION_MAJOR,__SHIVA_VERSION_MINOR,__SHIVA_VERSION_RELEASE))
+	{
+		::MessageBox(NULL,_T("Invalid version of libshiva.dll"),_T("Error"),MB_ICONERROR);
+		return -1;
+	}
 
 	if (!guilib.Load(guilib.CreateLibFileName(_T("shivaguiwin32"))))
 	{
