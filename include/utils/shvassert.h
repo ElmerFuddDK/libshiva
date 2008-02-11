@@ -6,7 +6,7 @@
 #  define SHVBREAKPOINT false
 # endif
 # define SHVASSERT(x) (void) ((x) || !SHVAssert::ReportError(__FILE__, __LINE__) || BREAKPOINT)
-# define SHVVERIFY(x) ASSERT(x)
+# define SHVVERIFY(x) SHVASSERT(x)
 #else
 # define SHVASSERT(x)
 # define SHVVERIFY(x) x
