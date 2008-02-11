@@ -325,6 +325,10 @@
 					RelativePath="..\src\framework\shvmodule.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\src\framework\shvmodulelist.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="frameworkimpl"
@@ -373,6 +377,10 @@
 				</File>
 				<File
 					RelativePath="..\..\include\shvtypes.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\shvversion.h"
 					>
 				</File>
 				<Filter

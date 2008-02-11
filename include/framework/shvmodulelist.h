@@ -96,6 +96,10 @@ public:
 	virtual void CloseApp() = 0;
 
 
+	// Version check against libshiva
+	static SHVBool CheckVersion(int major, int minor, int release);
+
+
 protected:
 friend class SHVEventQueue;
 friend class SHVEventQueueList;
