@@ -1,0 +1,5 @@
+LIBRARY	"xmlstream"
+
+EXPORTS
+  CreateObjectInt
+  CreateObjectString
