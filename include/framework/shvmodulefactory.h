@@ -3,6 +3,8 @@
 
 #include "shvmodule.h"
 
+#define __MODULESYMBOL_DEFAULTS "Defaults"
+
 
 //-=========================================================================================================
 /// SHVModuleFactory class - interface for instantiating modules from a module library
@@ -20,10 +22,18 @@ public:
 
 	// Version check
 	virtual SHVBool CheckVersion(int verMajor,int verMinor,int verRelease) = 0;
+	virtual SHVInt GetMajor() = 0;
+	virtual SHVInt GetMinor() = 0;
+	virtual SHVInt GetRelease() = 0;
+	virtual SHVInt GetBuild() = 0;
+
+
+	// Get description
+	virtual SHVStringBuffer GetDescription() = 0;
 
 
 	// Module instantiation
-	virtual SHVBool ResolveModules(const SHVStringC symbol) = 0;
+	virtual SHVBool ResolveModules(const SHVString8C symbol) = 0;
 
 
 	// from SHVEventTarget
