@@ -24,6 +24,8 @@ public:
 	virtual SHVBool Register();
 	virtual void Unregister();
 
+	// CreateFont
+	virtual SHVFont* CreateFont(const SHVStringC name, int height, int styles = SHVFont::StyleNormal);
 
 	// PreTranslateMessage
 	virtual bool PreTranslateMessage(MSG* message);

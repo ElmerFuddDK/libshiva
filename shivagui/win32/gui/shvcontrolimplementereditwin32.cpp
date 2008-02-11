@@ -3,6 +3,7 @@
 
 #include "shvcontrolimplementereditwin32.h"
 #include "shvwin32.h"
+#include "utils/shvfontwin32.h"
 
 
 //=========================================================================================================
@@ -52,6 +53,8 @@ SHVBool retVal(parent && owner && !IsCreated());
 			0, 0, 0, 0, Win32::GetHandle(parent), NULL, Win32::GetInstance(owner), NULL));
 
 		retVal = IsCreated();
+
+		SetFont(owner,owner->GetManager()->GetFont(SHVGUIManager::CfgFontNormal));
 	}
 
 	return retVal;

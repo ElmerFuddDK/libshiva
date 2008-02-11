@@ -51,6 +51,8 @@ SHVBool SHVControlImplementerLabelWin32::Create(SHVControl* owner, SHVControlImp
 		SetHandle(CreateWindow(_T("STATIC"), _T(""), WS_CHILD|Win32::MapFlags(flags),
 			0, 0, 0, 0, Win32::GetHandle(parent), NULL, Win32::GetInstance(owner), NULL));
 	
+		SetFont(owner,owner->GetManager()->GetFont(SHVGUIManager::CfgFontLargeBold));
+
 		return IsCreated();
 	}
 	

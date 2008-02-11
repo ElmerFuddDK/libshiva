@@ -3,6 +3,7 @@
 
 #include "shvcontrolimplementerwin32base.h"
 #include "shvwin32.h"
+#include "utils/shvfontwin32.h"
 
 //=========================================================================================================
 // SHVControlImplementerWin32Base - implementation of base implementer methods
@@ -131,6 +132,41 @@ DWORD styles = (retVal ? ::GetWindowLong(Window,GWL_STYLE) : 0);
 	if (retVal && (flag & SHVControl::FlagDisabled))
 	{
 		retVal = ((styles & WS_DISABLED) ? true : false);
+	}
+
+	return retVal;
+}
+
+/*************************************
+ * GetFont
+ *************************************/
+SHVFont* SHVControlImplementerWin32Base::GetFont(SHVControl* owner)
+{
+SHVFontWin32* retVal = NULL;
+
+	if (IsCreated())
+	{
+	HFONT font = (HFONT)::SendMessage(GetHandle(),WM_GETFONT,0,0);
+
+		if (font)
+			retVal = new SHVFontWin32(font,false);
+
+	}
+
+	return retVal;
+}
+
+/*************************************
+ * SetFont
+ *************************************/
+SHVBool SHVControlImplementerWin32Base::SetFont(SHVControl* owner, SHVFont* font)
+{
+SHVBool retVal(IsCreated());
+
+	if (retVal && font)
+	{
+	SHVFontWin32* win32Font = (SHVFontWin32*)font;
+		::SendMessage(GetHandle(),WM_SETFONT,(WPARAM)win32Font->GetFont(),0);
 	}
 
 	return retVal;

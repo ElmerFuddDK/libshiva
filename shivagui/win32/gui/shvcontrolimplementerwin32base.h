@@ -35,6 +35,9 @@ public:
 	virtual SHVBool SetFlag(SHVControl* owner, int flag, bool enable = true);
 	virtual bool GetFlag(SHVControl* owner, int flag);
 
+	virtual SHVFont* GetFont(SHVControl* owner);
+	virtual SHVBool SetFont(SHVControl* owner, SHVFont* font);
+
 
 	virtual HWND GetHandle();
 

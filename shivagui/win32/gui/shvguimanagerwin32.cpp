@@ -33,6 +33,7 @@
 
 #include "shvguimanagerwin32.h"
 #include "shvwin32.h"
+#include "utils/shvfontwin32.h"
 
 #include "shvcontrolimplementerlabelwin32.h"
 #include "shvcontrolimplementereditwin32.h"
@@ -50,6 +51,9 @@
  *************************************/
 SHVGUIManagerWin32::SHVGUIManagerWin32(SHVModuleList& modules) : SHVGUIManagerImpl(modules)
 {
+SHVFontWin32Ref font;
+
+	// Register controls
 	RegisterFactory(SHVControl::TypeLabel,SHVControlLabel::SubTypeDefault,
 		new SHVControlCreator<SHVControlLabel,SHVControlImplementerLabelWin32>());
 
@@ -60,6 +64,14 @@ SHVGUIManagerWin32::SHVGUIManagerWin32(SHVModuleList& modules) : SHVGUIManagerIm
 
 	RegisterFactory(SHVControl::TypeButton,SHVControlButton::SubTypeDefault,
 		new SHVControlCreator<SHVControlButton,SHVControlImplementerButtonWin32>());
+
+
+	// Register fonts
+	font = SHVFontWin32::CreateSystemFont();
+	GetConfig().SetRef(CfgFontNormal,font);
+	GetConfig().SetRef(CfgFontNormalBold,font->CreateCopy(100,SHVFont::StyleBold));
+	GetConfig().SetRef(CfgFontLarge,font->CreateCopy(120));
+	GetConfig().SetRef(CfgFontLargeBold,font->CreateCopy(120,SHVFont::StyleBold));
 }
 
 /*************************************
@@ -76,6 +88,14 @@ SHVBool SHVGUIManagerWin32::Register()
 void SHVGUIManagerWin32::Unregister()
 {
 	SHVGUIManagerImpl::Unregister();
+}
+
+/*************************************
+ * CreateFont
+ *************************************/
+SHVFont* SHVGUIManagerWin32::CreateFont(const SHVStringC name, int height, int styles)
+{
+	return new SHVFontWin32(name,height,styles);
 }
 
 /*************************************

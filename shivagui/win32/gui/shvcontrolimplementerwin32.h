@@ -37,6 +37,9 @@ public:
 	virtual SHVBool SetFlag(SHVControl* owner, int flag, bool enable);
 	virtual bool GetFlag(SHVControl* owner, int flag);
 
+	virtual SHVFont* GetFont(SHVControl* owner);
+	virtual SHVBool SetFont(SHVControl* owner, SHVFont* font);
+
 	virtual void* GetNative();
 
 protected:
@@ -128,6 +131,24 @@ template <class T>
 bool SHVControlImplementerWin32<T>::GetFlag(SHVControl* owner, int flag)
 {
 	return SHVControlImplementerWin32Base::GetFlag(owner, flag);
+}
+
+/*************************************
+ * GetFont
+ *************************************/
+template <class T>
+SHVFont* SHVControlImplementerWin32<T>::GetFont(SHVControl* owner)
+{
+	return SHVControlImplementerWin32Base::GetFont(owner);
+}
+
+/*************************************
+ * SetFont
+ *************************************/
+template <class T>
+SHVBool SHVControlImplementerWin32<T>::SetFont(SHVControl* owner, SHVFont* font)
+{
+	return SHVControlImplementerWin32Base::SetFont(owner, font);
 }
 
 /*************************************

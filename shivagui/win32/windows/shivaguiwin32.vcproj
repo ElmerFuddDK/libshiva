@@ -281,6 +281,14 @@
 					RelativePath="..\gui\shvwin32.cpp"
 					>
 				</File>
+				<Filter
+					Name="utils"
+					>
+					<File
+						RelativePath="..\gui\utils\shvfontwin32.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
@@ -331,6 +339,14 @@
 					RelativePath="..\gui\shvwin32.h"
 					>
 				</File>
+				<Filter
+					Name="utils"
+					>
+					<File
+						RelativePath="..\gui\utils\shvfontwin32.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="include"
@@ -418,6 +434,10 @@
 				<Filter
 					Name="utils"
 					>
+					<File
+						RelativePath="..\..\include\utils\shvfont.h"
+						>
+					</File>
 					<File
 						RelativePath="..\..\include\utils\shvrect.h"
 						>

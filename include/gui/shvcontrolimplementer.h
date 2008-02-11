@@ -2,6 +2,7 @@
 #define __SHIVA_GUI_CONTROLIMPLEMENTER_H
 
 #include "utils/shvrect.h"
+#include "utils/shvfont.h"
 #include "../../include/utils/shvptrcontainer.h"
 
 
@@ -35,6 +36,9 @@ public:
 
 	virtual SHVBool SetFlag(SHVControl* owner, int flag, bool enable) = 0;
 	virtual bool GetFlag(SHVControl* owner, int flag) = 0;
+
+	virtual SHVFont* GetFont(SHVControl* owner) = 0;
+	virtual SHVBool SetFont(SHVControl* owner, SHVFont* font) = 0;
 
 	virtual void* GetNative() = 0;
 

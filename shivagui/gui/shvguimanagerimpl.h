@@ -25,6 +25,10 @@ public:
 	virtual void Unregister();
 
 
+	// Font creation function
+	virtual SHVFont* CreateFont(const SHVStringC name, int height, int styles = SHVFont::StyleNormal) = 0;
+
+
 	// Register controls
 	virtual SHVBool RegisterFactory(int controlType, int controlSubType, SHVControlCreatorBase* factory);
 	virtual SHVBool RegisterFactory(const SHVString8C& controlName, SHVControlCreatorBase* factory);

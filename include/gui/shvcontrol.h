@@ -7,6 +7,7 @@
 #include "shvcontroldata.h"
 #include "shvcontrolimplementer.h"
 #include "utils/shvrect.h"
+#include "utils/shvfont.h"
 
 
 // forward declare
@@ -65,6 +66,10 @@ public:
 
 	inline SHVBool SetFlag(int flag, bool enable = true);
 	inline bool GetFlag(int flag);
+
+	inline SHVFont* GetFont();
+	inline SHVBool SetFont(SHVFont* font);
+	
 
 	// obtain pointer to the implementor
 	inline SHVControlImplementer* GetImplementor();
@@ -163,6 +168,22 @@ bool SHVControl::GetFlag(int flag)
 		return GetImplementor()->GetFlag(this, flag);
 
 	return false;
+}
+
+/*************************************
+ * GetFont
+ *************************************/
+SHVFont* SHVControl::GetFont()
+{
+	return GetImplementor()->GetFont(this);
+}
+
+/*************************************
+ * SetFont
+ *************************************/
+SHVBool SHVControl::SetFont(SHVFont* font)
+{
+	return GetImplementor()->SetFont(this, font);
 }
 
 /*************************************

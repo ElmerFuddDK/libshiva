@@ -37,11 +37,11 @@ void SHVControlTester::PostRegister()
 	GUIManager->GetMainWindow()->SetLayoutEngine(new SHVControlLayoutCallback<SHVControlTester>(this,&SHVControlTester::OnResizeMainWnd));
 
 	///\todo add your controls here
-	Label = GUIManager->NewLabel()->SetParent(GUIManager->GetMainWindow())->SetText(_T("Label text"));
+	Label = GUIManager->NewLabel()->SetParent(GUIManager->GetMainWindow())->SetText(_T("Label\r\ntext"));
 	EditBox = GUIManager->NewEdit(SHVControlEdit::SubTypeMultiLine)->SetParent(GUIManager->GetMainWindow())->SetText(_T("Edit text"))->SetLimit(10);
 	Button = GUIManager->NewButton()->SetParent(GUIManager->GetMainWindow())->SetText(_T("Click Me!"));
 
-	Label->SetRect(SHVRect(0,0,100,20));
+	Label->SetRect(SHVRect(0,0,100,40));
 	EditBox->SetRect(SHVRect(100,0,200,100));
 	Button->SetRect(SHVRect(100,0,200,20));
 
