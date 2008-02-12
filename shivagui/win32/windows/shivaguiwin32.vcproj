@@ -210,6 +210,10 @@
 				Name="gui"
 				>
 				<File
+					RelativePath="..\..\gui\shvcompoundform.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\gui\shvcontrol.cpp"
 					>
 				</File>
@@ -227,6 +231,10 @@
 				</File>
 				<File
 					RelativePath="..\..\gui\shvcontrollabel.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\gui\shvform.cpp"
 					>
 				</File>
 				<File
@@ -355,6 +363,10 @@
 					Name="framework"
 					>
 					<File
+						RelativePath="..\..\..\include\framework\shveventstructs.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\..\include\framework\shvmainthreadeventdispatcher.h"
 						>
 					</File>
@@ -374,11 +386,19 @@
 						RelativePath="..\..\..\include\utils\shvrefobject.h"
 						>
 					</File>
+					<File
+						RelativePath="..\..\..\include\utils\shvvectorref.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
 				Name="gui"
 				>
+				<File
+					RelativePath="..\..\include\shvcompoundform.h"
+					>
+				</File>
 				<File
 					RelativePath="..\..\include\shvcontrol.h"
 					>
@@ -421,6 +441,10 @@
 				</File>
 				<File
 					RelativePath="..\..\include\shvcontrollayout.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\shvform.h"
 					>
 				</File>
 				<File
