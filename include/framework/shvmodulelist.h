@@ -122,12 +122,14 @@ friend class SHVEventQueueList;
  * running through the list for modules within a given group.
  */
 
-class SHVModuleListIterator
+class SHVAPI SHVModuleListIterator
 {
 public:
 	virtual operator SHVBool() = 0;
 	virtual SHVBool MoveNext() = 0;
 	virtual SHVModuleBase* Get() = 0;
+
+	virtual ~SHVModuleListIterator() {}
 };
 
 
