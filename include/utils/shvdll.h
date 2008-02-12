@@ -33,7 +33,8 @@ public:
 
 	enum ClassTypes {
 		ClassTypeMainThreadDispatcher,
-		ClassTypeModuleFactory
+		ClassTypeModuleFactory,
+		ClassTypeUser = 100
 	};
 
 
