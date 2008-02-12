@@ -88,7 +88,7 @@ protected:
 
 
 	SHVGUIManager* GUIManager;
-	SHVControlImplementerRef Implementor;
+	SHVControlImplementerPtr Implementor;
 
 
 private:

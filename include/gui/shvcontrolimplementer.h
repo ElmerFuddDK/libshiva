@@ -43,6 +43,6 @@ public:
 	virtual void* GetNative() = 0;
 
 };
-typedef SHVPtrContainer<SHVControlImplementer> SHVControlImplementerRef;
+typedef SHVPtrContainer<SHVControlImplementer> SHVControlImplementerPtr;
 
 #endif
