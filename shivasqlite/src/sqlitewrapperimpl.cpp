@@ -48,13 +48,20 @@ short RFTSQLiteWrapper_Impl::Close()
 
 short RFTSQLiteWrapper_Impl::Prepare(RFTSQLiteStatement*& statement, const char* sql, const char*& notparsed)
 {
-	sqlite3_stmt* sqllite_statement;
-	short res = sqlite3_prepare_v2(m_Sqlite, sql, -1, &sqllite_statement, &notparsed);
-	statement = new RFTSQLiteStatement_impl(sqllite_statement);
-	return res;
+sqlite3_stmt* sqllite_statement;
+short res = RFTSQLiteWrapper::SQLite_ERROR;;
+	if (m_Sqlite)
+	{
+		res = sqlite3_prepare_v2(m_Sqlite, sql, -1, &sqllite_statement, &notparsed);
+		statement = new RFTSQLiteStatement_impl(sqllite_statement);
+	}
+		return res;
 } 
 
 const char* RFTSQLiteWrapper_Impl::GetErrorMsg()
 {
-	return sqlite3_errmsg(m_Sqlite);
+	if (m_Sqlite)
+		return sqlite3_errmsg(m_Sqlite);
+	else
+		return "Database is not open";
 }

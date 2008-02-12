@@ -88,6 +88,50 @@ int RFTSQLiteStatement_impl::GetColumnCount()
 	return sqlite3_column_count(m_Statement);
 }
 
+short RFTSQLiteStatement_impl::SetParameter(const char* name, long val)
+{
+	int pIdx = sqlite3_bind_parameter_index(m_Statement, name);
+	if (pIdx)
+	{
+		return sqlite3_bind_int64(m_Statement, pIdx, val);
+	}
+	else
+		return RFTSQLiteWrapper::SQLite_ERROR;
+}
+
+short RFTSQLiteStatement_impl::SetParameter(const char* name, double val)
+{
+	int pIdx = sqlite3_bind_parameter_index(m_Statement, name);
+	if (pIdx)
+	{
+		return sqlite3_bind_double(m_Statement, pIdx, val);
+	}
+	else
+		return RFTSQLiteWrapper::SQLite_ERROR;
+}
+
+short RFTSQLiteStatement_impl::SetParameter(const char* name, const char* val)
+{
+	int pIdx = sqlite3_bind_parameter_index(m_Statement, name);
+	if (pIdx)
+	{
+		return sqlite3_bind_text(m_Statement, pIdx, val, (int) strlen(val), SQLITE_TRANSIENT);
+	}
+	else
+		return RFTSQLiteWrapper::SQLite_ERROR;
+}
+
+short RFTSQLiteStatement_impl::SetParameterNull(const char* name)
+{
+	int pIdx = sqlite3_bind_parameter_index(m_Statement, name);
+	if (pIdx)
+	{
+		return sqlite3_bind_null(m_Statement, pIdx);
+	}
+	else
+		return RFTSQLiteWrapper::SQLite_ERROR;
+}
+
 short RFTSQLiteStatement_impl::NextResult()
 {
 	return sqlite3_step(m_Statement);
