@@ -4,6 +4,7 @@
 #include "shvstringc.h"
 #ifdef __SHVSTRING_INCLUDE_UNICODE
 # include "shvstring16.h"
+class SHVStringUTF8;
 #endif
 
 
@@ -17,7 +18,6 @@
 
 class SHVAPI SHVString8 : public SHVString8C
 {
-friend class SHVString8C;
 public:
 
 
@@ -68,6 +68,11 @@ public:
 
 
 private:
+friend class SHVString8C;
+#ifdef __SHVSTRING_INCLUDE_UNICODE
+friend class SHVStringUTF8;
+#endif
+	
 	///\cond INTERNAL
 	void AllocBuffer(size_t size);
 	size_t BufferLen;

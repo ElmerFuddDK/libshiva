@@ -262,6 +262,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\utils\shvstringutf8.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\utils\shvtime.cpp"
 					>
 				</File>
@@ -347,6 +351,10 @@
 				</File>
 				<File
 					RelativePath="..\src\frameworkimpl\shvmodulelistimpl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\frameworkimpl\shvmoduleloaderimpl.cpp"
 					>
 				</File>
 				<File
@@ -475,6 +483,14 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\include\utils\shvstringutf8.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\utils\shvstringutf8c.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\utils\shvtime.h"
 						>
 					</File>
@@ -551,6 +567,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\include\framework\shvmoduleloader.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\framework\shvtimer.h"
 						>
 					</File>
@@ -600,6 +620,10 @@
 					</File>
 					<File
 						RelativePath="..\..\include\frameworkimpl\shvmodulelistimpl.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\frameworkimpl\shvmoduleloaderimpl.h"
 						>
 					</File>
 					<File

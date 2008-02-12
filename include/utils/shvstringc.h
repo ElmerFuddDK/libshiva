@@ -97,9 +97,10 @@ public:
 	static SHVStringBuffer8 LongToString(long val);
 #ifdef __SHVSTRING_INCLUDE_UNICODE
 	SHVStringBuffer16 ToStr16() const;
+	SHVStringBufferUTF8 ToStrUTF8() const;
 	SHVStringBuffer ToStrT() const;
 	bool ConvertBufferToWChar(SHVWChar* buffer, size_t len) const;
-	static SHVStringBuffer8 FromUTF8(const char* utf8Str);
+	bool ConvertBufferToUTF8(SHVChar* buffer, size_t& len) const;
 #endif
 #ifdef __SHIVA_EPOC
 	inline TPtrC8 ToPtr() const;

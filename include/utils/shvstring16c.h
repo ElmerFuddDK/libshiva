@@ -13,8 +13,14 @@ class SHVString16C;
 class SHVString16;
 class SHVString16CRef;
 class SHVStringBuffer8;
+class SHVStringBufferUTF8;
 class SHVStringBuffer16;
 #include "shvstringc.h"
+#ifndef __SHIVA_UTILS_STRINGC_H
+class SHVString8C;
+class SHVString8;
+class SHVString8CRef;
+#endif
 
 
 
@@ -91,12 +97,11 @@ public:
 	const SHVWChar* GetSafeBuffer() const; ///< will return the real buffer, or "" if the string is null
 	long ToLong(SHVWChar** endChar = NULL) const;
 	static SHVStringBuffer16 LongToString(long val);
-#ifdef __SHIVA_UTILS_STRINGC_H
 	SHVStringBuffer8 ToStr8() const;
+	SHVStringBufferUTF8 ToStrUTF8() const;
 	SHVStringBuffer ToStrT() const;
 	bool ConvertBufferToChar(SHVChar* buffer, size_t len) const;
-	static SHVStringBuffer16 FromUTF8(const char* utf8Str);
-#endif
+	bool ConvertBufferToUTF8(SHVChar* buffer, size_t& len) const;
 #ifdef __SHIVA_EPOC
 	inline TPtrC16 ToPtr() const;
 #endif

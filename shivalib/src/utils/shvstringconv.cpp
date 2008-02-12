@@ -31,6 +31,7 @@
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
 #include "../../../include/utils/shvstring.h"
+#include "../../../include/utils/shvstringutf8.h"
 
 #ifdef __SHVSTRING_INCLUDE_UNICODE
 
@@ -49,6 +50,9 @@ const char* retVal = getenv("CHARSET");
 }
 #endif
 
+/*************************************
+ * ToStr16
+ *************************************/
 SHVStringBuffer16 SHVString8C::ToStr16() const
 {
 	if (IsNull()) return SHVStringBuffer16();
@@ -60,6 +64,9 @@ SHVString16 retVal;
 	return retVal.ReleaseBuffer();
 }
 
+/*************************************
+ * ConvertBufferToWChar
+ *************************************/
 bool SHVString8C::ConvertBufferToWChar(SHVWChar* outBuffer, size_t len) const
 {
 bool retVal = true;
@@ -127,6 +134,9 @@ unicode_iconv_t conv = unicode_iconv_open("UCS-2",SHVStringC_Get8BitCharSet());
 	return retVal;
 }
 
+/*************************************
+ * ToStr8
+ *************************************/
 SHVStringBuffer8 SHVString16C::ToStr8() const
 {
 	if (IsNull()) return SHVStringBuffer8();
@@ -138,6 +148,9 @@ SHVString8 retVal;
 	return retVal.ReleaseBuffer();
 }
 
+/*************************************
+ * ConvertBufferToChar
+ *************************************/
 bool SHVString16C::ConvertBufferToChar(SHVChar* outBuffer, size_t len) const
 {
 	bool retVal = true;
@@ -205,11 +218,28 @@ unicode_iconv_t conv = unicode_iconv_open(SHVStringC_Get8BitCharSet(),"UCS-2");
 	return retVal;
 }
 
-SHVStringBuffer8 SHVString8C::FromUTF8(const char* utf8Str)
+/*************************************
+ * ToStr8
+ *************************************/
+SHVStringBuffer8 SHVStringUTF8C::ToStr8() const
 {
 SHVString8 retVal;
-size_t len = SHVString8C::StrLen(utf8Str);
-SHVChar* buf;
+
+	if (!IsNull())
+	{
+	size_t len = GetLength();
+		ConvertBufferToChar(retVal.SetBufferSize(len+1), len);
+	}
+	
+	return retVal.ReleaseBuffer();
+}
+
+/*************************************
+ * ConvertBufferToChar
+ *************************************/
+bool SHVStringUTF8C::ConvertBufferToChar(SHVChar* buffer, size_t len) const
+{
+const char* utf8Str = Buffer;
 const char* endch;
 size_t bytes;
 #ifdef __SHIVA_WIN32
@@ -238,19 +268,16 @@ unicode_iconv_t conv = unicode_iconv_open(SHVStringC_Get8BitCharSet(),"UTF-8");
 	if ((size_t)conv == -1)
 	{
 		fprintf(stderr, "UTF-8 conversion error %d\n", errno);
-		return retVal.ReleaseBuffer();
+		return false;
 	}
 #endif
-
-	retVal.AllocBuffer(len+1);
-	buf = retVal.Buffer;
 
 	while (*utf8Str)
 	{
 		if (!((*utf8Str)&0x80))
 		{
-			*buf = *utf8Str;
-			buf++;
+			*buffer = *utf8Str;
+			buffer++;
 			utf8Str++;
 		}
 		else
@@ -260,33 +287,33 @@ unicode_iconv_t conv = unicode_iconv_open(SHVStringC_Get8BitCharSet(),"UTF-8");
 
 #ifdef __SHIVA_WIN32
 			MultiByteToWideChar(CP_UTF8,0,utf8Str,(int)bytes,&ch,1);
-			WideCharToMultiByte(CP_ACP,0,&ch,1,buf,1,"?",NULL);
+			WideCharToMultiByte(CP_ACP,0,&ch,1,buffer,1,"?",NULL);
 #elif defined(__SHIVA_EPOC)
 			aState = CCnvCharacterSetConverter::KStateDefault;
 			{
 			TPtr16 unicodePtr((TUint16*)&ch,1);
-			TPtr8 utf8Ptr((TUint8*)buf,1);
+			TPtr8 utf8Ptr((TUint8*)buffer,1);
 				if (cnvToUnicode->ConvertToUnicode( unicodePtr, TPtrC8((const TUint8*)utf8Str,bytes), aState ) != 0 ||
 					cnvFromUnicode->ConvertFromUnicode( utf8Ptr, TPtrC16((const TUint16*)&ch,1), aState ) != 0)
 				{
-					*buf = '?';
+					*buffer = '?';
 				}
 			}
 #else
 			iBuf = (char*)utf8Str;
-			oBuf = (char*)buf;
+			oBuf = (char*)buffer;
 			iLeft  = bytes;
 			oLeft  = 1;
 
 			if ( unicode_iconv(conv,&iBuf,&iLeft,&oBuf,&oLeft) == -1)
-				*buf = '?';
+				*buffer = '?';
 #endif
 
-			buf++;
+			buffer++;
 			utf8Str=endch;
 		}
 	}
-	*buf = '\0';
+	*buffer = '\0';
 
 #ifdef __SHIVA_WIN32
 #elif defined(__SHIVA_EPOC)
@@ -296,14 +323,31 @@ unicode_iconv_t conv = unicode_iconv_open(SHVStringC_Get8BitCharSet(),"UTF-8");
 	unicode_iconv_close(conv);
 #endif
 
+	return true;
+}
+
+/*************************************
+ * ToStr16
+ *************************************/
+SHVStringBuffer16 SHVStringUTF8C::ToStr16() const
+{
+SHVString16 retVal;
+
+	if (!IsNull())
+	{
+	size_t len = GetLength();
+		ConvertBufferToWChar(retVal.SetBufferSize(len+1), len);
+	}
+	
 	return retVal.ReleaseBuffer();
 }
 
-SHVStringBuffer16 SHVString16C::FromUTF8(const char* utf8Str)
+/*************************************
+ * ConvertBufferToWChar
+ *************************************/
+bool SHVStringUTF8C::ConvertBufferToWChar(SHVWChar* buffer, size_t len) const
 {
-SHVString16 retVal;
-size_t len = SHVString8C::StrLen(utf8Str);
-SHVWChar* buf;
+const char* utf8Str = Buffer;
 const char* endch;
 size_t bytes;
 #ifdef __SHIVA_WIN32
@@ -325,19 +369,16 @@ unicode_iconv_t conv = unicode_iconv_open("UCS-2","UTF-8");
 	if ((size_t)conv == -1)
 	{
 		fprintf(stderr, "UTF-8 conversion error %d\n", errno);
-		return retVal.ReleaseBuffer();
+		return false;
 	}
 #endif
-
-	retVal.AllocBuffer(len+1);
-	buf = retVal.Buffer;
 
 	while (*utf8Str)
 	{
 		if (!((*utf8Str)&0x80))
 		{
-			*buf = *utf8Str;
-			buf++;
+			*buffer = *utf8Str;
+			buffer++;
 			utf8Str++;
 		}
 		else
@@ -346,31 +387,31 @@ unicode_iconv_t conv = unicode_iconv_open("UCS-2","UTF-8");
 			for (bytes=1;((*(utf8Str+bytes))&0xC0) == 0x80;bytes++) endch++;
 
 #ifdef __SHIVA_WIN32
-			MultiByteToWideChar(CP_UTF8,0,utf8Str,(int)bytes,(WCHAR*)buf,1);
+			MultiByteToWideChar(CP_UTF8,0,utf8Str,(int)bytes,(WCHAR*)buffer,1);
 #elif defined(__SHIVA_EPOC)
 			aState = CCnvCharacterSetConverter::KStateDefault;
 			{
-			TPtr16 unicodePtr((TUint16*)buf,1);
+			TPtr16 unicodePtr((TUint16*)buffer,1);
 				if (cnvToUnicode->ConvertToUnicode( unicodePtr, TPtrC8((const TUint8*)utf8Str,bytes), aState ) != 0)
 				{
-					*buf = '?';
+					*buffer = '?';
 				}
 			}
 #else
 			iBuf = (char*)utf8Str;
-			oBuf = (char*)buf;
+			oBuf = (char*)buffer;
 			iLeft  = bytes;
 			oLeft  = 2;
 
 			if ( unicode_iconv(conv,&iBuf,&iLeft,&oBuf,&oLeft) == -1)
-				*buf = '?';
+				*buffer = '?';
 #endif
 
-			buf++;
+			buffer++;
 			utf8Str=endch;
 		}
 	}
-	*buf = '\0';
+	*buffer = '\0';
 
 #ifdef __SHIVA_WIN32
 #elif defined(__SHIVA_EPOC)
@@ -380,7 +421,341 @@ unicode_iconv_t conv = unicode_iconv_open("UCS-2","UTF-8");
 	unicode_iconv_close(conv);
 #endif
 
+	return true;
+}
+
+
+
+/*************************************
+ * ToStrUTF8
+ *************************************/
+SHVStringBufferUTF8 SHVString8C::ToStrUTF8() const
+{
+SHVStringUTF8 retVal;
+
+	if (!IsNull())
+	{
+	size_t len;
+
+		if (ConvertBufferToUTF8(NULL,len))
+			ConvertBufferToUTF8(retVal.SetBufferSize(len+1), len);
+	}
+	
 	return retVal.ReleaseBuffer();
+}
+
+
+/*************************************
+ * CalculateUTF8Len8
+ *************************************/
+size_t SHVStringUTF8C::CalculateUTF8Len8(const SHVChar* str)
+{
+size_t retVal = 0;
+
+	SHVString8C(str).ConvertBufferToUTF8(NULL,retVal);
+	return retVal;
+}
+
+/*************************************
+ * ConvertBufferToUTF8
+ *************************************/
+bool SHVString8C::ConvertBufferToUTF8(SHVChar* str, size_t& len) const
+{
+const SHVChar* buffer = Buffer;
+char utf8Str[5];
+size_t retVal = 0;
+#ifdef __SHIVA_WIN32
+WCHAR ch;
+int bytes;
+#elif defined(__SHIVA_EPOC)
+CCnvCharacterSetConverter* cnvToUnicode = CCnvCharacterSetConverter::NewLC();
+CCnvCharacterSetConverter* cnvFromUnicode = CCnvCharacterSetConverter::NewLC();
+RFs fs;
+TInt aState;
+SHVWChar ch;
+
+	fs.Connect();
+
+	cnvToUnicode->PrepareToConvertToOrFromL(KCharacterSetIdentifierCodePage1252, fs);
+	cnvFromUnicode->PrepareToConvertToOrFromL(KCharacterSetIdentifierUtf8, fs);
+#else
+const char* iBuf;
+char* oBuf;
+size_t iLeft;
+size_t oLeft;
+unicode_iconv_t conv = unicode_iconv_open("UTF-8",SHVStringC_Get8BitCharSet());
+
+	if ((size_t)conv == -1) // failure, try ascii as fallback
+		conv = unicode_iconv_open("UTF-8","ASCII");
+
+	if ((size_t)conv == -1)
+	{
+		fprintf(stderr, "UTF-8 conversion error %d\n", errno);
+		return false;
+	}
+#endif
+
+	while (*buffer)
+	{
+		if (!((*buffer)&0x80))
+		{
+			if (str)
+			{
+				*str = *buffer;
+				str++;
+			}
+			buffer++;
+			retVal++;
+		}
+		else
+		{
+#ifdef __SHIVA_WIN32
+			MultiByteToWideChar(CP_ACP,0,buffer,1,&ch,1);
+			bytes = WideCharToMultiByte(CP_UTF8,0,&ch,1,str ? str : utf8Str,5,NULL,NULL);
+			if (bytes)
+			{
+				retVal += bytes;
+				if (str)
+					str += bytes;
+			}
+			else
+			{
+				if (str)
+				{
+					*str = '?';
+					str++;
+				}
+				retVal++;
+			}
+#elif defined(__SHIVA_EPOC)
+			aState = CCnvCharacterSetConverter::KStateDefault;
+			{
+			TPtr16 unicodePtr((TUint16*)&ch,1);
+			TPtr8 utf8Ptr((TUint8*)(str ? str : utf8Str),4);
+				if (cnvToUnicode->ConvertToUnicode( unicodePtr, TPtrC8((const TUint8*)utf8Str,bytes), aState ) != 0 ||
+					cnvFromUnicode->ConvertFromUnicode( utf8Ptr, TPtrC16((const TUint16*)&ch,1), aState ) != 0)
+				{
+					retVal++;
+					if (str)
+					{
+						*str = '?';
+						str++;
+					}
+				}
+				else
+				{
+					retVal += SHVString8C::StrLen(utf8Str);
+					if (str)
+						str += SHVString8C::StrLen(utf8Str);
+				}
+			}
+#else
+			iBuf = (char*)str;
+			oBuf = (char*)(str ? str : utf8Str);
+			iLeft  = 1;
+			oLeft  = 4;
+
+			if ( unicode_iconv(conv,&iBuf,&iLeft,&oBuf,&oLeft) == -1)
+			{
+				retVal++;
+				if (str)
+				{
+					*str = '?';
+					str++;
+				}
+			}
+			else
+			{
+				retVal += 4 - oLeft;
+				if (str)
+				{
+					str += 4 - oLeft;
+				}
+			}
+#endif
+
+			buffer++;
+		}
+	}
+
+	if (str)
+		*str = '\0';
+
+#ifdef __SHIVA_WIN32
+#elif defined(__SHIVA_EPOC)
+	fs.Close();
+	CleanupStack::PopAndDestroy(2); // cnv's
+#else
+	unicode_iconv_close(conv);
+#endif
+
+	len = retVal;
+
+	return true;
+}
+
+/*************************************
+ * ToStrUTF8
+ *************************************/
+SHVStringBufferUTF8 SHVString16C::ToStrUTF8() const
+{
+SHVStringUTF8 retVal;
+
+	if (!IsNull())
+	{
+	size_t len;
+
+		if (ConvertBufferToUTF8(NULL,len))
+			ConvertBufferToUTF8(retVal.SetBufferSize(len+1), len);
+	}
+	
+	return retVal.ReleaseBuffer();
+}
+
+/*************************************
+ * CalculateUTF8Len16
+ *************************************/
+size_t SHVStringUTF8C::CalculateUTF8Len16(const SHVWChar* str)
+{
+size_t retVal = 0;
+
+	SHVString16C(str).ConvertBufferToUTF8(NULL,retVal);
+	return retVal;
+}
+
+
+
+
+
+
+
+
+/*************************************
+ * ConvertBufferToUTF8
+ *************************************/
+bool SHVString16C::ConvertBufferToUTF8(SHVChar* str, size_t& len) const
+{
+const SHVWChar* buffer = Buffer;
+char utf8Str[5];
+size_t retVal = 0;
+#ifdef __SHIVA_WIN32
+int bytes;
+#elif defined(__SHIVA_EPOC)
+CCnvCharacterSetConverter* cnvFromUnicode = CCnvCharacterSetConverter::NewLC();
+RFs fs;
+TInt aState;
+
+	fs.Connect();
+
+	cnvFromUnicode->PrepareToConvertToOrFromL(KCharacterSetIdentifierUtf8, fs);
+#else
+const char* iBuf;
+char* oBuf;
+size_t iLeft;
+size_t oLeft;
+unicode_iconv_t conv = unicode_iconv_open("UTF-8","UCS-2");
+
+	if ((size_t)conv == -1)
+	{
+		fprintf(stderr, "UTF-8 conversion error %d\n", errno);
+		return false;
+	}
+#endif
+
+	while (*buffer)
+	{
+		if ( !((*buffer)&0xFF80) )
+		{
+			if (str)
+			{
+				*str = (const char)*buffer;
+				str++;
+			}
+			buffer++;
+			retVal++;
+		}
+		else
+		{
+#ifdef __SHIVA_WIN32
+			bytes = WideCharToMultiByte(CP_UTF8,0,buffer,1,str ? str : utf8Str,5,NULL,NULL);
+			if (bytes)
+			{
+				retVal += bytes;
+				if (str)
+					str += bytes;
+			}
+			else
+			{
+				if (str)
+				{
+					*str = '?';
+					str++;
+				}
+				retVal++;
+			}
+#elif defined(__SHIVA_EPOC)
+			aState = CCnvCharacterSetConverter::KStateDefault;
+			{
+			TPtr16 unicodePtr((TUint16*)str,1);
+			TPtr8 utf8Ptr((TUint8*)(str ? str : utf8Str),4);
+				if (cnvFromUnicode->ConvertFromUnicode( utf8Ptr, TPtrC16((const TUint16*)&ch,1), aState ) != 0)
+				{
+					retVal++;
+					if (str)
+					{
+						*str = '?';
+						str++;
+					}
+				}
+				else
+				{
+					retVal += SHVString8C::StrLen(utf8Str);
+					if (str)
+						str += SHVString8C::StrLen(utf8Str);
+				}
+			}
+#else
+			iBuf = (char*)buffer;
+			oBuf = (char*)(str ? str : utf8Str);
+			iLeft  = 2;
+			oLeft  = 4;
+
+			if ( unicode_iconv(conv,&iBuf,&iLeft,&oBuf,&oLeft) == -1)
+			{
+				retVal++;
+				if (str)
+				{
+					*str = '?';
+					str++;
+				}
+			}
+			else
+			{
+				retVal += 4 - oLeft;
+				if (str)
+				{
+					str += 4 - oLeft;
+				}
+			}
+#endif
+			buffer++;
+		}
+	}
+
+	if (str)
+		*str = '\0';
+
+#ifdef __SHIVA_WIN32
+#elif defined(__SHIVA_EPOC)
+	fs.Close();
+	CleanupStack::PopAndDestroy(2); // cnv's
+#else
+	unicode_iconv_close(conv);
+#endif
+
+	len = retVal;
+
+	return true;
 }
 
 #endif
