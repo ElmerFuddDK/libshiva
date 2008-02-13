@@ -7,7 +7,6 @@
 SHVSQLiteWrapper_Impl::SHVSQLiteWrapper_Impl(void)
 {
 	Sqlite = NULL;
-	Lock = new SHVMutex();
 }
 
 SHVSQLiteWrapper_Impl::~SHVSQLiteWrapper_Impl(void)
@@ -17,7 +16,6 @@ SHVMutexLocker lock(Lock);
 	{
 		sqlite3_close(Sqlite);
 		Sqlite = NULL;
-		delete Lock;
 	}
 }
 
@@ -78,7 +76,7 @@ SHVMutexLocker lock(Lock);
 		return "Database is not open";
 }
 
-SHVMutex* SHVSQLiteWrapper_Impl::GetMutex()
+SHVMutex& SHVSQLiteWrapper_Impl::GetMutex()
 {
 	return Lock;
 }

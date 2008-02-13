@@ -22,10 +22,11 @@
 class SHVMutexLocker
 {
 public:
-	SHVMutexLocker(SHVMutex* Mutex) { Mutex->Lock();   }
-	~SHVMutexLocker()               { Mutex->Unlock(); }
+	SHVMutexLocker(SHVMutex* mutex): Mutex(*mutex) { Mutex.Lock();   }
+	SHVMutexLocker(SHVMutex& mutex): Mutex(mutex)  { Mutex.Lock();   }
+	~SHVMutexLocker()               { Mutex.Unlock(); }
 private:
-	SHVMutex* Mutex;
+	SHVMutex& Mutex;
 };
 
 #endif

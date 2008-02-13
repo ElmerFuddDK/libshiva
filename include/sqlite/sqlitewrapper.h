@@ -67,7 +67,7 @@ public:
 	inline SHVBool Prepare(SHVSQLiteStatement*& statement, const SHVStringC& sql, SHVString& notparsed);
 	virtual SHVStringUTF8C GetErrorMsgUTF8() = 0; 
 	inline SHVStringBuffer GetErrorMsg();
-	virtual SHVMutex* GetMutex() = 0;
+	virtual SHVMutex& GetMutex() = 0;
 };
 
 typedef SHVRefObjectContainer<SHVSQLiteWrapper> SHVSQLiteWrapperRef;

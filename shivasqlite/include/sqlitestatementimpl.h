@@ -35,7 +35,7 @@ public:
 	virtual SHVBool Reset();
 private:
 	sqlite3_stmt* Statement;
-	SHVMutex* Lock;
+	SHVMutex Lock;
 	SHVSQLiteWrapperRef Owner;
 };
 

@@ -10,7 +10,6 @@ SHVSQLiteStatement_impl::SHVSQLiteStatement_impl(sqlite3_stmt* statement, SHVSQL
 {
 	Statement = statement;	
 	Owner = owner;
-	Lock = new SHVMutex();
 }
 
 SHVSQLiteStatement_impl::~SHVSQLiteStatement_impl()
@@ -18,7 +17,6 @@ SHVSQLiteStatement_impl::~SHVSQLiteStatement_impl()
 SHVMutexLocker lock(Owner->GetMutex());
 	if (Statement)
 		sqlite3_finalize(Statement);
-	delete Lock;
 }
 
 SHVBool SHVSQLiteStatement_impl::GetValue(long& val, int columnIdx)

@@ -22,9 +22,9 @@ public:
 	virtual SHVBool Close();
 	virtual SHVBool PrepareUTF8(SHVSQLiteStatement*& statement, const SHVStringUTF8C& sql, SHVStringUTF8& notparsed);
 	virtual SHVStringUTF8C GetErrorMsgUTF8(); 
-	virtual SHVMutex* GetMutex();
+	virtual SHVMutex& GetMutex();
 private:
 	sqlite3* Sqlite;
-	SHVMutex* Lock;
+	SHVMutex Lock;
 };
 #endif
