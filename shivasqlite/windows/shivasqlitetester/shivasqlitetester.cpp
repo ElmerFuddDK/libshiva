@@ -1,0 +1,98 @@
+// shivasqlitetester.cpp : Defines the entry point for the console application.
+//
+
+#include "stdafx.h"
+#include "../../../include/platformspc.h"
+#include "../../../include/utils/shvdll.h"
+#include "../../../include/utils/shvstring.h"
+#include "../../include/sqlitewrapper.h"
+#include "../../include/sqlitestatement.h"
+
+int _tmain(int argc, _TCHAR* argv[])
+{
+	// Lets start by create an instance of SQLLite
+	SHVDll dll;
+
+	if (dll.Load(dll.CreateLibFileName(_T("shivasqlite"))))
+	{
+		SHVSQLiteWrapperRef sqlLite = (SHVSQLiteWrapper*) dll.CreateObjectInt(NULL, SHVDll::ClassTypeUser);
+		SHVSQLiteStatement* statement;
+		TCHAR input[255];
+		SHVString reminder;
+		SHVString sql;
+		TCHAR* fileName = _T("test.db");
+		if (argc > 1)
+			fileName = argv[1];
+		
+		puts("SQLite tester");
+		if (sqlLite->Open(fileName) == SHVSQLiteWrapper::SQLite_OK)
+		{
+			do
+			{
+				if (reminder.GetLength())
+				{
+					_putts(_T("------------------>"));
+					sql = reminder;
+				}
+				else
+				{
+					_tprintf(_T("=>"));
+					sql = _getts_s<255>(input);
+				}
+				if (sql != _T("exit") && sql != _T("cleanup"))
+				{
+				SHVBool errorCode;
+					if ((errorCode = sqlLite->Prepare(statement, sql, reminder)))
+					{
+						while ((errorCode = statement->NextResult()).GetError() == SHVSQLiteWrapper::SQLite_ROW)
+						{
+							for (int i = 0; i < statement->GetColumnCount(); i++)
+							{
+								SHVString value;
+								SHVString columnName;
+								int len = 0;
+								if (statement->GetColumnName(columnName, i))
+								{
+									if (statement->GetValue(value, len, i))
+									{
+										_tprintf(_T("%s = %s\r\n"), columnName.GetSafeBuffer(), value.GetSafeBuffer());
+									}
+								}
+							}
+						}
+						if (errorCode.GetError() != SHVSQLiteWrapper::SQLite_DONE)
+						{
+							reminder = _T("");
+							_tprintf(_T("Error %d: %s\r\n"), errorCode.GetError(), sqlLite->GetErrorMsg().GetSafeBuffer());
+						}
+					}
+					else
+					{
+						reminder = _T("");
+						_tprintf(_T("Error %d: %s\r\n"), errorCode.GetError(), sqlLite->GetErrorMsg().GetSafeBuffer());
+					}
+					delete statement;
+				}
+				if (sql == _T("cleanup"))
+				{
+					reminder = _T("");
+					sqlLite = (SHVSQLiteWrapper*) dll.CreateObjectInt(NULL, SHVDll::ClassTypeUser);
+					if (sqlLite->Open(fileName) != SHVSQLiteWrapper::SQLite_OK)
+					{
+						_tprintf(_T("Could not open %s\r\n"), fileName);
+						_tcscpy_s(input, 255, _T("exit"));
+					}
+				}
+			} while (_tcscmp(input, _T("exit")));
+			sqlLite = NULL;
+		}
+		_putts(_T("Done"));
+	}
+	else
+		_putts(_T("Could not load sqlite"));
+#ifdef DEBUG	
+	_CrtDumpMemoryLeaks();
+#endif
+	return 0;
+}
+

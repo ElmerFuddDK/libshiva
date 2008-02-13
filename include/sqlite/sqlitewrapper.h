@@ -1,16 +1,21 @@
-// The following ifdef block is the standard way of creating macros which make exporting 
-// from a DLL simpler. All files within this DLL are compiled with the SQLITEWRAPPER_EXPORTS
-// symbol defined on the command line. this symbol should not be defined on any project
-// that uses this DLL. This way any other project whose source files include this file see 
-// SQLITEWRAPPER_API functions as being imported from a DLL, whereas this DLL sees symbols
-// defined with this macro as being exported.
-#ifndef __SQLITEWRAPPER_H
-#define __SQLITEWRAPPER_H
+#ifndef __SHIVA_SQLITE_WRAPPER_H
+#define __SHIVA_SQLITE_WRAPPER_H
+
 
 #include "sqlitestatement.h"
+#include "../../include/utils/shvstring.h"
+#include "../../include/utils/shvstringutf8.h"
+#include "../../include/utils/shvrefobject.h"
+#include "../../include/threadutils/shvmutex.h"
 
-// This class is exported from the SQLiteWrapper.dll
-class RFTSQLiteWrapper {
+#define __SHVSQLITEWRAPPER_CREATE_SYMBOL _T("CreateSHVSQLiteWrapper")
+
+//-=========================================================================================================
+///  SHVSQLiteWrapper class - The shiva C++ interface for SQLite
+/**
+ */
+class SHVSQLiteWrapper: public SHVRefObject
+{
 public:
 	enum SQLiteType
 	{
@@ -53,14 +58,47 @@ public:
 		SQLite_DONE = 101		/* sqlite3_step() has finished executing */
 	};
 public:
-	virtual ~RFTSQLiteWrapper() {}
-	virtual short Open(const char* fileName, int option = 6) = 0;
-	virtual short OpenInMemory() = 0;
-	virtual short Close() = 0;
-	virtual short Prepare(RFTSQLiteStatement*& statement, const char* sql, const char*& notparsed) = 0;
-	virtual const char* GetErrorMsg() = 0; 
+	virtual ~SHVSQLiteWrapper() {}
+	virtual SHVBool OpenUTF8(const SHVStringUTF8C& fileName, int option = 6) = 0;
+	inline SHVBool Open(const SHVStringC& fileName, int option = 6);
+	virtual SHVBool OpenInMemory() = 0;
+	virtual SHVBool Close() = 0;
+	virtual SHVBool PrepareUTF8(SHVSQLiteStatement*& statement, const SHVStringUTF8C& sql, SHVStringUTF8& notparsed) = 0;
+	inline SHVBool Prepare(SHVSQLiteStatement*& statement, const SHVStringC& sql, SHVString& notparsed);
+	virtual SHVStringUTF8C GetErrorMsgUTF8() = 0; 
+	inline SHVStringBuffer GetErrorMsg();
+	virtual SHVMutex* GetMutex() = 0;
 };
 
-#define __RFTSQLITEWRAPPER_CREATE_SYMBOL _T("CreateRFTSQLiteWrapper")
+typedef SHVRefObjectContainer<SHVSQLiteWrapper> SHVSQLiteWrapperRef;
+
+// ============================================ implementation ============================================ //
+
+/*************************************
+ * Open
+ *************************************/
+SHVBool SHVSQLiteWrapper::Open(const SHVStringC& fileName, int option)
+{
+	return OpenUTF8(fileName.ToStrUTF8(), option);
+}
+
+/*************************************
+ * Prepare
+ *************************************/
+SHVBool SHVSQLiteWrapper::Prepare(SHVSQLiteStatement*& statement, const SHVStringC& sql, SHVString& notparsed)
+{
+	SHVStringUTF8 rest;
+	SHVBool res = PrepareUTF8(statement, sql.ToStrUTF8(), rest);
+	notparsed = rest.ToStrT();
+	return res;
+}
+
+/*************************************
+ * GetErrorMsg
+ *************************************/
+SHVStringBuffer SHVSQLiteWrapper::GetErrorMsg()
+{
+	return GetErrorMsgUTF8().ToStrT();
+}
 
 #endif

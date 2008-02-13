@@ -1,27 +1,43 @@
-#ifndef __SQLITESTATEMENT_IMPL_H
-#define __SQLITESTATEMENT_IMPL_H
+#ifndef __SHIVA_SQLITE_SQLITESTATEMENT_IMPL_H
+#define __SHIVA_SQLITE_SQLITESTATEMENT_IMPL_H
 
 #include "../sqlitewrapper.h"
 #include "../sqlitestatement.h"
+#include "../../../include/threadutils/shvmutexlocker.h"
 
-
-class RFTSQLiteStatement_impl: public RFTSQLiteStatement
+// forward declares
+class SQLiteWrapper;
+//-=========================================================================================================
+///  SHVSQLiteStatement_impl class - Implements the shiva C++ interface for a SQLite statement
+/**
+ */
+class SHVSQLiteStatement_impl: public SHVSQLiteStatement
 {
-private:
-	sqlite3_stmt* m_Statement;
 public:
-	RFTSQLiteStatement_impl(sqlite3_stmt* statement);
-	virtual ~RFTSQLiteStatement_impl();
+	SHVSQLiteStatement_impl(sqlite3_stmt* statement, SHVSQLiteWrapper* owner);
+	virtual ~SHVSQLiteStatement_impl();
 
-	virtual short GetValue(long& val, int columnIdx);
-	virtual short GetValue(double& val, int columnIdx);
-	virtual short GetValue(const void*& blob, int& len, int columnIdx);
-	virtual short GetValue(const char*& text, int& len, int columnIdx);
-	virtual short GetColumnName(const char*& name, int columnIdx);
-	virtual short GetColumnType(short& type, int columnIdx);
+	virtual SHVBool GetValue(long& val, int columnIdx);
+	virtual SHVBool GetValue(double& val, int columnIdx);
+	virtual SHVBool GetValue(const void*& blob, int& len, int columnIdx);
+	virtual SHVBool GetValueUTF8(SHVStringUTF8C& text, int& len, int columnIdx);
+	virtual SHVBool GetColumnNameUTF8(SHVStringUTF8C& name, int columnIdx);
+
+	virtual SHVBool GetColumnType(short& type, int columnIdx);
 	virtual int GetColumnCount();
 
-	virtual short NextResult();
-	virtual short Reset();
+	virtual SHVBool SetParameterUTF8(const SHVStringUTF8C& name, long val);
+	virtual SHVBool SetParameterUTF8(const SHVStringUTF8C& name, double val);
+	virtual SHVBool SetParameterUTF8(const SHVStringUTF8C& name, const SHVStringUTF8C& val);
+	virtual SHVBool SetParameterNullUTF8(const SHVStringUTF8C& name);
+
+	virtual SHVBool NextResult();
+	virtual SHVBool Reset();
+private:
+	sqlite3_stmt* Statement;
+	SHVMutex* Lock;
+	SHVSQLiteWrapperRef Owner;
 };
+
+
 #endif

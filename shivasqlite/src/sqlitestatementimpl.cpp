@@ -1,145 +1,165 @@
 #include "StdAfx.h"
+#include "../../../include/platformspc.h"
+
 #include "../SQLite/sqlite3.h"
-#include "sqlitewrapper_impl.h"
-#include "sqlitestatement_impl.h"
+#include "../../include/sqliteimpl/sqlitewrapper_impl.h"
+#include "../../include/sqliteimpl/sqlitestatement_impl.h"
+#include "../../../include/threadutils/shvmutexlocker.h"
 
-RFTSQLiteStatement_impl::RFTSQLiteStatement_impl(sqlite3_stmt* statement)
+SHVSQLiteStatement_impl::SHVSQLiteStatement_impl(sqlite3_stmt* statement, SHVSQLiteWrapper* owner)
 {
-	m_Statement = statement;
+	Statement = statement;	
+	Owner = owner;
+	Lock = new SHVMutex();
 }
 
-RFTSQLiteStatement_impl::~RFTSQLiteStatement_impl()
+SHVSQLiteStatement_impl::~SHVSQLiteStatement_impl()
 {
-	sqlite3_finalize(m_Statement);
+SHVMutexLocker lock(Owner->GetMutex());
+	if (Statement)
+		sqlite3_finalize(Statement);
+	delete Lock;
 }
 
-
-short RFTSQLiteStatement_impl::GetValue(long& val, int columnIdx)
+SHVBool SHVSQLiteStatement_impl::GetValue(long& val, int columnIdx)
 {
-	if (columnIdx < sqlite3_column_count(m_Statement) && columnIdx >= 0)
+SHVMutexLocker lock(Lock);
+	if (columnIdx < sqlite3_column_count(Statement) && columnIdx >= 0)
 	{
-		val = sqlite3_column_int(m_Statement, columnIdx);
-		return RFTSQLiteWrapper::SQLite_OK;
+		val = sqlite3_column_int(Statement, columnIdx);
+		return SHVBool(SHVSQLiteWrapper::SQLite_OK);
 	}
 	else
-		return RFTSQLiteWrapper::SQLite_ERROR;	
+		return SHVBool(SHVSQLiteWrapper::SQLite_ERROR);	
 }
 
-short RFTSQLiteStatement_impl::GetValue(double& val, int columnIdx)
+SHVBool SHVSQLiteStatement_impl::GetValue(double& val, int columnIdx)
 {
-	if (columnIdx < sqlite3_column_count(m_Statement) && columnIdx >= 0)
+SHVMutexLocker lock(Lock);
+	if (columnIdx < sqlite3_column_count(Statement) && columnIdx >= 0)
 	{
-		val = sqlite3_column_double(m_Statement, columnIdx);
-		return RFTSQLiteWrapper::SQLite_OK;
+		val = sqlite3_column_double(Statement, columnIdx);
+		return SHVBool(SHVSQLiteWrapper::SQLite_OK);
 	}
 	else
-		return RFTSQLiteWrapper::SQLite_ERROR;	
+		return SHVBool(SHVSQLiteWrapper::SQLite_ERROR);	
 }
 
-short RFTSQLiteStatement_impl::GetValue(const void*& blob, int& len, int columnIdx)
+SHVBool SHVSQLiteStatement_impl::GetValue(const void*& blob, int& len, int columnIdx)
 {
-	if (columnIdx < sqlite3_column_count(m_Statement) && columnIdx >= 0)
+SHVMutexLocker lock(Lock);
+	if (columnIdx < sqlite3_column_count(Statement) && columnIdx >= 0)
 	{
-		len = sqlite3_column_count(m_Statement);
-		blob = sqlite3_column_blob(m_Statement, columnIdx);
-		return RFTSQLiteWrapper::SQLite_OK;
+		len = sqlite3_column_count(Statement);
+		blob = sqlite3_column_blob(Statement, columnIdx);
+		return SHVBool(SHVSQLiteWrapper::SQLite_OK);
 	}
 	else
-		return RFTSQLiteWrapper::SQLite_ERROR;		
+		return SHVBool(SHVSQLiteWrapper::SQLite_ERROR);
 }
 
-short RFTSQLiteStatement_impl::GetValue(const char*& text, int& len, int columnIdx)
+SHVBool SHVSQLiteStatement_impl::GetValueUTF8(SHVStringUTF8C& text, int& len, int columnIdx)
 {
-	if (columnIdx < sqlite3_column_count(m_Statement) && columnIdx >= 0)
+SHVMutexLocker lock(Lock);
+	if (columnIdx < sqlite3_column_count(Statement) && columnIdx >= 0)
 	{
-		len = sqlite3_column_bytes(m_Statement, columnIdx);
-		text = (const char*) sqlite3_column_text(m_Statement, columnIdx);
-		return RFTSQLiteWrapper::SQLite_OK;
+		len = sqlite3_column_bytes(Statement, columnIdx);
+		text = SHVStringUTF8C((const SHVChar*) sqlite3_column_text(Statement, columnIdx));
+		return SHVBool(SHVSQLiteWrapper::SQLite_OK);
 	}
 	else
-		return RFTSQLiteWrapper::SQLite_ERROR;		
+		return SHVBool(SHVSQLiteWrapper::SQLite_ERROR);
 }
 
-short RFTSQLiteStatement_impl::GetColumnName(const char*& name, int columnIdx)
+SHVBool SHVSQLiteStatement_impl::GetColumnNameUTF8(SHVStringUTF8C& name, int columnIdx)
 {
-	if (columnIdx < sqlite3_column_count(m_Statement) && columnIdx >= 0)
+SHVMutexLocker lock(Lock);
+	if (columnIdx < sqlite3_column_count(Statement) && columnIdx >= 0)
 	{
-		name = sqlite3_column_name(m_Statement, columnIdx);
-		return RFTSQLiteWrapper::SQLite_OK;
+		name = sqlite3_column_name(Statement, columnIdx);
+		return SHVBool(SHVSQLiteWrapper::SQLite_OK);
 	}
 	else
-		return RFTSQLiteWrapper::SQLite_ERROR;			
+		return SHVBool(SHVSQLiteWrapper::SQLite_ERROR);
 }
 
 
-short RFTSQLiteStatement_impl::GetColumnType(short& type, int columnIdx)
+SHVBool SHVSQLiteStatement_impl::GetColumnType(short& type, int columnIdx)
 {
-	if (columnIdx < sqlite3_column_count(m_Statement) && columnIdx >= 0)
+SHVMutexLocker lock(Lock);
+	if (columnIdx < sqlite3_column_count(Statement) && columnIdx >= 0)
 	{
-		type = sqlite3_column_type(m_Statement, columnIdx);
-		return RFTSQLiteWrapper::SQLite_OK;
+		type = sqlite3_column_type(Statement, columnIdx);
+		return SHVSQLiteWrapper::SQLite_OK;
 	}
 	else
-		return RFTSQLiteWrapper::SQLite_ERROR;			
+		return SHVSQLiteWrapper::SQLite_ERROR;			
 }
 
-int RFTSQLiteStatement_impl::GetColumnCount()
+int SHVSQLiteStatement_impl::GetColumnCount()
 {
-	return sqlite3_column_count(m_Statement);
+SHVMutexLocker lock(Lock);
+	return sqlite3_column_count(Statement);
 }
 
-short RFTSQLiteStatement_impl::SetParameter(const char* name, long val)
+SHVBool SHVSQLiteStatement_impl::SetParameterUTF8(const SHVStringUTF8C& name, long val)
 {
-	int pIdx = sqlite3_bind_parameter_index(m_Statement, name);
+SHVMutexLocker lock(Lock);
+	int pIdx = sqlite3_bind_parameter_index(Statement, name.GetSafeBuffer());
 	if (pIdx)
 	{
-		return sqlite3_bind_int64(m_Statement, pIdx, val);
+		return SHVBool(sqlite3_bind_int64(Statement, pIdx, val));
 	}
 	else
-		return RFTSQLiteWrapper::SQLite_ERROR;
+		return SHVBool(SHVSQLiteWrapper::SQLite_ERROR);
 }
 
-short RFTSQLiteStatement_impl::SetParameter(const char* name, double val)
+SHVBool SHVSQLiteStatement_impl::SetParameterUTF8(const SHVStringUTF8C& name, double val)
 {
-	int pIdx = sqlite3_bind_parameter_index(m_Statement, name);
+SHVMutexLocker lock(Lock);
+	int pIdx = sqlite3_bind_parameter_index(Statement, name.GetSafeBuffer());
 	if (pIdx)
 	{
-		return sqlite3_bind_double(m_Statement, pIdx, val);
+		return SHVBool(sqlite3_bind_double(Statement, pIdx, val));
 	}
 	else
-		return RFTSQLiteWrapper::SQLite_ERROR;
+		return SHVBool(SHVSQLiteWrapper::SQLite_ERROR);
 }
 
-short RFTSQLiteStatement_impl::SetParameter(const char* name, const char* val)
+SHVBool SHVSQLiteStatement_impl::SetParameterUTF8(const SHVStringUTF8C& name, const SHVStringUTF8C& val)
 {
-	int pIdx = sqlite3_bind_parameter_index(m_Statement, name);
+SHVMutexLocker lock(Lock);
+	int pIdx = sqlite3_bind_parameter_index(Statement, name.GetSafeBuffer());
 	if (pIdx)
 	{
-		return sqlite3_bind_text(m_Statement, pIdx, val, (int) strlen(val), SQLITE_TRANSIENT);
+		return SHVBool(sqlite3_bind_text(Statement, pIdx, val.GetSafeBuffer(), SHVString8C::StrLen(val.GetSafeBuffer()), SQLITE_TRANSIENT));
 	}
 	else
-		return RFTSQLiteWrapper::SQLite_ERROR;
+		return SHVBool(SHVSQLiteWrapper::SQLite_ERROR);
 }
 
-short RFTSQLiteStatement_impl::SetParameterNull(const char* name)
+SHVBool SHVSQLiteStatement_impl::SetParameterNullUTF8(const SHVStringUTF8C& name)
 {
-	int pIdx = sqlite3_bind_parameter_index(m_Statement, name);
+SHVMutexLocker lock(Lock);
+	int pIdx = sqlite3_bind_parameter_index(Statement, name.GetSafeBuffer());
 	if (pIdx)
 	{
-		return sqlite3_bind_null(m_Statement, pIdx);
+		return SHVBool(sqlite3_bind_null(Statement, pIdx));
 	}
 	else
-		return RFTSQLiteWrapper::SQLite_ERROR;
+		return SHVBool(SHVSQLiteWrapper::SQLite_ERROR);
 }
 
-short RFTSQLiteStatement_impl::NextResult()
+SHVBool SHVSQLiteStatement_impl::NextResult()
 {
-	return sqlite3_step(m_Statement);
+SHVMutexLocker lock(Lock);
+	return SHVBool(sqlite3_step(Statement));
 }
 
-short RFTSQLiteStatement_impl::Reset()
+SHVBool SHVSQLiteStatement_impl::Reset()
 {
-	return sqlite3_reset(m_Statement);
+SHVMutexLocker lock(Lock);
+	return SHVBool(sqlite3_reset(Statement));
 }	
 
 

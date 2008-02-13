@@ -2,8 +2,10 @@
 //
 
 #include "stdafx.h"
-#include "sqlitewrapper.h"
-#include "./Impl/sqlitewrapper_impl.h"
+#include "../../include/platformspc.h"
+
+#include "../include/sqlitewrapper.h"
+#include "../include/sqliteimpl/sqlitewrapper_impl.h"
 
 #ifdef _WIN32
 #  define __REEFT_DLLSPEC __declspec(dllexport) __stdcall
@@ -36,10 +38,10 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 #else
 #  define __REEFT_DLLSPEC
 #endif
-typedef RFTSQLiteWrapper* LPRFTSQLITEWRAPPER;
+typedef SHVSQLiteWrapper* LPSHVSQLITEWRAPPER;
 
-LPRFTSQLITEWRAPPER __REEFT_DLLSPEC CreateRFTSQLiteWrapper()
+LPSHVSQLITEWRAPPER __REEFT_DLLSPEC CreateSHVSQLiteWrapper()
 {
-	return new RFTSQLiteWrapper_Impl();
+	return new SHVSQLiteWrapper_Impl();
 }
 

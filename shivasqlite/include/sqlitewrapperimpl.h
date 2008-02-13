@@ -1,22 +1,30 @@
-#ifndef __SQLITEWRAPPER_IMPL_H
-#define __SQLITEWRAPPER_IMPL_H
+#ifndef __SHIVA_SQLITE_WRAPPER_IMPL_H
+#define __SHIVA_SQLITE_WRAPPER_IMPL_H
 
 #include "../sqlitewrapper.h"
-#include "../SQLite\sqlite3.h"
+#include "../../src/sqlite/sqlite3.h"
 #include "../sqlitestatement.h"
+#include "../../../include/threadutils/shvmutex.h"
 
-class RFTSQLiteWrapper_Impl: public RFTSQLiteWrapper
+//-=========================================================================================================
+///  SHVSQLiteWrapper_Impl class - Implement the shiva C++ interface for SQLite
+/**
+ */
+	
+class SHVSQLiteWrapper_Impl: public SHVSQLiteWrapper
 {
-private:
-	sqlite3* m_Sqlite;
 public:
-	RFTSQLiteWrapper_Impl(void);
-	virtual ~RFTSQLiteWrapper_Impl(void);
+	SHVSQLiteWrapper_Impl(void);
+	virtual ~SHVSQLiteWrapper_Impl(void);
 
-	virtual short Open(const char* fileName, int option);
-	virtual short OpenInMemory();
-	virtual short Close();
-	virtual short Prepare(RFTSQLiteStatement*& statement, const char* sql, const char*& notparsed); 
-	virtual const char* GetErrorMsg();
+	virtual SHVBool OpenUTF8(const SHVStringUTF8C& fileName, int option = 6);
+	virtual SHVBool OpenInMemory();
+	virtual SHVBool Close();
+	virtual SHVBool PrepareUTF8(SHVSQLiteStatement*& statement, const SHVStringUTF8C& sql, SHVStringUTF8& notparsed);
+	virtual SHVStringUTF8C GetErrorMsgUTF8(); 
+	virtual SHVMutex* GetMutex();
+private:
+	sqlite3* Sqlite;
+	SHVMutex* Lock;
 };
 #endif

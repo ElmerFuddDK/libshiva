@@ -1,26 +1,101 @@
+#ifndef __SHIVA_SQLITE_SQLITESTATEMENT_H
+#define __SHIVA_SQLITE_SQLITESTATEMENT_H
 
-#ifndef __SQLITESTATEMENT_H
-#define __SQLITESTATEMENT_H
+#include "../../include/utils/shvstring.h"
+#include "../../include/utils/shvstringutf8.h"
+#include "../../include/threadutils/shvmutex.h"
 
-class RFTSQLiteStatement
+//-=========================================================================================================
+///  SHVSQLiteStatement class - The shiva C++ interface for SQLite
+/**
+ * Use the Prepare function on SQLiteWrapper to execute a SQL statement in the SQLite
+ * engine. 
+ */
+class SHVSQLiteStatement
 {
 public:
-	virtual ~RFTSQLiteStatement() {}
+	virtual ~SHVSQLiteStatement() {}
 
-	virtual short GetValue(long& val, int columnIdx) = 0;
-	virtual short GetValue(double& val, int columnIdx) = 0;
-	virtual short GetValue(const void*& blob, int& len, int columnIdx) = 0;
-	virtual short GetValue(const char*& text, int& len, int columnIdx) = 0;
-	virtual short GetColumnName(const char*& name, int columnIdx) = 0;
-	virtual short GetColumnType(short& type, int columnIdx) = 0;
+	// GetValue
+	virtual SHVBool GetValue(long& val, int columnIdx) = 0;
+	virtual SHVBool GetValue(double& val, int columnIdx) = 0;
+	virtual SHVBool GetValue(const void*& blob, int& len, int columnIdx) = 0;
+	virtual SHVBool GetValueUTF8(SHVStringUTF8C& text, int& len, int columnIdx) = 0;
+	inline SHVBool GetValue(SHVString& text, int& len, int columnIdx);
+
+	// GetColumnName
+	virtual SHVBool GetColumnNameUTF8(SHVStringUTF8C& name, int columnIdx) = 0;
+	inline SHVBool GetColumnName(SHVString& name, int columnIdx);
+
+	// GetColumnType
+	virtual SHVBool GetColumnType(short& type, int columnIdx) = 0;
+
+	// GetColumnCount
 	virtual int GetColumnCount() = 0;
-	virtual short SetParameter(const char* name, long val) = 0;
-	virtual short SetParameter(const char* name, double val) = 0;
-	virtual short SetParameter(const char* name, const char* val) = 0;
-	virtual short SetParameterNull(const char* name) = 0;
 
-	virtual short NextResult() = 0;
-	virtual short Reset() = 0;	
+	// SetParameter
+	virtual SHVBool SetParameterUTF8(const SHVStringUTF8C& name, long val) = 0;
+	inline SHVBool SetParameter(const SHVStringC& name, long val);
+
+	virtual SHVBool SetParameterUTF8(const SHVStringUTF8C& name, double val) = 0;
+	inline SHVBool SetParameter(const SHVStringC& name, double val);
+
+	virtual SHVBool SetParameterUTF8(const SHVStringUTF8C& name, const SHVStringUTF8C& val) = 0;
+	inline SHVBool SetParameter(const SHVStringC& name, const SHVStringC& val);
+
+	virtual SHVBool SetParameterNullUTF8(const SHVStringUTF8C& name) = 0;
+	inline SHVBool SetParameterNull(SHVStringC& name);
+
+	// Iteration methods
+	virtual SHVBool NextResult() = 0;
+	virtual SHVBool Reset() = 0;	
 };
+// ============================================ implementation ============================================ //
+/*************************************
+ * GetValue
+ *************************************/
+SHVBool SHVSQLiteStatement::GetValue(SHVString& text, int& len, int columnIdx)
+{
+	SHVStringUTF8C res(NULL);
+	SHVBool retVal = GetValueUTF8(res, len, columnIdx);
+	if (retVal)
+		text = res.ToStrT();
+	return retVal;
+}
+
+/*************************************
+ * GetColumnName
+ *************************************/
+SHVBool SHVSQLiteStatement::GetColumnName(SHVString& name, int columnIdx)
+{
+	SHVStringUTF8C res(NULL);
+	SHVBool retVal = GetColumnNameUTF8(res, columnIdx);
+	if (retVal)
+		name = res.ToStrT();
+	return retVal;
+}
+
+/*************************************
+ * SetParameter
+ *************************************/
+SHVBool SHVSQLiteStatement::SetParameter(const SHVStringC& name, long val)
+{
+	return SetParameterUTF8(name.ToStrUTF8(), val);
+}
+
+SHVBool SHVSQLiteStatement::SetParameter(const SHVStringC& name, double val)
+{
+	return SetParameterUTF8(name.ToStrUTF8(), val);
+}
+
+SHVBool SHVSQLiteStatement::SetParameter(const SHVStringC& name, const SHVStringC& val)
+{
+	return SetParameterUTF8(name.ToStrUTF8(), val.ToStrUTF8());
+}
+
+SHVBool SHVSQLiteStatement::SetParameterNull(SHVStringC& name)
+{
+	return SetParameterNullUTF8(name.ToStrUTF8());
+}
 
 #endif

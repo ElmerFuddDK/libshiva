@@ -1,67 +1,84 @@
 #include "StdAfx.h"
-#include "sqlitewrapper_impl.h"
-#include "sqlitestatement_impl.h"
+#include "../../../include/platformspc.h"
 
-RFTSQLiteWrapper_Impl::RFTSQLiteWrapper_Impl(void)
+#include "../../include/sqliteimpl/sqlitewrapper_impl.h"
+#include "../../include/sqliteimpl/sqlitestatement_impl.h"
+
+SHVSQLiteWrapper_Impl::SHVSQLiteWrapper_Impl(void)
 {
-	m_Sqlite = NULL;
+	Sqlite = NULL;
+	Lock = new SHVMutex();
 }
 
-RFTSQLiteWrapper_Impl::~RFTSQLiteWrapper_Impl(void)
+SHVSQLiteWrapper_Impl::~SHVSQLiteWrapper_Impl(void)
 {
-	if (m_Sqlite)
+SHVMutexLocker lock(Lock);
+	if (Sqlite)
 	{
-		sqlite3_close(m_Sqlite);
-		m_Sqlite = NULL;
+		sqlite3_close(Sqlite);
+		Sqlite = NULL;
+		delete Lock;
 	}
 }
 
-short RFTSQLiteWrapper_Impl::Open(const char* fileName, int option)
+SHVBool SHVSQLiteWrapper_Impl::OpenUTF8(const SHVStringUTF8C& fileName, int option)
 {
-	if (m_Sqlite)
+SHVMutexLocker lock(Lock);
+	if (Sqlite)
 	{
-		sqlite3_close(m_Sqlite);
+		sqlite3_close(Sqlite);
 	}
-	return (short) sqlite3_open_v2(fileName, &m_Sqlite, option, NULL);
+	return SHVBool(sqlite3_open_v2(fileName.GetSafeBuffer(), &Sqlite, option, NULL));
 }
 
-short RFTSQLiteWrapper_Impl::OpenInMemory()
+SHVBool SHVSQLiteWrapper_Impl::OpenInMemory()
 {
-	if (m_Sqlite)
+SHVMutexLocker lock(Lock);
+	if (Sqlite)
 	{
-		sqlite3_close(m_Sqlite);
+		sqlite3_close(Sqlite);
 	}
-	return (short) sqlite3_open(":memory", &m_Sqlite);
+	return SHVBool(sqlite3_open(":memory", &Sqlite));
 }
 
-short RFTSQLiteWrapper_Impl::Close()
+SHVBool SHVSQLiteWrapper_Impl::Close()
 {
-	if (m_Sqlite)
+SHVMutexLocker lock(Lock);
+	if (Sqlite)
 	{
-		short res = (short) sqlite3_close(m_Sqlite);
-		m_Sqlite = NULL;
-		return res;
+		short res = (short) sqlite3_close(Sqlite);
+		Sqlite = NULL;
+		return SHVBool(res);
 	}
 	else
-		return RFTSQLiteWrapper::SQLite_ERROR;
+		return SHVBool(SHVSQLiteWrapper::SQLite_ERROR);
 }
 
-short RFTSQLiteWrapper_Impl::Prepare(RFTSQLiteStatement*& statement, const char* sql, const char*& notparsed)
+SHVBool SHVSQLiteWrapper_Impl::PrepareUTF8(SHVSQLiteStatement*& statement, const SHVStringUTF8C& sql, SHVStringUTF8& notparsed)
 {
+SHVMutexLocker lock(Lock);
 sqlite3_stmt* sqllite_statement;
-short res = RFTSQLiteWrapper::SQLite_ERROR;;
-	if (m_Sqlite)
+int res = SHVSQLiteWrapper::SQLite_ERROR;;
+const char* rest;
+	if (Sqlite)
 	{
-		res = sqlite3_prepare_v2(m_Sqlite, sql, -1, &sqllite_statement, &notparsed);
-		statement = new RFTSQLiteStatement_impl(sqllite_statement);
+		res = sqlite3_prepare_v2(Sqlite, sql.GetSafeBuffer(), -1, &sqllite_statement, &rest);
+		notparsed = rest;
+		statement = new SHVSQLiteStatement_impl(sqllite_statement, this);
 	}
-		return res;
+	return SHVBool(res);
 } 
 
-const char* RFTSQLiteWrapper_Impl::GetErrorMsg()
+SHVStringUTF8C SHVSQLiteWrapper_Impl::GetErrorMsgUTF8()
 {
-	if (m_Sqlite)
-		return sqlite3_errmsg(m_Sqlite);
+SHVMutexLocker lock(Lock);
+	if (Sqlite)
+		return sqlite3_errmsg(Sqlite);
 	else
 		return "Database is not open";
+}
+
+SHVMutex* SHVSQLiteWrapper_Impl::GetMutex()
+{
+	return Lock;
 }
