@@ -1,5 +1,6 @@
 #if !defined(__SHIVA_MFC) // include this if you have an MFC project
 # ifdef DEBUG
+#  define _CRTDBG_MAP_ALLOC
 #  include <crtdbg.h>
 #  define BREAKPOINT (_CrtDbgBreak(), 0)
 # endif
