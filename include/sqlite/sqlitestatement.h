@@ -25,6 +25,8 @@ public:
 
 	// GetColumnName
 	virtual SHVBool GetColumnNameUTF8(SHVStringUTF8C& name, int columnIdx) = 0;
+	virtual SHVBool GetColumnName8(SHVString8& name, int columnIdx) = 0;
+	virtual SHVBool GetColumnName16(SHVString16& name, int columnIdx) = 0;
 	inline SHVBool GetColumnName(SHVString& name, int columnIdx);
 
 	// GetColumnType
@@ -68,11 +70,11 @@ SHVBool SHVSQLiteStatement::GetValue(SHVString& text, int& len, int columnIdx)
  *************************************/
 SHVBool SHVSQLiteStatement::GetColumnName(SHVString& name, int columnIdx)
 {
-	SHVStringUTF8C res(NULL);
-	SHVBool retVal = GetColumnNameUTF8(res, columnIdx);
-	if (retVal)
-		name = res.ToStrT();
-	return retVal;
+#ifdef UNICODE
+	return GetColumnName16(name, columnIdx);
+#else
+	return GetColumnName8(name, columnIdx);
+#endif
 }
 
 /*************************************

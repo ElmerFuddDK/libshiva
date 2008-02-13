@@ -22,6 +22,8 @@ public:
 	virtual SHVBool GetValue(const void*& blob, int& len, int columnIdx);
 	virtual SHVBool GetValueUTF8(SHVStringUTF8C& text, int& len, int columnIdx);
 	virtual SHVBool GetColumnNameUTF8(SHVStringUTF8C& name, int columnIdx);
+	virtual SHVBool GetColumnName8(SHVString8& name, int columnIdx);
+	virtual SHVBool GetColumnName16(SHVString16& name, int columnIdx);
 
 	virtual SHVBool GetColumnType(short& type, int columnIdx);
 	virtual int GetColumnCount();
