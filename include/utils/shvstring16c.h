@@ -89,7 +89,7 @@ public:
 	bool operator>=(const SHVString16C& str) const;
 	short Compare(const SHVString16C& str) const;
 	short CompareNoCase(const SHVString16C& str) const;
-	friend SHVStringBuffer16 operator+(const SHVString16C& str1, const SHVString16C& str2);
+	friend SHVStringBuffer16 SHVAPI operator+(const SHVString16C& str1, const SHVString16C& str2);
 
 
 	// Access/Conversion functions
