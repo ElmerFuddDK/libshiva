@@ -18,12 +18,15 @@ public:
 
 	// Constructors
 	inline SHVColorWin32(ColorVal r, ColorVal g, ColorVal b);
+	inline SHVColorWin32(COLORREF color);
 
 	virtual ColorVal GetRed() const;
 	virtual ColorVal GetGreen() const;
 	virtual ColorVal GetBlue() const;
 
 	inline COLORREF GetColor() const;
+
+	static SHVColorWin32* FromSysColor(int color); ///< eg. COLOR_3DFACE
 
 private:
 	///\cond INTERNAL
@@ -42,6 +45,10 @@ typedef SHVRefObjectContainer<SHVColorWin32> SHVColorWin32Ref;
 SHVColorWin32::SHVColorWin32(ColorVal r, ColorVal g, ColorVal b)
 {
 	Color = RGB(r,g,b);
+}
+SHVColorWin32::SHVColorWin32(COLORREF color)
+{
+	Color = color;
 }
 
 /*************************************

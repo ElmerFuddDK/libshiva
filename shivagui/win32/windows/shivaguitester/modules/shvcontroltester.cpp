@@ -28,7 +28,7 @@ SHVFontRef font;
 	if (!SHVModuleResolver<SHVGUIManager>(Modules,GUIManager,"GUIManager"))
 		return false;
 
-	font = GUIManager->GetFont(SHVGUIManager::CfgFontNormal)->CreateCopy(100);
+	font = GUIManager->GetFont(SHVGUIManager::CfgFontNormal)->CreateCopy(150);
 
 	GUIManager->GetConfig().SetRef(SHVGUIManager::CfgFontNormal,font);
 
@@ -44,20 +44,26 @@ SHVEventSubscriberBaseRef subsOnDrawLabel = new SHVEventSubscriberFunc<SHVContro
 SHVEventSubscriberBaseRef subsOnDrawContainer = new SHVEventSubscriberFunc<SHVControlTester>(this,&SHVControlTester::OnDrawContainer);
 SHVFontRef ownerDrawFont = GUIManager->GetFont(SHVGUIManager::CfgFontNormal)->CreateCopy(250);
 
+	
 	GUIManager->GetMainWindow()->SetTitle(_T("noget"));
 	GUIManager->GetMainWindow()->SetLayoutEngine(new SHVControlLayoutCallback<SHVControlTester>(this,&SHVControlTester::OnResizeContainer));
 
-	Container = GUIManager->NewContainerCustomDraw(subsOnDrawContainer)->SetColor(GUIManager->CreateColor(0xFF,0xFF,0xFF))->SetParent(GUIManager->GetMainWindow());
+
+	Container = GUIManager->NewContainerCustomDraw(subsOnDrawContainer)
+		->SetColor(GUIManager->CreateColor(0xFF,0xFF,0xFF))
+		->SetParent(GUIManager->GetMainWindow());
+
 	Container->SetLayoutEngine(new SHVControlLayoutCallback<SHVControlTester>(this,&SHVControlTester::OnResizeControls));
 
 	Label = GUIManager->NewLabel()->SetParent(Container)->SetText(_T("Label text"));
-	LabelCustomDraw = GUIManager->NewLabelCustomDraw(NULL)->SetParent(Container)->SetText(_T("Noget eller noget andet"));
-//	LabelCustomDraw = GUIManager->NewLabelCustomDraw(subsOnDrawLabel)->SetParent(Container)->SetText(_T(""));
+	LabelCustomDraw = GUIManager->NewLabelCustomDraw(subsOnDrawLabel)->SetParent(Container)->SetText(_T(""));
 	EditBox = GUIManager->NewEdit(SHVControlEdit::SubTypeMultiLine)->SetParent(Container)->SetText(_T("Edit\ntext"))->SetLimit(10);
 	Button = GUIManager->NewButton()->SetParent(Container)->SetText(_T("Click Me!"));
 
+
 	LabelCustomDraw->SetFont(ownerDrawFont,true);
 	EditBox->SetHeight(4);
+
 
 	Button->SubscribeClicked(new SHVEventSubscriber(this,&Modules));
 
@@ -82,6 +88,7 @@ void SHVControlTester::Unregister()
 void SHVControlTester::OnEvent(SHVEvent* event)
 {
 	::MessageBox(NULL,_T("Noget"),_T("Knap"),MB_OK);
+	GUIManager->GetMainWindow()->SetColor(GUIManager->CreateColor(0x99,0x66,0x66));
 }
 
 void SHVControlTester::OnResizeContainer(SHVControlContainer* container, SHVControlLayout* layout)

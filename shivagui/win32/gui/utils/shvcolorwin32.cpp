@@ -31,3 +31,11 @@ SHVColor::ColorVal SHVColorWin32::GetBlue() const
 {
 	return (SHVColor::ColorVal)GetBValue(Color);
 }
+
+/*************************************
+ * FromSysColor
+ *************************************/
+SHVColorWin32* SHVColorWin32::FromSysColor(int color)
+{
+	return new SHVColorWin32(::GetSysColor(color));
+}

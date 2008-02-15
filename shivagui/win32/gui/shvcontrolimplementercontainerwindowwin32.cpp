@@ -207,11 +207,12 @@ SHVControlImplementerContainerWindowWin32* self = (owner ? (SHVControlImplemente
 			if (owner)
 			{
 			SHVDrawWin32Ref draw = Win32::CreateDraw(owner,(HDC)wParam);
+			SHVColor* color = owner->GetColor();
 
-				if (!self->Color.IsNull())
+				if (color)
 				{
 					drawn = true;
-					draw->DrawRectFilled(draw->GetClientRect(owner),self->Color);
+					draw->DrawRectFilled(draw->GetClientRect(owner),color);
 				}
 		
 				if (!self->Subscriber.IsNull())

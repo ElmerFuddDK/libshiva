@@ -53,6 +53,8 @@ SHVControlImplementerMainWindowWin32::SHVControlImplementerMainWindowWin32(HINST
 {
 	hInstance = hinstance;
 	Dispatcher = dispatcher;
+
+	Color = SHVColorWin32::FromSysColor(COLOR_3DFACE);
 }
 
 /*************************************
