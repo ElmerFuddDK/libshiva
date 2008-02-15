@@ -49,7 +49,7 @@ SHVBool SHVControlImplementerButtonWin32::Create(SHVControl* owner, SHVControlIm
 {
 	if (!IsCreated() && parent && parent->IsCreated())
 	{
-		SetHandle(CreateWindow(_T("BUTTON"), _T(""), WS_CHILD|WS_TABSTOP|Win32::MapFlags(flags),
+		SetHandle(CreateWindow(_T("BUTTON"), _T(""), WS_CHILD|WS_TABSTOP|Win32::MapFlags(flags)|BS_PUSHLIKE,
 			0, 0, 0, 0, Win32::GetHandle(parent), NULL, Win32::GetInstance(owner), NULL));
 
 		if (IsCreated())
