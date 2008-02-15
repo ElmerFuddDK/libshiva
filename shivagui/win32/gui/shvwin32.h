@@ -3,7 +3,7 @@
 
 
 #include "shvcontrolimplementerwin32base.h"
-#include "../../include/shvguimanager.h"
+#include "shvguimanagerwin32.h"
 #include "../../include/shvcontrol.h"
 #include "../../include/shvcontrolimplementer.h"
 
@@ -32,6 +32,13 @@ public:
 	inline static HINSTANCE GetInstance(SHVControl* control);
 
 	static int MapFlags(int shivaflags);
+
+	inline static SHVDrawWin32* CreateDraw(SHVControl* control, HDC hDC);
+	inline static SHVDrawWin32* CreateDrawPaint(SHVControl* control);
+
+	inline static bool CheckForNewlines(const SHVStringC str);
+	inline static SHVStringBuffer ConvertNewlinesC(const SHVStringC str);
+	inline static void ConvertNewlines(SHVString& str);
 
 };
 
@@ -76,6 +83,50 @@ SHVConfig& Win32::GetGUIConfig(SHVControl* control)
 HINSTANCE Win32::GetInstance(SHVControl* control)
 {
 	return (HINSTANCE)GetGUIConfig(control).FindPtr(SHVGUIManager::CfgInstanceHandle).ToPtr();
+}
+
+/*************************************
+ * CreateDraw
+ *************************************/
+SHVDrawWin32* Win32::CreateDraw(SHVControl* control, HDC hDC)
+{
+	return ((SHVGUIManagerWin32*)control->GetManager())->CreateDraw(hDC);
+}
+
+/*************************************
+ * CreateDrawPaint
+ *************************************/
+SHVDrawWin32* Win32::CreateDrawPaint(SHVControl* control)
+{
+	return (SHVDrawWin32*)((SHVGUIManagerWin32*)control->GetManager())->CreateDrawPaint(GetHandle(control));
+}
+
+/*************************************
+ * CheckForNewlines
+ *************************************/
+bool Win32::CheckForNewlines(const SHVStringC str)
+{
+	return (str.Find(_T("\n")) >= 0);
+}
+
+/*************************************
+ * ConvertNewlinesC
+ *************************************/
+SHVStringBuffer Win32::ConvertNewlinesC(const SHVStringC str)
+{
+SHVString retVal(str);
+
+	retVal.Replace(_T("\n"),_T("\r\n"));
+
+	return retVal.ReleaseBuffer();
+}
+
+/*************************************
+ * ConvertNewlines
+ *************************************/
+void Win32::ConvertNewlines(SHVString& str)
+{
+	str.Replace(_T("\n"),_T("\r\n"));
 }
 
 #endif
