@@ -2,6 +2,7 @@
 #include "../../../../include/platformspc.h"
 
 #include "shvfontwin32.h"
+#include "../shvwin32.h"
 
 //=========================================================================================================
 // SHVFontWin32
@@ -13,6 +14,7 @@
 SHVFontWin32::SHVFontWin32(HFONT font, bool owner) : Font(font), Owner(owner)
 {
 	SHVASSERT(Font);
+	CellHeight = SHVFontWin32::CalculateCellHeight(Font);
 }
 SHVFontWin32::SHVFontWin32(const SHVStringC fontName, int height, int styles)
 {
@@ -28,6 +30,7 @@ LOGFONT lf;
 	lf.lfUnderline = ( styles & SHVFont::StyleUnderline ? TRUE : FALSE );
 	::memcpy( lf.lfFaceName, fontName.GetSafeBuffer(), (fontName.GetLength()+1)*sizeof(SHVTChar) );
 	SHVVERIFY(Font = ::CreateFontIndirect(&lf));
+	CellHeight = SHVFontWin32::CalculateCellHeight(Font);
 }
 
 /*************************************
@@ -79,6 +82,8 @@ LOGFONT lf;
 	{
 	HDC hDC = ::GetDC(NULL);
 
+		SHVASSERT(lf.lfHeight < 0);
+
 		if (lf.lfHeight < 0)
 			lf.lfHeight = -lf.lfHeight;
 
@@ -90,11 +95,34 @@ LOGFONT lf;
 }
 
 /*************************************
+ * GetCellHeight
+ *************************************/
+int SHVFontWin32::GetCellHeight()
+{
+	return CellHeight;
+}
+
+/*************************************
  * GetWidth
  *************************************/
-int SHVFontWin32::GetWidth()
+int SHVFontWin32::CalculateTextWidth(const SHVStringC text)
 {
-	return -1;
+HDC dc = ::GetDC(NULL);
+int dcBackup = ::SaveDC(dc);
+SIZE sz;
+int retVal;
+
+	SHVASSERT(!Win32::CheckForNewlines(text));
+
+	::SelectObject(dc,Font);
+	
+	SHVVERIFY(::GetTextExtentPoint(dc,text.GetSafeBuffer(),(int)text.GetLength(),&sz));
+	retVal = sz.cx;
+
+	::RestoreDC(dc,dcBackup);
+	::ReleaseDC(NULL,dc);
+
+	return retVal;
 }
 
 /*************************************
@@ -146,6 +174,27 @@ int retVal = SHVFont::StyleNormal;
 		retVal |= SHVFont::StyleItalic;
 	if (lf.lfUnderline)
 		retVal |= SHVFont::StyleUnderline;
+
+	return retVal;
+}
+
+/*************************************
+ * CalculateCellHeight
+ *************************************/
+int SHVFontWin32::CalculateCellHeight(HFONT font)
+{
+HDC dc = ::GetDC(NULL);
+int dcBackup = ::SaveDC(dc);
+SIZE sz;
+int retVal;
+
+	::SelectObject(dc,font);
+	
+	SHVVERIFY(::GetTextExtentPoint(dc,_T(" "),1,&sz));
+	retVal = sz.cy;
+
+	::RestoreDC(dc,dcBackup);
+	::ReleaseDC(NULL,dc);
 
 	return retVal;
 }

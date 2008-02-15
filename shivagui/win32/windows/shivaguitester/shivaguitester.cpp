@@ -18,6 +18,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
                      int       nCmdShow)
 {
 SHVDll guilib;
+int retVal = -1;
 
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
@@ -25,13 +26,10 @@ SHVDll guilib;
 	if (!SHVModuleList::CheckVersion(__SHIVA_VERSION_MAJOR,__SHIVA_VERSION_MINOR,__SHIVA_VERSION_RELEASE))
 	{
 		::MessageBox(NULL,_T("Invalid version of libshiva.dll"),_T("Error"),MB_ICONERROR);
-		return -1;
 	}
-
-	if (!guilib.Load(guilib.CreateLibFileName(_T("shivaguiwin32"))))
+	else if (!guilib.Load(guilib.CreateLibFileName(_T("shivaguiwin32"))))
 	{
 		::MessageBox(NULL,_T("These are not the droids you are looking for ..."),_T("FætterHat"),0);
-		return -1;
 	}
 	else
 	{
@@ -42,6 +40,14 @@ SHVDll guilib;
 
 		mainqueue.GetModuleList().AddModule(new SHVControlTester(mainqueue.GetModuleList()));
 
-		return mainqueue.Run();
+		retVal = mainqueue.Run();
 	}
+
+	guilib.Unload();
+
+#ifdef DEBUG
+	_CrtDumpMemoryLeaks();
+#endif
+
+	return retVal;
 }

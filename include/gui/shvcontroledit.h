@@ -44,6 +44,8 @@ public:
 	inline int GetLimit();
 	inline SHVControlEdit* SetLimit(int limit);
 
+	inline void SetHeight(int lines); // only applicable on multiline boxes
+
 
 	// obtain pointer to the implementor
 	inline SHVControlImplementerEdit* GetImplementor();
@@ -67,6 +69,8 @@ public:
 
 	virtual int GetLimit() = 0;
 	virtual void SetLimit(int limit) = 0;
+
+	virtual void SetHeight(SHVControlEdit* owner, int lines) = 0; // only applicable on multiline boxes
 
 };
 
@@ -122,6 +126,14 @@ SHVControlEdit* SHVControlEdit::SetLimit(int limit)
 {
 	GetImplementor()->SetLimit(limit);
 	return this;
+}
+
+/*************************************
+ * SetHeight
+ *************************************/
+void SHVControlEdit::SetHeight(int lines)
+{
+	GetImplementor()->SetHeight(this,lines);
 }
 
 /*************************************

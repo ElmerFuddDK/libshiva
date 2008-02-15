@@ -3,10 +3,13 @@
 
 #include "../shvcontrolcontainer.h"
 #include "shvrect.h"
+#include "../../../include/utils/shvptrcontainer.h"
+#include "../../../include/utils/shvrefobject.h"
 
 
 // forward declare
 class SHVRegionAction;
+typedef SHVPtrContainer<SHVRegionAction> SHVRegionActionPtr;
 
 
 //-=========================================================================================================
@@ -15,7 +18,7 @@ class SHVRegionAction;
  * This class is used for placing controls in a control container
  */
 
-class SHVRegion
+class SHVRegion : public SHVRefObject
 {
 public:
 
@@ -26,15 +29,11 @@ public:
 		AlignNone = 0,
 		AlignLeft = 1,
 		AlignRight = 2,
-		AlignHorizCenter = AlignLeft+AlignRight,
+		AlignHCenter = AlignLeft+AlignRight,
 		AlignTop = 16,
 		AlignBottom = 32,
-		AlignVertCenter = AlignTop+AlignBottom
+		AlignVCenter = AlignTop+AlignBottom
 	};
-
-
-	// default constructor
-	SHVRegion(SHVControlContainer* container);
 
 
 	// operators
@@ -42,33 +41,27 @@ public:
 
 
 	// properties
-	int GetHeight();
-	int GetWidth ();
+	virtual int GetHeight() = 0;
+	virtual int GetWidth () = 0;
 
 
 	// Rectangle handling
-	void Reset();
-	void SetRect(const SHVRect& rect);
+	virtual void Reset() = 0;
+	virtual void SetRect(const SHVRect& rect) = 0;
 
+	virtual SHVRegion* ClipTop(int pixels) = 0;
+	virtual SHVRegion* ClipBottom(int pixels) = 0;
+	virtual SHVRegion* ClipLeft(int pixels) = 0;
+	virtual SHVRegion* ClipRight(int pixels) = 0;
 
 	// Start placing a window
-	inline SHVRegionAction Move(SHVControl* wnd);
+	virtual SHVRegionActionPtr Move(SHVControl* wnd) = 0;
 
 
-private:
-friend class SHVRegionAction;
-
-	///\cond INTERNAL
-	SHVControlContainerRef Container;
-	SHVControl* Wnd;
-	int HorizMargin, VertMargin;
-	SHVRect Rect;
-	#ifdef __SHIVA_WIN32
-	#elif defined(__SHIVA_EPOC)
-	#else
-	#endif
-	///\endcond
+protected:
+	inline SHVRegion() {}
 };
+typedef SHVRefObjectContainer<SHVRegion> SHVRegionRef;
 
 
 //-=========================================================================================================
@@ -80,58 +73,31 @@ friend class SHVRegionAction;
 
 class SHVRegionAction
 {
-friend class SHVRegion;
 public:
 
 
-	// desctructor
-	~SHVRegionAction();
-
-
 	// placement methods
-	SHVRegionAction& Top(int leftMargin = -1, int topMargin = -1);
-	SHVRegionAction& Bottom(int leftMargin = -1, int topMargin = -1);
-	SHVRegionAction& Left(int leftMargin = -1, int topMargin = -1);
-	SHVRegionAction& Right(int leftMargin = -1, int topMargin = -1);
+	virtual SHVRegionAction* Top(int leftMargin = -1, int topMargin = -1) = 0;
+	virtual SHVRegionAction* Bottom(int leftMargin = -1, int topMargin = -1) = 0;
+	virtual SHVRegionAction* Left(int leftMargin = -1, int topMargin = -1) = 0;
+	virtual SHVRegionAction* Right(int leftMargin = -1, int topMargin = -1) = 0;
 
-	SHVRegionAction& AlignLeftRight(SHVControl* left = NULL, SHVControl* right = NULL, int alignment = SHVRegion::AlignLeft, int margin = -1);
-	SHVRegionAction& FillLeftRight(SHVControl* left = NULL, SHVControl* right = NULL, int margin = -1);
+	virtual SHVRegionAction* ClipTop(int extraMargin = 0) = 0;
+	virtual SHVRegionAction* ClipBottom(int extraMargin = 0) = 0;
+	virtual SHVRegionAction* ClipLeft(int extraMargin = 0) = 0;
+	virtual SHVRegionAction* ClipRight(int extraMargin = 0) = 0;
+
+	virtual SHVRegionAction* LeftOf(SHVControl* left = NULL, int leftMargin = -1) = 0;
+
+	virtual SHVRegionAction* SetPercent(int x = -1, int y = -1, int width = -1, int height = -1, SHVRect margins = SHVRect(-1,-1,-1,-1)) = 0;
+
+	virtual SHVRegionAction* AlignLeftRight(SHVControl* left = NULL, SHVControl* right = NULL, int alignment = SHVRegion::AlignLeft, int margin = -1) = 0;
+	virtual SHVRegionAction* FillLeftRight(SHVControl* left = NULL, SHVControl* right = NULL, int margin = -1) = 0;
 
 
-private:
-	///\cond INTERNAL
-	SHVRegion& Region;
-	SHVControl* Wnd;
-	bool Initialized;
-	SHVRect WindowRect;
-	SHVRegionAction(SHVRegion& region, SHVControl* wnd);
-	bool Initialize();
-	///\endcond
+	// desctructor
+	virtual ~SHVRegionAction() {}
+
 };
 
-
-
-// ============================================= implementation ============================================= //
-
-/*************************************
- * Move
- *************************************/
-/// Initializes placement of a window in the region
-/**
- * This function will return an action class that can be
- * used to directly manipulate the region with the provided
- * window.\n
- * Here is an example as to how this works:
-\code
-	{
-	SHVRegion rgn(container,guiConfig);
-
-		rgn.Move(button).Top().FillLeftRight();
-	}
-\endcode
- */
-SHVRegionAction SHVRegion::Move(SHVControl* wnd)
-{
-	return SHVRegionAction(*this,wnd);
-}
 #endif

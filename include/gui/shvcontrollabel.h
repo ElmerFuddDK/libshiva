@@ -17,6 +17,13 @@ class SHVControlLabel: public SHVControl
 {
 public:
 
+
+	enum SubTypes {
+		SubTypeNormal = SubTypeDefault,
+		SubTypeCustomDraw
+	};
+
+
 	inline SHVControlLabel(SHVGUIManager* manager, SHVControlImplementer* implementor);
 
 	virtual int GetType();
@@ -26,12 +33,13 @@ public:
 	virtual SHVBool GetData(SHVControlData* data);
 	virtual SHVBool SetData(SHVControlData* data);
 
-	inline SHVControlLabel* SetText(const SHVStringC& text);
+	inline SHVControlLabel* SetText(const SHVStringC& text, bool autoSize = true);
 	inline SHVStringBuffer GetText();
 
 	inline SHVControlImplementerLabel* GetImplementor();
 };
 typedef SHVRefObjectContainer<SHVControlLabel> SHVControlLabelRef;
+
 
 
 //-=========================================================================================================
@@ -45,7 +53,23 @@ class SHVControlImplementerLabel : public SHVControlImplementer
 public:
 
 	virtual SHVStringBuffer GetText() = 0;
-	virtual void SetText(const SHVStringC& title) = 0;
+	virtual void SetText(SHVControlLabel* owner, const SHVStringC& title, bool autoSize) = 0;
+
+};
+
+
+
+//-=========================================================================================================
+/// SHVControlImplementerLabelCustomDraw - label implementer for custom drawn labels
+/**
+ * Interface that has to be implemented for the specific platform
+ */
+
+class SHVControlImplementerLabelCustomDraw : public SHVControlImplementerLabel
+{
+public:
+
+	virtual void SubscribeDraw(SHVEventSubscriberBase* subscriber) = 0;
 
 };
 
@@ -82,9 +106,9 @@ SHVStringBuffer SHVControlLabel::GetText()
 /*************************************
  * SetText
  *************************************/
-SHVControlLabel* SHVControlLabel::SetText(const SHVStringC& title)
+SHVControlLabel* SHVControlLabel::SetText(const SHVStringC& title, bool autoSize)
 {
-	GetImplementor()->SetText(title);
+	GetImplementor()->SetText(this,title,autoSize);
 	return this;
 }
 

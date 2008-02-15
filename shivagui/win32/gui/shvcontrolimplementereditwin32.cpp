@@ -15,6 +15,7 @@
  *************************************/
 SHVControlImplementerEditWin32::SHVControlImplementerEditWin32(int subType) : SHVControlImplementerWin32<SHVControlImplementerEdit>(), SubType(subType)
 {
+	Lines = 1;
 }
 
 /*************************************
@@ -54,7 +55,7 @@ SHVBool retVal(parent && owner && !IsCreated());
 
 		retVal = IsCreated();
 
-		SetFont(owner,owner->GetManager()->GetFont(SHVGUIManager::CfgFontNormal));
+		SetFont(owner,owner->GetManager()->GetFont(SHVGUIManager::CfgFontNormal),true);
 	}
 
 	return retVal;
@@ -65,14 +66,7 @@ SHVBool retVal(parent && owner && !IsCreated());
  *************************************/
 SHVStringBuffer SHVControlImplementerEditWin32::GetText()
 {
-SHVString retVal;
-
-	SHVASSERT(IsCreated());
-
-	retVal.SetBufferSize( GetWindowTextLength(GetHandle())+1 );
-	GetWindowText(GetHandle(),(TCHAR*)retVal.GetBuffer(), (int)retVal.GetBufferLen());
-
-	return retVal.ReleaseBuffer();
+	return SHVControlImplementerWin32Base::GetText();
 }
 
 /*************************************
@@ -80,9 +74,7 @@ SHVString retVal;
  *************************************/
 void SHVControlImplementerEditWin32::SetText(const SHVStringC& text)
 {
-	SHVASSERT(IsCreated());
-
-	SetWindowText(GetHandle(),text.GetSafeBuffer());
+	SHVControlImplementerWin32Base::SetText(text);
 }
 
 /*************************************
@@ -103,4 +95,27 @@ void SHVControlImplementerEditWin32::SetLimit(int limit)
 	SHVASSERT(IsCreated());
 
 	::SendMessage(GetHandle(),EM_SETLIMITTEXT,(WPARAM)limit,0);
+}
+
+/*************************************
+ * SetHeight
+ *************************************/
+void SHVControlImplementerEditWin32::SetHeight(SHVControlEdit* owner, int lines)
+{
+	Lines = lines;
+
+	if (IsCreated())
+	{
+	SHVFontRef font = GetFont(owner);
+		SHVControlImplementerWin32Base::SetFont(owner,font,CalculateNewHeight(owner,font));
+	}
+}
+
+/*************************************
+ * CalculateNewHeight
+ *************************************/
+int SHVControlImplementerEditWin32::CalculateNewHeight(SHVControl* owner, SHVFont* font)
+{
+	return SHVControlImplementerWin32<SHVControlImplementerEdit>::CalculateNewHeight(owner,font)
+		+ font->GetCellHeight()*(Lines-1);
 }

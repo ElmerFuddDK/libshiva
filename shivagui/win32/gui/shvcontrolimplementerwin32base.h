@@ -10,6 +10,14 @@
 # error This code does not work in MFC mode
 #endif
 
+// Redefine SetWindowLongPtr and GetWindowLongPtr to avoid stupid warnings on win32
+#ifndef _WIN64
+# undef SetWindowLongPtr
+# undef GetWindowLongPtr
+# define SetWindowLongPtr(x,y,z) SetWindowLong(x,y,(LONG)z)
+# define GetWindowLongPtr(x,y) (LONG_PTR)GetWindowLong(x,y)
+#endif
+
 
 //-=========================================================================================================
 /// SHVControlImplementerWin32Base - implementation of base implementer methods
@@ -36,10 +44,13 @@ public:
 	virtual bool GetFlag(SHVControl* owner, int flag);
 
 	virtual SHVFont* GetFont(SHVControl* owner);
-	virtual SHVBool SetFont(SHVControl* owner, SHVFont* font);
+	virtual SHVBool SetFont(SHVControl* owner, SHVFont* font, SHVInt newHeight);
 
 
 	virtual HWND GetHandle();
+
+	SHVStringBuffer GetText();
+	void SetText(const SHVStringC& text);
 
 protected:
 

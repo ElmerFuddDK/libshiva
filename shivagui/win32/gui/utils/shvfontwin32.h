@@ -25,7 +25,8 @@ public:
 	virtual SHVFont* CreateCopy(int sizePercentage = 100, int styles = StyleUnchanged);
 
 	virtual int GetHeight();
-	virtual int GetWidth();
+	virtual int GetCellHeight();
+	virtual int CalculateTextWidth(const SHVStringC text);
 
 	virtual SHVStringBuffer GetName();
 
@@ -34,10 +35,12 @@ public:
 
 	static SHVFontWin32* SHVFontWin32::CreateSystemFont();
 	static int MapStyles(LOGFONT& lf);
+	static int CalculateCellHeight(HFONT font);
 
 private:
 	///\cond INTERNAL
 	HFONT Font;
+	int CellHeight;
 	bool Owner;
 	///\endcond
 };

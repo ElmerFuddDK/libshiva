@@ -34,6 +34,7 @@
 #include "shvwin32.h"
 
 
+
 /*************************************
  * Constructor
  *************************************/
@@ -58,7 +59,7 @@ SHVBool SHVControlImplementerButtonWin32::Create(SHVControl* owner, SHVControlIm
 			SetWindowLongPtr(GetHandle(),GWLP_WNDPROC,(LONG_PTR)&SHVControlImplementerButtonWin32::WndProc);
 		}
 		
-		SetFont(owner,owner->GetManager()->GetFont(SHVGUIManager::CfgFontNormal));
+		SetFont(owner,owner->GetManager()->GetFont(SHVGUIManager::CfgFontNormal),true);
 
 		return IsCreated();
 	}
@@ -92,11 +93,21 @@ SHVString retVal;
 /*************************************
  * SetText
  *************************************/
-void SHVControlImplementerButtonWin32::SetText(const SHVStringC& text)
+void SHVControlImplementerButtonWin32::SetText(SHVControlButton* owner, const SHVStringC& text, bool autoSize)
 {
 	SHVASSERT(IsCreated());
 
 	SetWindowText(GetHandle(),text.GetSafeBuffer());
+
+	if (autoSize)
+	{
+	SHVRect rect(GetRect(owner));
+	SHVFontRef font = GetFont(owner);
+
+		rect.SetWidth(MulDiv(font->CalculateTextWidth(text),160,100));
+
+		SetRect(owner,rect);
+	}
 }
 
 ///\cond INTERNAL

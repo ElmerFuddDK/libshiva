@@ -38,7 +38,7 @@ public:
 	virtual bool GetFlag(SHVControl* owner, int flag) = 0;
 
 	virtual SHVFont* GetFont(SHVControl* owner) = 0;
-	virtual SHVBool SetFont(SHVControl* owner, SHVFont* font) = 0;
+	virtual SHVBool SetFont(SHVControl* owner, SHVFont* font, bool resetHeight) = 0;
 
 	virtual void* GetNative() = 0;
 

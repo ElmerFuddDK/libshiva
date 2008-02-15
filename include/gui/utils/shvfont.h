@@ -30,7 +30,8 @@ public:
 	virtual SHVFont* CreateCopy(int sizePercentage = 100, int styles = StyleUnchanged) = 0;
 
 	virtual int GetHeight() = 0;
-	virtual int GetWidth() = 0;
+	virtual int GetCellHeight() = 0;
+	virtual int CalculateTextWidth(const SHVStringC text) = 0;
 
 	virtual SHVStringBuffer GetName() = 0;
 

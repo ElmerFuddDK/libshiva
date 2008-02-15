@@ -27,10 +27,15 @@ public:
 
 private:
 
-	void OnResizeMainWnd(SHVControlContainer* container, SHVControlLayout* layout);
+	void OnResizeContainer(SHVControlContainer* container, SHVControlLayout* layout);
+	void OnResizeControls(SHVControlContainer* container, SHVControlLayout* layout);
+	void OnDrawLabel(SHVEvent* event);
+	void OnDrawContainer(SHVEvent* event);
 
 	SHVGUIManager* GUIManager;
+	SHVControlContainerRef Container;
 	SHVControlLabelRef Label;
+	SHVControlLabelRef LabelCustomDraw;
 	SHVControlEditRef EditBox;
 	SHVControlButtonRef Button;
 };

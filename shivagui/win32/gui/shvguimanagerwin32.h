@@ -3,6 +3,12 @@
 
 #include "../../gui/shvguimanagerimpl.h"
 
+// forward declares
+class SHVDrawWin32;
+class SHVDrawPaintWin32;
+class SHVDrawGetDCWin32;
+class SHVDrawWindowWin32;
+
 
 //-=========================================================================================================
 /// SHVGUIManagerWin32 - Module for registering control types, and instantiating them
@@ -26,6 +32,16 @@ public:
 
 	// CreateFont
 	virtual SHVFont* CreateFont(const SHVStringC name, int height, int styles = SHVFont::StyleNormal);
+
+	// Factories
+	virtual SHVColor* CreateColor(SHVColor::ColorVal r, SHVColor::ColorVal g, SHVColor::ColorVal b);
+	virtual SHVPen* CreatePen(SHVColor* color, int style = SHVPen::StyleDefault, int width = 1);
+	virtual SHVBrush* CreateBrush(SHVColor* color, int style = SHVBrush::StyleDefault);
+	virtual SHVRegion* CreateRegion(SHVControlContainer* container);
+
+	// Create draw context
+	virtual SHVDrawWin32* CreateDraw(HDC dc);
+	virtual SHVDrawPaintWin32* CreateDrawPaint(HWND window);
 
 	// PreTranslateMessage
 	virtual bool PreTranslateMessage(MSG* message);

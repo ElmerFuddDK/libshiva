@@ -8,6 +8,10 @@
 #include "shvcontrollabel.h"
 #include "shvcontrolbutton.h"
 #include "utils/shvfont.h"
+#include "utils/shvcolor.h"
+#include "utils/shvpen.h"
+#include "utils/shvbrush.h"
+#include "utils/shvregion.h"
 
 
 
@@ -29,6 +33,7 @@ public:
 		CfgInstanceHandle,
 		CfgRegionHorizMargin,
 		CfgRegionVertMargin,
+		CfgColorTransparent,
 
 		// Font options
 		CfgFontNormal = 900,
@@ -46,13 +51,22 @@ public:
 
 
 	// Control creation functions
+	inline SHVControlContainer* NewContainer(int subType = SHVControlContainer::SubTypeDefault);
+	inline SHVControlContainer* NewContainerCustomDraw(SHVEventSubscriberBase* subscriber);
 	inline SHVControlEdit* NewEdit(int subType = SHVControlEdit::SubTypeDefault);
 	inline SHVControlLabel* NewLabel(int subType = SHVControlLabel::SubTypeDefault);
+	inline SHVControlLabel* NewLabelCustomDraw(SHVEventSubscriberBase* subscriber);
 	inline SHVControlButton* NewButton(int subType = SHVControlButton::SubTypeDefault);
 
 	// Font functions
 	inline SHVFont* GetFont(int cfgID);
 	virtual SHVFont* CreateFont(const SHVStringC name, int height, int styles = SHVFont::StyleNormal) = 0;
+
+	// Factories
+	virtual SHVColor* CreateColor(SHVColor::ColorVal r, SHVColor::ColorVal g, SHVColor::ColorVal b) = 0;
+	virtual SHVPen* CreatePen(SHVColor* color, int style = SHVPen::StyleDefault, int width = 1) = 0;
+	virtual SHVBrush* CreateBrush(SHVColor* color, int style = SHVBrush::StyleDefault) = 0;
+	virtual SHVRegion* CreateRegion(SHVControlContainer* container) = 0;
 
 
 	// Register controls
@@ -81,7 +95,30 @@ protected:
 // ============================================= implementation ============================================= //
 
 /*************************************
- * CreateEdit
+ * NewContainer
+ *************************************/
+SHVControlContainer* SHVGUIManager::NewContainer(int subType)
+{
+	return (SHVControlContainer*)NewControl(SHVControl::TypeContainer,subType);
+}
+
+/*************************************
+ * NewContainerCustomDraw
+ *************************************/
+SHVControlContainer* SHVGUIManager::NewContainerCustomDraw(SHVEventSubscriberBase* subscriber)
+{
+SHVControlContainer* retVal = (SHVControlContainer*)NewControl(SHVControl::TypeContainer,SHVControlContainer::SubTypeCustomDraw);
+
+	if (retVal)
+		((SHVControlImplementerContainerCustomDraw*)retVal->GetImplementor())->SubscribeDraw(subscriber);
+	else
+		subscriber->ValidateRefCount();
+
+	return retVal;
+}
+
+/*************************************
+ * NewEdit
  *************************************/
 SHVControlEdit* SHVGUIManager::NewEdit(int subType)
 {
@@ -89,11 +126,26 @@ SHVControlEdit* SHVGUIManager::NewEdit(int subType)
 }
 
 /*************************************
- * CreateLabel
+ * NewLabel
  *************************************/
 SHVControlLabel* SHVGUIManager::NewLabel(int subType)
 {
 	return (SHVControlLabel*)NewControl(SHVControl::TypeLabel,subType);
+}
+
+/*************************************
+ * NewLabelCustomDraw
+ *************************************/
+SHVControlLabel* SHVGUIManager::NewLabelCustomDraw(SHVEventSubscriberBase* subscriber)
+{
+SHVControlLabel* retVal = (SHVControlLabel*)NewControl(SHVControl::TypeLabel,SHVControlLabel::SubTypeCustomDraw);
+
+	if (retVal)
+		((SHVControlImplementerLabelCustomDraw*)retVal->GetImplementor())->SubscribeDraw(subscriber);
+	else
+		subscriber->ValidateRefCount();
+
+	return retVal;
 }
 
 /*************************************

@@ -249,16 +249,16 @@
 					RelativePath="..\..\utils\shvrect.cpp"
 					>
 				</File>
-				<File
-					RelativePath="..\..\utils\shvregion.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="win32gui"
 				>
 				<File
 					RelativePath="..\gui\shvcontrolimplementerbuttonwin32.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\gui\shvcontrolimplementercontainerwindowwin32.cpp"
 					>
 				</File>
 				<File
@@ -293,10 +293,38 @@
 					Name="utils"
 					>
 					<File
+						RelativePath="..\gui\utils\shvbitmapwin32.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\gui\utils\shvbrushwin32.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\gui\utils\shvcolorwin32.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\gui\utils\shvdrawwin32.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\gui\utils\shvfontwin32.cpp"
 						>
 					</File>
+					<File
+						RelativePath="..\gui\utils\shvpenwin32.cpp"
+						>
+					</File>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="utilsimpl"
+				>
+				<File
+					RelativePath="..\..\utilsimpl\shvregionimpl.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -316,6 +344,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\gui\shvcontrolimplementercontainerwindowwin32.h"
+					>
+				</File>
+				<File
 					RelativePath="..\gui\shvcontrolimplementereditwin32.h"
 					>
 				</File>
@@ -329,6 +361,10 @@
 				</File>
 				<File
 					RelativePath="..\gui\shvcontrolimplementerwin32.h"
+					>
+				</File>
+				<File
+					RelativePath="..\gui\shvcontrolimplementerwin32base.h"
 					>
 				</File>
 				<File
@@ -351,7 +387,27 @@
 					Name="utils"
 					>
 					<File
+						RelativePath="..\gui\utils\shvbitmapwin32.h"
+						>
+					</File>
+					<File
+						RelativePath="..\gui\utils\shvbrushwin32.h"
+						>
+					</File>
+					<File
+						RelativePath="..\gui\utils\shvcolorwin32.h"
+						>
+					</File>
+					<File
+						RelativePath="..\gui\utils\shvdrawwin32.h"
+						>
+					</File>
+					<File
 						RelativePath="..\gui\utils\shvfontwin32.h"
+						>
+					</File>
+					<File
+						RelativePath="..\gui\utils\shvpenwin32.h"
 						>
 					</File>
 				</Filter>
@@ -459,7 +515,31 @@
 					Name="utils"
 					>
 					<File
+						RelativePath="..\..\include\utils\shvbitmap.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\utils\shvbrush.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\utils\shvcolor.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\utils\shvdraw.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\utils\shvfont.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\utils\shvpen.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\utils\shvpoint.h"
 						>
 					</File>
 					<File
@@ -468,6 +548,14 @@
 					</File>
 					<File
 						RelativePath="..\..\include\utils\shvregion.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="utilsimpl"
+					>
+					<File
+						RelativePath="..\..\utilsimpl\shvregionimpl.h"
 						>
 					</File>
 				</Filter>

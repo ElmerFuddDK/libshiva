@@ -28,6 +28,12 @@ public:
 	// Font creation function
 	virtual SHVFont* CreateFont(const SHVStringC name, int height, int styles = SHVFont::StyleNormal) = 0;
 
+	// Factories
+	virtual SHVColor* CreateColor(SHVColor::ColorVal r, SHVColor::ColorVal g, SHVColor::ColorVal b) = 0;
+	virtual SHVPen* CreatePen(SHVColor* color, int style = SHVPen::StyleDefault, int width = 1) = 0;
+	virtual SHVBrush* CreateBrush(SHVColor* color, int style = SHVBrush::StyleDefault) = 0;
+	virtual SHVRegion* CreateRegion(SHVControlContainer* container) = 0;
+
 
 	// Register controls
 	virtual SHVBool RegisterFactory(int controlType, int controlSubType, SHVControlCreatorBase* factory);

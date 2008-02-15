@@ -29,16 +29,19 @@
  */
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
+#include "../../../include/framework/shveventdata.h"
 
 #include "shvcontrolimplementerlabelwin32.h"
 #include "shvwin32.h"
+#include "utils/shvdrawwin32.h"
 
 
 /*************************************
  * Constructor
  *************************************/
-SHVControlImplementerLabelWin32::SHVControlImplementerLabelWin32() : SHVControlImplementerWin32<SHVControlImplementerLabel>()
+SHVControlImplementerLabelWin32::SHVControlImplementerLabelWin32(int subType) : SHVControlImplementerWin32<SHVControlImplementerLabelCustomDraw>()
 {
+	SubType = subType;
 }
 
 /*************************************
@@ -51,7 +54,14 @@ SHVBool SHVControlImplementerLabelWin32::Create(SHVControl* owner, SHVControlImp
 		SetHandle(CreateWindow(_T("STATIC"), _T(""), WS_CHILD|Win32::MapFlags(flags),
 			0, 0, 0, 0, Win32::GetHandle(parent), NULL, Win32::GetInstance(owner), NULL));
 	
-		SetFont(owner,owner->GetManager()->GetFont(SHVGUIManager::CfgFontLargeBold));
+		if (IsCreated())
+		{
+			OrigProc = (WNDPROC)GetWindowLongPtr(GetHandle(),GWLP_WNDPROC);
+			SetWindowLongPtr(GetHandle(),GWLP_USERDATA,(LONG_PTR)owner);
+			SetWindowLongPtr(GetHandle(),GWLP_WNDPROC,(LONG_PTR)&SHVControlImplementerLabelWin32::WndProc);
+
+			SetFont(owner,owner->GetManager()->GetFont(SHVGUIManager::CfgFontNormal),true);
+		}
 
 		return IsCreated();
 	}
@@ -64,7 +74,7 @@ SHVBool SHVControlImplementerLabelWin32::Create(SHVControl* owner, SHVControlImp
  *************************************/
 int SHVControlImplementerLabelWin32::GetSubType(SHVControl* owner)
 {
-	return SHVControl::SubTypeDefault;
+	return SubType;
 }
 
 /*************************************
@@ -85,9 +95,88 @@ SHVString retVal;
 /*************************************
  * SetText
  *************************************/
-void SHVControlImplementerLabelWin32::SetText(const SHVStringC& text)
+void SHVControlImplementerLabelWin32::SetText(SHVControlLabel* owner, const SHVStringC& text, bool autoSize)
 {
 	SHVASSERT(IsCreated());
 
 	SetWindowText(GetHandle(),text.GetSafeBuffer());
+
+	if (autoSize)
+	{
+	SHVRect rect(GetRect(owner));
+	SHVFontRef font = GetFont(owner);
+
+		rect.SetWidth(font->CalculateTextWidth(text));
+
+		SetRect(owner,rect);
+	}
 }
+
+/*************************************
+ * SubscribeDraw
+ *************************************/
+void SHVControlImplementerLabelWin32::SubscribeDraw(SHVEventSubscriberBase* subscriber)
+{
+	Subscriber = subscriber;
+}
+
+///\cond INTERNAL
+/*************************************
+ * WndProc
+ *************************************/
+LRESULT CALLBACK SHVControlImplementerLabelWin32::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+SHVControlLabel* owner = (SHVControlLabel*)GetWindowLongPtr(hWnd,GWLP_USERDATA);
+SHVControlImplementerLabelWin32* self = (owner ? (SHVControlImplementerLabelWin32*)owner->GetImplementor() : NULL);
+
+	switch (message) 
+	{
+	case WM_SIZE:
+		{
+		LRESULT result = CallWindowProc(self->OrigProc,hWnd, message, wParam, lParam);
+			::InvalidateRect(hWnd,NULL,TRUE);
+			return result;
+		}
+	case WM_ERASEBKGND:
+		{
+		bool drawn = false;
+			if (owner)
+			{
+			SHVDrawWin32Ref draw = Win32::CreateDraw(owner,(HDC)wParam);
+			SHVColorRef color = owner->GetParent()->GetColor();
+
+				if (!color.IsNull())
+				{
+					drawn = true;
+					draw->DrawRectFilled(draw->GetClientRect(owner),color);
+				}
+			}
+			
+			if (drawn)
+				return 1;
+			else
+				return DefWindowProc(hWnd, message, wParam, lParam);
+		}
+	case WM_PAINT:
+		if (owner)
+		{
+		SHVDrawWin32Ref draw = Win32::CreateDrawPaint(owner);
+
+			if (!self->Subscriber.IsNull())
+			{
+				self->Subscriber->EmitNow(owner->GetModuleList(),new SHVEventData<SHVDrawRef>((SHVDraw*)draw,NULL,SHVControl::EventDraw,NULL,owner));
+			}
+			else
+			{
+				draw->DrawText(self->GetText(),draw->GetClientRect(owner),SHVDraw::TextVCenter|SHVDraw::TextLeft|SHVDraw::TextEndEllipsis);
+			}
+
+			break;
+		}
+		// else continue
+	default:
+		return CallWindowProc(self->OrigProc,hWnd, message, wParam, lParam);
+	}
+	return 0;
+}
+///\endcond

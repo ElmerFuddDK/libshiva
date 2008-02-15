@@ -31,9 +31,9 @@ public:
 	virtual SHVBool Create(SHVControl* owner, SHVControlImplementer* parent, int flags);
 
 
-	// From SHVControlImplementerContainer
+	// From SHVControlImplementerButton
 	virtual SHVStringBuffer GetText();
-	virtual void SetText(const SHVStringC& text);
+	virtual void SetText(SHVControlButton* owner, const SHVStringC& text, bool autoSize);
 
 
 private:

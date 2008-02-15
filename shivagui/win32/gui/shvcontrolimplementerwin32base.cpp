@@ -159,7 +159,7 @@ SHVFontWin32* retVal = NULL;
 /*************************************
  * SetFont
  *************************************/
-SHVBool SHVControlImplementerWin32Base::SetFont(SHVControl* owner, SHVFont* font)
+SHVBool SHVControlImplementerWin32Base::SetFont(SHVControl* owner, SHVFont* font, SHVInt newHeight)
 {
 SHVBool retVal(IsCreated());
 
@@ -167,9 +167,48 @@ SHVBool retVal(IsCreated());
 	{
 	SHVFontWin32* win32Font = (SHVFontWin32*)font;
 		::SendMessage(GetHandle(),WM_SETFONT,(WPARAM)win32Font->GetFont(),0);
+
+		if (!newHeight.IsNull())
+		{
+		RECT rect;
+
+			::GetWindowRect(Window,&rect);
+			::MoveWindow(Window,rect.left,rect.top,rect.right-rect.left,newHeight,TRUE);
+		}
 	}
 
 	return retVal;
+}
+
+/*************************************
+ * GetText
+ *************************************/
+SHVStringBuffer SHVControlImplementerWin32Base::GetText()
+{
+SHVString retVal;
+
+	SHVASSERT(IsCreated());
+
+	retVal.SetBufferSize( GetWindowTextLength(GetHandle())+1 );
+	GetWindowText(GetHandle(),(TCHAR*)retVal.GetBuffer(), (int)retVal.GetBufferLen());
+
+	if (Win32::CheckForNewlines(retVal))
+		Win32::ConvertNewlines(retVal);
+
+	return retVal.ReleaseBuffer();
+}
+
+/*************************************
+ * SetText
+ *************************************/
+void SHVControlImplementerWin32Base::SetText(const SHVStringC& text)
+{
+	SHVASSERT(IsCreated());
+
+	if (Win32::CheckForNewlines(text))
+		SetWindowText(GetHandle(),Win32::ConvertNewlinesC(text.GetSafeBuffer()).GetSafeBuffer());
+	else
+		SetWindowText(GetHandle(),text.GetSafeBuffer());
 }
 
 /*************************************

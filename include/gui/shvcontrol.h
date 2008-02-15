@@ -45,6 +45,12 @@ public:
 		FlagDisabled = 2
 	};
 
+	enum Events {
+		EventDraw,
+		EventSubClass = 1000, // Subclass event types start from here
+		EventSubType = 2000 // SubType event types start from here
+	};
+
 
 	// Destructor
 	virtual ~SHVControl();
@@ -68,7 +74,7 @@ public:
 	inline bool GetFlag(int flag);
 
 	inline SHVFont* GetFont();
-	inline SHVBool SetFont(SHVFont* font);
+	inline SHVBool SetFont(SHVFont* font, bool resetHeight);
 	
 
 	// obtain pointer to the implementor
@@ -181,9 +187,9 @@ SHVFont* SHVControl::GetFont()
 /*************************************
  * SetFont
  *************************************/
-SHVBool SHVControl::SetFont(SHVFont* font)
+SHVBool SHVControl::SetFont(SHVFont* font, bool resetHeight)
 {
-	return GetImplementor()->SetFont(this, font);
+	return GetImplementor()->SetFont(this, font, resetHeight);
 }
 
 /*************************************

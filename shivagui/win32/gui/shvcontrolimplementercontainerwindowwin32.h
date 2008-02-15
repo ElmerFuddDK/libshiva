@@ -1,5 +1,5 @@
-#ifndef __SHIVA_WIN32GUI_SHVCONTROLIMPLEMENTERMAINWINDOW_H
-#define __SHIVA_WIN32GUI_SHVCONTROLIMPLEMENTERMAINWINDOW_H
+#ifndef __SHIVA_WIN32GUI_SHVCONTROLIMPLEMENTERCONTAINERWINDOW_H
+#define __SHIVA_WIN32GUI_SHVCONTROLIMPLEMENTERCONTAINERWINDOW_H
 
 
 #include "../../include/shvcontrolcontainer.h"
@@ -12,21 +12,17 @@
 #endif
 
 
-// Forward declare
-class SHVMainThreadEventDispatcherWin32;
-
 //-=========================================================================================================
-/// SHVControlImplementerMainWindowWin32 - Main window implementation
+/// SHVControlImplementerContainerWindowWin32 - Container sub window
 /**
- * Use this class as a main window implementer in win32.
  */
 
-class SHVControlImplementerMainWindowWin32 : public SHVControlImplementerWin32<SHVControlImplementerContainer>
+class SHVControlImplementerContainerWindowWin32 : public SHVControlImplementerWin32<SHVControlImplementerContainerCustomDraw>
 {
 public:
 
 
-	SHVControlImplementerMainWindowWin32(HINSTANCE hinstance, SHVMainThreadEventDispatcherWin32* dispatcher);
+	SHVControlImplementerContainerWindowWin32(int subType);
 
 
 	// From SHVControlImplementer
@@ -44,15 +40,18 @@ public:
 	virtual SHVColor* GetColor(SHVControlContainer* owner);
 	virtual void SetColor(SHVControlContainer* owner, SHVColor* color);
 
+	// From SHVControlImplementerContainerCustomDraw
+	virtual void SubscribeDraw(SHVEventSubscriberBase* subscriber);
+
 
 	// Register class
-	static void RegisterClass(HINSTANCE hInstance);
+	static void RegisterClass(SHVGUIManager* manager, HINSTANCE hInstance);
 
 private:
 	///\cond INTERNAL
-	HINSTANCE hInstance;
-	SHVMainThreadEventDispatcherWin32* Dispatcher;
+	int SubType;
 	SHVColorRef Color;
+	SHVEventSubscriberBaseRef Subscriber;
 
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	///\endcond

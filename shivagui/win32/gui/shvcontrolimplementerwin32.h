@@ -38,9 +38,11 @@ public:
 	virtual bool GetFlag(SHVControl* owner, int flag);
 
 	virtual SHVFont* GetFont(SHVControl* owner);
-	virtual SHVBool SetFont(SHVControl* owner, SHVFont* font);
+	virtual SHVBool SetFont(SHVControl* owner, SHVFont* font, bool resetHeight);
 
 	virtual void* GetNative();
+
+	virtual int CalculateNewHeight(SHVControl* owner, SHVFont* font);
 
 protected:
 
@@ -146,9 +148,12 @@ SHVFont* SHVControlImplementerWin32<T>::GetFont(SHVControl* owner)
  * SetFont
  *************************************/
 template <class T>
-SHVBool SHVControlImplementerWin32<T>::SetFont(SHVControl* owner, SHVFont* font)
+SHVBool SHVControlImplementerWin32<T>::SetFont(SHVControl* owner, SHVFont* font, bool resetHeight)
 {
-	return SHVControlImplementerWin32Base::SetFont(owner, font);
+SHVInt newHeight;
+	if (resetHeight)
+		newHeight = CalculateNewHeight(owner,font);
+	return SHVControlImplementerWin32Base::SetFont(owner, font, newHeight);
 }
 
 /*************************************
@@ -158,6 +163,15 @@ template <class T>
 void* SHVControlImplementerWin32<T>::GetNative()
 {
 	return (SHVControlImplementerWin32Base*)this;
+}
+
+/*************************************
+ * CalculateNewHeight
+ *************************************/
+template <class T>
+int SHVControlImplementerWin32<T>::CalculateNewHeight(SHVControl* owner, SHVFont* font)
+{
+	return MulDiv(font->GetCellHeight(),145,100);
 }
 
 #endif

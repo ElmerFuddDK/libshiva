@@ -30,86 +30,63 @@
 
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
+#include "../../../include/framework/shveventdata.h"
 
-#include "shvcontrolimplementermainwindowwin32.h"
+#include "shvcontrolimplementercontainerwindowwin32.h"
 #include "shvmainthreadeventdispatcherwin32.h"
 #include "shvwin32.h"
 #include "utils/shvdrawwin32.h"
 
-#include <commctrl.h>
 
-
-#define SHVWIN32CLASS_MAINWND _T("SHV_MainWnd")
+#define SHVWIN32CLASS_CONTAINERWND _T("SHV_CntWnd")
+#define SHVWIN32ATOM_CONTAINERWND _T("SHV_ContainerWndAtom")
 
 //=========================================================================================================
-// SHVControlImplementerMainWindowWin32 - Main window implementation
+// SHVControlImplementerContainerWindowWin32
 //=========================================================================================================
 
 
 /*************************************
  * Constructor
  *************************************/
-SHVControlImplementerMainWindowWin32::SHVControlImplementerMainWindowWin32(HINSTANCE hinstance, SHVMainThreadEventDispatcherWin32* dispatcher) : SHVControlImplementerWin32<SHVControlImplementerContainer>()
+SHVControlImplementerContainerWindowWin32::SHVControlImplementerContainerWindowWin32(int subType) : SHVControlImplementerWin32<SHVControlImplementerContainerCustomDraw>()
 {
-	hInstance = hinstance;
-	Dispatcher = dispatcher;
+	SubType = subType;
 }
 
 /*************************************
  * GetSubType
  *************************************/
-int SHVControlImplementerMainWindowWin32::GetSubType(SHVControl* owner)
+int SHVControlImplementerContainerWindowWin32::GetSubType(SHVControl* owner)
 {
-	return SHVControlContainer::SubTypeMainWindow;
+	return SubType;
 }
 
 /*************************************
  * Create(parent)
  *************************************/
-SHVBool SHVControlImplementerMainWindowWin32::Create(SHVControl* owner, SHVControlImplementer* parent, int flags)
+SHVBool SHVControlImplementerContainerWindowWin32::Create(SHVControl* owner, SHVControlImplementer* parent, int flags)
 {
-SHVBool retVal(parent == NULL && !IsCreated());
-
-	SHVASSERT(owner && owner->GetImplementor() == this);
-
-	if (retVal)
+	if (!IsCreated() && parent && parent->IsCreated())
 	{
-#ifdef __SHIVA_WINCE
-	HWND hWnd = FindWindow(SHVWIN32CLASS_MAINWND,NULL);
-		///\todo add code to make sure the window is created with the same application as us
-		if (hWnd) 
-		{
-			// set focus to foremost child window
-			// The "| 0x01" is used to bring any owned windows to the foreground and
-			// activate them.
-			SetForegroundWindow((HWND)((ULONG) hWnd | 0x00000001));
-			return SHVBool::False;
-		}
-#endif
+		SetHandle(::CreateWindow(SHVWIN32CLASS_CONTAINERWND, _T(""), WS_CHILD|Win32::MapFlags(flags),
+			CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, Win32::GetHandle(parent), NULL, Win32::GetInstance(owner), NULL));
 
-#ifdef __SHIVA_WINCE
-	DWORD styles = Win32::MapFlags(flags);
-#else
-	DWORD styles = WS_OVERLAPPEDWINDOW|Win32::MapFlags(flags);
-#endif
-		SetHandle(::CreateWindow(SHVWIN32CLASS_MAINWND, _T(""), styles,
-			CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL));
-
-		retVal = IsCreated();
-
-		if (retVal)
+		if (IsCreated())
 		{
 			SetWindowLongPtr(GetHandle(),0,(LONG_PTR)owner);
 		}
+
+		return IsCreated();
 	}
 
-	return retVal;
+	return SHVBool::False;
 }
 
 /*************************************
  * GetRegionRect
  *************************************/
-SHVRect SHVControlImplementerMainWindowWin32::GetRegionRect()
+SHVRect SHVControlImplementerContainerWindowWin32::GetRegionRect()
 {
 RECT nativeRect;
 
@@ -123,7 +100,7 @@ RECT nativeRect;
 /*************************************
  * GetTitle
  *************************************/
-SHVStringBuffer SHVControlImplementerMainWindowWin32::GetTitle()
+SHVStringBuffer SHVControlImplementerContainerWindowWin32::GetTitle()
 {
 SHVString retVal;
 
@@ -138,7 +115,7 @@ SHVString retVal;
 /*************************************
  * SetTitle
  *************************************/
-void SHVControlImplementerMainWindowWin32::SetTitle(const SHVStringC& title)
+void SHVControlImplementerContainerWindowWin32::SetTitle(const SHVStringC& title)
 {
 	SHVASSERT(IsCreated());
 
@@ -148,7 +125,7 @@ void SHVControlImplementerMainWindowWin32::SetTitle(const SHVStringC& title)
 /*************************************
  * GetColor
  *************************************/
-SHVColor* SHVControlImplementerMainWindowWin32::GetColor(SHVControlContainer* owner)
+SHVColor* SHVControlImplementerContainerWindowWin32::GetColor(SHVControlContainer* owner)
 {
 	return Color;
 }
@@ -156,7 +133,7 @@ SHVColor* SHVControlImplementerMainWindowWin32::GetColor(SHVControlContainer* ow
 /*************************************
  * SetColor
  *************************************/
-void SHVControlImplementerMainWindowWin32::SetColor(SHVControlContainer* owner, SHVColor* color)
+void SHVControlImplementerContainerWindowWin32::SetColor(SHVControlContainer* owner, SHVColor* color)
 {
 	Color = color;
 
@@ -167,9 +144,9 @@ void SHVControlImplementerMainWindowWin32::SetColor(SHVControlContainer* owner, 
 /*************************************
  * RegisterClass
  *************************************/
-void SHVControlImplementerMainWindowWin32::RegisterClass(HINSTANCE hInstance)
+void SHVControlImplementerContainerWindowWin32::RegisterClass(SHVGUIManager* manager, HINSTANCE hInstance)
 {
-INITCOMMONCONTROLSEX cctrlex;
+ATOM clss;
 #ifdef __SHIVA_WINCE
 WNDCLASS wc;
 #else
@@ -178,13 +155,8 @@ WNDCLASSEX wc;
 	wc.hIconSm			= 0;
 #endif
 
-	cctrlex.dwSize = sizeof(INITCOMMONCONTROLSEX);
-	cctrlex.dwICC = ICC_WIN95_CLASSES; // see http://msdn2.microsoft.com/en-us/library/bb775507.aspx for more info
-
-	InitCommonControlsEx(&cctrlex);
-
-	wc.style			= 0;//CS_HREDRAW | CS_VREDRAW;
-	wc.lpfnWndProc		= (WNDPROC)SHVControlImplementerMainWindowWin32::WndProc;
+	wc.style			= 0;
+	wc.lpfnWndProc		= (WNDPROC)SHVControlImplementerContainerWindowWin32::WndProc;
 	wc.cbClsExtra		= 0;
 	wc.cbWndExtra		= sizeof(void*);
 	wc.hInstance		= hInstance;
@@ -192,36 +164,46 @@ WNDCLASSEX wc;
 	wc.hCursor			= LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground	= (HBRUSH)(COLOR_BACKGROUND);
 	wc.lpszMenuName		= NULL;
-	wc.lpszClassName	= SHVWIN32CLASS_MAINWND;
+	wc.lpszClassName	= SHVWIN32CLASS_CONTAINERWND;
 
 #ifdef __SHIVA_WINCE
-	::RegisterClass(&wc);
+	SHVVERIFY(clss = ::RegisterClass(&wc));
 #else
-	::RegisterClassEx(&wc);
+	SHVVERIFY(clss = ::RegisterClassEx(&wc));
 #endif
+	manager->GetConfig().Set(SHVWIN32ATOM_CONTAINERWND, clss);
+}
+
+/*************************************
+ * SubscribeDraw
+ *************************************/
+void SHVControlImplementerContainerWindowWin32::SubscribeDraw(SHVEventSubscriberBase* subscriber)
+{
+	Subscriber = subscriber;
 }
 
 ///\cond INTERNAL
 /*************************************
  * WndProc
  *************************************/
-LRESULT CALLBACK SHVControlImplementerMainWindowWin32::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK SHVControlImplementerContainerWindowWin32::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 SHVControlContainer* owner = (SHVControlContainer*)GetWindowLongPtr(hWnd,0);
-SHVControlImplementerMainWindowWin32* self = (owner ? (SHVControlImplementerMainWindowWin32*)owner->GetImplementor() : NULL);
+SHVControlImplementerContainerWindowWin32* self = (owner ? (SHVControlImplementerContainerWindowWin32*)owner->GetImplementor() : NULL);
 
 	switch (message) 
 	{
-	case WM_SHV_DISPATCHMESSAGES:
-		self->Dispatcher->DispatchEvents();
-		break;
-	case WM_CLOSE:
-		self->Dispatcher->CloseApp();
+	case WM_PAINT:
+		{
+		PAINTSTRUCT ps;
+		HDC hdc;
+			hdc = BeginPaint(hWnd, &ps);
+			EndPaint(hWnd, &ps);
+		}
 		break;
 	case WM_ERASEBKGND:
 		{
 		bool drawn = false;
-
 			if (owner)
 			{
 			SHVDrawWin32Ref draw = Win32::CreateDraw(owner,(HDC)wParam);
@@ -231,6 +213,13 @@ SHVControlImplementerMainWindowWin32* self = (owner ? (SHVControlImplementerMain
 					drawn = true;
 					draw->DrawRectFilled(draw->GetClientRect(owner),self->Color);
 				}
+		
+				if (!self->Subscriber.IsNull())
+				{
+					drawn = true;
+					self->Subscriber->EmitNow(owner->GetModuleList(),new SHVEventData<SHVDrawRef>((SHVDraw*)draw,NULL,SHVControl::EventDraw,NULL,owner));
+				}
+
 			}
 			
 			if (drawn)
@@ -238,17 +227,8 @@ SHVControlImplementerMainWindowWin32* self = (owner ? (SHVControlImplementerMain
 			else
 				return DefWindowProc(hWnd, message, wParam, lParam);
 		}
-	case WM_PAINT:
-		{
-		PAINTSTRUCT ps;
-		HDC hdc;
-			hdc = BeginPaint(hWnd, &ps);
-			EndPaint(hWnd, &ps);
-		}
-		break;
 	case WM_DESTROY:
 		owner->Clear();
-		PostQuitMessage(0);
 		break;
 	case WM_SIZE:
 		if (owner && owner->GetModuleList().IsRegistered())

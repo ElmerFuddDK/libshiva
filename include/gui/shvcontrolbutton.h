@@ -19,7 +19,7 @@ public:
 
 
 	enum Events {
-		EventClicked
+		EventClicked = EventSubClass
 	};
 
 
@@ -37,7 +37,7 @@ public:
 	virtual SHVBool SetData(SHVControlData* data);
 
 	inline SHVStringBuffer GetText();
-	inline SHVControlButton* SetText(const SHVStringC& title);
+	inline SHVControlButton* SetText(const SHVStringC& title, bool autoSize = true);
 
 
 	// Perform click event
@@ -69,7 +69,7 @@ public:
 
 	// Properties
 	virtual SHVStringBuffer GetText() = 0;
-	virtual void SetText(const SHVStringC& text) = 0;
+	virtual void SetText(SHVControlButton* owner, const SHVStringC& text, bool autoSize) = 0;
 
 };
 
@@ -104,9 +104,9 @@ SHVStringBuffer SHVControlButton::GetText()
 /*************************************
  * SetText
  *************************************/
-SHVControlButton* SHVControlButton::SetText(const SHVStringC& title)
+SHVControlButton* SHVControlButton::SetText(const SHVStringC& title, bool autoSize)
 {
-	GetImplementor()->SetText(title);
+	GetImplementor()->SetText(this,title,autoSize);
 	return this;
 }
 

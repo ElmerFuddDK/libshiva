@@ -4,6 +4,7 @@
 #include "shvcontrollayout.h"
 #include "../../include/utils/shvvector.h"
 #include "../../include/framework/shvconfig.h"
+#include "utils/shvcolor.h"
 
 
 // forward declare
@@ -25,6 +26,7 @@ public:
 	// defines and constants
 	enum SubTypes {
 		SubTypeWindow = SHVControl::SubTypeDefault,
+		SubTypeCustomDraw,
 		SubTypeMainWindow,
 		SubTypeDialog,
 	};
@@ -41,6 +43,8 @@ public:
 
 	virtual int GetType();
 
+	inline SHVControlContainer* SetParent(SHVControlContainer* parent, int flags = FlagVisible);
+
 
 	// Create top level window
 	virtual SHVBool Create();
@@ -52,6 +56,9 @@ public:
 
 	inline SHVStringBuffer GetTitle();
 	inline void SetTitle(const SHVStringC& title);
+
+	inline SHVColor* GetColor();
+	inline SHVControlContainer* SetColor(SHVColor* color);
 
 	virtual void SetLayoutEngine(SHVControlLayout* engine);
 	virtual SHVControlLayout* GetLayoutEngine();
@@ -109,7 +116,28 @@ public:
 	virtual SHVStringBuffer GetTitle() = 0;
 	virtual void SetTitle(const SHVStringC& title) = 0;
 
+	virtual SHVColor* GetColor(SHVControlContainer* owner) = 0;
+	virtual void SetColor(SHVControlContainer* owner, SHVColor* color) = 0;
+
 };
+
+
+
+//-=========================================================================================================
+/// SHVControlImplementerContainerCustomDraw - container implementer for custom drawn container windows
+/**
+ * Interface that has to be implemented for the specific platform
+ */
+
+class SHVControlImplementerContainerCustomDraw : public SHVControlImplementerContainer
+{
+public:
+
+	virtual void SubscribeDraw(SHVEventSubscriberBase* subscriber) = 0;
+
+};
+
+
 
 
 // ============================================= implementation ============================================= //
@@ -121,6 +149,15 @@ public:
 SHVControlContainer::SHVControlContainer(SHVGUIManager* manager, SHVControlImplementer* implementor)
   : SHVControl(manager,implementor)
 {}
+
+/*************************************
+ * SetParent
+ *************************************/
+SHVControlContainer* SHVControlContainer::SetParent(SHVControlContainer* parent, int flags)
+{
+	SHVControl::SetParent(parent,flags);
+	return this;
+}
 
 /*************************************
  * GetTitle
@@ -137,6 +174,29 @@ void SHVControlContainer::SetTitle(const SHVStringC& title)
 {
 	GetImplementor()->SetTitle(title);
 }
+
+/*************************************
+ * GetColor
+ *************************************/
+SHVColor* SHVControlContainer::GetColor()
+{
+SHVColor* retVal = GetImplementor()->GetColor(this);
+
+	if (!retVal && GetParent())
+		retVal = GetParent()->GetColor();
+
+	return retVal;
+}
+
+/*************************************
+ * SetColor
+ *************************************/
+SHVControlContainer* SHVControlContainer::SetColor(SHVColor* color)
+{
+	GetImplementor()->SetColor(this,color);
+	return this;
+}
+
 
 /*************************************
  * GetRegionRect

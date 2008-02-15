@@ -11,10 +11,10 @@
 #endif
 
 
-class SHVControlImplementerLabelWin32 : public SHVControlImplementerWin32<SHVControlImplementerLabel>
+class SHVControlImplementerLabelWin32 : public SHVControlImplementerWin32<SHVControlImplementerLabelCustomDraw>
 {
 public:
-	SHVControlImplementerLabelWin32();
+	SHVControlImplementerLabelWin32(int subType);
 
 	// From SHVControlImplementer
 	virtual int GetSubType(SHVControl* owner);
@@ -22,11 +22,21 @@ public:
 
 	// From SHVControlImplementerLabel
 	virtual SHVStringBuffer GetText();
-	virtual void SetText(const SHVStringC& text);
+	virtual void SetText(SHVControlLabel* owner, const SHVStringC& text, bool autoSize);
 
+
+	// From SHVControlImplementerLabelCustomDraw
+	virtual void SubscribeDraw(SHVEventSubscriberBase* subscriber);
+
+private:
+
+	///\cond INTERNAL
+	int SubType;
+	SHVEventSubscriberBaseRef Subscriber;
+	WNDPROC OrigProc;
+
+	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	///\endcond
 };
-
-
-
 
 #endif

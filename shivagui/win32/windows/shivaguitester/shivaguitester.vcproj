@@ -215,10 +215,6 @@
 					RelativePath="..\..\..\utils\shvrect.cpp"
 					>
 				</File>
-				<File
-					RelativePath="..\..\..\utils\shvregion.cpp"
-					>
-				</File>
 			</Filter>
 		</Filter>
 		<Filter

@@ -38,9 +38,16 @@ public:
 	virtual int GetLimit();
 	virtual void SetLimit(int limit);
 
+	virtual void SetHeight(SHVControlEdit* owner, int lines); // only applicable on multiline boxes
+
+	// From SHVControlImplementerWin32
+	virtual int CalculateNewHeight(SHVControl* owner, SHVFont* font);
+
+
 private:
 	///\cond INTERNAL
 	int SubType;
+	int Lines;
 	///\endcond
 };
 
