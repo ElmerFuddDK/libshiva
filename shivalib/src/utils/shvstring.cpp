@@ -147,16 +147,12 @@ SHVString8 str;
 }
 
 /*************************************
- * ToStrT
+ * ToStr8
  *************************************/
-SHVStringBuffer SHVString8C::ToStrT() const
+SHVStringBuffer8 SHVString8C::ToStr8() const
 {
-#ifdef UNICODE
-	return ToStr16();
-#else
-SHVString str(*this);
+SHVString8 str(*this);
 	return str.ReleaseBuffer();
-#endif
 }
 
 /*************************************

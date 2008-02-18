@@ -203,16 +203,12 @@ SHVString16 str;
 }
 
 /*************************************
- * ToStrT
+ * ToStr16
  *************************************/
-SHVStringBuffer SHVString16C::ToStrT() const
+SHVStringBuffer16 SHVString16C::ToStr16() const
 {
-#ifdef UNICODE
 SHVString str(*this);
 	return str.ReleaseBuffer();
-#else
-	return ToStr8();
-#endif
 }
 
 /*************************************

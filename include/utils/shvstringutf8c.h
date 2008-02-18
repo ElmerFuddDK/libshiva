@@ -75,7 +75,7 @@ public:
 
 	SHVStringBuffer8 ToStr8() const;
 	SHVStringBuffer16 ToStr16() const;
-	SHVStringBuffer ToStrT() const;
+	inline SHVStringBuffer ToStrT() const;
 	bool ConvertBufferToChar(SHVChar* buffer, size_t len) const;
 	bool ConvertBufferToWChar(SHVWChar* buffer, size_t len) const;
 
@@ -216,6 +216,18 @@ bool SHVStringUTF8C::IsNull() const { return Buffer == NULL; }
 #ifdef __SHIVA_EPOC
 TPtrC8 SHVStringUTF8C::ToPtr() const { return TPtrC8((TUint8*)Buffer,GetLength()); }
 #endif
+
+/*************************************
+ * ToStrT
+ *************************************/
+SHVStringBuffer SHVStringUTF8C::ToStrT() const
+{
+#ifdef UNICODE
+	return ToStr16();
+#else
+	return ToStr8();
+#endif
+}
 
 
 // ===================================== implementation - SHVStringCRef ===================================== //

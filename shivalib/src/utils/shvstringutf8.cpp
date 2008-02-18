@@ -184,18 +184,6 @@ SHVStringUTF8 str;
 }
 
 /*************************************
- * ToStrT
- *************************************/
-SHVStringBuffer SHVStringUTF8C::ToStrT() const
-{
-#ifdef UNICODE
-	return ToStr16();
-#else
-	return ToStr8();
-#endif
-}
-
-/*************************************
  * GetLength
  *************************************/
 size_t SHVStringUTF8C::GetLength() const
