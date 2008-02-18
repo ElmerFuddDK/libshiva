@@ -39,6 +39,7 @@ public:
 	bool Resize(int count);
 
 	void*  operator[](size_t index);
+	inline const void*  operator[](size_t index) const;
 	size_t Add(void* item);
 	bool   InsertAt(size_t index, void* item); ///< only works if zeroed and if the index is NULL  .. for now
 	void*  Remove(size_t index);
@@ -80,5 +81,7 @@ int    SHVDynArrayBase::GetGrowSize() const
 { return GrowSize; }
 void   SHVDynArrayBase::SetGrowSize(int s)
 { GrowSize = s; }
+const void* SHVDynArrayBase::operator[](size_t index) const
+{ return (const void*)(*(SHVDynArrayBase*)this)[index]; }
 
 #endif

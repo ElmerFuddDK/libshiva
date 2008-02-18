@@ -11,7 +11,7 @@
  */
 
 template< class T, class S = T >
-class SHVAPI SHVDynArray : SHVDynArrayBase
+class SHVDynArray : SHVDynArrayBase
 {
 public:
 
@@ -27,9 +27,9 @@ public:
 
 
 	// properties
-	inline size_t GetCount();
-	inline size_t GetArrayLen();
-	inline size_t GetGrowSize();
+	inline size_t GetCount() const;
+	inline size_t GetArrayLen() const;
+	inline size_t GetGrowSize() const;
 	inline void   SetGrowSize(size_t s);
 
 
@@ -37,7 +37,8 @@ public:
 	inline void ClearAndInit(int initSize=0);
 	inline bool Resize(int count);
 
-	inline T*     operator[](size_t index);
+	inline T* operator[](size_t index);
+	inline const T* operator[](size_t index) const;
 	inline size_t Add(T* item);
 	inline SHVPtrContainer<T> Remove(size_t index);
 	inline SHVPtrContainer<T> Replace(size_t index, T* item);
@@ -107,21 +108,21 @@ void SHVDynArray<T,S>::DefaultDestroy(T* val)
  * GetCount
  *************************************/
 template<class T, class S>
-size_t SHVDynArray<T,S>::GetCount()
+size_t SHVDynArray<T,S>::GetCount() const
 { return SHVDynArrayBase::GetCount(); }
 
 /*************************************
  * GetArrayLen
  *************************************/
 template<class T, class S>
-size_t SHVDynArray<T,S>::GetArrayLen()
+size_t SHVDynArray<T,S>::GetArrayLen() const
 { return SHVDynArrayBase::GetArrayLen(); }
 
 /*************************************
  * GetGrowSize
  *************************************/
 template<class T, class S>
-size_t SHVDynArray<T,S>::GetGrowSize()
+size_t SHVDynArray<T,S>::GetGrowSize() const
 { return SHVDynArrayBase::GetGrowSize(); }
 template<class T, class S>
 
@@ -152,6 +153,13 @@ bool SHVDynArray<T,S>::Resize(int count)
 template<class T, class S>
 T* SHVDynArray<T,S>::operator[](size_t index)
 { return (T*)(*(SHVDynArrayBase*)this)[index]; }
+
+/*************************************
+ * index operator
+ *************************************/
+template<class T, class S>
+const T* SHVDynArray<T,S>::operator[](size_t index) const
+{ return (const T*)(*(SHVDynArrayBase*)this)[index]; }
 
 /*************************************
  * Add
