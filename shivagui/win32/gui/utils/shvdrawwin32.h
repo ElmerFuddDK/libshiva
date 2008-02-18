@@ -58,7 +58,8 @@ public:
 
 
 	// Static mapping functions
-	inline static RECT MapRect(SHVRect& rect);
+	inline static RECT MapRect(const SHVRect& rect);
+	inline static SHVRect MapRect(const RECT& rect);
 	inline static COLORREF GetColor(SHVColor* color);
 	inline static HPEN GetPen(SHVPen* pen);
 	inline static HBRUSH GetBrush(SHVBrush* brush);
@@ -121,13 +122,27 @@ void SHVDrawWin32::CloseDC()
 /*************************************
  * MapRect
  *************************************/
-RECT SHVDrawWin32::MapRect(SHVRect& rect)
+RECT SHVDrawWin32::MapRect(const SHVRect& rect)
 {
 RECT rct;
 	rct.left = rect.GetLeft();
 	rct.top = rect.GetTop();
 	rct.right = rect.GetRight();
 	rct.bottom = rect.GetBottom();
+
+	return rct;
+}
+
+/*************************************
+ * MapRect
+ *************************************/
+SHVRect SHVDrawWin32::MapRect(const RECT& rect)
+{
+SHVRect rct;
+	rct.SetLeft(rect.left);
+	rct.SetTop(rect.top);
+	rct.SetRight(rect.right);
+	rct.SetBottom(rect.bottom);
 
 	return rct;
 }
