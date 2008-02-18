@@ -61,7 +61,7 @@ SHVVectorBase::~SHVVectorBase()
 /*************************************
  * CalculateCount
  *************************************/
-size_t SHVVectorBase::CalculateCount()
+size_t SHVVectorBase::CalculateCount() const
 {
 	return ArrayEnd-Array;
 }
