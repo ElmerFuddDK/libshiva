@@ -238,7 +238,7 @@ bool endEllipsis = ( (options&TextEndEllipsis) ? true : false );
 		::DrawText(hDC, txt.GetSafeBuffer(), (int)txt.GetLength(), &rectNative, mapoptions);
 	}
 
-//	for windows - maybe later -- m_pDC->DrawText( txt.GetSafeBuffer(), -1, &rectNative, mapoptions | (endEllipsis ? DT_END_ELLIPSIS : 0) );
+//	for windows - maybe later -- ::DrawText( hDC, txt.GetSafeBuffer(), -1, &rectNative, mapoptions | (endEllipsis ? DT_END_ELLIPSIS : 0) );
 
 	::SetBkMode(hDC,oldBkMode);
 	::RestoreDC(hDC,dcBackup);
