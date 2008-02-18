@@ -93,7 +93,7 @@ private:
  * Base class for iterating a hash table.
  */
 
-class SHVHashIteratorBase
+class SHVAPI SHVHashIteratorBase
 {
 friend class SHVHashTableBase;
 
