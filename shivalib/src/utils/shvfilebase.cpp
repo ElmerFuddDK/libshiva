@@ -310,7 +310,7 @@ SHVBool retVal( (flags&FlagRead) || (flags&FlagWrite) ? (int)SHVBool::True : (in
 
 #if defined(UNICODE)
 		File = wfopen((const wchar_t*)fileName.GetSafeBuffer(),(const wchar_t*)mode.GetSafeBuffer());
-#elif defined(__SHIVA_WIN32)
+#elif defined(__SHIVA_WIN32) && defined(UNICODE)
 		File = _tfopen(fileName.GetSafeBuffer(),mode.GetSafeBuffer());
 #else
 		File = fopen(fileName.GetSafeBuffer(),mode.GetSafeBuffer());

@@ -118,7 +118,7 @@ SHVBool retVal(SHVBool::False);
 	Unload();
 
 #if defined(__SHIVA_WIN32)
-	hDll = ::LoadLibrary((const wchar_t*)libFile.GetBufferConst());
+	hDll = ::LoadLibrary((const TCHAR*)libFile.GetBufferConst());
 	retVal = IsLoaded();
 #elif defined(__SHIVA_LINUX)
 	dlerror(); // reset error
