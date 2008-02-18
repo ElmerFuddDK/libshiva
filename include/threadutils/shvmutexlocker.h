@@ -22,8 +22,8 @@
 class SHVMutexLocker
 {
 public:
-	SHVMutexLocker(SHVMutex* mutex): Mutex(*mutex) { Mutex.Lock();   }
-	SHVMutexLocker(SHVMutex& mutex): Mutex(mutex)  { Mutex.Lock();   }
+	SHVMutexLocker(const SHVMutex* mutex): Mutex(*(SHVMutex*)mutex) { Mutex.Lock();   }
+	SHVMutexLocker(const SHVMutex& mutex): Mutex(*((SHVMutex*)&mutex))  { Mutex.Lock();   }
 	~SHVMutexLocker()               { Mutex.Unlock(); }
 private:
 	SHVMutex& Mutex;
