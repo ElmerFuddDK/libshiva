@@ -251,6 +251,20 @@ SHVStringBuffer SHVString8C::ToStrT() const
 #endif
 }
 
+// ==================================== implementation - SHVString16C ==================================== //
+
+/*************************************
+ * ToStrT
+ *************************************/
+SHVStringBuffer SHVString16C::ToStrT() const
+{
+#ifdef UNICODE
+	return ToStr16();
+#else
+	return ToStr8();
+#endif
+}
+
 
 // ===================================== implementation - SHVStringCRef ===================================== //
 SHVString8CRef::SHVString8CRef() { Buffer = NULL; }

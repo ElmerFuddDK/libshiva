@@ -15,7 +15,6 @@ class SHVString16CRef;
 class SHVStringBuffer8;
 class SHVStringBufferUTF8;
 class SHVStringBuffer16;
-#include "shvstringc.h"
 #ifndef __SHIVA_UTILS_STRINGC_H
 class SHVString8C;
 class SHVString8;
@@ -239,18 +238,6 @@ bool SHVString16C::IsNull() const { return Buffer == NULL; }
 TPtrC16 SHVString16C::ToPtr() const { return TPtrC16((TUint16*)Buffer,GetLength()); }
 #endif
 
-/*************************************
- * ToStrT
- *************************************/
-SHVStringBuffer SHVString16C::ToStrT() const
-{
-#ifdef UNICODE
-	return ToStr16();
-#else
-	return ToStr8();
-#endif
-}
-
 
 // ===================================== implementation - SHVStringCRef ===================================== //
 SHVString16CRef::SHVString16CRef() { Buffer = NULL; }
@@ -274,3 +261,6 @@ SHVStringBuffer16::SHVStringBuffer16() { Buffer = NULL; }
 ///\endcond
 
 #endif
+
+#include "shvstringc.h"
+
