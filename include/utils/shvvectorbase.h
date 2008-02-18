@@ -26,7 +26,7 @@ public:
 
 
 	// properties
-	size_t CalculateCount();
+	size_t CalculateCount() const;
 	bool IsEmpty();
 	inline bool Eof(size_t index);
 

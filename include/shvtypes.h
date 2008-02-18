@@ -66,7 +66,7 @@ public:
 
 
 	// Error property
-	inline int  GetError();
+	inline int  GetError() const;
 	inline void SetError(int err);
 
 
@@ -75,8 +75,8 @@ public:
 
 	inline SHVBool& operator=(BoolVal val);
 	inline SHVBool& operator=(bool val);
-	inline bool operator==(const SHVBool& val);
-	inline bool operator==(const int& err);
+	inline bool operator==(const SHVBool& val) const;
+	inline bool operator==(const int& err) const;
 
 
 private:
@@ -106,7 +106,7 @@ public:
 
 
 	// Properties
-	inline bool IsNull();
+	inline bool IsNull() const;
 	inline void SetToNull();
 
 
@@ -145,7 +145,7 @@ public:
 
 
 	// Properties
-	inline bool IsNull();
+	inline bool IsNull() const;
 	inline void SetToNull();
 
 
@@ -181,16 +181,16 @@ SHVInt::SHVInt(int val) : Val(val), Null(false) {}
 /*************************************
  * Properties
  *************************************/
-int  SHVBool::GetError() { return Val; }
+int  SHVBool::GetError() const { return Val; }
 void SHVBool::SetError(int err) { Val = err; }
 
-bool SHVInt::IsNull() { return Null; }
+bool SHVInt::IsNull() const { return Null; }
 void SHVInt::SetToNull() { Null = true; Val = -1; }
 
 SHVDouble::SHVDouble() { SetToNull(); }
 SHVDouble::SHVDouble(double val) : Val(val), Null(false) {}
 
-bool SHVDouble::IsNull() { return Null; }
+bool SHVDouble::IsNull() const { return Null; }
 void SHVDouble::SetToNull() { Null = true; Val = 0.0; }
 
 /*************************************
@@ -200,8 +200,8 @@ SHVBool::operator bool () { return Val == True; }
 
 SHVBool& SHVBool::operator=(BoolVal val) { Val = val; return *this; }
 SHVBool& SHVBool::operator=(bool val) { Val = ( val ? True : False ); return *this; }
-bool SHVBool::operator==(const SHVBool& val) { return Val == val.Val; }
-bool SHVBool::operator==(const int& err) { return Val == err; }
+bool SHVBool::operator==(const SHVBool& val) const { return Val == val.Val; }
+bool SHVBool::operator==(const int& err) const { return Val == err; }
 
 SHVInt::operator int() { return Val; }
 SHVInt::operator size_t() const { return ( Null ? 0 : Val ); } // makes sure the null integer is smaller than whatever matches its hash key (zero)

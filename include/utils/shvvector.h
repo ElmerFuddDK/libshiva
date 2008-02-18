@@ -22,7 +22,7 @@ public:
 
 
 	// properties
-	inline size_t CalculateCount();
+	inline size_t CalculateCount() const;
 	inline bool IsEmpty();
 	inline bool Eof(size_t index);
 
@@ -31,6 +31,7 @@ public:
 	inline void Clear();
 
 	inline T* operator[](size_t index);
+	inline const T* operator[](size_t index) const;
 	inline size_t Add(T* item);
 	inline SHVPtrContainer<T> Remove(size_t index);
 	inline SHVPtrContainer<T> Replace(size_t index, T* item);
@@ -78,7 +79,7 @@ SHVVector<T,GrowSize>::~SHVVector()
  * CalculateCount
  *************************************/
 template<class T, int GrowSize>
-size_t SHVVector<T,GrowSize>::CalculateCount()
+size_t SHVVector<T,GrowSize>::CalculateCount() const
 {
 	return SHVVectorBase::CalculateCount();
 }
@@ -119,6 +120,15 @@ template<class T, int GrowSize>
 T* SHVVector<T,GrowSize>::operator[](size_t index)
 {
 	return (T*)(*(SHVVectorBase*)this)[index];
+}
+
+/*************************************
+ * const index operator
+ *************************************/
+template<class T, int GrowSize>
+const T* SHVVector<T,GrowSize>::operator[](size_t index) const
+{
+	return (const T*)(*(SHVVectorBase*)this)[index];
 }
 
 /*************************************
