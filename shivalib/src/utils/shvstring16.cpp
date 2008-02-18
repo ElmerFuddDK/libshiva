@@ -207,7 +207,7 @@ SHVString16 str;
  *************************************/
 SHVStringBuffer16 SHVString16C::ToStr16() const
 {
-SHVString str(*this);
+SHVString16 str(*this);
 	return str.ReleaseBuffer();
 }
 
