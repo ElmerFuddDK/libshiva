@@ -60,6 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="../../../shivalib/windows/$(ConfigurationName)/libshiva.lib"
 				LinkIncremental="2"
 				ModuleDefinitionFile="DataEngine.def"
 				GenerateDebugInformation="true"
@@ -134,6 +135,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="../../shivalib/windows/$(ConfigurationName)/libshiva.lib"
 				LinkIncremental="1"
 				ModuleDefinitionFile="DataEngine.def"
 				GenerateDebugInformation="true"
@@ -204,6 +206,54 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<Filter
+				Name="utils"
+				>
+			</Filter>
+			<Filter
+				Name="dataengineimpl"
+				>
+				<File
+					RelativePath="..\src\dataengineimpl\shvdatafactory_impl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\dataengineimpl\shvdatarow_impl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\dataengineimpl\shvdatarowc_sqlite.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\dataengineimpl\shvdatarowkey_impl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\dataengineimpl\shvdatarowlist_sqlite.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\dataengineimpl\shvdatarowlistc_sqlite.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\dataengineimpl\shvdatastruct_impl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\dataengineimpl\shvdatastructc_sqlite.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\dataengineimpl\shvdatatable_sqlite.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\dataengineimpl\shvdatavariant_impl.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -211,17 +261,157 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\shvdataenginefactory.cpp"
+				RelativePath=".\shvdataenginefactory.h"
 				>
 			</File>
 			<File
-				RelativePath=".\shvdataenginefactory.h"
+				RelativePath="..\include\shvdatafactory.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\shvdatarow.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\shvdatarowc.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\shvdatarowkey.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\shvdatarowlist.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\shvdatarowlistc.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\shvdataselect.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\shvdatastruct.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\shvdatastructc.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\shvdatatable.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\shvdatavariant.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\include\shvtypes.h"
 				>
 			</File>
 			<File
 				RelativePath=".\stdafx.h"
 				>
 			</File>
+			<Filter
+				Name="include"
+				>
+				<Filter
+					Name="utils"
+					>
+					<File
+						RelativePath="..\..\..\include\utils\shvrefobject.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\utils\shvstring.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\utils\shvstring16.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\utils\shvstring16c.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\utils\shvstringc.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\utils\shvtime.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\utils\shvvector.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\utils\shvvectorref.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="shvsqlite"
+					>
+					<File
+						RelativePath="..\..\..\shivasqlite\include\sqlitestatement.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\shivasqlite\include\sqlitewrapper.h"
+						>
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="dataengineimpl"
+				>
+				<File
+					RelativePath="..\include\dataengineimpl\shvdatafactory_impl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\dataengineimpl\shvdatarow_impl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\dataengineimpl\shvdatarowc_sqlite.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\dataengineimpl\shvdatarowkey_impl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\dataengineimpl\shvdatarowlist_sqlite.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\dataengineimpl\shvdatarowlistc_sqlite.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\dataengineimpl\shvdatastruct_impl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\dataengineimpl\shvdatastructc_sqlite.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\dataengineimpl\shvdatatable_sqlite.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\dataengineimpl\shvdatavariant_impl.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
