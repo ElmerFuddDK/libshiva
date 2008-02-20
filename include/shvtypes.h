@@ -77,6 +77,7 @@ public:
 	inline SHVBool& operator=(bool val);
 	inline bool operator==(const SHVBool& val) const;
 	inline bool operator==(const int& err) const;
+	inline bool operator!() const;
 
 
 private:
@@ -202,6 +203,7 @@ SHVBool& SHVBool::operator=(BoolVal val) { Val = val; return *this; }
 SHVBool& SHVBool::operator=(bool val) { Val = ( val ? True : False ); return *this; }
 bool SHVBool::operator==(const SHVBool& val) const { return Val == val.Val; }
 bool SHVBool::operator==(const int& err) const { return Val == err; }
+bool SHVBool::operator!() const { return Val != True; }
 
 SHVInt::operator int() { return Val; }
 SHVInt::operator size_t() const { return ( Null ? 0 : Val ); } // makes sure the null integer is smaller than whatever matches its hash key (zero)
