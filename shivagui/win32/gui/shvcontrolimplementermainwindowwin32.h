@@ -44,12 +44,19 @@ public:
 	virtual SHVColor* GetColor(SHVControlContainer* owner);
 	virtual void SetColor(SHVControlContainer* owner, SHVColor* color);
 
+	virtual void SetMinimumSize(SHVControlContainer* owner, int widthInChars, int heightInChars);
+	virtual SHVPoint GetMinimumSizeInPixels(SHVControlContainer* owner);
+
 
 	// Register class
 	static void RegisterClass(HINSTANCE hInstance);
 
 private:
 	///\cond INTERNAL
+	int MinWidthInChars;
+	int MinHeightInChars;
+	SHVPoint MinSize;
+	SHVPoint DecorationsSize;
 	HINSTANCE hInstance;
 	SHVMainThreadEventDispatcherWin32* Dispatcher;
 	SHVColorRef Color;

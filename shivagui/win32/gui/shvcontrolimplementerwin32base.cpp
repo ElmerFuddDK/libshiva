@@ -212,6 +212,27 @@ void SHVControlImplementerWin32Base::SetText(const SHVStringC& text)
 }
 
 /*************************************
+ * CalculateMinSize
+ *************************************/
+SHVPoint SHVControlImplementerWin32Base::CalculateMinSize(SHVControl* owner, int widthInChars, int heightInChars)
+{
+
+	SHVASSERT(IsCreated());
+
+	if (widthInChars || heightInChars)
+	{
+	SHVFontRef font = GetFont(owner);
+
+		if (font.IsNull())
+			font = owner->GetManager()->GetFont(SHVGUIManager::CfgFontNormal);
+
+		return SHVPoint( widthInChars * font->GetApproximateWidth(), heightInChars * font->GetCellHeight() );
+	}
+
+	return SHVPoint();
+}
+
+/*************************************
  * GetHandle
  *************************************/
 HWND SHVControlImplementerWin32Base::GetHandle()

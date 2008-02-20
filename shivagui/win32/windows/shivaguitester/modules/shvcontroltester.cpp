@@ -28,7 +28,7 @@ SHVFontRef font;
 	if (!SHVModuleResolver<SHVGUIManager>(Modules,GUIManager,"GUIManager"))
 		return false;
 
-	font = GUIManager->GetFont(SHVGUIManager::CfgFontNormal)->CreateCopy(150);
+	font = GUIManager->GetFont(SHVGUIManager::CfgFontNormal)->CreateCopy(120);
 
 	GUIManager->GetConfig().SetRef(SHVGUIManager::CfgFontNormal,font);
 
@@ -45,7 +45,8 @@ SHVEventSubscriberBaseRef subsOnDrawContainer = new SHVEventSubscriberFunc<SHVCo
 SHVFontRef ownerDrawFont = GUIManager->GetFont(SHVGUIManager::CfgFontNormal)->CreateCopy(250);
 
 	
-	GUIManager->GetMainWindow()->SetTitle(_T("noget"));
+	GUIManager->GetMainWindow()->SetTitle(_T("SHIVA GUI test application"));
+	GUIManager->GetMainWindow()->SetMinimumSize(20,11);
 	GUIManager->GetMainWindow()->SetLayoutEngine(new SHVControlLayoutCallback<SHVControlTester>(this,&SHVControlTester::OnResizeContainer));
 
 

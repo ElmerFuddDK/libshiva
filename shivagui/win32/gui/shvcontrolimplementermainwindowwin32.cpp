@@ -54,6 +54,8 @@ SHVControlImplementerMainWindowWin32::SHVControlImplementerMainWindowWin32(HINST
 	hInstance = hinstance;
 	Dispatcher = dispatcher;
 
+	MinWidthInChars = MinHeightInChars = 0;
+
 	Color = SHVColorWin32::FromSysColor(COLOR_3DFACE);
 }
 
@@ -101,7 +103,17 @@ SHVBool retVal(parent == NULL && !IsCreated());
 
 		if (retVal)
 		{
+		RECT winRect, clientRect;
+
 			SetWindowLongPtr(GetHandle(),0,(LONG_PTR)owner);
+
+			::GetClientRect(GetHandle(),&clientRect);
+			::GetWindowRect(GetHandle(),&winRect);
+
+			DecorationsSize.x = (winRect.right - winRect.left) - (clientRect.right - clientRect.left);
+			DecorationsSize.y = (winRect.bottom - winRect.top) - (clientRect.bottom - clientRect.top);
+
+			MinSize = CalculateMinSize(owner,MinWidthInChars,MinHeightInChars);
 		}
 	}
 
@@ -132,7 +144,7 @@ SHVString retVal;
 	SHVASSERT(IsCreated());
 
 	retVal.SetBufferSize( GetWindowTextLength(GetHandle())+1 );
-	GetWindowText(GetHandle(),(TCHAR*)retVal.GetBuffer(), (int)retVal.GetBufferLen());
+	::GetWindowText(GetHandle(),(TCHAR*)retVal.GetBuffer(), (int)retVal.GetBufferLen());
 
 	return retVal.ReleaseBuffer();
 }
@@ -164,6 +176,26 @@ void SHVControlImplementerMainWindowWin32::SetColor(SHVControlContainer* owner, 
 
 	if (IsCreated())
 		::InvalidateRect(GetHandle(),NULL,TRUE);
+}
+
+/*************************************
+ * SetMinimumSize
+ *************************************/
+void SHVControlImplementerMainWindowWin32::SetMinimumSize(SHVControlContainer* owner, int widthInChars, int heightInChars)
+{
+	MinWidthInChars = widthInChars;
+	MinHeightInChars = heightInChars;
+
+	if (IsCreated())
+		MinSize = CalculateMinSize(owner,MinWidthInChars,MinHeightInChars);
+}
+
+/*************************************
+ * GetMinimumSizeInPixels
+ *************************************/
+SHVPoint SHVControlImplementerMainWindowWin32::GetMinimumSizeInPixels(SHVControlContainer* owner)
+{
+	return MinSize;
 }
 
 /*************************************
@@ -211,6 +243,7 @@ LRESULT CALLBACK SHVControlImplementerMainWindowWin32::WndProc(HWND hWnd, UINT m
 {
 SHVControlContainer* owner = (SHVControlContainer*)GetWindowLongPtr(hWnd,0);
 SHVControlImplementerMainWindowWin32* self = (owner ? (SHVControlImplementerMainWindowWin32*)owner->GetImplementor() : NULL);
+LRESULT retVal = 0;
 
 	switch (message) 
 	{
@@ -236,9 +269,9 @@ SHVControlImplementerMainWindowWin32* self = (owner ? (SHVControlImplementerMain
 			}
 			
 			if (drawn)
-				return 1;
+				retVal = 1;
 			else
-				return DefWindowProc(hWnd, message, wParam, lParam);
+				retVal = DefWindowProc(hWnd, message, wParam, lParam);
 		}
 	case WM_PAINT:
 		{
@@ -252,15 +285,63 @@ SHVControlImplementerMainWindowWin32* self = (owner ? (SHVControlImplementerMain
 		owner->Clear();
 		PostQuitMessage(0);
 		break;
+#ifdef WM_SIZING
+	case WM_SIZING:
+		retVal = DefWindowProc(hWnd, message, wParam, lParam);
+		if ( self && ( self->MinSize.x || self->MinSize.y ) )
+		{
+		LPRECT rect = (LPRECT)lParam;
+		SHVPoint minSize( self->MinSize.x + self->DecorationsSize.x, self->MinSize.y + self->DecorationsSize.y );
+
+			// Check for min width
+			if ( (rect->right - rect->left) < minSize.x )
+			{
+				switch (wParam)
+				{
+				case WMSZ_RIGHT:
+				case WMSZ_BOTTOMRIGHT:
+				case WMSZ_TOPRIGHT:
+					rect->right = rect->left + minSize.x;
+					break;
+				case WMSZ_LEFT:
+				case WMSZ_BOTTOMLEFT:
+				case WMSZ_TOPLEFT:
+					rect->left = rect->right - minSize.x;
+					break;
+				}
+			}
+
+			// Check for min height
+			if ( (rect->bottom - rect->top) < minSize.y )
+			{
+				switch (wParam)
+				{
+				case WMSZ_BOTTOM:
+				case WMSZ_BOTTOMLEFT:
+				case WMSZ_BOTTOMRIGHT:
+					rect->bottom = rect->top + minSize.y;
+					break;
+				case WMSZ_TOP:
+				case WMSZ_TOPLEFT:
+				case WMSZ_TOPRIGHT:
+					rect->top = rect->bottom - minSize.y;
+					break;
+				}
+			}
+
+			retVal = TRUE;
+		}
+#endif
 	case WM_SIZE:
+		///\todo Add a mechanism for handling minsize when WM_SIZING is not supported (WinCE)
 		if (owner && owner->GetModuleList().IsRegistered())
 		{
 			owner->ResizeControls();
 		}
 		break;
 	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
+		retVal = DefWindowProc(hWnd, message, wParam, lParam);
 	}
-	return 0;
+	return retVal;
 }
 ///\endcond

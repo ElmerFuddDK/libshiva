@@ -3,6 +3,7 @@
 
 
 #include "../../include/shvcontrolimplementer.h"
+#include "../../include/utils/shvpoint.h"
 
 #ifndef __SHIVA_WIN32
 # error This code only works for win32
@@ -51,6 +52,8 @@ public:
 
 	SHVStringBuffer GetText();
 	void SetText(const SHVStringC& text);
+
+	SHVPoint CalculateMinSize(SHVControl* owner, int widthInChars, int heightInChars);
 
 protected:
 

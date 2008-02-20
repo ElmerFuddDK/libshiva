@@ -32,6 +32,7 @@ public:
 	virtual int GetHeight() = 0;
 	virtual int GetCellHeight() = 0;
 	virtual int CalculateTextWidth(const SHVStringC text) = 0;
+	virtual int GetApproximateWidth() = 0;
 
 	virtual SHVStringBuffer GetName() = 0;
 

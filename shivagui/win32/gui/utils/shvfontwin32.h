@@ -27,6 +27,7 @@ public:
 	virtual int GetHeight();
 	virtual int GetCellHeight();
 	virtual int CalculateTextWidth(const SHVStringC text);
+	virtual int GetApproximateWidth();
 
 	virtual SHVStringBuffer GetName();
 
@@ -41,6 +42,7 @@ private:
 	///\cond INTERNAL
 	HFONT Font;
 	int CellHeight;
+	int ApproximateWidth;
 	bool Owner;
 	///\endcond
 };

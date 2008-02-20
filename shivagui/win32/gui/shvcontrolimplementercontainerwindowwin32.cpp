@@ -52,6 +52,7 @@
 SHVControlImplementerContainerWindowWin32::SHVControlImplementerContainerWindowWin32(int subType) : SHVControlImplementerWin32<SHVControlImplementerContainerCustomDraw>()
 {
 	SubType = subType;
+	MinWidthInChars = MinHeightInChars = 0;
 }
 
 /*************************************
@@ -75,6 +76,7 @@ SHVBool SHVControlImplementerContainerWindowWin32::Create(SHVControl* owner, SHV
 		if (IsCreated())
 		{
 			SetWindowLongPtr(GetHandle(),0,(LONG_PTR)owner);
+			MinSize = CalculateMinSize(owner,MinWidthInChars,MinHeightInChars);
 		}
 
 		return IsCreated();
@@ -175,6 +177,26 @@ WNDCLASSEX wc;
 }
 
 /*************************************
+ * SetMinimumSize
+ *************************************/
+void SHVControlImplementerContainerWindowWin32::SetMinimumSize(SHVControlContainer* owner, int widthInChars, int heightInChars)
+{
+	MinWidthInChars = widthInChars;
+	MinHeightInChars = heightInChars;
+
+	if (IsCreated())
+		MinSize = CalculateMinSize(owner,MinWidthInChars,MinHeightInChars);
+}
+
+/*************************************
+ * GetMinimumSizeInPixels
+ *************************************/
+SHVPoint SHVControlImplementerContainerWindowWin32::GetMinimumSizeInPixels(SHVControlContainer* owner)
+{
+	return MinSize;
+}
+
+/*************************************
  * SubscribeDraw
  *************************************/
 void SHVControlImplementerContainerWindowWin32::SubscribeDraw(SHVEventSubscriberBase* subscriber)
@@ -190,6 +212,7 @@ LRESULT CALLBACK SHVControlImplementerContainerWindowWin32::WndProc(HWND hWnd, U
 {
 SHVControlContainer* owner = (SHVControlContainer*)GetWindowLongPtr(hWnd,0);
 SHVControlImplementerContainerWindowWin32* self = (owner ? (SHVControlImplementerContainerWindowWin32*)owner->GetImplementor() : NULL);
+LRESULT res = 0;
 
 	switch (message) 
 	{
@@ -232,14 +255,16 @@ SHVControlImplementerContainerWindowWin32* self = (owner ? (SHVControlImplemente
 		owner->Clear();
 		break;
 	case WM_SIZE:
+		///\todo Add minimum resize code for platforms that do not support WM_SIZING
 		if (owner && owner->GetModuleList().IsRegistered())
 		{
 			owner->ResizeControls();
 		}
 		break;
 	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
+		res = DefWindowProc(hWnd, message, wParam, lParam);
+		break;
 	}
-	return 0;
+	return res;
 }
 ///\endcond

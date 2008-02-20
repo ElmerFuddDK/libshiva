@@ -5,6 +5,7 @@
 #include "../../include/utils/shvvector.h"
 #include "../../include/framework/shvconfig.h"
 #include "utils/shvcolor.h"
+#include "utils/shvpoint.h"
 
 
 // forward declare
@@ -55,7 +56,10 @@ public:
 	virtual SHVBool SetData(SHVControlData* data);
 
 	inline SHVStringBuffer GetTitle();
-	inline void SetTitle(const SHVStringC& title);
+	inline SHVControlContainer* SetTitle(const SHVStringC& title);
+
+	inline SHVControlContainer* SetMinimumSize(int widthInChars, int heightInChars);
+	inline SHVPoint GetMinimumSizeInPixels();
 
 	inline SHVColor* GetColor();
 	inline SHVControlContainer* SetColor(SHVColor* color);
@@ -119,6 +123,9 @@ public:
 	virtual SHVColor* GetColor(SHVControlContainer* owner) = 0;
 	virtual void SetColor(SHVControlContainer* owner, SHVColor* color) = 0;
 
+	virtual void SetMinimumSize(SHVControlContainer* owner, int widthInChars, int heightInChars) = 0;
+	virtual SHVPoint GetMinimumSizeInPixels(SHVControlContainer* owner) = 0;
+
 };
 
 
@@ -170,9 +177,27 @@ SHVStringBuffer SHVControlContainer::GetTitle()
 /*************************************
  * SetTitle
  *************************************/
-void SHVControlContainer::SetTitle(const SHVStringC& title)
+SHVControlContainer* SHVControlContainer::SetTitle(const SHVStringC& title)
 {
 	GetImplementor()->SetTitle(title);
+	return this;
+}
+
+/*************************************
+ * SetMinimumSize
+ *************************************/
+SHVControlContainer* SHVControlContainer::SetMinimumSize(int widthInChars, int heightInChars)
+{
+	GetImplementor()->SetMinimumSize(this,widthInChars,heightInChars);
+	return this;
+}
+
+/*************************************
+ * SetMinimumSize
+ *************************************/
+SHVPoint SHVControlContainer::GetMinimumSizeInPixels()
+{
+	return GetImplementor()->GetMinimumSizeInPixels(this);
 }
 
 /*************************************

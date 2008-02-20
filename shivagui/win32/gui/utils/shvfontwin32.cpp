@@ -14,7 +14,8 @@
 SHVFontWin32::SHVFontWin32(HFONT font, bool owner) : Font(font), Owner(owner)
 {
 	SHVASSERT(Font);
-	CellHeight = SHVFontWin32::CalculateCellHeight(Font);
+	CellHeight = -1;
+	ApproximateWidth = -1;
 }
 SHVFontWin32::SHVFontWin32(const SHVStringC fontName, int height, int styles)
 {
@@ -30,7 +31,8 @@ LOGFONT lf;
 	lf.lfUnderline = ( styles & SHVFont::StyleUnderline ? TRUE : FALSE );
 	::memcpy( lf.lfFaceName, fontName.GetSafeBuffer(), (fontName.GetLength()+1)*sizeof(SHVTChar) );
 	SHVVERIFY(Font = ::CreateFontIndirect(&lf));
-	CellHeight = SHVFontWin32::CalculateCellHeight(Font);
+	CellHeight = -1;
+	ApproximateWidth = -1;
 }
 
 /*************************************
@@ -99,7 +101,19 @@ LOGFONT lf;
  *************************************/
 int SHVFontWin32::GetCellHeight()
 {
+	if (CellHeight == -1)
+		CellHeight = SHVFontWin32::CalculateCellHeight(Font);
 	return CellHeight;
+}
+
+/*************************************
+ * GetApproximateWidth
+ *************************************/
+int SHVFontWin32::GetApproximateWidth()
+{
+	if (ApproximateWidth == -1)
+		ApproximateWidth = CalculateTextWidth(_T("W"));
+	return ApproximateWidth;
 }
 
 /*************************************
