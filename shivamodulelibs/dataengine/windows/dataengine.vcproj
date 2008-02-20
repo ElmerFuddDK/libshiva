@@ -214,6 +214,10 @@
 				Name="dataengineimpl"
 				>
 				<File
+					RelativePath="..\src\dataengineimpl\shvdataengine_impl.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\dataengineimpl\shvdatafactory_impl.cpp"
 					>
 				</File>
@@ -260,6 +264,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\include\shvdataengine.h"
+				>
+			</File>
 			<File
 				RelativePath=".\shvdataenginefactory.h"
 				>
@@ -371,6 +379,10 @@
 			<Filter
 				Name="dataengineimpl"
 				>
+				<File
+					RelativePath="..\include\dataengineimpl\shvdataengine_impl.h"
+					>
+				</File>
 				<File
 					RelativePath="..\include\dataengineimpl\shvdatafactory_impl.h"
 					>

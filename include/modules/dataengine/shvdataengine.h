@@ -5,6 +5,8 @@
 #include "../../../include/framework/shvmodule.h"
 #include "../../../include/utils/shvdll.h"
 
+#define 
+
 class SHVDataEngine: public SHVModule
 {
 public:

@@ -6,7 +6,7 @@
 #include "../../../include/utils/shvdll.h"
 #include "../../../include/framework/shvmodulelist.h"
 
-#include "shvdataenginefactory.h"
+#include "shvdatafactory.h"
 
 
 
@@ -18,14 +18,14 @@ BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
                        LPVOID lpReserved
 					 )
-{
+{/*
 	if (ul_reason_for_call == DLL_PROCESS_ATTACH &&
 		!SHVModuleList::CheckVersion(__SHIVA_VERSION_MAJOR,__SHIVA_VERSION_MINOR,__SHIVA_VERSION_RELEASE))
 	{
 		::MessageBox(NULL,_T("Invalid version of libshiva.dll in module library DataEngine"),_T("Error"),MB_ICONERROR);
 		return FALSE;
 	}
-
+*/
 	return TRUE;
 }
 
@@ -38,7 +38,7 @@ void* CreateObjectInt(SHVModuleList* list, int id)
 	switch (id)
 	{
 	case SHVDll::ClassTypeModuleFactory:
-		return new SHVModuleFactoryDataEngine(*list);
+//		return new SHVModuleFactoryDataEngine(*list);
 	default:
 		return NULL;
 	}

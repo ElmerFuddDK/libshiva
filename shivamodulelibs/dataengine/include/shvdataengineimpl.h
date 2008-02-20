@@ -7,8 +7,12 @@
 class SHVDataEngine_impl: public SHVDataEngine
 {
 public:
+	virtual SHVDataEngine_impl(SHVModuleList& modules);
 	virtual ~SHVDataEngine_impl() {}
-	virtual SHVDataEngine(SHVModuleList& modules);
+
+	virtual SHVBool Register();
+	virtual void Unregister();
+
 	virtual SHVDataFactory* CreateFactory(const SHVStringC& dbName);
 private:
 	SHVDll SQLiteDll;
