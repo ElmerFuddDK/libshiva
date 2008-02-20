@@ -16,7 +16,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	if (dll.Load(dll.CreateLibFileName(_T("shivasqlite"))))
 	{
 		SHVSQLiteWrapperRef sqlLite = (SHVSQLiteWrapper*) dll.CreateObjectInt(NULL, SHVDll::ClassTypeUser);
-		SHVSQLiteStatement* statement;
+		SHVSQLiteStatementRef statement;
 		TCHAR input[255];
 		SHVString reminder;
 		SHVString sql;
@@ -42,7 +42,8 @@ int _tmain(int argc, _TCHAR* argv[])
 				if (sql != _T("exit") && sql != _T("cleanup"))
 				{
 				SHVBool errorCode;
-					if ((errorCode = sqlLite->Prepare(statement, sql, reminder)))
+				statement = sqlLite->Prepare(errorCode, sql, reminder);
+					if (errorCode)
 					{
 						while ((errorCode = statement->NextResult()).GetError() == SHVSQLiteWrapper::SQLite_ROW)
 						{
@@ -50,12 +51,15 @@ int _tmain(int argc, _TCHAR* argv[])
 							{
 								SHVString value;
 								SHVString columnName;
+								SHVString columnType;
 								int len = 0;
 								if (statement->GetColumnName(columnName, i))
 								{
+									statement->GetColumnType(columnType, i);
 									if (statement->GetValue(value, len, i))
 									{
-										_tprintf(_T("%s = %s\r\n"), columnName.GetSafeBuffer(), value.GetSafeBuffer());
+
+										_tprintf(_T("%s:%s = %s\r\n"), columnName.GetSafeBuffer(), columnType.GetSafeBuffer(), value.GetSafeBuffer());
 									}
 								}
 							}
@@ -71,7 +75,6 @@ int _tmain(int argc, _TCHAR* argv[])
 						reminder = _T("");
 						_tprintf(_T("Error %d: %s\r\n"), errorCode.GetError(), sqlLite->GetErrorMsg().GetSafeBuffer());
 					}
-					delete statement;
 				}
 				if (sql == _T("cleanup"))
 				{
@@ -85,6 +88,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 			} while (_tcscmp(input, _T("exit")));
 			sqlLite = NULL;
+			statement = NULL;
 		}
 		_putts(_T("Done"));
 	}

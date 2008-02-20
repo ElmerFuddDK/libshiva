@@ -57,14 +57,15 @@ public:
 		SQLite_ROW = 100,       /* sqlite3_step() has another row ready */
 		SQLite_DONE = 101		/* sqlite3_step() has finished executing */
 	};
-public:
+protected:
 	virtual ~SHVSQLiteWrapper() {}
+public:
 	virtual SHVBool OpenUTF8(const SHVStringUTF8C& fileName, int option = 6) = 0;
 	inline SHVBool Open(const SHVStringC& fileName, int option = 6);
 	virtual SHVBool OpenInMemory() = 0;
 	virtual SHVBool Close() = 0;
-	virtual SHVBool PrepareUTF8(SHVSQLiteStatement*& statement, const SHVStringUTF8C& sql, SHVStringUTF8& notparsed) = 0;
-	inline SHVBool Prepare(SHVSQLiteStatement*& statement, const SHVStringC& sql, SHVString& notparsed);
+	virtual SHVSQLiteStatement* PrepareUTF8(SHVBool& ok, const SHVStringUTF8C& sql, SHVStringUTF8& notparsed) = 0;
+	inline SHVSQLiteStatement* Prepare(SHVBool& ok, const SHVStringC& sql, SHVString& notparsed);
 	virtual SHVStringUTF8C GetErrorMsgUTF8() = 0; 
 	inline SHVStringBuffer GetErrorMsg();
 	virtual SHVMutex& GetMutex() = 0;
@@ -85,10 +86,10 @@ SHVBool SHVSQLiteWrapper::Open(const SHVStringC& fileName, int option)
 /*************************************
  * Prepare
  *************************************/
-SHVBool SHVSQLiteWrapper::Prepare(SHVSQLiteStatement*& statement, const SHVStringC& sql, SHVString& notparsed)
+SHVSQLiteStatement*  SHVSQLiteWrapper::Prepare(SHVBool& ok, const SHVStringC& sql, SHVString& notparsed)
 {
 	SHVStringUTF8 rest;
-	SHVBool res = PrepareUTF8(statement, sql.ToStrUTF8(), rest);
+	SHVSQLiteStatement* res = PrepareUTF8(ok, sql.ToStrUTF8(), rest);
 	notparsed = rest.ToStrT();
 	return res;
 }

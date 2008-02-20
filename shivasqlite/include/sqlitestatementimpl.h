@@ -17,16 +17,20 @@ public:
 	SHVSQLiteStatement_impl(sqlite3_stmt* statement, SHVSQLiteWrapper* owner);
 	virtual ~SHVSQLiteStatement_impl();
 
-	virtual SHVBool GetValue(long& val, int columnIdx);
-	virtual SHVBool GetValue(double& val, int columnIdx);
-	virtual SHVBool GetValue(const void*& blob, int& len, int columnIdx);
-	virtual SHVBool GetValueUTF8(SHVStringUTF8C& text, int& len, int columnIdx);
-	virtual SHVBool GetColumnNameUTF8(SHVStringUTF8C& name, int columnIdx);
-	virtual SHVBool GetColumnName8(SHVString8& name, int columnIdx);
-	virtual SHVBool GetColumnName16(SHVString16& name, int columnIdx);
+	virtual SHVBool GetValue(long& val, int columnIdx) const;
+	virtual SHVBool GetValue(double& val, int columnIdx) const;
+	virtual SHVBool GetValue(const void*& blob, int& len, int columnIdx) const;
+	virtual SHVBool GetValueUTF8(SHVStringUTF8C& text, int& len, int columnIdx) const;
+	virtual SHVBool GetColumnNameUTF8(SHVStringUTF8C& name, int columnIdx) const;
+	virtual SHVBool GetColumnName8(SHVString8& name, int columnIdx) const;
+	virtual SHVBool GetColumnName16(SHVString16& name, int columnIdx) const;
 
-	virtual SHVBool GetColumnType(short& type, int columnIdx);
-	virtual int GetColumnCount();
+	virtual SHVBool GetColumnType(short& type, int columnIdx) const;
+	virtual SHVBool GetColumnTypeUTF8(SHVStringUTF8C& colType, int columnIdx) const;
+	virtual SHVBool GetColumnType8(SHVString8& colType, int columnIdx) const;
+	virtual SHVBool GetColumnType16(SHVString16& colType, int columnIdx) const;
+
+	virtual int GetColumnCount() const;
 
 	virtual SHVBool SetParameterUTF8(const SHVStringUTF8C& name, long val);
 	virtual SHVBool SetParameterUTF8(const SHVStringUTF8C& name, double val);

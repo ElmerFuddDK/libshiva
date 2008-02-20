@@ -3,6 +3,7 @@
 
 #include "../../include/utils/shvstring.h"
 #include "../../include/utils/shvstringutf8.h"
+#include "../../include/utils/shvrefobject.h"
 #include "../../include/threadutils/shvmutex.h"
 
 //-=========================================================================================================
@@ -11,29 +12,34 @@
  * Use the Prepare function on SQLiteWrapper to execute a SQL statement in the SQLite
  * engine. 
  */
-class SHVSQLiteStatement
+class SHVSQLiteStatement: public SHVRefObject
 {
-public:
+protected:
 	virtual ~SHVSQLiteStatement() {}
+public:
 
 	// GetValue
-	virtual SHVBool GetValue(long& val, int columnIdx) = 0;
-	virtual SHVBool GetValue(double& val, int columnIdx) = 0;
-	virtual SHVBool GetValue(const void*& blob, int& len, int columnIdx) = 0;
-	virtual SHVBool GetValueUTF8(SHVStringUTF8C& text, int& len, int columnIdx) = 0;
-	inline SHVBool GetValue(SHVString& text, int& len, int columnIdx);
+	virtual SHVBool GetValue(long& val, int columnIdx) const = 0;
+	virtual SHVBool GetValue(double& val, int columnIdx) const = 0;
+	virtual SHVBool GetValue(const void*& blob, int& len, int columnIdx) const = 0;
+	virtual SHVBool GetValueUTF8(SHVStringUTF8C& text, int& len, int columnIdx) const = 0;
+	inline SHVBool GetValue(SHVString& text, int& len, int columnIdx) const;
 
 	// GetColumnName
-	virtual SHVBool GetColumnNameUTF8(SHVStringUTF8C& name, int columnIdx) = 0;
-	virtual SHVBool GetColumnName8(SHVString8& name, int columnIdx) = 0;
-	virtual SHVBool GetColumnName16(SHVString16& name, int columnIdx) = 0;
-	inline SHVBool GetColumnName(SHVString& name, int columnIdx);
+	virtual SHVBool GetColumnNameUTF8(SHVStringUTF8C& name, int columnIdx) const = 0;
+	virtual SHVBool GetColumnName8(SHVString8& name, int columnIdx) const = 0;
+	virtual SHVBool GetColumnName16(SHVString16& name, int columnIdx) const = 0;
+	inline SHVBool GetColumnName(SHVString& name, int columnIdx) const;
 
 	// GetColumnType
-	virtual SHVBool GetColumnType(short& type, int columnIdx) = 0;
+	virtual SHVBool GetColumnType(short& type, int columnIdx) const = 0;
+	virtual SHVBool GetColumnTypeUTF8(SHVStringUTF8C& colType, int columnIdx) const = 0;
+	virtual SHVBool GetColumnType8(SHVString8& colType, int columnIdx) const = 0;
+	virtual SHVBool GetColumnType16(SHVString16& colType, int columnIdx) const = 0;
+	inline SHVBool GetColumnType(SHVString& colType, int columnIdx) const;
 
 	// GetColumnCount
-	virtual int GetColumnCount() = 0;
+	virtual int GetColumnCount() const = 0;
 
 	// SetParameter
 	virtual SHVBool SetParameterUTF8(const SHVStringUTF8C& name, long val) = 0;
@@ -52,11 +58,13 @@ public:
 	virtual SHVBool NextResult() = 0;
 	virtual SHVBool Reset() = 0;	
 };
+typedef SHVRefObjectContainer<SHVSQLiteStatement> SHVSQLiteStatementRef;
+
 // ============================================ implementation ============================================ //
 /*************************************
  * GetValue
  *************************************/
-SHVBool SHVSQLiteStatement::GetValue(SHVString& text, int& len, int columnIdx)
+SHVBool SHVSQLiteStatement::GetValue(SHVString& text, int& len, int columnIdx) const
 {
 	SHVStringUTF8C res(NULL);
 	SHVBool retVal = GetValueUTF8(res, len, columnIdx);
@@ -68,12 +76,24 @@ SHVBool SHVSQLiteStatement::GetValue(SHVString& text, int& len, int columnIdx)
 /*************************************
  * GetColumnName
  *************************************/
-SHVBool SHVSQLiteStatement::GetColumnName(SHVString& name, int columnIdx)
+SHVBool SHVSQLiteStatement::GetColumnName(SHVString& name, int columnIdx) const
 {
 #ifdef UNICODE
 	return GetColumnName16(name, columnIdx);
 #else
 	return GetColumnName8(name, columnIdx);
+#endif
+}
+
+/*************************************
+ * GetColumnType
+ *************************************/
+SHVBool SHVSQLiteStatement::GetColumnType(SHVString& colType, int columnIdx) const
+{
+#ifdef UNICODE
+	return GetColumnType16(colType, columnIdx);
+#else
+	return GetColumnType8(colType, columnIdx);
 #endif
 }
 
