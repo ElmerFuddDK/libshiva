@@ -55,6 +55,8 @@ public:
 
 	SHVPoint CalculateMinSize(SHVControl* owner, int widthInChars, int heightInChars);
 
+	void SetResizable(bool resizable);
+
 protected:
 
 	virtual void SetHandle(HWND handle);

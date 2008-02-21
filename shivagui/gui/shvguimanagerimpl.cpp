@@ -61,7 +61,29 @@ void SHVGUIManagerImpl::Unregister()
 	ControlsByType.Clear();
 	ControlsByName.Clear();
 
+	MessageBoxes.RemoveAll();
+
+	SHVASSERT(TopLevelDialogs.GetCount() == 0);
+	SHVASSERT(TopLevelModalDialogs.GetCount() == 0);
+
 	SHVModule::Unregister();
+}
+
+/*************************************
+ * ShowMessageBox
+ *************************************/
+// Show a message box
+SHVBool SHVGUIManagerImpl::ShowMessageBox(const SHVStringC text, const SHVStringC title, int type, SHVEventSubscriberBase* resultSubscriber)
+{
+SHVControlContainerRef dialog = NewModalDialog();
+SHVBool retVal = dialog->Create();
+
+	if (retVal)
+	{
+		MessageBoxes.AddTail(dialog);
+	}
+
+	return retVal;
 }
 
 /*************************************
@@ -96,7 +118,7 @@ SHVControlCreatorBaseRef* creator;
 	if (!creator)
 		creator = ControlsByType.Find(ControlPair(controlType, SHVControl::SubTypeDefault));
 	retVal = (creator ? (*creator)->New(this) : NULL);
-	
+
 	return retVal;
 }
 SHVControl* SHVGUIManagerImpl::NewControl(const SHVString8C& controlName)
@@ -133,4 +155,3 @@ SHVControlContainer* SHVGUIManagerImpl::GetMainWindow()
 {
 	return MainWindow;
 }
-

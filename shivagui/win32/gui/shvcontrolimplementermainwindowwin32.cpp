@@ -94,7 +94,7 @@ SHVBool retVal(parent == NULL && !IsCreated());
 #ifdef __SHIVA_WINCE
 	DWORD styles = Win32::MapFlags(flags);
 #else
-	DWORD styles = WS_OVERLAPPEDWINDOW|Win32::MapFlags(flags);
+	DWORD styles = WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU|WS_MINIMIZEBOX|WS_MAXIMIZEBOX|Win32::MapFlags(flags);
 #endif
 		SetHandle(::CreateWindow(SHVWIN32CLASS_MAINWND, _T(""), styles,
 			CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL));
@@ -235,6 +235,14 @@ WNDCLASSEX wc;
 #endif
 }
 
+/*************************************
+ * SetResizable
+ *************************************/
+void SHVControlImplementerMainWindowWin32::SetResizable(bool resizable)
+{
+	SHVControlImplementerWin32Base::SetResizable(resizable);
+}
+
 ///\cond INTERNAL
 /*************************************
  * WndProc
@@ -282,6 +290,7 @@ LRESULT retVal = 0;
 		}
 		break;
 	case WM_DESTROY:
+		SHVASSERT(!self->IsCreated());
 		owner->Clear();
 		PostQuitMessage(0);
 		break;

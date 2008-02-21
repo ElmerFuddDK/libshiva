@@ -38,6 +38,7 @@
 #include "utils/shvdrawwin32.h"
 
 #include "shvcontrolimplementercontainerwindowwin32.h"
+#include "shvcontrolimplementerdialogwin32.h"
 #include "shvcontrolimplementerlabelwin32.h"
 #include "shvcontrolimplementereditwin32.h"
 #include "shvcontrolimplementerbuttonwin32.h"
@@ -60,12 +61,18 @@ HINSTANCE hInstance = (HINSTANCE)GetConfig().FindPtr(CfgInstanceHandle).ToPtr();
 
 	// Register control classes
 	SHVControlImplementerContainerWindowWin32::RegisterClass(this,hInstance);
+	SHVControlImplementerDialogWin32::RegisterClass(this,hInstance);
 
 	// Register controls
 	RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeDefault,
 		new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerContainerWindowWin32,SHVControlContainer::SubTypeDefault>());
 	RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeCustomDraw,
 		new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerContainerWindowWin32,SHVControlContainer::SubTypeCustomDraw>());
+
+	RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeModalDialog,
+		new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerDialogWin32,SHVControlContainer::SubTypeModalDialog>());
+	RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeDialog,
+		new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerDialogWin32,SHVControlContainer::SubTypeDialog>());
 
 	RegisterFactory(SHVControl::TypeLabel,SHVControlLabel::SubTypeDefault,
 		new SHVControlCreatorSubType<SHVControlLabel,SHVControlImplementerLabelWin32,SHVControlLabel::SubTypeDefault>());

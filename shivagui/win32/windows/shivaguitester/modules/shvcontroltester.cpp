@@ -88,7 +88,8 @@ void SHVControlTester::Unregister()
 
 void SHVControlTester::OnEvent(SHVEvent* event)
 {
-	::MessageBox(NULL,_T("Noget"),_T("Knap"),MB_OK);
+	//::MessageBox(NULL,_T("Noget"),_T("Knap"),MB_OK);
+	GUIManager->ShowMessageBox(_T("Noget"),_T("Knap"));
 	GUIManager->GetMainWindow()->SetColor(GUIManager->CreateColor(0x99,0x66,0x66));
 }
 

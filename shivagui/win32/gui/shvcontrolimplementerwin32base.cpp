@@ -57,8 +57,10 @@ SHVBool retVal(IsCreated());
 
 	if (retVal)
 	{
-		::DestroyWindow(Window);
+	HWND oldwindow = Window;
+
 		Window = Win32::InvalidHandle();
+		::DestroyWindow(oldwindow);
 	}
 
 	return retVal;
@@ -230,6 +232,22 @@ SHVPoint SHVControlImplementerWin32Base::CalculateMinSize(SHVControl* owner, int
 	}
 
 	return SHVPoint();
+}
+
+void SHVControlImplementerWin32Base::SetResizable(bool resizable)
+{
+DWORD style = ::GetWindowLong(GetHandle(), GWL_STYLE);
+DWORD newStyle = style;
+
+	// only modify the style if resizable is different from what it was before
+	if (resizable)
+		style |= WS_THICKFRAME;
+	else
+		style = (style & ~WS_VISIBLE);
+
+	if (style != newStyle)
+		::SetWindowLong(GetHandle(), GWL_STYLE, style);
+
 }
 
 /*************************************

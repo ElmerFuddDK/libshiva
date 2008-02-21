@@ -25,6 +25,12 @@ public:
 	virtual void Unregister();
 
 
+	// Show a message box
+	virtual SHVBool ShowMessageBox( const SHVStringC text,
+									const SHVStringC title = NULL,
+									int type = MsgBoxDefault,
+									SHVEventSubscriberBase* resultSubscriber = NULL);
+
 	// Font creation function
 	virtual SHVFont* CreateFont(const SHVStringC name, int height, int styles = SHVFont::StyleNormal) = 0;
 
@@ -53,6 +59,8 @@ public:
 
 
 protected:
+friend class SHVControlContainer;
+
 	///\cond INTERNAL
 	typedef struct ControlPair {
 		int Type;
@@ -66,6 +74,11 @@ protected:
 	SHVHashTable<ControlPair,SHVControlCreatorBaseRef> ControlsByType;
 	SHVHashTable<SHVString8,SHVControlCreatorBaseRef,const SHVString8C> ControlsByName;
 	SHVControlContainerRef MainWindow;
+
+	SHVList<SHVControlContainer*> TopLevelDialogs;
+	SHVList<SHVControlContainer*> TopLevelModalDialogs;
+
+	SHVList<SHVControlContainerRef,SHVControlContainer*> MessageBoxes;
 	///\endcond
 };
 

@@ -10,6 +10,7 @@
 
 // forward declare
 class SHVControlImplementerContainer;
+class SHVGUIManagerImpl;
 
 
 //-=========================================================================================================
@@ -29,6 +30,7 @@ public:
 		SubTypeWindow = SHVControl::SubTypeDefault,
 		SubTypeCustomDraw,
 		SubTypeMainWindow,
+		SubTypeModalDialog,
 		SubTypeDialog,
 	};
 	enum EventTypes
@@ -47,8 +49,9 @@ public:
 	inline SHVControlContainer* SetParent(SHVControlContainer* parent, int flags = FlagVisible);
 
 
-	// Create top level window
+	// Create top level container
 	virtual SHVBool Create();
+	virtual SHVBool Close();
 
 
 	// Data handling
@@ -90,12 +93,21 @@ public:
 
 private:
 friend class SHVControl;
+friend class SHVControlImplementerContainer;
+friend class SHVGUIManagerImpl;
 
 	virtual SHVBool AddControl(SHVControl* cntrl);
 	virtual SHVBool RemoveControl(SHVControl* cntrl);
-	
-	
+
 	///\cond INTERNAL
+	enum ModalModes {
+		ModalNone = 0,
+		ModalGlobalDisabled,
+		ModalGlobalSelfDisabled
+	} ModalMode;
+
+	virtual void SetModalMode(bool enable);
+	
 	SHVControlLayoutRef LayoutEngine;
 	SHVVectorBase Controls;
 	SHVEventSubscriberBaseRef PreDestroySubscriber;
@@ -114,7 +126,6 @@ class SHVControlImplementerContainer : public SHVControlImplementer
 {
 public:
 
-	// Properties
 	virtual SHVRect GetRegionRect() = 0;
 
 	virtual SHVStringBuffer GetTitle() = 0;
@@ -126,6 +137,17 @@ public:
 	virtual void SetMinimumSize(SHVControlContainer* owner, int widthInChars, int heightInChars) = 0;
 	virtual SHVPoint GetMinimumSizeInPixels(SHVControlContainer* owner) = 0;
 
+protected:
+friend class SHVControlContainer;
+
+	inline SHVControlImplementerContainer() {}
+
+	// Will be called when a layout engine is attached/detached
+	virtual void SetResizable(bool resizable) = 0;
+
+	// Functions mandatory for use in SetFlag and GetFlag on dialog control containers
+	virtual void UpdateSetFlag(SHVControl* owner, int& flag, bool enable);
+	virtual bool GetDisabledFlag(SHVControl* owner, int flag); // returns false if the container is globally disabled and locally enabled and the check is for disabled
 };
 
 
@@ -155,7 +177,9 @@ public:
  *************************************/
 SHVControlContainer::SHVControlContainer(SHVGUIManager* manager, SHVControlImplementer* implementor)
   : SHVControl(manager,implementor)
-{}
+{
+	ModalMode = ModalNone;
+}
 
 /*************************************
  * SetParent

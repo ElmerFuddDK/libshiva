@@ -49,10 +49,23 @@ public:
 		EventPreTranslateMessage
 	};
 
+	enum MsgBoxTypes {
+		MsgBoxOK,
+		MsgBoxDefault = MsgBoxOK
+	};
+
+
+	// Show a message box
+	virtual SHVBool ShowMessageBox( const SHVStringC text,
+									const SHVStringC title = NULL,
+									int type = MsgBoxDefault,
+									SHVEventSubscriberBase* resultSubscriber = NULL) = 0;
 
 	// Control creation functions
 	inline SHVControlContainer* NewContainer(int subType = SHVControlContainer::SubTypeDefault);
 	inline SHVControlContainer* NewContainerCustomDraw(SHVEventSubscriberBase* subscriber);
+	inline SHVControlContainer* NewDialog();
+	inline SHVControlContainer* NewModalDialog();
 	inline SHVControlEdit* NewEdit(int subType = SHVControlEdit::SubTypeDefault);
 	inline SHVControlLabel* NewLabel(int subType = SHVControlLabel::SubTypeDefault);
 	inline SHVControlLabel* NewLabelCustomDraw(SHVEventSubscriberBase* subscriber);
@@ -115,6 +128,22 @@ SHVControlContainer* retVal = (SHVControlContainer*)NewControl(SHVControl::TypeC
 		subscriber->ValidateRefCount();
 
 	return retVal;
+}
+
+/*************************************
+ * NewDialog
+ *************************************/
+SHVControlContainer* SHVGUIManager::NewDialog()
+{
+	return (SHVControlContainer*)NewControl(SHVControl::TypeContainer,SHVControlContainer::SubTypeDialog);
+}
+
+/*************************************
+ * NewDialog
+ *************************************/
+SHVControlContainer* SHVGUIManager::NewModalDialog()
+{
+	return (SHVControlContainer*)NewControl(SHVControl::TypeContainer,SHVControlContainer::SubTypeModalDialog);
 }
 
 /*************************************

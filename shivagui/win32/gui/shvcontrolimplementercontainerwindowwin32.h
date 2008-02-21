@@ -50,6 +50,11 @@ public:
 	// Register class
 	static void RegisterClass(SHVGUIManager* manager, HINSTANCE hInstance);
 
+
+protected:
+
+	virtual void SetResizable(bool resizable);
+
 private:
 	///\cond INTERNAL
 	int MinWidthInChars;

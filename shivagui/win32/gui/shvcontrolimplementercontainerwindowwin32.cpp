@@ -177,6 +177,13 @@ WNDCLASSEX wc;
 }
 
 /*************************************
+ * SetResizable
+ *************************************/
+void SHVControlImplementerContainerWindowWin32::SetResizable(bool resizable)
+{
+}
+
+/*************************************
  * SetMinimumSize
  *************************************/
 void SHVControlImplementerContainerWindowWin32::SetMinimumSize(SHVControlContainer* owner, int widthInChars, int heightInChars)
@@ -252,6 +259,7 @@ LRESULT res = 0;
 				return DefWindowProc(hWnd, message, wParam, lParam);
 		}
 	case WM_DESTROY:
+		SHVASSERT(!self->IsCreated());
 		owner->Clear();
 		break;
 	case WM_SIZE:

@@ -264,6 +264,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\gui\shvcontrolimplementerdialogwin32.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\gui\shvcontrolimplementereditwin32.cpp"
 					>
 				</File>
@@ -347,6 +351,10 @@
 				</File>
 				<File
 					RelativePath="..\gui\shvcontrolimplementercontainerwindowwin32.h"
+					>
+				</File>
+				<File
+					RelativePath="..\gui\shvcontrolimplementerdialogwin32.h"
 					>
 				</File>
 				<File

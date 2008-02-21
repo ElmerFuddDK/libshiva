@@ -27,6 +27,7 @@ public:
 
 	inline static HWND GetHandle(SHVControl* control);
 	inline static HWND GetHandle(SHVControlImplementer* implementer);
+	inline static HWND GetMainWndHandle(SHVControl* control);
 
 	inline static SHVConfig& GetGUIConfig(SHVControl* control);
 	inline static HINSTANCE GetInstance(SHVControl* control);
@@ -67,6 +68,14 @@ HWND Win32::GetHandle(SHVControl* control)
 HWND Win32::GetHandle(SHVControlImplementer* implementer)
 {
 	return ((SHVControlImplementerWin32Base*)implementer->GetNative())->GetHandle();
+}
+
+/*************************************
+ * GetHandle
+ *************************************/
+HWND Win32::GetMainWndHandle(SHVControl* control)
+{
+	return ((SHVControlImplementerWin32Base*)control->GetManager()->GetMainWindow()->GetImplementor()->GetNative())->GetHandle();
 }
 
 /*************************************
