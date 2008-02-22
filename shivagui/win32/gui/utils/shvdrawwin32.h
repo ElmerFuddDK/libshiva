@@ -29,6 +29,10 @@ public:
 	inline void CloseDC();
 
 
+	// Get internal DC handle
+	inline HDC GetHDC();
+
+
 	// Drawing routines:
 	// -----------------
 
@@ -53,8 +57,8 @@ public:
 	virtual void DrawBitmapCentered(SHVBitmap* bitmap, SHVRect rDest, SHVColor* transparentColor = NULL);
 
 	// Draw text
-	virtual void DrawText(const SHVStringC txt, SHVRect rect, int options = TextDefault);
-	virtual void DrawText(SHVFont* font, const SHVStringC txt, SHVRect rect, int options = TextDefault);
+	virtual void DrawText(const SHVStringC txt, SHVRect rect, SHVColor* color = NULL, int options = TextDefault);
+	virtual void DrawText(SHVFont* font, const SHVStringC txt, SHVRect rect, SHVColor* color = NULL, int options = TextDefault);
 
 
 	// Static mapping functions
@@ -117,6 +121,14 @@ void SHVDrawWin32::CloseDC()
 		::ReleaseDC(hWnd,hDC);
 		hDC = NULL;
 	}
+}
+
+/*************************************
+ * GetHDC
+ *************************************/
+HDC SHVDrawWin32::GetHDC()
+{
+	return hDC;
 }
 
 /*************************************
