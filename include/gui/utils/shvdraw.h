@@ -73,8 +73,8 @@ public:
 	virtual void DrawBitmapCentered(SHVBitmap* bitmap, SHVRect rDest, SHVColor* transparentColor = NULL) = 0;
 
 	// Draw text
-	virtual void DrawText(const SHVStringC txt, SHVRect rect, int options = TextDefault) = 0;
-	virtual void DrawText(SHVFont* font, const SHVStringC txt, SHVRect rect, int options = TextDefault) = 0;
+	virtual void DrawText(const SHVStringC txt, SHVRect rect, SHVColor* color = NULL, int options = TextDefault) = 0;
+	virtual void DrawText(SHVFont* font, const SHVStringC txt, SHVRect rect, SHVColor* color = NULL, int options = TextDefault) = 0;
 
 	// Obtain default transparent color
 	inline SHVColor* GetTransparentColor();
