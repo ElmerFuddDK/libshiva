@@ -47,6 +47,11 @@ public:
 	void SetByXY(int x, int y, int width, int height);
 	void SetByLeftTop(int left, int top, int right, int bottom);
 
+	void Shrink(int left, int top, int right, int bottom);
+	inline void Expand(int left, int top, int right, int bottom);
+
+	inline bool IsEmpty() const;
+	inline void SetEmpty();
 
 private:
 	///\cond INTERNAL
@@ -127,6 +132,33 @@ int  SHVRect::GetHeight() const
 void SHVRect::SetHeight(int height)
 {
 	Bottom = Top + height;
+}
+
+/*************************************
+ * Expand
+ *************************************/
+void SHVRect::Expand(int left, int top, int right, int bottom)
+{
+	Shrink(left*-1,top*-1,right*-1,bottom*-1);
+}
+
+/*************************************
+ * IsEmpty
+ *************************************/
+bool SHVRect::IsEmpty() const
+{
+	return (!Left && !Top && !Right && !Bottom);
+}
+
+/*************************************
+ * SetEmpty
+ *************************************/
+void SHVRect::SetEmpty()
+{
+	Left   = 0;
+	Top    = 0;
+	Right  = 0;
+	Bottom = 0;
 }
 
 #endif

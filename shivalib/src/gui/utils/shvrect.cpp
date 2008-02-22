@@ -58,3 +58,14 @@ void SHVRect::SetByLeftTop(int left, int top, int right, int bottom)
 	SetRight(right);
 	SetBottom(bottom);
 }
+
+/*************************************
+ * Shrink
+ *************************************/
+void SHVRect::Shrink(int left, int top, int right, int bottom)
+{
+	SetLeft(GetLeft()+left);
+	SetTop(GetTop()+top);
+	SetRight(GetRight()-right);
+	SetBottom(GetBottom()-bottom);
+}
