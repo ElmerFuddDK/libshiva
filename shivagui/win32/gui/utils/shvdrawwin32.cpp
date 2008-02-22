@@ -28,7 +28,8 @@ void SHVDrawWin32::DrawLine(SHVPoint from, SHVPoint to, SHVColor* color)
 {
 SHVPenRef pen = GUIManager->CreatePen(color);
 	DrawLine(from,to,pen);
-	color->ValidateRefCount();
+	if (color)
+		color->ValidateRefCount();
 }
 void SHVDrawWin32::DrawLine(SHVPoint from, SHVPoint to, SHVPen* pen)
 {
@@ -42,7 +43,8 @@ POINT point;
 
 	::RestoreDC(hDC,dcBackup);
 
-	pen->ValidateRefCount();
+	if (pen)
+		pen->ValidateRefCount();
 }
 
 /*************************************
@@ -51,7 +53,8 @@ POINT point;
 void SHVDrawWin32::DrawPixel(SHVPoint where, SHVColor* color)
 {
 	::SetPixel(hDC, where.x, where.y, SHVDrawWin32::GetColor(color));
-	color->ValidateRefCount();
+	if (color)
+		color->ValidateRefCount();
 }
 
 /*************************************
@@ -72,7 +75,8 @@ POINT point;
 	::LineTo(hDC, rect.GetLeft(), rect.GetTop());
 
 	::RestoreDC(hDC,dcBackup);
-	color->ValidateRefCount();
+	if (color)
+		color->ValidateRefCount();
 }
 
 /*************************************
@@ -84,7 +88,8 @@ RECT rectNative(SHVDrawWin32::MapRect(rect));
 
 	::SetBkColor(hDC, SHVDrawWin32::GetColor(color));
 	::ExtTextOut(hDC, 0, 0, ETO_OPAQUE, &rectNative, NULL, 0, NULL);
-	color->ValidateRefCount();
+	if (color)
+		color->ValidateRefCount();
 }
 
 /*************************************
@@ -112,7 +117,8 @@ int dcBackup = ::SaveDC(hDC);
 	::RestoreDC(hDC,dcBackup);
 
 	delete [] pts;
-	color->ValidateRefCount();
+	if (color)
+		color->ValidateRefCount();
 }
 
 /*************************************
@@ -142,7 +148,8 @@ int dcBackup = ::SaveDC(hDC);
 	::RestoreDC(hDC,dcBackup);
 
 	delete [] pts;
-	color->ValidateRefCount();
+	if (color)
+		color->ValidateRefCount();
 }
 
 /*************************************
@@ -151,10 +158,14 @@ int dcBackup = ::SaveDC(hDC);
 void SHVDrawWin32::DrawBitmap(SHVBitmap* bitmap, SHVPoint position, int width, int height, SHVColor* transparentColor)
 {
 	bitmap->ValidateRefCount();
+	if (transparentColor)
+		transparentColor->ValidateRefCount();
 }
 void SHVDrawWin32::DrawBitmap(SHVBitmap* bitmap, SHVPoint position, SHVColor* transparentColor)
 {
 	bitmap->ValidateRefCount();
+	if (transparentColor)
+		transparentColor->ValidateRefCount();
 }
 
 /*************************************
@@ -163,16 +174,18 @@ void SHVDrawWin32::DrawBitmap(SHVBitmap* bitmap, SHVPoint position, SHVColor* tr
 void SHVDrawWin32::DrawBitmapCentered(SHVBitmap* bitmap, SHVRect rDest, SHVColor* transparentColor)
 {
 	bitmap->ValidateRefCount();
+	if (transparentColor)
+		transparentColor->ValidateRefCount();
 }
 
 /*************************************
  * DrawText
  *************************************/
-void SHVDrawWin32::DrawText(const SHVStringC txt, SHVRect rect, int options)
+void SHVDrawWin32::DrawText(const SHVStringC txt, SHVRect rect, SHVColor* color, int options)
 {
-	DrawText(NULL,txt,rect,options);
+	DrawText(NULL,txt,rect,color,options);
 }
-void SHVDrawWin32::DrawText(SHVFont* font, const SHVStringC txt, SHVRect rect, int options)
+void SHVDrawWin32::DrawText(SHVFont* font, const SHVStringC txt, SHVRect rect, SHVColor* color, int options)
 {
 int dcBackup = ::SaveDC(hDC);
 int oldBkMode = ::SetBkMode(hDC,TRANSPARENT);
@@ -186,6 +199,9 @@ bool endEllipsis = ( (options&TextEndEllipsis) ? true : false );
 		::SelectObject(hDC,SHVDrawWin32::GetFont(font));
 	else if (hWnd)
 		::SelectObject(hDC,(HFONT)::SendMessage(hWnd,WM_GETFONT,0,0));
+
+	if (color)
+		::SetTextColor(hDC, SHVDrawWin32::GetColor(color));
 
 	if ( (options&TextHCenter) == TextHCenter )
 		mapoptions |= DT_CENTER;
@@ -245,6 +261,8 @@ bool endEllipsis = ( (options&TextEndEllipsis) ? true : false );
 
 	if (font)
 		font->ValidateRefCount();
+	if (color)
+		color->ValidateRefCount();
 }
 
 
