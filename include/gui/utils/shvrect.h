@@ -24,6 +24,12 @@ public:
 
 
 	// properties
+	inline int  GetX() const;
+	inline void SetX(int x);
+
+	inline int  GetY() const;
+	inline void SetY(int y);
+
 	inline int  GetLeft() const;
 	inline void SetLeft(int left);
 
@@ -61,6 +67,36 @@ private:
 
 
 // ============================================= implementation ============================================= //
+
+/*************************************
+ * X
+ *************************************/
+int  SHVRect::GetX() const
+{
+	return Left;
+}
+void SHVRect::SetX(int x)
+{
+int width = GetWidth();
+
+	Left = x;
+	Right = Left + width;
+}
+
+/*************************************
+ * Y
+ *************************************/
+int  SHVRect::GetY() const
+{
+	return Top;
+}
+void SHVRect::SetY(int y)
+{
+int height = GetHeight();
+
+	Top = y;
+	Bottom = Top + height;
+}
 
 /*************************************
  * Left
