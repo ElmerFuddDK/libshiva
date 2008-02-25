@@ -71,7 +71,7 @@ public:
 
 
 	// operators
-	inline operator bool ();
+	inline operator bool () const;
 
 	inline SHVBool& operator=(BoolVal val);
 	inline SHVBool& operator=(bool val);
@@ -197,7 +197,7 @@ void SHVDouble::SetToNull() { Null = true; Val = 0.0; }
 /*************************************
  * Operators
  *************************************/
-SHVBool::operator bool () { return Val == True; }
+SHVBool::operator bool () const { return Val == True; }
 
 SHVBool& SHVBool::operator=(BoolVal val) { Val = val; return *this; }
 SHVBool& SHVBool::operator=(bool val) { Val = ( val ? True : False ); return *this; }
