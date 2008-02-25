@@ -757,9 +757,6 @@ void SHVStringUTF8::FormatList(const SHVChar* s, SHVVA_LIST args)
 {
 SHVString8 self;
 	
-	self.Buffer = Buffer;
-	Buffer = NULL;
-
 	self.FormatList(s,args);
 	*this = SHVStringBufferUTF8::Encapsulate(self.Buffer);
 	self.Buffer = NULL;
