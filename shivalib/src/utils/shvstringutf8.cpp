@@ -64,11 +64,14 @@
 // ========================================================================================================
 long SHVStringUTF8C::StrToL(const SHVChar* str, SHVChar** ptr, int base)
 {
-	return ::strtol(str,ptr,base);
+	return SHVString8C::StrToL(str,ptr,base);
 }
 size_t SHVStringUTF8C::StrLen(const SHVChar* str)
 {
 size_t retVal = 0;
+
+	if (!str)
+		return 0;
 
 	for(;*str;str++)
 	{
@@ -108,7 +111,7 @@ const char* offset = end;
 }
 int SHVStringUTF8C::StrCmp(const SHVChar* str1,const SHVChar* str2)
 {
-	return strcmp(str1,str2);
+	return SHVString8C::StrCmp(str1,str2);
 }
 int SHVStringUTF8C::StrCaseCmp(const SHVChar* s1,const SHVChar* s2)
 {
@@ -126,7 +129,7 @@ SHVStringUTF8 str2(s2);
 }
 SHVChar* SHVStringUTF8C::StrCat(SHVChar* dest, const SHVChar* source)
 {
-	return strcat(dest,source);
+	return SHVString8C::StrCat(dest,source);
 }
 
 

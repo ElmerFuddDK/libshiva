@@ -66,7 +66,7 @@ long SHVString16C::StrToL(const SHVWChar* str, SHVWChar** ptr, int base)
 #if defined(__SHIVA_LINUX) || defined(__SHIVA_EPOC)
 long retVal = 0;
 
-	for(*ptr = (SHVWChar*)str; *ptr != '\0'; (*ptr)++)
+	for(*ptr = (SHVWChar*)str; str && *ptr != '\0'; (*ptr)++)
 	{
 		if (**ptr < '0' || **ptr > '9') // only base10 for now
 			break;
@@ -80,7 +80,7 @@ long retVal = 0;
 
 	return retVal;
 #else
-	return wcstol((const wchar_t*)str,(wchar_t**)ptr,base);
+	return (str ? wcstol((const wchar_t*)str,(wchar_t**)ptr,base) : NULL);
 #endif
 
 }
@@ -88,11 +88,11 @@ size_t SHVString16C::StrLen(const SHVWChar* str)
 {
 #if defined(__SHIVA_LINUX) || defined(__SHIVA_EPOC)
 size_t len;
-	for (len=0;str[len];len++) ;
+	for (len=0;str && str[len];len++) ;
 	return len;
 	// TODO: Use memmem in linux
 #else
-	return ::wcslen((const wchar_t*)str);
+	return (str ? ::wcslen((const wchar_t*)str) : 0);
 #endif
 }
 int SHVString16C::StrCmp(const SHVWChar* str1,const SHVWChar* str2)
@@ -144,7 +144,7 @@ size_t sourcelen = StrLen(source);
 	}
 	return dest;
 #else
-	return (SHVWChar*)wcscat((wchar_t*)dest,(const wchar_t*)source);
+	return (source ? (SHVWChar*)wcscat((wchar_t*)dest,(const wchar_t*)source) : dest);
 #endif
 }
 

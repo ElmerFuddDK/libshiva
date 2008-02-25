@@ -63,11 +63,11 @@
 // ========================================================================================================
 long SHVString8C::StrToL(const SHVChar* str, SHVChar** ptr, int base)
 {
-	return ::strtol(str,ptr,base);
+	return (str ? ::strtol(str,ptr,base) : 0);
 }
 size_t SHVString8C::StrLen(const SHVChar* str)
 {
-	return ::strlen(str);
+	return (str ? ::strlen(str) : 0);
 }
 int SHVString8C::StrCmp(const SHVChar* str1,const SHVChar* str2)
 {
@@ -89,7 +89,7 @@ SHVString8 str2(s2);
 }
 SHVChar* SHVString8C::StrCat(SHVChar* dest, const SHVChar* source)
 {
-	return strcat(dest,source);
+	return (source ? strcat(dest,source) : dest);
 }
 
 
