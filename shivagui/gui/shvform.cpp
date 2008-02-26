@@ -10,7 +10,7 @@
 //=========================================================================================================
 // SHVForm - base form interface
 //=========================================================================================================
-SHVForm::SHVForm(SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVStringC entityName): 
+SHVForm::SHVForm(SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVString8C entityName): 
 	GUIManager(manager), 
 	ControlContainer(controlContainer),
 	EntityName(entityName)
@@ -72,6 +72,14 @@ SHVBool SHVForm::GetData(SHVControlData* data)
 SHVBool SHVForm::SetData(SHVControlData* data)
 {
 	return ControlContainer->SetData(data);
+}
+
+/*************************************
+ * GetEntityName
+ *************************************/
+SHVString8C SHVForm::GetEntityName()
+{
+	return EntityName;
 }
 
 /*************************************

@@ -11,7 +11,7 @@
 /*************************************
  * Constructor
  *************************************/
-SHVCompoundForm::SHVCompoundForm(SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVStringC entityName):
+SHVCompoundForm::SHVCompoundForm(SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVString8C entityName):
 	SHVForm(manager, controlContainer, entityName)
 {
 }
@@ -30,7 +30,7 @@ SHVBool retVal(SHVBool::True);
 		for (i=count;i>0 && retVal;)
 		{
 			if (data->GetRow())
-				retVal = Forms[i]->GetData(data->GetRow()->GetSubData(Forms[i]->GetEntityName()));
+				retVal = Forms[i]->GetData(data->GetRow()->GetSubData(Forms[i]->GetEntityName().ToStrT()));
 		}
 	}
 	return retVal;
@@ -49,8 +49,9 @@ SHVBool retVal(SHVBool::True);
 	{
 		for (i=count;i>0 && retVal;)
 		{
+			i--;
 			if (data->GetRow())
-				retVal = Forms[i]->SetData(data->GetRow()->GetSubData(Forms[i]->GetEntityName()));
+				retVal = Forms[i]->SetData(data->GetRow()->GetSubData(Forms[i]->GetEntityName().ToStrT()));
 		}
 	}
 	else

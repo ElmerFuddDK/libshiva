@@ -13,14 +13,12 @@
 class SHVCompoundForm: public SHVForm
 {
 public:
-	SHVCompoundForm(SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVStringC entityName);
+	SHVCompoundForm(SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVString8C entityName);
 
 	virtual void InitializeForm(SHVControlLayout* layout) = 0;
 
 	virtual SHVBool GetData(SHVControlData* data);
 	virtual SHVBool SetData(SHVControlData* data);
-
-	virtual SHVStringC GetEntityName() = 0;
 
 	virtual SHVBool PreClose();
 
