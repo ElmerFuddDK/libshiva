@@ -119,10 +119,6 @@ public:
 
 
 
-	// conparison
-	inline bool operator ==(const T* r) const;
-
-
 	// Release the valid reference to the object
 	inline T* ReleaseReference();
 
@@ -302,13 +298,6 @@ SHVRefObjectContainer<T>& SHVRefObjectContainer<T>::operator =(T* obj)
 	{ if (Obj && RefValid) Obj->DestroyRef(); Obj = ( obj ? (T *) obj->CreateRef() : NULL); RefValid = true; return *this; }
 
 
-
-// conparison
-/*************************************
- * comparison operator
- *************************************/
-template <class T>
-bool SHVRefObjectContainer<T>::operator ==(const T* r) const { return r == Obj; }
 
 /*************************************
  * ReleaseReference
