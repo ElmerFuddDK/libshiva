@@ -78,10 +78,17 @@ HINSTANCE hInstance = (HINSTANCE)Queue->GetModuleList().GetConfig(SHVModuleList:
 	MainWindow = new SHVControlContainer(GUIManager,new SHVControlImplementerMainWindowWin32(hInstance,this));
 
 	GUIManager->SetMainWindow(MainWindow);
+	MainWindow->SetFont(NULL,false);
 
 	retVal = Queue->GetModuleList().AddModule(GUIManager);
 
-	return ( retVal && MainWindow->Create() );
+	if (retVal)
+	{
+		retVal = MainWindow->Create();
+		MainWindow->SetFont(NULL,false);
+	}
+
+	return retVal;
 }
 
 /*************************************
