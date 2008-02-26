@@ -318,6 +318,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\framework\shveventsubscriberdynamic.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\framework\shveventsubscriptionlist.cpp"
 					>
 				</File>
@@ -539,7 +543,15 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\include\framework\shveventsubscriberdynamic.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\framework\shveventsubscriptionlist.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\framework\shveventtargetdynamic.h"
 						>
 					</File>
 					<File
