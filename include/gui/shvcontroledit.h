@@ -23,6 +23,10 @@ public:
 		SubTypeSingleLine = SHVControl::SubTypeDefault,
 		SubTypeMultiLine
 	};
+	enum SubTypeFlags {
+		FlagReadonly = FlagSubType,
+		FlagFlat = FlagSubType*2 ///< no edge
+	};
 
 
 	// constructor

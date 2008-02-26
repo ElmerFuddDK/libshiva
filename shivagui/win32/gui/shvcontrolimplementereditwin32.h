@@ -28,6 +28,9 @@ public:
 	// From SHVControlImplementer
 	virtual int GetSubType(SHVControl* owner);
 
+	virtual SHVBool SetFlag(SHVControl* owner, int flag, bool enable);
+	virtual bool GetFlag(SHVControl* owner, int flag);
+
 	virtual SHVBool Create(SHVControl* owner, SHVControlImplementer* parent, int flags);
 
 
