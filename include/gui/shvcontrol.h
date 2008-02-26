@@ -42,7 +42,8 @@ public:
 
 	enum Flags {
 		FlagVisible = 1,
-		FlagDisabled = 2
+		FlagDisabled = 2,
+		FlagSubType = 512 // Sub type controls start from here
 	};
 
 	enum Events {
@@ -74,7 +75,7 @@ public:
 	inline bool GetFlag(int flag);
 
 	inline SHVFont* GetFont();
-	inline SHVBool SetFont(SHVFont* font, bool resetHeight);
+	virtual SHVBool SetFont(SHVFont* font, bool resetHeight);
 	
 
 	// obtain pointer to the implementor
@@ -182,14 +183,6 @@ bool SHVControl::GetFlag(int flag)
 SHVFont* SHVControl::GetFont()
 {
 	return GetImplementor()->GetFont(this);
-}
-
-/*************************************
- * SetFont
- *************************************/
-SHVBool SHVControl::SetFont(SHVFont* font, bool resetHeight)
-{
-	return GetImplementor()->SetFont(this, font, resetHeight);
 }
 
 /*************************************

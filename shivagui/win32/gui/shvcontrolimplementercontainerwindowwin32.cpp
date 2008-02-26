@@ -52,7 +52,6 @@
 SHVControlImplementerContainerWindowWin32::SHVControlImplementerContainerWindowWin32(int subType) : SHVControlImplementerWin32<SHVControlImplementerContainerCustomDraw>()
 {
 	SubType = subType;
-	MinWidthInChars = MinHeightInChars = 0;
 }
 
 /*************************************
@@ -75,8 +74,9 @@ SHVBool SHVControlImplementerContainerWindowWin32::Create(SHVControl* owner, SHV
 
 		if (IsCreated())
 		{
+			owner->SetFont(NULL,false);
+
 			SetWindowLongPtr(GetHandle(),0,(LONG_PTR)owner);
-			MinSize = CalculateMinSize(owner,MinWidthInChars,MinHeightInChars);
 		}
 
 		return IsCreated();
@@ -97,6 +97,33 @@ RECT nativeRect;
 	::GetClientRect(GetHandle(),&nativeRect);
 
 	return SHVRect(nativeRect.left,nativeRect.top,nativeRect.right,nativeRect.bottom);
+}
+
+/*************************************
+ * SetSize
+ *************************************/
+void SHVControlImplementerContainerWindowWin32::SetSize(SHVControlContainer* owner, int widthInPixels, int heightInPixels, SHVControlContainer::PosModes mode)
+{
+SHVRect parentRect(owner->GetParent()->GetRect());
+SHVRect rect(GetRect(owner));
+
+	SHVASSERT(IsCreated());
+
+	rect.SetWidth(widthInPixels);
+	rect.SetHeight(heightInPixels);
+
+	switch (mode)
+	{
+	case SHVControlContainer::PosCenterScreen: // equals centerwindow on child containers
+	case SHVControlContainer::PosCenterWindow:
+		rect.SetX( (parentRect.GetWidth()-rect.GetWidth())/2 );
+		rect.SetY( (parentRect.GetHeight()-rect.GetHeight())/2 );
+		break;
+	default:
+		break;
+	}
+
+	SetRect(owner,rect);
 }
 
 /*************************************
@@ -186,13 +213,10 @@ void SHVControlImplementerContainerWindowWin32::SetResizable(bool resizable)
 /*************************************
  * SetMinimumSize
  *************************************/
-void SHVControlImplementerContainerWindowWin32::SetMinimumSize(SHVControlContainer* owner, int widthInChars, int heightInChars)
+void SHVControlImplementerContainerWindowWin32::SetMinimumSize(SHVControlContainer* owner, int widthInPixels, int heightInPixels)
 {
-	MinWidthInChars = widthInChars;
-	MinHeightInChars = heightInChars;
-
-	if (IsCreated())
-		MinSize = CalculateMinSize(owner,MinWidthInChars,MinHeightInChars);
+	MinSize.x = widthInPixels;
+	MinSize.y = heightInPixels;
 }
 
 /*************************************

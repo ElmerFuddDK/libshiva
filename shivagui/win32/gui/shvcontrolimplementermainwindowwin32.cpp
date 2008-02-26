@@ -54,8 +54,6 @@ SHVControlImplementerMainWindowWin32::SHVControlImplementerMainWindowWin32(HINST
 	hInstance = hinstance;
 	Dispatcher = dispatcher;
 
-	MinWidthInChars = MinHeightInChars = 0;
-
 	Color = SHVColorWin32::FromSysColor(COLOR_3DFACE);
 }
 
@@ -112,8 +110,6 @@ SHVBool retVal(parent == NULL && !IsCreated());
 
 			DecorationsSize.x = (winRect.right - winRect.left) - (clientRect.right - clientRect.left);
 			DecorationsSize.y = (winRect.bottom - winRect.top) - (clientRect.bottom - clientRect.top);
-
-			MinSize = CalculateMinSize(owner,MinWidthInChars,MinHeightInChars);
 		}
 	}
 
@@ -132,6 +128,31 @@ RECT nativeRect;
 	::GetClientRect(GetHandle(),&nativeRect);
 
 	return SHVRect(nativeRect.left,nativeRect.top,nativeRect.right,nativeRect.bottom);
+}
+
+/*************************************
+ * SetSize
+ *************************************/
+void SHVControlImplementerMainWindowWin32::SetSize(SHVControlContainer* owner, int widthInPixels, int heightInPixels, SHVControlContainer::PosModes mode)
+{
+SHVRect rect(GetRect(owner));
+
+	SHVASSERT(IsCreated());
+
+	rect.SetWidth(widthInPixels+DecorationsSize.x);
+	rect.SetHeight(heightInPixels+DecorationsSize.y);
+
+	switch (mode)
+	{
+	case SHVControlContainer::PosCenterWindow: // centerwindow is the same as screen for main window
+	case SHVControlContainer::PosCenterScreen:
+		///\todo implement CenterScreen for main window
+		break;
+	default:
+		break;
+	}
+
+	SetRect(owner,rect);
 }
 
 /*************************************
@@ -181,13 +202,10 @@ void SHVControlImplementerMainWindowWin32::SetColor(SHVControlContainer* owner, 
 /*************************************
  * SetMinimumSize
  *************************************/
-void SHVControlImplementerMainWindowWin32::SetMinimumSize(SHVControlContainer* owner, int widthInChars, int heightInChars)
+void SHVControlImplementerMainWindowWin32::SetMinimumSize(SHVControlContainer* owner, int widthInPixels, int heightInPixels)
 {
-	MinWidthInChars = widthInChars;
-	MinHeightInChars = heightInChars;
-
-	if (IsCreated())
-		MinSize = CalculateMinSize(owner,MinWidthInChars,MinHeightInChars);
+	MinSize.x = widthInPixels;
+	MinSize.y = heightInPixels;
 }
 
 /*************************************

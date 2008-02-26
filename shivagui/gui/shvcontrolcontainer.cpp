@@ -29,7 +29,7 @@ int SHVControlContainer::GetType()
 /*************************************
  * Create
  *************************************/
-SHVBool SHVControlContainer::Create()
+SHVBool SHVControlContainer::Create(int flags)
 {
 SHVBool retVal;
 SHVGUIManagerImpl* manager = (SHVGUIManagerImpl*)GetManager();
@@ -38,7 +38,7 @@ SHVGUIManagerImpl* manager = (SHVGUIManagerImpl*)GetManager();
 		GetImplementor()->GetSubType(this) == SHVControlContainer::SubTypeDialog || 
 		GetImplementor()->GetSubType(this) == SHVControlContainer::SubTypeModalDialog );
 
-	retVal = GetImplementor()->Create(this, NULL, SHVControl::FlagVisible);
+	retVal = GetImplementor()->Create(this, NULL, flags);
 
 	if (retVal)
 	{
@@ -120,6 +120,16 @@ SHVGUIManagerImpl* manager = (SHVGUIManagerImpl*)GetManager();
 }
 
 /*************************************
+ * SetSize
+ *************************************/
+SHVControlContainer* SHVControlContainer::SetSize(int widthInFontUnits, int heightInFontUnits, PosModes mode)
+{
+SHVFontRef font = GetFont();
+	GetImplementor()->SetSize(this, font->LFUToWidth(widthInFontUnits), font->LFUToHeight(heightInFontUnits), mode);
+	return this;
+}
+
+/*************************************
  * GetData
  *************************************/
 SHVBool SHVControlContainer::GetData(SHVControlData* data)
@@ -148,6 +158,16 @@ SHVControlDataRowRef dataRow = data->GetRow();
 	}
 
 	return SHVBool::False;
+}
+
+/*************************************
+ * SetMinimumSize
+ *************************************/
+SHVControlContainer* SHVControlContainer::SetMinimumSize(int widthInFontUnits, int heightInFontUnits)
+{
+SHVFontRef font = GetFont();
+	GetImplementor()->SetMinimumSize(this,font->LFUToWidth(widthInFontUnits),font->LFUToHeight(heightInFontUnits));
+	return this;
 }
 
 /*************************************

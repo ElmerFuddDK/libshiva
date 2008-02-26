@@ -60,7 +60,7 @@ SHVBool SHVControlImplementerLabelWin32::Create(SHVControl* owner, SHVControlImp
 			SetWindowLongPtr(GetHandle(),GWLP_USERDATA,(LONG_PTR)owner);
 			SetWindowLongPtr(GetHandle(),GWLP_WNDPROC,(LONG_PTR)&SHVControlImplementerLabelWin32::WndProc);
 
-			SetFont(owner,owner->GetManager()->GetFont(SHVGUIManager::CfgFontNormal),true);
+			owner->SetFont(NULL,true);
 		}
 
 		return IsCreated();
@@ -168,7 +168,7 @@ SHVControlImplementerLabelWin32* self = (owner ? (SHVControlImplementerLabelWin3
 			}
 			else
 			{
-				draw->DrawText(self->GetText(),draw->GetClientRect(owner),SHVDraw::TextVCenter|SHVDraw::TextLeft|SHVDraw::TextEndEllipsis);
+				draw->DrawText(self->GetText(),draw->GetClientRect(owner),NULL,SHVDraw::TextVCenter|SHVDraw::TextLeft|SHVDraw::TextEndEllipsis);
 			}
 
 			break;

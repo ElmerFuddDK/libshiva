@@ -37,6 +37,7 @@ public:
 
 	// From SHVControlImplementerContainer
 	virtual SHVRect GetRegionRect();
+	virtual void SetSize(SHVControlContainer* owner, int widthInPixels, int heightInPixels, SHVControlContainer::PosModes mode);
 
 	virtual SHVStringBuffer GetTitle();
 	virtual void SetTitle(const SHVStringC& title);
@@ -44,7 +45,7 @@ public:
 	virtual SHVColor* GetColor(SHVControlContainer* owner);
 	virtual void SetColor(SHVControlContainer* owner, SHVColor* color);
 
-	virtual void SetMinimumSize(SHVControlContainer* owner, int widthInChars, int heightInChars);
+	virtual void SetMinimumSize(SHVControlContainer* owner, int widthInPixels, int heightInPixels);
 	virtual SHVPoint GetMinimumSizeInPixels(SHVControlContainer* owner);
 
 
@@ -58,8 +59,6 @@ protected:
 
 private:
 	///\cond INTERNAL
-	int MinWidthInChars;
-	int MinHeightInChars;
 	SHVPoint MinSize;
 	SHVPoint DecorationsSize;
 	HINSTANCE hInstance;

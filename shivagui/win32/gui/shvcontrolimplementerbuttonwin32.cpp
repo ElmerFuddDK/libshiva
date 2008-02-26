@@ -59,7 +59,7 @@ SHVBool SHVControlImplementerButtonWin32::Create(SHVControl* owner, SHVControlIm
 			SetWindowLongPtr(GetHandle(),GWLP_WNDPROC,(LONG_PTR)&SHVControlImplementerButtonWin32::WndProc);
 		}
 		
-		SetFont(owner,owner->GetManager()->GetFont(SHVGUIManager::CfgFontNormal),true);
+		owner->SetFont(NULL,true);
 
 		return IsCreated();
 	}

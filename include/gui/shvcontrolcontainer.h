@@ -33,9 +33,14 @@ public:
 		SubTypeModalDialog,
 		SubTypeDialog,
 	};
-	enum EventTypes
-	{
+	enum EventTypes	{
 		EventPreDestroy
+	};
+	enum PosModes {
+		PosNone = 0,
+		PosCenterWindow,
+		PosCenterScreen,
+		PosDefault = PosNone
 	};
 
 
@@ -49,9 +54,10 @@ public:
 	inline SHVControlContainer* SetParent(SHVControlContainer* parent, int flags = FlagVisible);
 
 
-	// Create top level container
-	virtual SHVBool Create();
+	// top level container functions
+	virtual SHVBool Create(int flags = SHVControl::FlagVisible);
 	virtual SHVBool Close();
+	virtual SHVControlContainer* SetSize(int widthInFontUnits, int heightInFontUnits, PosModes mode = PosDefault);
 
 
 	// Data handling
@@ -61,7 +67,7 @@ public:
 	inline SHVStringBuffer GetTitle();
 	inline SHVControlContainer* SetTitle(const SHVStringC& title);
 
-	inline SHVControlContainer* SetMinimumSize(int widthInChars, int heightInChars);
+	virtual SHVControlContainer* SetMinimumSize(int widthInFontUnits, int heightInFontUnits);
 	inline SHVPoint GetMinimumSizeInPixels();
 
 	inline SHVColor* GetColor();
@@ -127,6 +133,7 @@ class SHVControlImplementerContainer : public SHVControlImplementer
 public:
 
 	virtual SHVRect GetRegionRect() = 0;
+	virtual void SetSize(SHVControlContainer* owner, int widthInPixels, int heightInPixels, SHVControlContainer::PosModes mode) = 0;
 
 	virtual SHVStringBuffer GetTitle() = 0;
 	virtual void SetTitle(const SHVStringC& title) = 0;
@@ -134,7 +141,7 @@ public:
 	virtual SHVColor* GetColor(SHVControlContainer* owner) = 0;
 	virtual void SetColor(SHVControlContainer* owner, SHVColor* color) = 0;
 
-	virtual void SetMinimumSize(SHVControlContainer* owner, int widthInChars, int heightInChars) = 0;
+	virtual void SetMinimumSize(SHVControlContainer* owner, int widthInPixels, int heightInPixels) = 0;
 	virtual SHVPoint GetMinimumSizeInPixels(SHVControlContainer* owner) = 0;
 
 protected:
@@ -208,16 +215,7 @@ SHVControlContainer* SHVControlContainer::SetTitle(const SHVStringC& title)
 }
 
 /*************************************
- * SetMinimumSize
- *************************************/
-SHVControlContainer* SHVControlContainer::SetMinimumSize(int widthInChars, int heightInChars)
-{
-	GetImplementor()->SetMinimumSize(this,widthInChars,heightInChars);
-	return this;
-}
-
-/*************************************
- * SetMinimumSize
+ * GetMinimumSizeInPixels
  *************************************/
 SHVPoint SHVControlContainer::GetMinimumSizeInPixels()
 {

@@ -28,6 +28,17 @@ void SHVControl::SetRect(const SHVRect& rect)
 }
 
 /*************************************
+ * SetFont
+ *************************************/
+SHVBool SHVControl::SetFont(SHVFont* font, bool resetHeight)
+{
+	if (font == NULL)
+		font = GetManager()->GetFont(SHVGUIManager::CfgFontNormal);
+
+	return GetImplementor()->SetFont(this, font, resetHeight);
+}
+
+/*************************************
  * GetModuleList
  *************************************/
 SHVModuleList& SHVControl::GetModuleList()
