@@ -338,7 +338,7 @@ SHVRegionAction* SHVRegionActionImpl::AlignLeftRight(SHVControl* left, SHVContro
 		}
 
 		// set the x axis position
-		if ( (alignment&SHVRegion::AlignHCenter) )
+		if ( (alignment&SHVRegion::AlignHCenter) == SHVRegion::AlignHCenter )
 		{
 			WindowRect.SetLeft( (rctRight.GetLeft() - rctLeft.GetRight() - width)/2 );
 			WindowRect.SetWidth( width );
@@ -383,7 +383,7 @@ SHVRegionAction* SHVRegionActionImpl::AlignLeftRight(SHVControl* left, SHVContro
 			}
 			
 			// set the y axis position
-			if ( (alignment&SHVRegion::AlignVCenter) )
+			if ( (alignment&SHVRegion::AlignVCenter) == SHVRegion::AlignVCenter )
 			{
 				WindowRect.SetTop( (bottom - top - height)/2 );
 				WindowRect.SetHeight( height );
@@ -430,6 +430,40 @@ SHVRegionAction* SHVRegionActionImpl::LeftOf(SHVControl* left, int leftMargin)
 		}
 
 		rect.SetWidth(WindowRect.GetWidth());
+		rect.SetHeight(WindowRect.GetHeight());
+
+		WindowRect = rect;
+	}
+
+	return this;
+}
+
+/*************************************
+ * RightOf
+ *************************************/
+SHVRegionAction* SHVRegionActionImpl::RightOf(SHVControl* right, int rightMargin)
+{
+	if (Initialize())
+	{
+	SHVRect rect(Region.Rect);
+
+		if (rightMargin < 0)
+			rightMargin = Region.HorizMargin;
+
+		if (right)
+		{
+		SHVRect rightRect(right->GetRect());
+
+			rect.SetRight(rightRect.GetLeft()+rightMargin);
+			rect.SetTop(rightRect.GetTop());
+		}
+		else
+		{
+			rect.SetTop(rect.GetTop()+Region.VertMargin);
+			rect.SetRight(rect.GetLeft()+rightMargin);
+		}
+
+		rect.SetLeft(rect.GetRight()-WindowRect.GetWidth());
 		rect.SetHeight(WindowRect.GetHeight());
 
 		WindowRect = rect;

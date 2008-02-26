@@ -88,6 +88,7 @@ public:
 	virtual SHVRegionAction* ClipRight(int extraMargin = 0) = 0;
 
 	virtual SHVRegionAction* LeftOf(SHVControl* left = NULL, int leftMargin = -1) = 0;
+	virtual SHVRegionAction* RightOf(SHVControl* right = NULL, int rightMargin = -1) = 0;
 
 	virtual SHVRegionAction* SetPercent(int x = -1, int y = -1, int width = -1, int height = -1, SHVRect margins = SHVRect(-1,-1,-1,-1)) = 0;
 
