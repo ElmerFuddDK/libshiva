@@ -315,7 +315,7 @@ const SHVChar* self = Buffer;
 		}
 	}
 
-	return SHVString8C(self).Find(self);
+	return SHVString8C(self).Find(str.GetBufferConst());
 }
 
 /*************************************
