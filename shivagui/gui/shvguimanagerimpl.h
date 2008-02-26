@@ -3,6 +3,7 @@
 
 #include "../include/shvguimanager.h"
 #include "../../include/utils/shvhashtable.h"
+#include "shvmessagebox.h"
 
 
 //-=========================================================================================================
@@ -60,6 +61,7 @@ public:
 
 protected:
 friend class SHVControlContainer;
+friend class SHVMessageBox;
 
 	///\cond INTERNAL
 	typedef struct ControlPair {
@@ -78,7 +80,7 @@ friend class SHVControlContainer;
 	SHVList<SHVControlContainer*> TopLevelDialogs;
 	SHVList<SHVControlContainer*> TopLevelModalDialogs;
 
-	SHVList<SHVControlContainerRef,SHVControlContainer*> MessageBoxes;
+	SHVList<SHVMessageBoxRef,SHVMessageBox*> MessageBoxes;
 	///\endcond
 };
 

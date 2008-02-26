@@ -75,15 +75,15 @@ void SHVGUIManagerImpl::Unregister()
 // Show a message box
 SHVBool SHVGUIManagerImpl::ShowMessageBox(const SHVStringC text, const SHVStringC title, int type, SHVEventSubscriberBase* resultSubscriber)
 {
-SHVControlContainerRef dialog = NewModalDialog();
-SHVBool retVal = dialog->Create();
+SHVMessageBox* msgBox = SHVMessageBox::Create(this,text,title,type);
 
-	if (retVal)
+	if (msgBox)
 	{
-		MessageBoxes.AddTail(dialog);
+		msgBox->ResultSubscribe(resultSubscriber);
+		msgBox->InitializeForm(NULL);
 	}
 
-	return retVal;
+	return (msgBox ? SHVBool::True : SHVBool::False);
 }
 
 /*************************************
