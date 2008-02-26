@@ -4,6 +4,7 @@
 
 #include "../../include/shvcontrolimplementer.h"
 #include "../../include/utils/shvpoint.h"
+#include "utils/shvfontwin32.h"
 
 #ifndef __SHIVA_WIN32
 # error This code only works for win32
@@ -61,9 +62,13 @@ protected:
 
 	virtual void SetHandle(HWND handle);
 
+	virtual void ModifyStyle(int set, int remove);
+	virtual void ModifyStyleEx(int set, int remove);
+
 private:
 
 	HWND Window;
+	SHVFontWin32Ref Font;
 
 };
 

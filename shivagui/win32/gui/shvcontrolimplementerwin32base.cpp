@@ -4,6 +4,7 @@
 #include "shvcontrolimplementerwin32base.h"
 #include "shvwin32.h"
 #include "utils/shvfontwin32.h"
+#include "utils/shvdrawwin32.h"
 
 //=========================================================================================================
 // SHVControlImplementerWin32Base - implementation of base implementer methods
@@ -61,6 +62,8 @@ SHVBool retVal(IsCreated());
 
 		Window = Win32::InvalidHandle();
 		::DestroyWindow(oldwindow);
+
+		Font = NULL;
 	}
 
 	return retVal;
@@ -72,21 +75,27 @@ SHVBool retVal(IsCreated());
 SHVRect SHVControlImplementerWin32Base::GetRect(SHVControl* owner)
 {
 RECT nativeRect;
-POINT topleft, bottomright;
 
 	SHVASSERT(IsCreated() && owner && owner->GetImplementor()->GetNative() == this);
 
 	::GetWindowRect(Window,&nativeRect);
 
-	topleft.x = nativeRect.left;
-	topleft.y = nativeRect.top;
-	bottomright.x = nativeRect.right;
-	bottomright.y = nativeRect.bottom;
+	if (owner->GetParent())
+	{
+	POINT topleft, bottomright;
 
-	ScreenToClient(Win32::GetHandle(owner->GetParent()),&topleft);
-	ScreenToClient(Win32::GetHandle(owner->GetParent()),&bottomright);
+		topleft.x = nativeRect.left;
+		topleft.y = nativeRect.top;
+		bottomright.x = nativeRect.right;
+		bottomright.y = nativeRect.bottom;
 
-	return SHVRect(topleft.x,topleft.y,bottomright.x,bottomright.y);
+		ScreenToClient(Win32::GetHandle(owner->GetParent()),&topleft);
+		ScreenToClient(Win32::GetHandle(owner->GetParent()),&bottomright);
+
+		return SHVRect(topleft.x,topleft.y,bottomright.x,bottomright.y);
+	}
+
+	return SHVDrawWin32::MapRect(nativeRect);
 }
 
 /*************************************
@@ -144,18 +153,7 @@ DWORD styles = (retVal ? ::GetWindowLong(Window,GWL_STYLE) : 0);
  *************************************/
 SHVFont* SHVControlImplementerWin32Base::GetFont(SHVControl* owner)
 {
-SHVFontWin32* retVal = NULL;
-
-	if (IsCreated())
-	{
-	HFONT font = (HFONT)::SendMessage(GetHandle(),WM_GETFONT,0,0);
-
-		if (font)
-			retVal = new SHVFontWin32(font,false);
-
-	}
-
-	return retVal;
+	return Font;
 }
 
 /*************************************
@@ -167,8 +165,9 @@ SHVBool retVal(IsCreated());
 
 	if (retVal && font)
 	{
-	SHVFontWin32* win32Font = (SHVFontWin32*)font;
-		::SendMessage(GetHandle(),WM_SETFONT,(WPARAM)win32Font->GetFont(),0);
+		Font = (SHVFontWin32*)font;
+
+		::SendMessage(GetHandle(),WM_SETFONT,(WPARAM)Font->GetFont(),0);
 
 		if (!newHeight.IsNull())
 		{
@@ -237,7 +236,7 @@ SHVPoint SHVControlImplementerWin32Base::CalculateMinSize(SHVControl* owner, int
 void SHVControlImplementerWin32Base::SetResizable(bool resizable)
 {
 DWORD style = ::GetWindowLong(GetHandle(), GWL_STYLE);
-DWORD newStyle = style;
+DWORD oldStyle = style;
 
 	// only modify the style if resizable is different from what it was before
 	if (resizable)
@@ -245,7 +244,7 @@ DWORD newStyle = style;
 	else
 		style = (style & ~WS_VISIBLE);
 
-	if (style != newStyle)
+	if (style != oldStyle)
 		::SetWindowLong(GetHandle(), GWL_STYLE, style);
 
 }
@@ -268,4 +267,34 @@ void SHVControlImplementerWin32Base::SetHandle(HWND handle)
 
 	SHVASSERT(!IsCreated());
 	Window = handle;
+}
+
+/*************************************
+ * ModifyStyle
+ *************************************/
+void SHVControlImplementerWin32Base::ModifyStyle(int set, int remove)
+{
+DWORD style = ::GetWindowLong(GetHandle(), GWL_STYLE);
+DWORD oldStyle = style;
+
+	style |= set;
+	style = (style & ~remove);
+
+	if (style != oldStyle)
+		::SetWindowLong(GetHandle(), GWL_STYLE, style);
+}
+
+/*************************************
+ * ModifyStyleEx
+ *************************************/
+void SHVControlImplementerWin32Base::ModifyStyleEx(int set, int remove)
+{
+DWORD style = ::GetWindowLong(GetHandle(), GWL_EXSTYLE);
+DWORD oldStyle = style;
+
+	style |= set;
+	style = (style & ~remove);
+
+	if (style != oldStyle)
+		::SetWindowLong(GetHandle(), GWL_EXSTYLE, style);
 }
