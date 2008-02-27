@@ -34,6 +34,7 @@ public:
 
 protected:
 	virtual void OnEvent(SHVEvent* event);
+	virtual void OnPreDestroyEvent(SHVEvent* event);
 	virtual void OnResizeForm(SHVControlContainer* container, SHVControlLayout* layout);
 
 	SHVControlContainerRef ControlContainer;

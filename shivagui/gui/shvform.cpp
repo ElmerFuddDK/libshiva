@@ -15,7 +15,7 @@ SHVForm::SHVForm(SHVGUIManager* manager, SHVControlContainer* controlContainer, 
 	ControlContainer(controlContainer),
 	EntityName(entityName)
 {
-	ControlContainer->SubscribePreDestroy(new SHVEventSubscriber(this));
+	ControlContainer->SubscribePreDestroy(new SHVEventSubscriberFunc<SHVForm>(this,&SHVForm::OnPreDestroyEvent));
 }
 
 /*************************************
@@ -100,10 +100,14 @@ SHVBool SHVForm::PreClose()
  *************************************/
 void SHVForm::OnEvent(SHVEvent* event)
 {
-	if (event->GetID() == SHVInt(SHVControlContainer::EventPreDestroy))
-	{
-		SHVEventDataBool::SetValue(event, PreClose());
-	}
+}
+
+/*************************************
+ * OnPreDestroyEvent
+ *************************************/
+void SHVForm::OnPreDestroyEvent(SHVEvent* event)
+{
+	SHVEventDataBool::SetValue(event, PreClose());
 }
 
 /*************************************
