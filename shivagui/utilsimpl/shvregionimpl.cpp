@@ -78,6 +78,7 @@ int SHVRegionImpl::GetWidth()
 void SHVRegionImpl::Reset()
 {
 	SetRect(Container->GetRegionRect());
+	Font = Container->GetFont();
 	HorizMargin = Container->GetManager()->GetConfig().FindInt(SHVGUIManager::CfgRegionHorizMargin,0).ToInt();
 	VertMargin = Container->GetManager()->GetConfig().FindInt(SHVGUIManager::CfgRegionVertMargin,0).ToInt();
 }
@@ -91,36 +92,87 @@ void SHVRegionImpl::SetRect(const SHVRect& rect)
 }
 
 /*************************************
+ * SetRect
+ *************************************/
+SHVRegion* SHVRegionImpl::SetMargin(int hmargin, int vmargin)
+{
+	return SetMarginInPixels(Font->LFUToWidth(hmargin),Font->LFUToHeight(vmargin));
+}
+
+/*************************************
+ * SetRect
+ *************************************/
+SHVRegion* SHVRegionImpl::SetMarginInPixels(int hmargin, int vmargin)
+{
+	HorizMargin = hmargin;
+	VertMargin = vmargin;
+
+	return this;
+}
+
+/*************************************
  * ClipTop
  *************************************/
-SHVRegion* SHVRegionImpl::ClipTop(int pixels)
+SHVRegion* SHVRegionImpl::ClipTop(int lfuheight)
+{
+	return ClipTopInPixels(Font->LFUToHeight(lfuheight));
+}
+
+/*************************************
+ * ClipBottom
+ *************************************/
+SHVRegion* SHVRegionImpl::ClipBottom(int lfuheight)
+{
+	return ClipBottomInPixels(Font->LFUToHeight(lfuheight));
+}
+
+/*************************************
+ * ClipLeft
+ *************************************/
+SHVRegion* SHVRegionImpl::ClipLeft(int lfuwidth)
+{
+	return ClipLeftInPixels(Font->LFUToWidth(lfuwidth));
+}
+
+/*************************************
+ * ClipRight
+ *************************************/
+SHVRegion* SHVRegionImpl::ClipRight(int lfuwidth)
+{
+	return ClipRightInPixels(Font->LFUToWidth(lfuwidth));
+}
+
+/*************************************
+ * ClipTopInPixels
+ *************************************/
+SHVRegion* SHVRegionImpl::ClipTopInPixels(int pixels)
 {
 	Rect.SetTop(Rect.GetTop()+pixels);
 	return this;
 }
 
 /*************************************
- * ClipBottom
+ * ClipBottomInPixels
  *************************************/
-SHVRegion* SHVRegionImpl::ClipBottom(int pixels)
+SHVRegion* SHVRegionImpl::ClipBottomInPixels(int pixels)
 {
 	Rect.SetBottom(Rect.GetBottom()-pixels);
 	return this;
 }
 
 /*************************************
- * ClipLeft
+ * ClipLeftInPixels
  *************************************/
-SHVRegion* SHVRegionImpl::ClipLeft(int pixels)
+SHVRegion* SHVRegionImpl::ClipLeftInPixels(int pixels)
 {
 	Rect.SetLeft(Rect.GetLeft()+pixels);
 	return this;
 }
 
 /*************************************
- * ClipRight
+ * ClipRightInPixels
  *************************************/
-SHVRegion* SHVRegionImpl::ClipRight(int pixels)
+SHVRegion* SHVRegionImpl::ClipRightInPixels(int pixels)
 {
 	Rect.SetRight(Rect.GetRight()-pixels);
 	return this;
@@ -131,7 +183,15 @@ SHVRegion* SHVRegionImpl::ClipRight(int pixels)
  *************************************/
 SHVRegionActionPtr SHVRegionImpl::Move(SHVControl* wnd)
 {
-	return new SHVRegionActionImpl(*this,wnd);
+	return new SHVRegionActionImpl(*this,wnd,true);
+}
+
+/*************************************
+ * Move a window (in pixels)
+ *************************************/
+SHVRegionActionPtr SHVRegionImpl::MoveInPixels(SHVControl* wnd)
+{
+	return new SHVRegionActionImpl(*this,wnd,false);
 }
 
 
@@ -144,9 +204,12 @@ SHVRegionActionPtr SHVRegionImpl::Move(SHVControl* wnd)
  * Constructor
  *************************************/
 ///\cond INTERNAL
-SHVRegionActionImpl::SHVRegionActionImpl(SHVRegionImpl& region, SHVControl* wnd) : Region(region), Wnd(wnd)
+SHVRegionActionImpl::SHVRegionActionImpl(SHVRegionImpl& region, SHVControl* wnd, bool lfumode) : Region(region)
 {
 	Initialized = false;
+	LFUMode = lfumode;
+
+	And(wnd);
 }
 ///\endcond
 
@@ -155,8 +218,98 @@ SHVRegionActionImpl::SHVRegionActionImpl(SHVRegionImpl& region, SHVControl* wnd)
  *************************************/
 SHVRegionActionImpl::~SHVRegionActionImpl()
 {
-	if (Initialized)
-		Wnd->SetRect(WindowRect);
+SHVListWndIterator itr(Wnds);
+
+	Commit();
+
+	while (itr.MoveNext())
+	{
+		// adjust according to max
+		if (!itr.Get()->MaxWidth.IsNull() && itr.Get()->Rect.GetWidth() > itr.Get()->MaxWidth)
+		{
+			itr.Get()->Rect.SetWidth(itr.Get()->MaxWidth);
+		}
+		if (!itr.Get()->MaxHeight.IsNull() && itr.Get()->Rect.GetHeight() > itr.Get()->MaxHeight)
+		{
+			itr.Get()->Rect.SetHeight(itr.Get()->MaxHeight);
+		}
+
+		itr.Get()->Wnd->SetRect(itr.Get()->Rect);
+	}
+}
+
+/*************************************
+ * And
+ *************************************/
+SHVRegionAction* SHVRegionActionImpl::And(SHVControl* extraControl)
+{
+	if (extraControl && extraControl->IsCreated())
+	{
+		Commit();
+		Wnds.AddTail(new Control(extraControl));
+	}
+
+	return this;
+}
+
+/*************************************
+ * CtrlMaxWidth
+ *************************************/
+SHVRegionAction* SHVRegionActionImpl::CtrlMaxWidth(int width)
+{
+	if (Wnds.GetCount())
+	{
+		CalculateHMargin(width);
+
+		Wnds.GetLast()->FixedWidth = false;
+		Wnds.GetLast()->MaxWidth = width;
+	}
+	
+	return this;
+}
+
+/*************************************
+ * CtrlWidth
+ *************************************/
+SHVRegionAction* SHVRegionActionImpl::CtrlWidth(int width)
+{
+	if (Wnds.GetCount())
+	{
+		CalculateHMargin(width);
+
+		Commit();
+		Wnds.GetLast()->Rect.SetWidth(width);
+	}
+	
+	return this;
+}
+
+/*************************************
+ * CtrlFixedWidth
+ *************************************/
+SHVRegionAction* SHVRegionActionImpl::CtrlFixedWidth()
+{
+	if (Wnds.GetCount())
+	{
+		Wnds.GetLast()->FixedWidth = true;
+		Wnds.GetLast()->MaxWidth.SetToNull();
+	}
+	
+	return this;
+}
+
+/*************************************
+ * CtrlFixedHeight
+ *************************************/
+SHVRegionAction* SHVRegionActionImpl::CtrlFixedHeight()
+{
+	if (Wnds.GetCount())
+	{
+		Wnds.GetLast()->FixedHeight = true;
+		Wnds.GetLast()->MaxHeight.SetToNull();
+	}
+	
+	return this;
 }
 
 // placement methods
@@ -167,10 +320,8 @@ SHVRegionAction* SHVRegionActionImpl::Top(int leftMargin, int topMargin)
 {
 	if (Initialize())
 	{
-		if (leftMargin < 0)
-			leftMargin = Region.HorizMargin;
-		if (topMargin < 0)
-			topMargin = Region.VertMargin;
+		CalculateHMargin(leftMargin);
+		CalculateVMargin(topMargin);
 
 		WindowRect.SetByXY( Region.Rect.GetLeft()+leftMargin,
 							Region.Rect.GetTop()+topMargin,
@@ -188,10 +339,8 @@ SHVRegionAction* SHVRegionActionImpl::Bottom(int leftMargin, int topMargin)
 {
 	if (Initialize())
 	{
-		if (leftMargin < 0)
-			leftMargin = Region.HorizMargin;
-		if (topMargin < 0)
-			topMargin = Region.VertMargin;
+		CalculateHMargin(leftMargin);
+		CalculateVMargin(topMargin);
 
 		WindowRect.SetByXY( Region.Rect.GetLeft()+leftMargin,
 							Region.Rect.GetBottom()-topMargin-WindowRect.GetHeight(),
@@ -209,10 +358,8 @@ SHVRegionAction* SHVRegionActionImpl::Left(int leftMargin, int topMargin)
 {
 	if (Initialize())
 	{
-		if (leftMargin < 0)
-			leftMargin = Region.HorizMargin;
-		if (topMargin < 0)
-			topMargin = Region.VertMargin;
+		CalculateHMargin(leftMargin);
+		CalculateVMargin(topMargin);
 
 		WindowRect.SetByXY( Region.Rect.GetLeft()+leftMargin,
 							Region.Rect.GetTop()+topMargin,
@@ -230,10 +377,8 @@ SHVRegionAction* SHVRegionActionImpl::Right(int leftMargin, int topMargin)
 {
 	if (Initialize())
 	{
-		if (leftMargin < 0)
-			leftMargin = Region.HorizMargin;
-		if (topMargin < 0)
-			topMargin = Region.VertMargin;
+		CalculateHMargin(leftMargin);
+		CalculateVMargin(topMargin);
 
 		WindowRect.SetByXY( Region.Rect.GetLeft()-leftMargin-WindowRect.GetWidth(),
 							Region.Rect.GetTop()+topMargin,
@@ -251,6 +396,8 @@ SHVRegionAction* SHVRegionActionImpl::ClipTop(int extraMargin)
 {
 	if (Initialize())
 	{
+		CalculateVMargin(extraMargin);
+
 		if (WindowRect.GetBottom()+extraMargin > Region.Rect.GetTop())
 			Region.Rect.SetTop( WindowRect.GetBottom()+extraMargin );
 	}
@@ -265,6 +412,8 @@ SHVRegionAction* SHVRegionActionImpl::ClipBottom(int extraMargin)
 {
 	if (Initialize())
 	{
+		CalculateVMargin(extraMargin);
+
 		if (WindowRect.GetTop()-extraMargin < Region.Rect.GetBottom())
 			Region.Rect.SetBottom( WindowRect.GetTop()-extraMargin );
 	}
@@ -279,6 +428,8 @@ SHVRegionAction* SHVRegionActionImpl::ClipLeft(int extraMargin)
 {
 	if (Initialize())
 	{
+		CalculateHMargin(extraMargin);
+
 		if (WindowRect.GetRight()+extraMargin > Region.Rect.GetLeft())
 			Region.Rect.SetLeft( WindowRect.GetRight()+extraMargin );
 	}
@@ -293,6 +444,8 @@ SHVRegionAction* SHVRegionActionImpl::ClipRight(int extraMargin)
 {
 	if (Initialize())
 	{
+		CalculateHMargin(extraMargin);
+
 		if (WindowRect.GetLeft()-extraMargin < Region.Rect.GetRight())
 			Region.Rect.SetRight( WindowRect.GetLeft()-extraMargin );
 	}
@@ -310,14 +463,17 @@ SHVRegionAction* SHVRegionActionImpl::AlignLeftRight(SHVControl* left, SHVContro
 	{
 	SHVRect rctLeft, rctRight;
 	int width, height;
+
+		// Make sure you don't use any of the windows in the combined list
+		SHVASSERT(left == NULL || !ContainsWnd(left));
+		SHVASSERT(right == NULL || !ContainsWnd(right));
 	
 		width = WindowRect.GetWidth();
 		height = WindowRect.GetHeight();
 
-		if (margin < 0)
-			margin = Region.HorizMargin;
+		CalculateHMargin(margin);
 
-		if (left)
+		if (left && left->IsCreated())
 		{
 			rctLeft = left->GetRect();
 		}
@@ -327,7 +483,7 @@ SHVRegionAction* SHVRegionActionImpl::AlignLeftRight(SHVControl* left, SHVContro
 			rctLeft.SetRight(rctLeft.GetLeft());
 		}
 
-		if (right)
+		if (right && right->IsCreated())
 		{
 			rctRight = right->GetRect();
 		}
@@ -413,10 +569,12 @@ SHVRegionAction* SHVRegionActionImpl::LeftOf(SHVControl* left, int leftMargin)
 	{
 	SHVRect rect(Region.Rect);
 
-		if (leftMargin < 0)
-			leftMargin = Region.HorizMargin;
+		// Make sure you don't use any of the windows in the combined list
+		SHVASSERT(left == NULL || !ContainsWnd(left));
+		
+		CalculateHMargin(leftMargin);
 
-		if (left)
+		if (left && left->IsCreated())
 		{
 		SHVRect leftRect(left->GetRect());
 
@@ -447,20 +605,22 @@ SHVRegionAction* SHVRegionActionImpl::RightOf(SHVControl* right, int rightMargin
 	{
 	SHVRect rect(Region.Rect);
 
-		if (rightMargin < 0)
-			rightMargin = Region.HorizMargin;
+		// Make sure you don't use any of the windows in the combined list
+		SHVASSERT(right == NULL || !ContainsWnd(right));
 
-		if (right)
+		CalculateHMargin(rightMargin);
+
+		if (right && right->IsCreated())
 		{
 		SHVRect rightRect(right->GetRect());
 
-			rect.SetRight(rightRect.GetLeft()+rightMargin);
+			rect.SetRight(rightRect.GetLeft()-rightMargin);
 			rect.SetTop(rightRect.GetTop());
 		}
 		else
 		{
 			rect.SetTop(rect.GetTop()+Region.VertMargin);
-			rect.SetRight(rect.GetLeft()+rightMargin);
+			rect.SetRight(rect.GetLeft()-rightMargin);
 		}
 
 		rect.SetLeft(rect.GetRight()-WindowRect.GetWidth());
@@ -473,22 +633,15 @@ SHVRegionAction* SHVRegionActionImpl::RightOf(SHVControl* right, int rightMargin
 }
 
 /*************************************
- * SetPercent
+ * FillPercent
  *************************************/
-SHVRegionAction* SHVRegionActionImpl::SetPercent(int x, int y, int width, int height, SHVRect margins)
+SHVRegionAction* SHVRegionActionImpl::FillPercent(int x, int y, int width, int height, SHVRect margins)
 {
 	if (Initialize())
 	{
 	int wwidth, wheight, i, j;
 
-		if (margins.GetLeft() < 0)
-			margins.SetLeft(Region.HorizMargin);
-		if (margins.GetRight() < 0)
-			margins.SetRight(Region.HorizMargin);
-		if (margins.GetTop() < 0)
-			margins.SetTop(Region.VertMargin);
-		if (margins.GetBottom() < 0)
-			margins.SetBottom(Region.VertMargin);
+		CalculateRectMargin(margins);
 
 		wwidth = WindowRect.GetWidth();
 		wheight = WindowRect.GetHeight();
@@ -545,10 +698,13 @@ SHVRegionAction* SHVRegionActionImpl::FillLeftRight(SHVControl* left, SHVControl
 	{
 	SHVRect rctLeft, rctRight;
 
-		if (margin < 0)
-			margin = Region.HorizMargin;
+		// Make sure you don't use any of the windows in the combined list
+		SHVASSERT(left == NULL || !ContainsWnd(left));
+		SHVASSERT(right == NULL || !ContainsWnd(right));
 
-		if (left)
+		CalculateHMargin(margin);
+
+		if (left && left->IsCreated())
 		{
 			rctLeft = left->GetRect();
 		}
@@ -558,7 +714,7 @@ SHVRegionAction* SHVRegionActionImpl::FillLeftRight(SHVControl* left, SHVControl
 			rctLeft.SetRight(rctLeft.GetLeft());
 		}
 
-		if (right)
+		if (right && right->IsCreated())
 		{
 			rctRight = right->GetRect();
 		}
@@ -575,18 +731,185 @@ SHVRegionAction* SHVRegionActionImpl::FillLeftRight(SHVControl* left, SHVControl
 	return this;
 }
 
+///\cond INTERNAL
+/*************************************
+ * Control constructor
+ *************************************/
+SHVRegionActionImpl::Control::Control(SHVControl* wnd) : Wnd(wnd), Rect(wnd->GetRect())
+{
+	FixedHeight = FixedWidth = false;
+}
 /*************************************
  * Initialize
  *************************************/
-///\cond INTERNAL
 bool SHVRegionActionImpl::Initialize()
 {
-	if (!Initialized && Wnd && Wnd->IsCreated())
+	if (!Initialized && Wnds.GetCount())
 	{
+	SHVListWndIterator itr(Wnds);
+	SHVRect tmpRect;
+
 		Initialized = true;
-		WindowRect = Wnd->GetRect();
+
+		WindowRect = Wnds.GetFirst()->Rect;
+
+		itr.MoveNext();
+		while (itr.MoveNext())
+		{
+			tmpRect = itr.Get()->Rect;
+
+			if (tmpRect.GetLeft() < WindowRect.GetLeft())
+				WindowRect.SetLeft(tmpRect.GetLeft());
+
+			if (tmpRect.GetTop() < WindowRect.GetTop())
+				WindowRect.SetTop(tmpRect.GetTop());
+
+			if (tmpRect.GetRight() > WindowRect.GetRight())
+				WindowRect.SetRight(tmpRect.GetRight());
+
+			if (tmpRect.GetBottom() > WindowRect.GetBottom())
+				WindowRect.SetBottom(tmpRect.GetBottom());
+		}
+
+		OrigRect = WindowRect;
 	}
 
 	return Initialized;
+}
+
+/*************************************
+ * Commit
+ *************************************/
+void SHVRegionActionImpl::Commit()
+{
+	if (Initialized)
+	{
+		if (Wnds.GetCount() == 1)
+		{
+			if (Wnds.GetFirst()->FixedWidth)
+				WindowRect.SetWidth(Wnds.GetFirst()->Rect.GetWidth());
+			if (Wnds.GetFirst()->FixedHeight)
+				WindowRect.SetHeight(Wnds.GetFirst()->Rect.GetHeight());
+			Wnds.GetFirst()->Rect = WindowRect;
+		}
+		else
+		{
+		SHVListWndIterator itr(Wnds);
+		SHVRect tmpRect;
+		SHVDouble pixelWidthOffset;
+		SHVDouble pixelHeightOffset;
+
+			// Check if we need to resize the windows first and move them a bit
+			if (OrigRect.GetWidth() != WindowRect.GetWidth())
+			{
+				pixelWidthOffset = double(WindowRect.GetWidth()) / double(OrigRect.GetWidth());
+			}
+			if (OrigRect.GetHeight() != WindowRect.GetHeight())
+			{
+				pixelHeightOffset = double(WindowRect.GetHeight()) / double(OrigRect.GetHeight());
+			}
+
+			while (itr.MoveNext())
+			{
+				tmpRect = itr.Get()->Rect;
+
+				if (pixelWidthOffset.IsNull())
+				{
+					tmpRect.SetX( WindowRect.GetX() + (tmpRect.GetX() - OrigRect.GetX()) );
+				}
+				else
+				{
+					tmpRect.SetX( WindowRect.GetX() + int(double(tmpRect.GetX() - OrigRect.GetX()) * pixelWidthOffset + 0.5) );
+					tmpRect.SetWidth( int(double(tmpRect.GetWidth()) * pixelWidthOffset + 0.5) );
+				}
+
+				if (pixelHeightOffset.IsNull())
+				{
+					tmpRect.SetY( WindowRect.GetY() + (tmpRect.GetY() - OrigRect.GetY()) );
+				}
+				else
+				{
+					tmpRect.SetY( WindowRect.GetY() + int(double(tmpRect.GetY() - OrigRect.GetY()) * pixelHeightOffset + 0.5) );
+					tmpRect.SetHeight( int(double(tmpRect.GetHeight()) * pixelHeightOffset + 0.5) );
+				}
+
+				if (itr.Get()->FixedWidth)
+					tmpRect.SetWidth(itr.Get()->Rect.GetWidth());
+				if (itr.Get()->FixedHeight)
+					tmpRect.SetHeight(itr.Get()->Rect.GetHeight());
+
+				itr.Get()->Rect = tmpRect;
+			}
+		}
+
+		Initialized = false;
+		WindowRect.SetEmpty();
+		OrigRect.SetEmpty();
+	}
+}
+
+/*************************************
+ * ContainsWnd
+ *************************************/
+bool SHVRegionActionImpl::ContainsWnd(SHVControl* wnd)
+{
+SHVListWndIterator itr(Wnds);
+bool retVal = (wnd == NULL);
+
+	while (!retVal && itr.MoveNext())
+	{
+		retVal = (itr.Get()->Wnd == wnd);
+	}
+
+	return retVal;
+}
+
+/*************************************
+ * CalculateHMargin
+ *************************************/
+void SHVRegionActionImpl::CalculateHMargin(int& hmargin)
+{
+	if (hmargin < 0)
+		hmargin = Region.HorizMargin;
+	else if (LFUMode)
+		hmargin = Region.Font->LFUToWidth(hmargin);
+}
+
+/*************************************
+ * CalculateVMargin
+ *************************************/
+void SHVRegionActionImpl::CalculateVMargin(int& vmargin)
+{
+	if (vmargin < 0)
+		vmargin = Region.VertMargin;
+	else if (LFUMode)
+		vmargin = Region.Font->LFUToHeight(vmargin);
+}
+
+/*************************************
+ * CalculateRectMargin
+ *************************************/
+void SHVRegionActionImpl::CalculateRectMargin(SHVRect& margin)
+{
+	if (margin.GetLeft() < 0)
+		margin.SetLeft(Region.HorizMargin);
+	else if (LFUMode)
+		margin.SetLeft(Region.Font->LFUToWidth(margin.GetLeft()));
+
+	if (margin.GetRight() < 0)
+		margin.SetRight(Region.HorizMargin);
+	else if (LFUMode)
+		margin.SetRight(Region.Font->LFUToWidth(margin.GetRight()));
+
+	if (margin.GetTop() < 0)
+		margin.SetTop(Region.VertMargin);
+	else if (LFUMode)
+		margin.SetTop(Region.Font->LFUToHeight(margin.GetTop()));
+
+	if (margin.GetBottom() < 0)
+		margin.SetBottom(Region.VertMargin);
+	else if (LFUMode)
+		margin.SetBottom(Region.Font->LFUToHeight(margin.GetBottom()));
+
 }
 ///\endcond

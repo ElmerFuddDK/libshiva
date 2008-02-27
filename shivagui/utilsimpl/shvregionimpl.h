@@ -2,6 +2,8 @@
 #define __SHIVA_GUIIMPL_REGION_H
 
 #include "../include/utils/shvregion.h"
+#include "../include/utils/shvfont.h"
+#include "../../include/utils/shvlist.h"
 
 // forward declare
 class SHVRegionActionImpl;
@@ -35,13 +37,25 @@ public:
 	virtual void Reset();
 	virtual void SetRect(const SHVRect& rect);
 
-	virtual SHVRegion* ClipTop(int pixels);
-	virtual SHVRegion* ClipBottom(int pixels);
-	virtual SHVRegion* ClipLeft(int pixels);
-	virtual SHVRegion* ClipRight(int pixels);
+	// Margin handling
+	virtual SHVRegion* SetMargin(int hmargin, int vmargin);
+	virtual SHVRegion* SetMarginInPixels(int hmargin, int vmargin);
+
+
+	// Clipping functions
+	// ------------------
+	virtual SHVRegion* ClipTop(int lfuheight);
+	virtual SHVRegion* ClipBottom(int lfuheight);
+	virtual SHVRegion* ClipLeft(int lfuwidth);
+	virtual SHVRegion* ClipRight(int lfuwidth);
+	virtual SHVRegion* ClipTopInPixels(int pixels);
+	virtual SHVRegion* ClipBottomInPixels(int pixels);
+	virtual SHVRegion* ClipLeftInPixels(int pixels);
+	virtual SHVRegion* ClipRightInPixels(int pixels);
 
 	// Start placing a window
 	virtual SHVRegionActionPtr Move(SHVControl* wnd);
+	virtual SHVRegionActionPtr MoveInPixels(SHVControl* wnd);
 
 
 private:
@@ -50,6 +64,7 @@ friend class SHVRegionActionImpl;
 	///\cond INTERNAL
 	SHVControlContainerRef Container;
 	SHVControl* Wnd;
+	SHVFontRef Font;
 	int HorizMargin, VertMargin;
 	SHVRect Rect;
 	///\endcond
@@ -73,6 +88,17 @@ public:
 	virtual ~SHVRegionActionImpl();
 
 
+	// add a control to a combined sub region
+	virtual SHVRegionAction* And(SHVControl* extraControl);
+
+
+	// Sets boundaries for the recently added control
+	virtual SHVRegionAction* CtrlMaxWidth(int width);
+	virtual SHVRegionAction* CtrlWidth(int width);
+	virtual SHVRegionAction* CtrlFixedWidth();
+	virtual SHVRegionAction* CtrlFixedHeight();
+
+
 	// placement methods
 	virtual SHVRegionAction* Top(int leftMargin = -1, int topMargin = -1);
 	virtual SHVRegionAction* Bottom(int leftMargin = -1, int topMargin = -1);
@@ -87,7 +113,7 @@ public:
 	virtual SHVRegionAction* LeftOf(SHVControl* left = NULL, int leftMargin = -1);
 	virtual SHVRegionAction* RightOf(SHVControl* right = NULL, int rightMargin = -1);
 
-	virtual SHVRegionAction* SetPercent(int x = -1, int y = -1, int width = -1, int height = -1, SHVRect margins = SHVRect(-1,-1,-1,-1));
+	virtual SHVRegionAction* FillPercent(int x = -1, int y = -1, int width = -1, int height = -1, SHVRect margins = SHVRect(-1,-1,-1,-1));
 
 	virtual SHVRegionAction* AlignLeftRight(SHVControl* left = NULL, SHVControl* right = NULL, int alignment = SHVRegion::AlignLeft, int margin = -1);
 	virtual SHVRegionAction* FillLeftRight(SHVControl* left = NULL, SHVControl* right = NULL, int margin = -1);
@@ -96,11 +122,32 @@ public:
 private:
 	///\cond INTERNAL
 	SHVRegionImpl& Region;
-	SHVControl* Wnd;
-	bool Initialized;
-	SHVRect WindowRect;
-	SHVRegionActionImpl(SHVRegionImpl& region, SHVControl* wnd);
+	bool Initialized, LFUMode;
+	SHVRect WindowRect, OrigRect;
+
+	// struct for caching values assosiated with a control whilst moving
+	struct Control {
+		SHVControl* Wnd;
+		SHVRect Rect;
+		SHVInt MaxWidth;
+		SHVInt MaxHeight;
+		bool FixedWidth, FixedHeight;
+		Control(SHVControl* wnd);
+	};
+	typedef SHVPtrContainer<Control> ControlPtr;
+
+	SHVList<ControlPtr,Control*> Wnds;
+	typedef SHVListIterator<ControlPtr,Control*> SHVListWndIterator;
+
+	SHVRegionActionImpl(SHVRegionImpl& region, SHVControl* wnd, bool lfumode);
+
 	bool Initialize();
+	void Commit();
+	bool ContainsWnd(SHVControl* wnd);
+
+	void CalculateHMargin(int& hmargin);
+	void CalculateVMargin(int& vmargin);
+	void CalculateRectMargin(SHVRect& margin);
 	///\endcond
 };
 
