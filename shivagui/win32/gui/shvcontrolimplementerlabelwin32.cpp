@@ -128,15 +128,15 @@ LRESULT CALLBACK SHVControlImplementerLabelWin32::WndProc(HWND hWnd, UINT messag
 {
 SHVControlLabel* owner = (SHVControlLabel*)GetWindowLongPtr(hWnd,GWLP_USERDATA);
 SHVControlImplementerLabelWin32* self = (owner ? (SHVControlImplementerLabelWin32*)owner->GetImplementor() : NULL);
+SHVControlLabelRef refToSelf;
+LRESULT retVal = 0;
 
 	switch (message) 
 	{
 	case WM_SIZE:
-		{
-		LRESULT result = CallWindowProc(self->OrigProc,hWnd, message, wParam, lParam);
-			::InvalidateRect(hWnd,NULL,TRUE);
-			return result;
-		}
+		retVal = CallWindowProc(self->OrigProc,hWnd, message, wParam, lParam);
+		::InvalidateRect(hWnd,NULL,TRUE);
+		break;
 	case WM_ERASEBKGND:
 		{
 		bool drawn = false;
@@ -153,9 +153,10 @@ SHVControlImplementerLabelWin32* self = (owner ? (SHVControlImplementerLabelWin3
 			}
 			
 			if (drawn)
-				return 1;
+				retVal = 1;
 			else
-				return DefWindowProc(hWnd, message, wParam, lParam);
+				retVal = DefWindowProc(hWnd, message, wParam, lParam);
+			break;
 		}
 	case WM_PAINT:
 		if (owner)
@@ -164,6 +165,7 @@ SHVControlImplementerLabelWin32* self = (owner ? (SHVControlImplementerLabelWin3
 
 			if (!self->Subscriber.IsNull())
 			{
+				refToSelf = owner; // ensure the validity of the object through this function
 				self->Subscriber->EmitNow(owner->GetModuleList(),new SHVEventData<SHVDrawRef>((SHVDraw*)draw,NULL,SHVControl::EventDraw,NULL,owner));
 			}
 			else
@@ -175,8 +177,8 @@ SHVControlImplementerLabelWin32* self = (owner ? (SHVControlImplementerLabelWin3
 		}
 		// else continue
 	default:
-		return CallWindowProc(self->OrigProc,hWnd, message, wParam, lParam);
+		retVal = CallWindowProc(self->OrigProc,hWnd, message, wParam, lParam);
 	}
-	return 0;
+	return retVal;
 }
 ///\endcond

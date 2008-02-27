@@ -278,6 +278,7 @@ LRESULT CALLBACK SHVControlImplementerDialogWin32::WndProc(HWND hWnd, UINT messa
 SHVControlContainer* owner = (SHVControlContainer*)GetWindowLongPtr(hWnd,0);
 SHVControlImplementerDialogWin32* self = (owner ? (SHVControlImplementerDialogWin32*)owner->GetImplementor() : NULL);
 LRESULT retVal = 0;
+SHVControlContainerRef refToSelf;
 
 	switch (message) 
 	{
@@ -310,10 +311,9 @@ LRESULT retVal = 0;
 		}
 		break;
 	case WM_CLOSE:
-		owner->CreateRef();
+		refToSelf = owner; // ensure the validity of the object through this function
 		if (owner->PreDestroy())
 			owner->Close();
-		owner->DestroyRef();
 		break;
 	case WM_DESTROY:
 		::BringWindowToTop(Win32::GetMainWndHandle(owner));

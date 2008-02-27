@@ -243,7 +243,8 @@ LRESULT CALLBACK SHVControlImplementerContainerWindowWin32::WndProc(HWND hWnd, U
 {
 SHVControlContainer* owner = (SHVControlContainer*)GetWindowLongPtr(hWnd,0);
 SHVControlImplementerContainerWindowWin32* self = (owner ? (SHVControlImplementerContainerWindowWin32*)owner->GetImplementor() : NULL);
-LRESULT res = 0;
+SHVControlContainerRef refToSelf;
+LRESULT result = 0;
 
 	switch (message) 
 	{
@@ -272,15 +273,17 @@ LRESULT res = 0;
 				if (!self->Subscriber.IsNull())
 				{
 					drawn = true;
+					refToSelf = owner; // ensure the validity of the object through this function
 					self->Subscriber->EmitNow(owner->GetModuleList(),new SHVEventData<SHVDrawRef>((SHVDraw*)draw,NULL,SHVControl::EventDraw,NULL,owner));
 				}
 
 			}
 			
 			if (drawn)
-				return 1;
+				result = 1;
 			else
-				return DefWindowProc(hWnd, message, wParam, lParam);
+				result = DefWindowProc(hWnd, message, wParam, lParam);
+			break;
 		}
 	case WM_DESTROY:
 		SHVASSERT(!self->IsCreated());
@@ -294,9 +297,9 @@ LRESULT res = 0;
 		}
 		break;
 	default:
-		res = DefWindowProc(hWnd, message, wParam, lParam);
+		result = DefWindowProc(hWnd, message, wParam, lParam);
 		break;
 	}
-	return res;
+	return result;
 }
 ///\endcond

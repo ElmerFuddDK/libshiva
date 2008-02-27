@@ -118,12 +118,16 @@ LRESULT CALLBACK SHVControlImplementerButtonWin32::WndProc(HWND hWnd, UINT messa
 {
 SHVControlButton* owner = (SHVControlButton*)GetWindowLongPtr(hWnd,GWLP_USERDATA);
 SHVControlImplementerButtonWin32* self = (owner ? (SHVControlImplementerButtonWin32*)owner->GetImplementor() : NULL);
+SHVControlButtonRef refToSelf;
 
 	switch (message) 
 	{
 	case BM_SETSTATE:
 		if (wParam)
+		{
+			refToSelf = owner; // ensure the validity of the object through this function
 			owner->PerformClicked();
+		}
 	default:
 		return CallWindowProc(self->OrigProc,hWnd, message, wParam, lParam);
 	}
