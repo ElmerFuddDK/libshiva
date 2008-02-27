@@ -47,7 +47,7 @@ protected:
 	SHVControlButtonRef Cancel;
 
 	SHVEventSubscriberRef ButtonSubscriber;
-	SHVString Text;
+	SHVString Text, Title;
 };
 typedef SHVRefObjectContainer<SHVMessageBox> SHVMessageBoxRef;
 
