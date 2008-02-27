@@ -13,7 +13,7 @@
  */
 
 template<class T>
-class SHVAPI SHVThread : SHVThreadBase
+class SHVThread : SHVThreadBase
 {
 public:
 
