@@ -52,12 +52,19 @@ SHVEventSubscriber::SHVEventSubscriber(SHVEventTarget* target, SHVEventQueue* qu
  *************************************/
 SHVEventQueue* SHVEventSubscriber::Emit(SHVModuleList& modules, SHVEvent* event)
 {
-	if ( Queue && (!DirectIfSameThread || SHVThreadBase::GetCurrentThreadID() != Queue->GetThreadID()) )
-		Queue->EnqueueEvent(event,this);
-	else
-		Perform(event);
+SHVEventQueue* retVal = Queue;
 
-	return Queue;
+	if ( Queue && (!DirectIfSameThread || SHVThreadBase::GetCurrentThreadID() != Queue->GetThreadID()) )
+	{
+		Queue->EnqueueEvent(event,this);
+	}
+	else
+	{
+		Perform(event);
+		retVal = NULL;
+	}
+
+	return retVal;
 }
 
 /*************************************
