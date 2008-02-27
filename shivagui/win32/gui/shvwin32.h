@@ -1,16 +1,15 @@
 #ifndef __SHIVA_WIN32GUI_H
 #define __SHIVA_WIN32GUI_H
 
-
-#include "shvcontrolimplementerwin32base.h"
+#if !defined(__SHIVA_MFC)
+# include "shvcontrolimplementerwin32base.h"
+#endif
 #include "shvguimanagerwin32.h"
 #include "../../include/shvcontrol.h"
 #include "../../include/shvcontrolimplementer.h"
 
 #ifndef __SHIVA_WIN32
 # error This code only works for win32
-#elif defined(__SHIVA_MFC)
-# error This code does not work in MFC mode
 #endif
 
 
@@ -59,7 +58,11 @@ HWND Win32::InvalidHandle()
  *************************************/
 HWND Win32::GetHandle(SHVControl* control)
 {
+#ifdef __SHIVA_MFC
+	return InvalidHandle();
+#else
 	return ((SHVControlImplementerWin32Base*)control->GetImplementor()->GetNative())->GetHandle();
+#endif
 }
 
 /*************************************
@@ -67,15 +70,23 @@ HWND Win32::GetHandle(SHVControl* control)
  *************************************/
 HWND Win32::GetHandle(SHVControlImplementer* implementer)
 {
+#ifdef __SHIVA_MFC
+	return InvalidHandle();
+#else
 	return ((SHVControlImplementerWin32Base*)implementer->GetNative())->GetHandle();
+#endif
 }
 
 /*************************************
- * GetHandle
+ * GetMainWndHandle
  *************************************/
 HWND Win32::GetMainWndHandle(SHVControl* control)
 {
+#ifdef __SHIVA_MFC
+	return InvalidHandle();
+#else
 	return ((SHVControlImplementerWin32Base*)control->GetManager()->GetMainWindow()->GetImplementor()->GetNative())->GetHandle();
+#endif
 }
 
 /*************************************
