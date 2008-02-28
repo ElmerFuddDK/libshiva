@@ -168,7 +168,7 @@ size_t SHVString8C::GetLength() const
 /*************************************
  * hashing function
  *************************************/
-SHVString8C::operator size_t() const
+SHVString8C::operator SHVHashValue() const
 {
 size_t retVal = 0;
 	for(const SHVChar* ch = GetSafeBuffer(); *ch; ch++)

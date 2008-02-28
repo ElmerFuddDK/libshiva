@@ -3,6 +3,7 @@
 
 #include "shvstring.h"
 #include "shvdynarraybase.h"
+#include "shvhashvalue.h"
 
 #include "shvvectorbase.h"
 
@@ -30,7 +31,7 @@ public:
 
 
 	// defines
-	typedef size_t (*CreateHashFunc)(SHVHashDataBase* data);
+	typedef SHVHashValue (*CreateHashFunc)(SHVHashDataBase* data);
 	typedef bool (*MatchFunc)(SHVHashDataBase** data1,SHVHashDataBase** data2);
 	typedef void (*DestroyFunc)(SHVHashDataBase* data);
 
@@ -74,7 +75,7 @@ protected:
 private:
 	///\cond INTERNAL
 	void InsertReal(SHVHashDataBase* data);
-	size_t FindInBucket(SHVVectorBase* bucket, SHVHashDataBase* data, size_t key);
+	size_t FindInBucket(SHVVectorBase* bucket, SHVHashDataBase* data, SHVHashValue key);
 
 	int Count;
 	SHVDynArrayBase Buckets;
@@ -122,9 +123,9 @@ public:
 class SHVHashDataBase
 {
 friend class SHVHashTableBase;
-	size_t HashKey;
+	SHVHashValue HashKey;
 public:
-	inline SHVHashDataBase() {HashKey=0;}
+	inline SHVHashDataBase() : HashKey((size_t)0) {}
 };
 
 

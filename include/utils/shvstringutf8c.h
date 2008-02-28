@@ -87,7 +87,7 @@ public:
 	// buffer checks
 	inline bool IsNull() const;
 	size_t GetLength() const;
-	operator size_t() const; ///< hashing function
+	operator SHVHashValue() const; ///< hashing function
 
 
 	// buffer operations

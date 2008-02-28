@@ -199,7 +199,7 @@ size_t SHVStringUTF8C::GetLength() const
 /*************************************
  * hashing function
  *************************************/
-SHVStringUTF8C::operator size_t() const
+SHVStringUTF8C::operator SHVHashValue() const
 {
 size_t retVal = 0;
 	for(const SHVChar* ch = GetSafeBuffer(); *ch; ch++)

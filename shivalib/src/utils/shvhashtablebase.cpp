@@ -213,8 +213,8 @@ void SHVHashTableBase::Insert(SHVHashDataBase* data)
  */
 SHVHashDataBase* SHVHashTableBase::Find(SHVHashDataBase* key)
 {
-size_t hashKey = CreateHash(key);
-size_t index = hashKey%GetSize();
+SHVHashValue hashKey = CreateHash(key);
+size_t index = hashKey.GetValue()%GetSize();
 SHVHashDataBase* retVal = NULL;
 
 	if (Buckets[index])
@@ -241,8 +241,8 @@ SHVHashDataBase* retVal = NULL;
  */
 void SHVHashTableBase::Remove(SHVHashDataBase* key)
 {
-size_t hashKey = CreateHash(key);
-size_t index = hashKey%GetSize();
+SHVHashValue hashKey = CreateHash(key);
+size_t index = hashKey.GetValue()%GetSize();
 
 	if (Buckets[index])
 	{
@@ -306,7 +306,7 @@ size_t retVal = 0;
  *************************************/
 void SHVHashTableBase::InsertReal(SHVHashDataBase* data)
 {
-size_t index = data->HashKey%GetSize();
+size_t index = data->HashKey.GetValue()%GetSize();
 SHVVectorBase* bucket;
 bool added = false;
 
@@ -338,7 +338,7 @@ bool added = false;
 /*************************************
  * FindInBucket
  *************************************/
-size_t SHVHashTableBase::FindInBucket(SHVVectorBase* bucket, SHVHashDataBase* data, size_t key)
+size_t SHVHashTableBase::FindInBucket(SHVVectorBase* bucket, SHVHashDataBase* data, SHVHashValue key)
 {
 size_t retVal = SHVDynArrayBase::InvalidIndex;
 	if (bucket)

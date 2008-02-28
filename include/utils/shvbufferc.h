@@ -47,7 +47,7 @@ public:
 	// buffer checks
 	inline bool IsNull() const;
 	inline size_t GetSize() const;
-	operator size_t() const; ///< hashing function
+	operator SHVHashValue() const; ///< hashing function
 	
 	
 	// Read functions

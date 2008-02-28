@@ -58,7 +58,7 @@ protected:
 	inline SHVHashIteratorBase CreateIterator();
 ///\endcond
 
-	static size_t CreateHash(SHVHashDataBase* data);
+	static SHVHashValue CreateHash(SHVHashDataBase* data);
 	static bool Match(SHVHashDataBase** data1,SHVHashDataBase** data2);
 	static void Destroy(SHVHashDataBase* data);
 };
@@ -292,10 +292,10 @@ SHVHashIteratorBase SHVHashTableString<D,CopyD>::CreateIterator() { return SHVHa
  * This function is used for creating the hash value for a key, using the size_t operator on the key.
  */
 template<class K, class D, class CopyK, class CopyD>
-size_t SHVHashTable<K,D,CopyK,CopyD>::CreateHash(SHVHashDataBase* data)
+SHVHashValue SHVHashTable<K,D,CopyK,CopyD>::CreateHash(SHVHashDataBase* data)
 {
 SHVHashKey<K,D,CopyK,CopyD>* key = (SHVHashKey<K,D,CopyK,CopyD>*)data;
-	return (size_t)key->GetKeyC();
+	return (SHVHashValue)key->GetKeyC();
 }
 
 /*************************************

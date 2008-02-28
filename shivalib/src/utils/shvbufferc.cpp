@@ -44,7 +44,7 @@
 /*************************************
  * Constructor
  *************************************/
-SHVBufferC::operator size_t() const
+SHVBufferC::operator SHVHashValue() const
 {
 SHVByte* buf = Buffer();
 size_t sz = Size();

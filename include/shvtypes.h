@@ -1,6 +1,7 @@
 #ifndef __SHIVA_TYPES
 #define __SHIVA_TYPES
 
+#include "utils/shvhashvalue.h"
 
 typedef char SHVByte;
 
@@ -113,10 +114,10 @@ public:
 
 	// operators
 	inline operator int();
-	inline operator size_t() const;
+	inline operator SHVHashValue() const;
 	inline SHVInt& operator =(const SHVInt& val);
 	inline SHVInt& operator =(const int* val);
-	inline bool operator==(const SHVInt& val);
+	inline bool operator==(const SHVInt& val) const;
 
 private:
 	///\cond INTERNAL
@@ -152,10 +153,10 @@ public:
 
 	// operators
 	inline operator double();
-	inline operator size_t() const;
+	inline operator SHVHashValue() const;
 	inline SHVDouble& operator =(const SHVDouble& val);
 	inline SHVDouble& operator =(const double* val);
-	inline bool operator==(const SHVDouble& val);
+	inline bool operator==(const SHVDouble& val) const;
 
 private:
 	///\cond INTERNAL
@@ -206,15 +207,15 @@ bool SHVBool::operator==(const int& err) const { return Val == err; }
 bool SHVBool::operator!() const { return Val != True; }
 
 SHVInt::operator int() { return Val; }
-SHVInt::operator size_t() const { return ( Null ? 0 : Val ); } // makes sure the null integer is smaller than whatever matches its hash key (zero)
+SHVInt::operator SHVHashValue() const { return ( Null ? 0 : Val ); } // makes sure the null integer is smaller than whatever matches its hash key (zero)
 SHVInt& SHVInt::operator =(const SHVInt& val) { Null = val.Null; Val = val.Val; return *this; }
 SHVInt& SHVInt::operator =(const int* val) { if (val) { Null = false; Val = *val; } else SetToNull(); return *this; }
-bool SHVInt::operator==(const SHVInt& val) { return ( (val.Null && Null) || ( val.Null == Null && val.Val == Val ) ); }
+bool SHVInt::operator==(const SHVInt& val) const { return ( (val.Null && Null) || ( val.Null == Null && val.Val == Val ) ); }
 
 SHVDouble::operator double() { return Val; }
-SHVDouble::operator size_t() const { unsigned char* ptr = (unsigned char*)this; size_t retVal = 0; for (size_t i=0; i<sizeof(SHVDouble); i++,ptr++) retVal += *ptr; return retVal; }
+SHVDouble::operator SHVHashValue() const { unsigned char* ptr = (unsigned char*)this; size_t retVal = 0; for (size_t i=0; i<sizeof(SHVDouble); i++,ptr++) retVal += *ptr; return retVal; }
 SHVDouble& SHVDouble::operator =(const SHVDouble& val) { Null = val.Null; Val = val.Val; return *this; }
 SHVDouble& SHVDouble::operator =(const double* val) { if (val) { Null = false; Val = *val; } else SetToNull(); return *this; }
-bool SHVDouble::operator==(const SHVDouble& val) { return ( (val.Null && Null) || ( val.Null == Null && val.Val == Val ) ); }
+bool SHVDouble::operator==(const SHVDouble& val) const { return ( (val.Null && Null) || ( val.Null == Null && val.Val == Val ) ); }
 
 #endif
