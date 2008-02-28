@@ -8,6 +8,37 @@
 #include "../../include/sqlitewrapper.h"
 #include "../../include/sqlitestatement.h"
 
+void DumpRow(SHVSQLiteStatement* statement)
+{
+	for (int i = 0; i < statement->GetColumnCount(); i++)
+	{
+		SHVString value;
+		SHVString columnName;
+		SHVString columnType;
+		int len = 0;
+		if (statement->GetColumnName(columnName, i))
+		{
+			statement->GetColumnType(columnType, i);
+			if (statement->GetString(value, len, i))
+			{
+
+				_tprintf(_T("%s:%s = %s\r\n"), columnName.GetSafeBuffer(), columnType.GetSafeBuffer(), value.GetSafeBuffer());
+			}
+		}
+	}
+}
+SHVBool DumpData(SHVSQLiteStatement* statement)
+{
+SHVBool errorCode;
+	do 
+	{
+		DumpRow(statement);
+	} while ((errorCode = statement->NextResult()).GetError() == SHVSQLiteWrapper::SQLite_ROW);
+	return errorCode;
+}
+
+
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	// Lets start by create an instance of SQLLite
@@ -15,6 +46,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	if (dll.Load(dll.CreateLibFileName(_T("shivasqlite"))))
 	{
+		SHVStringUTF8 error;
 		SHVSQLiteWrapperRef sqlLite = (SHVSQLiteWrapper*) dll.CreateObjectInt(NULL, SHVDll::ClassTypeUser);
 		SHVSQLiteStatementRef statement;
 		TCHAR input[255];
@@ -23,7 +55,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		TCHAR* fileName = _T("test.db");
 		if (argc > 1)
 			fileName = argv[1];
-		
+
 		puts("SQLite tester");
 		if (sqlLite->Open(fileName) == SHVSQLiteWrapper::SQLite_OK)
 		{
@@ -42,35 +74,17 @@ int _tmain(int argc, _TCHAR* argv[])
 				if (sql != _T("exit") && sql != _T("cleanup"))
 				{
 				SHVBool errorCode;
-				statement = sqlLite->Prepare(errorCode, sql, reminder);
-					if (errorCode)
+				statement = sqlLite->Execute(errorCode, sql, reminder);
+					if (errorCode.GetError() ==  SHVSQLiteWrapper::SQLite_ROW)
 					{
-						while ((errorCode = statement->NextResult()).GetError() == SHVSQLiteWrapper::SQLite_ROW)
-						{
-							for (int i = 0; i < statement->GetColumnCount(); i++)
-							{
-								SHVString value;
-								SHVString columnName;
-								SHVString columnType;
-								int len = 0;
-								if (statement->GetColumnName(columnName, i))
-								{
-									statement->GetColumnType(columnType, i);
-									if (statement->GetValue(value, len, i))
-									{
-
-										_tprintf(_T("%s:%s = %s\r\n"), columnName.GetSafeBuffer(), columnType.GetSafeBuffer(), value.GetSafeBuffer());
-									}
-								}
-							}
-						}
+						errorCode = DumpData(statement);
 						if (errorCode.GetError() != SHVSQLiteWrapper::SQLite_DONE)
 						{
 							reminder = _T("");
 							_tprintf(_T("Error %d: %s\r\n"), errorCode.GetError(), sqlLite->GetErrorMsg().GetSafeBuffer());
 						}
 					}
-					else
+					if (errorCode.GetError() != SHVSQLiteWrapper::SQLite_DONE)
 					{
 						reminder = _T("");
 						_tprintf(_T("Error %d: %s\r\n"), errorCode.GetError(), sqlLite->GetErrorMsg().GetSafeBuffer());

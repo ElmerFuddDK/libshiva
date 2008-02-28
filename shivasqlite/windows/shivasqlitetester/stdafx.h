@@ -4,6 +4,7 @@
 //
 
 #pragma once
+#pragma warning(disable:4251) // disable "needs to have dll-interface" warnings on classes that uses templates
 
 #ifndef _WIN32_WINNT		// Allow use of features specific to Windows XP or later.                   
 #define _WIN32_WINNT 0x0501	// Change this to the appropriate value to target other versions of Windows.
