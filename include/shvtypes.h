@@ -73,6 +73,7 @@ public:
 
 	// operators
 	inline operator bool () const;
+	inline operator bool ();
 
 	inline SHVBool& operator=(BoolVal val);
 	inline SHVBool& operator=(bool val);
@@ -173,8 +174,8 @@ private:
 /*************************************
  * Constructors
  *************************************/
-SHVBool::SHVBool(bool val) { Val = ( val ? True : False ); }
-SHVBool::SHVBool(int err) { Val = err; }
+SHVBool::SHVBool(const bool val) { Val = ( val ? True : False ); }
+SHVBool::SHVBool(const int err) { Val = err; }
 SHVBool::SHVBool() { Val = False; }
 
 SHVInt::SHVInt() { SetToNull(); }
@@ -199,6 +200,7 @@ void SHVDouble::SetToNull() { Null = true; Val = 0.0; }
  * Operators
  *************************************/
 SHVBool::operator bool () const { return Val == True; }
+SHVBool::operator bool ()       { return Val == True; }
 
 SHVBool& SHVBool::operator=(BoolVal val) { Val = val; return *this; }
 SHVBool& SHVBool::operator=(bool val) { Val = ( val ? True : False ); return *this; }
