@@ -10,6 +10,7 @@
 
 #define __SHVSQLITEWRAPPER_CREATE_SYMBOL _T("CreateSHVSQLiteWrapper")
 
+
 //-=========================================================================================================
 ///  SHVSQLiteWrapper class - The shiva C++ interface for SQLite
 /**
@@ -17,13 +18,13 @@
 class SHVSQLiteWrapper: public SHVRefObject
 {
 public:
-	enum SQLiteType
+	enum SQLiteAffinity
 	{
-		SQLite_Int = 1,
-		SQLite_Float = 2,
-		SQLite_Text = 3,
-		SQLite_Blob = 4,
-		SQLite_Null = 5
+		Affinity_Int = 1,
+		Affinity_Float = 2,
+		Affinity_Text = 3,
+		Affinity_Blob = 4,
+		Affinity_Null = 5
 	};
 	enum SQLiteResult
 	{
@@ -64,13 +65,14 @@ public:
 	inline SHVBool Open(const SHVStringC& fileName, int option = 6);
 	virtual SHVBool OpenInMemory() = 0;
 	virtual SHVBool Close() = 0;
-	virtual SHVSQLiteStatement* PrepareUTF8(SHVBool& ok, const SHVStringUTF8C& sql, SHVStringUTF8& notparsed) = 0;
+	virtual SHVSQLiteStatement* PrepareUTF8(SHVBool& ok, const SHVStringUTF8C& sql, SHVStringSQLite& notparsed) = 0;
 	inline SHVSQLiteStatement* Prepare(SHVBool& ok, const SHVStringC& sql, SHVString& notparsed);
+	virtual SHVSQLiteStatement* ExecuteUTF8(SHVBool& ok, const SHVStringUTF8C& sql, SHVStringSQLite& notparsed) = 0;
+	inline SHVSQLiteStatement* Execute(SHVBool& ok, const SHVStringC& sql, SHVString& notparsed);
 	virtual SHVStringUTF8C GetErrorMsgUTF8() = 0; 
 	inline SHVStringBuffer GetErrorMsg();
 	virtual SHVMutex& GetMutex() = 0;
 };
-
 typedef SHVRefObjectContainer<SHVSQLiteWrapper> SHVSQLiteWrapperRef;
 
 // ============================================ implementation ============================================ //
@@ -88,8 +90,21 @@ SHVBool SHVSQLiteWrapper::Open(const SHVStringC& fileName, int option)
  *************************************/
 SHVSQLiteStatement*  SHVSQLiteWrapper::Prepare(SHVBool& ok, const SHVStringC& sql, SHVString& notparsed)
 {
-	SHVStringUTF8 rest;
-	SHVSQLiteStatement* res = PrepareUTF8(ok, sql.ToStrUTF8(), rest);
+SHVStringUTF8 sqlUTF8 = sql.ToStrUTF8();
+	SHVStringSQLite rest(NULL);
+	SHVSQLiteStatement* res = PrepareUTF8(ok, sqlUTF8, rest);
+	notparsed = rest.ToStrT();
+	return res;
+}
+
+/*************************************
+ * Execute
+ *************************************/
+SHVSQLiteStatement*  SHVSQLiteWrapper::Execute(SHVBool& ok, const SHVStringC& sql, SHVString& notparsed)
+{
+SHVStringUTF8 sqlUTF8 = sql.ToStrUTF8();
+	SHVStringSQLite rest(NULL);
+	SHVSQLiteStatement* res = ExecuteUTF8(ok, sqlUTF8, rest);
 	notparsed = rest.ToStrT();
 	return res;
 }

@@ -17,24 +17,24 @@ public:
 	SHVSQLiteStatement_impl(sqlite3_stmt* statement, SHVSQLiteWrapper* owner);
 	virtual ~SHVSQLiteStatement_impl();
 
-	virtual SHVBool GetValue(long& val, int columnIdx) const;
-	virtual SHVBool GetValue(double& val, int columnIdx) const;
-	virtual SHVBool GetValue(const void*& blob, int& len, int columnIdx) const;
-	virtual SHVBool GetValueUTF8(SHVStringUTF8C& text, int& len, int columnIdx) const;
-	virtual SHVBool GetColumnNameUTF8(SHVStringUTF8C& name, int columnIdx) const;
+	virtual SHVBool GetLong(long& val, int columnIdx) const;
+	virtual SHVBool GetDouble(double& val, int columnIdx) const;
+	virtual SHVBool GetBlob(const void*& blob, int& len, int columnIdx) const;
+	virtual SHVBool GetStringUTF8(SHVStringSQLite& text, int& len, int columnIdx) const;
+	virtual SHVBool GetColumnNameUTF8(SHVStringSQLite& name, int columnIdx) const;
 	virtual SHVBool GetColumnName8(SHVString8& name, int columnIdx) const;
 	virtual SHVBool GetColumnName16(SHVString16& name, int columnIdx) const;
 
-	virtual SHVBool GetColumnType(short& type, int columnIdx) const;
-	virtual SHVBool GetColumnTypeUTF8(SHVStringUTF8C& colType, int columnIdx) const;
+	virtual SHVBool GetColumnAffinity(short& type, int columnIdx) const;
+	virtual SHVBool GetColumnTypeUTF8(SHVStringSQLite& colType, int columnIdx) const;
 	virtual SHVBool GetColumnType8(SHVString8& colType, int columnIdx) const;
 	virtual SHVBool GetColumnType16(SHVString16& colType, int columnIdx) const;
 
 	virtual int GetColumnCount() const;
 
-	virtual SHVBool SetParameterUTF8(const SHVStringUTF8C& name, long val);
-	virtual SHVBool SetParameterUTF8(const SHVStringUTF8C& name, double val);
-	virtual SHVBool SetParameterUTF8(const SHVStringUTF8C& name, const SHVStringUTF8C& val);
+	virtual SHVBool SetParameterLongUTF8(const SHVStringUTF8C& name, long val);
+	virtual SHVBool SetParameterDoubleUTF8(const SHVStringUTF8C& name, double val);
+	virtual SHVBool SetParameterStringUTF8(const SHVStringUTF8C& name, const SHVStringUTF8C& val);
 	virtual SHVBool SetParameterNullUTF8(const SHVStringUTF8C& name);
 
 	virtual SHVBool NextResult();

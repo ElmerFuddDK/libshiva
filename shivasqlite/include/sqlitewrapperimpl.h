@@ -20,7 +20,8 @@ public:
 	virtual SHVBool OpenUTF8(const SHVStringUTF8C& fileName, int option = 6);
 	virtual SHVBool OpenInMemory();
 	virtual SHVBool Close();
-	virtual SHVSQLiteStatement* PrepareUTF8(SHVBool& ok, const SHVStringUTF8C& sql, SHVStringUTF8& notparsed);
+	virtual SHVSQLiteStatement* PrepareUTF8(SHVBool& ok, const SHVStringUTF8C& sql, SHVStringSQLite& notparsed);
+	virtual SHVSQLiteStatement* ExecuteUTF8(SHVBool& ok, const SHVStringUTF8C& sql, SHVStringSQLite& notparsed);
 	virtual SHVStringUTF8C GetErrorMsgUTF8(); 
 	virtual SHVMutex& GetMutex();
 private:
