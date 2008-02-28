@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
+#include "../include/dataengineimpl/shvdataengine_impl.h"
+#include "shvdataenginefactory.h"
 
 
 //=========================================================================================================
@@ -53,7 +55,7 @@ SHVInt SHVModuleFactoryDataEngine::GetRelease()
  *************************************/
 SHVInt SHVModuleFactoryDataEngine::GetBuild()
 {
-	return __DATAENGINE_VERSION_BUILD;
+	return __DATAENGINE_VERSION_RELEASE;
 }
 
 /*************************************
@@ -72,7 +74,7 @@ SHVBool SHVModuleFactoryDataEngine::ResolveModules(const SHVString8C symbol)
 {
 	if (symbol == __MODULESYMBOL_DEFAULTS)
 	{
-		modules.AddModule(new SHVDataEngine(Modules));
+		Modules.AddModule(new SHVDataEngine_impl(Modules));
 		return SHVBool::True;
 	}
 
@@ -84,4 +86,9 @@ SHVBool SHVModuleFactoryDataEngine::ResolveModules(const SHVString8C symbol)
  *************************************/
 void SHVModuleFactoryDataEngine::OnEvent(SHVEvent* event)
 {
+}
+
+SHVStringBuffer SHVModuleFactoryDataEngine::GetName()
+{
+	return SHVString(_T("DataEngine")).ReleaseBuffer();
 }

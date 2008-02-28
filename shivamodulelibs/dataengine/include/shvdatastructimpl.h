@@ -5,10 +5,10 @@
 #include "../shvdatastruct.h"
 
 //-=========================================================================================================
-///  SHVDataStructColumn_impl class - The non const implementation of a datastruct column definition.
+/// SHVDataStructColumn_impl class - Implementation of a datastructure column definition.
 /**
+ * Contains the column definition information.
  */
-
 class SHVDataStructColumn_impl: public SHVDataStructColumn
 {
 public:
@@ -25,9 +25,6 @@ public:
 	virtual int GetDataLength() const;
 	virtual void SetDataLength(int len);
 
-	virtual SHVBool GetPrimaryKey() const;
-	virtual void SetPrimaryKey(SHVBool flag);
-
 	virtual SHVBool GetAllowNull() const;
 	virtual void SetAllowNull(SHVBool flag);
 
@@ -39,7 +36,6 @@ private:
 	SHVString8 ColumnName;
 	int DataType;
 	int DataLength;
-	SHVBool PrimaryKey;
 	SHVBool AllowNull;
 	SHVBool AutoInc;
 };
@@ -48,8 +44,8 @@ typedef SHVRefObjectContainer<SHVDataStructColumn_impl> SHVDataStructColumn_impl
 //-=========================================================================================================
 ///  SHVDataStruct_impl class - The non const implementation of datastruct
 /**
+ * Objects of the class is the schema for the datatable.
  */
-
 class SHVDataStruct_impl: public SHVDataStruct
 {
 public:
@@ -73,6 +69,7 @@ public:
 	virtual void SetPrimaryIndex(const SHVDataRowKey* key);
 	virtual const SHVDataRowKey* GetIndex(size_t IdxID) const;
 	virtual const size_t IndexCount() const;
+	virtual SHVDataRowKey* CreateIndexKey() const;
 	virtual void AddIndex(SHVDataRowKey* index);
 	virtual SHVBool IsEqual(const SHVDataStructC* dataStruct) const;
 

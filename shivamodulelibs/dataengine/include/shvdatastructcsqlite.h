@@ -15,12 +15,12 @@
 //-=========================================================================================================
 /// SHVDataStructC_SQLite class - Class for retrieving sqlite data structure
 /**
+ * Objects of the class caches the schema information for a sqlite datatable.
  */
-
 class SHVDataStructC_SQLite: public SHVDataStructC
 {
 public:
-	SHVDataStructC_SQLite(SHVSQLiteWrapper* sqlite, const SHVString8C& tableName);
+	SHVDataStructC_SQLite(SHVSQLiteWrapper* psqlite, const SHVString8C& tableName);
 	~SHVDataStructC_SQLite();
 	virtual const SHVString8C& GetTableName() const;
 	virtual const SHVDataStructColumnC* operator[](size_t idx) const;
@@ -33,6 +33,7 @@ public:
 	virtual SHVBool IsEqual(const SHVDataStructC* dataStruct) const;
 	inline SHVBool TableExists() { return !Struct.IsNull(); }
 private:
+	void ResolveIndexes(SHVSQLiteWrapper* psqlite, const SHVStringUTF8C& tableName, const SHVStringUTF8C& condition);
 	SHVDataStruct_implRef Struct;
 };
 typedef SHVRefObjectContainer<SHVDataStructColumnC> SHVDataStructColumnCRef;

@@ -3,6 +3,7 @@
 
 #include "../../../include/utils/shvrefobject.h"
 #include "../../../include/utils/shvstring.h"
+#include "../../../include/utils/shvvectorref.h"
 #include "shvdatarowkey.h"
 
 //-=========================================================================================================
@@ -17,7 +18,6 @@ public:
 	virtual const SHVString8C& GetColumnName() const = 0;
 	virtual int GetDataType() const = 0;
 	virtual int GetDataLength() const = 0;
-	virtual SHVBool GetPrimaryKey() const = 0;
 	virtual SHVBool GetAllowNull() const = 0;
 	virtual SHVBool GetAutoInc() const = 0;
 	virtual void ClearOwnership() = 0;
@@ -43,6 +43,7 @@ public:
 	virtual SHVBool IsEqual(const SHVDataStructC* dataStruct) const = 0;
 };
 typedef SHVRefObjectContainer<SHVDataStructC> SHVDataStructCRef;
+typedef	SHVVectorRef<SHVDataStructC> SHVDataSchema;
 
 
 #endif

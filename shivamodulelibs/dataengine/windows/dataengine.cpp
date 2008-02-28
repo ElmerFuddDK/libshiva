@@ -6,7 +6,7 @@
 #include "../../../include/utils/shvdll.h"
 #include "../../../include/framework/shvmodulelist.h"
 
-#include "shvdatafactory.h"
+#include "shvdataenginefactory.h"
 
 
 
@@ -38,7 +38,7 @@ void* CreateObjectInt(SHVModuleList* list, int id)
 	switch (id)
 	{
 	case SHVDll::ClassTypeModuleFactory:
-//		return new SHVModuleFactoryDataEngine(*list);
+		return new SHVModuleFactoryDataEngine(*list);
 	default:
 		return NULL;
 	}

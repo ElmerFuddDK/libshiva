@@ -135,7 +135,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../../shivalib/windows/$(ConfigurationName)/libshiva.lib"
+				AdditionalDependencies="../../../shivalib/windows/$(ConfigurationName)/libshiva.lib"
 				LinkIncremental="1"
 				ModuleDefinitionFile="DataEngine.def"
 				GenerateDebugInformation="true"
@@ -184,6 +184,10 @@
 			</File>
 			<File
 				RelativePath=".\DataEngine.def"
+				>
+			</File>
+			<File
+				RelativePath=".\shvdataenginefactory.cpp"
 				>
 			</File>
 			<File
@@ -242,15 +246,15 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\dataengineimpl\shvdatasession_impl.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\dataengineimpl\shvdatastruct_impl.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\src\dataengineimpl\shvdatastructc_sqlite.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\dataengineimpl\shvdatatable_sqlite.cpp"
 					>
 				</File>
 				<File
@@ -297,7 +301,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\include\shvdataselect.h"
+				RelativePath="..\include\shvdatasession.h"
 				>
 			</File>
 			<File
@@ -327,6 +331,10 @@
 			<Filter
 				Name="include"
 				>
+				<File
+					RelativePath="..\..\..\include\framework\shveventsubscriber.h"
+					>
+				</File>
 				<Filter
 					Name="utils"
 					>
@@ -405,6 +413,10 @@
 				</File>
 				<File
 					RelativePath="..\include\dataengineimpl\shvdatarowlistc_sqlite.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\dataengineimpl\shvdatasession_sqlite.h"
 					>
 				</File>
 				<File

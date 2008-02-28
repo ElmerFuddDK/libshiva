@@ -19,13 +19,23 @@ public:
 	{
 		SHVString8      Key;
 		SHVDataVariant* Value;
-		SHVBool         Desc;
+		bool            Desc;
 	};
 
 protected:
 	virtual ~SHVDataRowKey() {}
 public:
 	virtual const SHVDataRowKey::KeyValuePair& operator[](size_t idx) const = 0;
+	virtual void SetKeyValue(size_t idx, SHVInt val) = 0;
+	virtual void SetKeyValue(size_t idx, SHVDouble val) = 0;
+	virtual void SetKeyValue(size_t idx, SHVBool val) = 0;
+	virtual void SetKeyValue(size_t idx, const SHVTime& val) = 0;
+	virtual void SetKeyValue(size_t idx, const SHVStringC& val) = 0;
+	virtual void SetKeyNull(size_t idx) = 0;
+
+	virtual void AddKey(const SHVString8C& columnName, SHVDataVariant* value, bool desc) = 0;
+	virtual SHVDataRowKey& AddKey(const SHVString8C& columnName, bool desc) = 0;
+
 	virtual size_t Count() const = 0;
 	virtual SHVBool Unique() const = 0;
 	virtual SHVBool KeyEquals(const SHVDataRowKey* key) const = 0;

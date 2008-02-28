@@ -15,7 +15,6 @@ SHVDataStructColumn_impl::SHVDataStructColumn_impl(const SHVDataStructColumnC* c
 	SetColumnName(col->GetColumnName());
 	SetDataType(col->GetDataType());
 	SetDataLength(col->GetDataLength());
-	SetPrimaryKey(col->GetPrimaryKey());
 	SetAllowNull(col->GetAllowNull());
 	SetAutoInc(col->GetAutoInc());
 }
@@ -74,22 +73,6 @@ int SHVDataStructColumn_impl::GetDataLength() const
 void SHVDataStructColumn_impl::SetDataLength(int len)
 {
 	DataLength = len;
-}
-
-/*************************************
- * GetPrimaryKey
- *************************************/
-SHVBool SHVDataStructColumn_impl::GetPrimaryKey() const
-{
-	return PrimaryKey;
-}
-
-/*************************************
- * SetPrimaryKey
- *************************************/
-void SHVDataStructColumn_impl::SetPrimaryKey(SHVBool flag)
-{
-	PrimaryKey = flag;
 }
 
 /*************************************
@@ -188,9 +171,9 @@ SHVDataStructColumn* SHVDataStruct_impl::operator[](size_t idx)
 const SHVBool SHVDataStruct_impl::FindColumnIndex(size_t& index, const SHVString8C& colName) const
 {
 SHVBool retVal(SHVBool::False);
-	for (index = Columns.CalculateCount(); index && retVal; index--)
+	for (index = Columns.CalculateCount(); index && !retVal; )
 	{
-		retVal = colName == Columns[index]->GetColumnName();
+		retVal = colName == Columns[--index]->GetColumnName();
 	}
 	return retVal;
 }
@@ -245,7 +228,7 @@ size_t SHVDataStruct_impl::Add(const SHVString8C& colName, int dataType, int dat
 SHVDataStructColumn_impl* col = new SHVDataStructColumn_impl();
 	col->SetColumnName(colName);
 	col->SetDataType(dataType);
-	col->SetPrimaryKey(PrimaryKey);
+	col->SetDataLength(dataLength);
 	col->SetAllowNull(AllowNull);
 	col->SetAutoInc(AutoInc);
 	return Add(col);
@@ -316,6 +299,9 @@ const SHVDataStructC& Struct = *dataStruct;
 	return retVal;
 }
 
+/*************************************
+ * GetIndex
+ *************************************/
 const SHVDataRowKey* SHVDataStruct_impl::GetIndex(size_t IdxID) const
 {
 	SHVASSERT(IdxID < Indexes.CalculateCount());
@@ -324,12 +310,26 @@ const SHVDataRowKey* SHVDataStruct_impl::GetIndex(size_t IdxID) const
 	return (const SHVDataRowKey*) Indexes[IdxID];
 }
 
+/*************************************
+ * IndexCount
+ *************************************/
 const size_t SHVDataStruct_impl::IndexCount() const
 {
 	return Indexes.CalculateCount();
 }
 
+/*************************************
+ * AddIndex
+ *************************************/
 void SHVDataStruct_impl::AddIndex(SHVDataRowKey* index)
 {
 	Indexes.Add(index);
+}
+
+/*************************************
+ * CreateIndexKey
+ *************************************/
+SHVDataRowKey* SHVDataStruct_impl::CreateIndexKey() const
+{
+	return new SHVDataRowKey_impl();
 }

@@ -1,0 +1,258 @@
+#include "stdafx.h"
+
+#include "../../../../include/platformspc.h"
+#include "../../../../include/utils/shvstringutf8.h"
+#include "../../include/dataengineimpl/shvdatasession_sqlite.h"
+#include "../../include/dataengineimpl/shvdatarowlist_sqlite.h"
+#include "../../include/dataengineimpl/shvdatarowlistc_sqlite.h"
+
+SHVDataSession_SQLite::SHVDataSession_SQLite(SHVModuleList& modules, SHVSQLiteWrapper* sqlite, SHVDataFactory* factory): Modules(modules)
+{
+	SQLite = sqlite;
+	Factory = factory;
+}
+
+SHVBool SHVDataSession_SQLite::StartEdit()
+{
+SHVStringSQLite rest(NULL);
+SHVBool ok;
+SHVSQLiteStatementRef statement = SQLite->ExecuteUTF8(ok, "BEGIN TRANSACTION", rest);
+Editting = SHVBool::True;
+	return ok.GetError() == SHVSQLiteWrapper::SQLite_DONE;
+}
+
+SHVBool SHVDataSession_SQLite::Commit()
+{
+SHVStringSQLite rest(NULL);
+SHVBool ok;
+SHVSQLiteStatementRef statement = SQLite->ExecuteUTF8(ok, "END TRANSACTION", rest);
+	if (ok && !ChangeSubscriber.IsNull())
+	{
+	SHVDataRowVector* RowVector = new SHVDataRowVector();
+		for (size_t i = 0;  i < ChangedRows.CalculateCount(); i++)
+			RowVector->Add(ChangedRows[i]);
+		ChangedRows.Clear();
+		ChangeSubscriber->EmitNow(Modules, new SHVEventDataChangeSet(SHVDataRowVectorPtr(RowVector), NULL, EventChangeSet));
+	}
+	return ok.GetError() == SHVSQLiteWrapper::SQLite_DONE;
+}
+
+SHVBool SHVDataSession_SQLite::Rollback()
+{
+SHVStringSQLite rest(NULL);
+SHVBool ok;
+SHVSQLiteStatementRef statement = SQLite->ExecuteUTF8(ok, "ROLLBACK TRANSACTION", rest);
+	Editting = false;
+	return ok.GetError() == SHVSQLiteWrapper::SQLite_DONE;
+}
+
+SHVDataRowList* SHVDataSession_SQLite::GetRows(const SHVString8C& tableName, const SHVStringC& condition, size_t index)
+{
+	return new SHVDataRowList_SQLite(this, QueryTable(tableName, condition, index));
+}
+
+SHVDataRowListC* SHVDataSession_SQLite::Query(const SHVStringC& query, const SHVDataRowKey* sortKey)
+{
+	return new SHVDataRowListC_SQLite(SQLite, query, sortKey);
+}
+
+SHVDataRowListC* SHVDataSession_SQLite::QueryTable(const SHVString8C& tableName, const SHVStringC& condition, size_t index)
+{
+const SHVDataStructC* st = Factory->FindStruct(tableName);	
+	return new SHVDataRowListC_SQLite(SQLite, st, condition, index);
+}
+
+SHVBool SHVDataSession_SQLite::ExecuteNonQuery(const SHVStringC& sql)
+{
+SHVBool ok;
+SHVStringSQLite rest("");
+SHVStringUTF8 sqlUTF8 = sql.ToStrUTF8();
+SHVStringSQLite blank("");
+SHVSQLiteStatementRef statement = SQLite->ExecuteUTF8(ok, sqlUTF8, rest);
+
+	while (!rest.IsNull() && rest != blank && ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+	{
+		statement = SQLite->ExecuteUTF8(ok, sqlUTF8, rest);
+	}
+	if (ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+		return SHVBool::True;
+	else
+		return ok;
+}
+
+SHVBool SHVDataSession_SQLite::IsEditting() const
+{
+	return Editting;
+}
+
+void SHVDataSession_SQLite::SubscribeDataChange(SHVEventSubscriberBase* sub)
+{
+	ChangeSubscriber = sub;
+}
+
+void* SHVDataSession_SQLite::GetProvider()
+{
+	return SQLite;
+}
+
+SHVBool SHVDataSession_SQLite::UpdateRow(SHVDataRow* row)
+{
+SHVBool retVal;
+	switch (row->GetRowState())
+	{
+	case SHVDataRow::SHVDataRowState_Changing:
+		retVal = DoUpdateRow(row);
+		break;
+	case SHVDataRow::SHVDataRowState_Adding:
+		retVal = DoInsertRow(row);
+		break;
+	case SHVDataRow::SHVDataRowState_Deleting:
+		retVal = DoDeleteRow(row);
+		break;
+	default:
+		retVal = SHVBool::False;
+	}
+	return retVal;
+}
+
+SHVDataSession_SQLite::~SHVDataSession_SQLite()
+{
+	if (Editting)
+		Rollback();
+}
+
+bool SHVDataSession_SQLite::EmptySlot(const SHVDataRowVector& vector, size_t& idx)
+{
+bool found = false;
+	for (idx = vector.CalculateCount(); idx && !found; idx--)
+	{
+		found = vector[idx] == NULL;	
+	}
+	return found;
+}
+
+SHVDataRow* SHVDataSession_SQLite::Find(const SHVDataRowVector& vector, const SHVDataRowKey* key, size_t& idx) const
+{
+SHVDataRow* found = NULL;
+	for (idx = vector.CalculateCount(); idx && !found; idx--)
+	{		
+		if (vector[idx] && vector[idx]->MatchKey(key))
+			found = (SHVDataRow*) vector[idx];
+	}
+	return found;
+}
+
+SHVBool SHVDataSession_SQLite::DoUpdateRow(SHVDataRow* row)
+{
+SHVBool retVal;
+SHVStringUTF8 col;
+SHVStringUTF8 cols;
+SHVStringUTF8 sql;
+SHVStringSQLite rest(NULL);
+SHVSQLiteStatementRef statement;
+const SHVDataStructC& st = *row->GetStruct();
+	for (size_t c = 0; c  < st.GetColumnCount(); c++)
+	{
+		if (c)
+			cols += ", ";
+		if (st[c]->GetDataType() == SHVDataVariant::TypeString ||
+			st[c]->GetDataType() == SHVDataVariant::TypeTime)
+			col.Format("set %s = '%s'", st[c]->GetColumnName().GetSafeBuffer(), row->AsString(c).ToStrUTF8().GetSafeBuffer());
+		else
+			col.Format("set %s = %s", st[c]->GetColumnName().GetSafeBuffer(), row->AsString(c).ToStrUTF8().GetSafeBuffer());
+		cols += col;
+	}
+	sql.Format("update or fail %s %s where %s",
+		st.GetTableName().GetSafeBuffer(),
+		cols.GetSafeBuffer(),
+		WhereSQL(row).GetSafeBuffer());
+	statement = SQLite->ExecuteUTF8(retVal, sql, rest);
+	if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+	{
+		retVal = SHVBool::True;
+
+	}
+	return retVal;
+}
+
+SHVBool SHVDataSession_SQLite::DoInsertRow(SHVDataRow* row)
+{
+SHVBool retVal;
+SHVStringUTF8 val;
+SHVStringUTF8 vals;
+SHVStringUTF8 cols;
+SHVStringUTF8 sql;
+SHVStringSQLite rest(NULL);
+SHVSQLiteStatementRef statement;
+const SHVDataStructC& st = *row->GetStruct();
+	for (size_t c = 0; c  < st.GetColumnCount(); c++)
+	{
+		if (c)
+		{
+			cols += ", ";
+			vals += ", ";
+		}
+		if (st[c]->GetDataType() == SHVDataVariant::TypeString ||
+			st[c]->GetDataType() == SHVDataVariant::TypeTime)
+		{
+			val.Format("'%s'", row->AsString(c).ToStrUTF8().GetSafeBuffer());
+			vals += val;
+		}
+		else
+			vals += row->AsString(c).ToStrUTF8().GetSafeBuffer();
+		cols += st[c]->GetColumnName().GetSafeBuffer();
+	}
+	sql.Format("insert or fail into %s (%s) values(%s)",
+		st.GetTableName().GetSafeBuffer(),
+		cols.GetSafeBuffer(),
+		vals.GetSafeBuffer());
+	statement = SQLite->ExecuteUTF8(retVal, sql, rest);
+	if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+	{
+		retVal = SHVBool::True;
+
+	}
+	return retVal;
+}
+
+SHVBool SHVDataSession_SQLite::DoDeleteRow(SHVDataRow* row)
+{
+SHVBool retVal;
+SHVStringUTF8 sql;
+SHVStringSQLite rest(NULL);
+SHVSQLiteStatementRef statement;
+	sql.Format("delete or fail from %s where %s", row->GetStruct()->GetTableName().GetSafeBuffer(), WhereSQL(row).GetSafeBuffer());
+	statement = SQLite->ExecuteUTF8(retVal, sql, rest);
+	if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+	{
+		retVal = SHVBool::True;
+
+	}
+	return retVal;
+}
+
+SHVStringUTF8 SHVDataSession_SQLite::WhereSQL(SHVDataRow* row)
+{
+SHVStringUTF8 retVal;
+SHVStringUTF8 keycond;
+SHVStringUTF8 rest;
+const SHVDataRowKey& Key = *row->GetStruct()->GetPrimaryIndex();
+SHVSQLiteStatementRef statement;
+	for (size_t k = 0; k < Key.Count(); k++)
+	{
+	size_t colIdx;
+		if (row->GetStruct()->FindColumnIndex(colIdx, Key[k].Key))
+		{
+		const SHVDataStructColumnC& col = *(*row->GetStruct())[colIdx];
+			if (k)
+				retVal += " and ";
+			if (col.GetDataType() == SHVDataVariant::TypeString ||
+				col.GetDataType() == SHVDataVariant::TypeTime)
+				keycond.Format("%s = '%s'", Key[k].Key.GetSafeBuffer(), row->OriginalValue(Key[k].Key)->AsString());
+			else
+				keycond.Format("%s = %s", Key[k].Key.GetSafeBuffer(), row->OriginalValue(Key[k].Key)->AsString());
+			retVal += keycond;
+		}
+	}
+	return keycond;
+}

@@ -4,30 +4,38 @@
 #include "../../include/dataengineimpl/shvdatarow_impl.h"
 #include "../../include/dataengineimpl/shvdatarowkey_impl.h"
 #include "../../include/shvdatastructc.h"
+#include "../../include/shvdatasession.h"
 
-SHVDataRow_impl::SHVDataRow_impl(SHVDataRowC* copyrow, SHVDataRowList* owner)
+/*************************************
+ * Constructors
+ *************************************/
+SHVDataRow_impl::SHVDataRow_impl(const SHVDataRowC* copyrow, SHVDataRowList* owner)
 {
 SHVDataStructCRef st = (SHVDataStructC*) owner->GetStruct();
-ColumnData = new KeyValuePair[st->GetColumnCount()];
+ColumnData = new RowValues[st->GetColumnCount()];
 	for (size_t i = 0; i < st->GetColumnCount(); i++)
 	{
-		ColumnData[i].Name = (*st)[i]->GetColumnName();
 		switch ((*st)[i]->GetDataType())
 		{
-		case SHVDataVariant::SHVDataType_Int:
-			ColumnData[i].Value.SetInt(copyrow->AsInt(ColumnData[i].Name));
+		case SHVDataVariant::TypeInt:
+			ColumnData[i].OrgValue.SetInt(copyrow->AsInt(i));
+			ColumnData[i].Value.SetInt(copyrow->AsInt(i));
 			break;
-		case SHVDataVariant::SHVDataType_Bool:
-			ColumnData[i].Value.SetBool(copyrow->AsBool(ColumnData[i].Name));
+		case SHVDataVariant::TypeBool:
+			ColumnData[i].OrgValue.SetBool(copyrow->AsBool(i));
+			ColumnData[i].Value.SetBool(copyrow->AsBool(i));
 			break;
-		case SHVDataVariant::SHVDataType_Double:
-			ColumnData[i].Value.SetDouble(copyrow->AsDouble(ColumnData[i].Name));
+		case SHVDataVariant::TypeDouble:
+			ColumnData[i].OrgValue.SetDouble(copyrow->AsDouble(i));
+			ColumnData[i].Value.SetDouble(copyrow->AsDouble(i));
 			break;
-		case SHVDataVariant::SHVDataType_String:
-			ColumnData[i].Value.SetString(copyrow->AsString(ColumnData[i].Name));
+		case SHVDataVariant::TypeString:
+			ColumnData[i].OrgValue.SetString(copyrow->AsString(i));
+			ColumnData[i].Value.SetString(copyrow->AsString(i));
 			break;
-		case SHVDataVariant::SHVDataType_Time:
-			ColumnData[i].Value.SetTime(copyrow->AsTime(ColumnData[i].Name));
+		case SHVDataVariant::TypeTime:
+			ColumnData[i].OrgValue.SetTime(copyrow->AsTime(i));
+			ColumnData[i].Value.SetTime(copyrow->AsTime(i));
 			break;
 		}
 	}
@@ -37,154 +45,208 @@ ColumnData = new KeyValuePair[st->GetColumnCount()];
 SHVDataRow_impl::SHVDataRow_impl(SHVDataRowList* owner)
 {
 SHVDataStructCRef st = (SHVDataStructC*) owner->GetStruct();
-ColumnData = new KeyValuePair[st->GetColumnCount()];
+ColumnData = new RowValues[st->GetColumnCount()];
+	Owner = owner;
 	for (size_t i = 0; i < st->GetColumnCount(); i++)
 	{
 		switch ((*st)[i]->GetDataType())
 		{
-		case SHVDataVariant::SHVDataType_Int:
+		case SHVDataVariant::TypeInt:
+			ColumnData[i].OrgValue.SetInt(SHVInt());
 			ColumnData[i].Value.SetInt(SHVInt());
 			break;
-		case SHVDataVariant::SHVDataType_Double:
+		case SHVDataVariant::TypeDouble:
+			ColumnData[i].OrgValue.SetDouble(SHVDouble());
 			ColumnData[i].Value.SetDouble(SHVDouble());
 			break;
-		case SHVDataVariant::SHVDataType_Bool:
+		case SHVDataVariant::TypeBool:
+			ColumnData[i].OrgValue.SetBool(SHVBool::False);
 			ColumnData[i].Value.SetBool(SHVBool::False);
 			break;
-		case SHVDataVariant::SHVDataType_Time:
+		case SHVDataVariant::TypeTime:
+			ColumnData[i].OrgValue.SetTime(SHVTime());
 			ColumnData[i].Value.SetTime(SHVTime());
 			break;
-		case SHVDataVariant::SHVDataType_String:
+		case SHVDataVariant::TypeString:
+			ColumnData[i].OrgValue.SetString(SHVString());
 			ColumnData[i].Value.SetString(SHVString());
 			break;
 		}
 	}
-	RowState = SHVDataRow::SHVDataRowState_Unchanged;
+	RowState = SHVDataRow::SHVDataRowState_Adding;
 }
 
-SHVStringBuffer SHVDataRow_impl::AsString(const SHVString8C& colName) const
+/*************************************
+ * AsString
+ *************************************/
+SHVStringBuffer SHVDataRow_impl::AsString(size_t colIdx) const
 {
-KeyValuePair* vp =	Find(colName);
-	return (vp ? vp->Value.AsString() : SHVString().ReleaseBuffer());
+	SHVASSERT(colIdx != SIZE_T_MAX);
+	return (colIdx != SIZE_T_MAX ? ColumnData[colIdx].Value.AsString() : SHVString().ReleaseBuffer());
 }
 
-void SHVDataRow_impl::SetValue(const SHVString8C& colName, const SHVStringC& val)
+/*************************************
+ * SetString
+ *************************************/
+void SHVDataRow_impl::SetString(size_t colIdx, const SHVStringC& val)
 {
-KeyValuePair* vp =	Find(colName);
-	if (vp)
+	SHVASSERT(colIdx != SIZE_T_MAX);
+	if (colIdx != SIZE_T_MAX)
 	{		
-		RowState = (RowState != SHVDataRow::SHVDataRowState_New ? 
-			SHVDataRow::SHVDataRowState_Changed : SHVDataRow::SHVDataRowState_New);
-		vp->Value.SetString(val);
+		SetChanged();
+		ColumnData[colIdx].Value.SetString(val);
 	}
 }
 
-SHVInt SHVDataRow_impl::AsInt(const SHVString8C& colName) const
+/*************************************
+ * AsInt
+ *************************************/
+SHVInt SHVDataRow_impl::AsInt(size_t colIdx) const
 {
-KeyValuePair* vp =	Find(colName);
-	return (vp ? vp->Value.AsInt() : SHVInt());
+	SHVASSERT(colIdx != SIZE_T_MAX);
+	return (colIdx != SIZE_T_MAX ? ColumnData[colIdx].Value.AsInt() : SHVInt());
 }
 
-void SHVDataRow_impl::SetValue(const SHVString8C& colName, SHVInt val)
+/*************************************
+ * SetInt
+ *************************************/
+void SHVDataRow_impl::SetInt(size_t colIdx, SHVInt val)
 {
-KeyValuePair* vp =	Find(colName);
-	if (vp)
+	SHVASSERT(colIdx != SIZE_T_MAX);
+	if (colIdx != SIZE_T_MAX)
 	{
-		RowState = (RowState != SHVDataRow::SHVDataRowState_New ? 
-			SHVDataRow::SHVDataRowState_Changed : SHVDataRow::SHVDataRowState_New);
-		vp->Value.SetInt(SHVInt(val));
+		SetChanged();
+		ColumnData[colIdx].Value.SetInt(SHVInt(val));
 	}
 }
 
-SHVDouble SHVDataRow_impl::AsDouble(const SHVString8C& colName) const
+/*************************************
+ * AsDouble
+ *************************************/
+SHVDouble SHVDataRow_impl::AsDouble(size_t colIdx) const
 {
-KeyValuePair* vp =	Find(colName);
-	return (vp ? vp->Value.AsDouble() : SHVDouble());
+	SHVASSERT(colIdx != SIZE_T_MAX);
+	return (colIdx != SIZE_T_MAX ? ColumnData[colIdx].Value.AsDouble() : SHVDouble());
 }
 
-void SHVDataRow_impl::SetValue(const SHVString8C& colName, SHVDouble val)
+/*************************************
+ * SetDouble
+ *************************************/
+void SHVDataRow_impl::SetDouble(size_t colIdx, SHVDouble val)
 {
-KeyValuePair* vp =	Find(colName);
-	if (vp)
+	SHVASSERT(colIdx != SIZE_T_MAX);
+	if (colIdx != SIZE_T_MAX)
 	{
-		RowState = (RowState != SHVDataRow::SHVDataRowState_New ? 
-			SHVDataRow::SHVDataRowState_Changed : SHVDataRow::SHVDataRowState_New);
-		vp->Value.SetDouble(val);
+		SetChanged();
+		ColumnData[colIdx].Value.SetDouble(val);
 	}
 }
 
-SHVTime SHVDataRow_impl::AsTime(const SHVString8C& colName) const
+/*************************************
+ * AsTime
+ *************************************/
+SHVTime SHVDataRow_impl::AsTime(size_t colIdx) const
 {
-KeyValuePair* vp =	Find(colName);
-	return (vp ? vp->Value.AsTime() : SHVTime());
+	SHVASSERT(colIdx != SIZE_T_MAX);
+	return (colIdx != SIZE_T_MAX ? ColumnData[colIdx].Value.AsTime() : SHVTime());
 }
 
-void SHVDataRow_impl::SetValue(const SHVString8C& colName, const SHVTime& time)
+/*************************************
+ * SetTime
+ *************************************/
+void SHVDataRow_impl::SetTime(size_t colIdx, const SHVTime& time)
 {
-KeyValuePair* vp =	Find(colName);
-	if (vp)
+	SHVASSERT(colIdx != SIZE_T_MAX);
+	if (colIdx != SIZE_T_MAX)
 	{
-		RowState = (RowState != SHVDataRow::SHVDataRowState_New ? 
-			SHVDataRow::SHVDataRowState_Changed : SHVDataRow::SHVDataRowState_New);
-		vp->Value.SetTime(time);
+		SetChanged();
+		ColumnData[colIdx].Value.SetTime(time);
 	}
 }
 
-SHVBool SHVDataRow_impl::AsBool(const SHVString8C& colName) const
+/*************************************
+ * AsBool
+ *************************************/
+SHVBool SHVDataRow_impl::AsBool(size_t colIdx) const
 {
-KeyValuePair* vp =	Find(colName);
-	return (vp ? vp->Value.AsBool() : SHVBool());
+	SHVASSERT(colIdx != SIZE_T_MAX);
+	return (colIdx != SIZE_T_MAX ? ColumnData[colIdx].Value.AsBool() : SHVBool());
 }
 
-void SHVDataRow_impl::SetValue(const SHVString8C& colName, SHVBool val)
+/*************************************
+ * AsBool
+ *************************************/
+void SHVDataRow_impl::SetBool(size_t colIdx, SHVBool val)
 {
-KeyValuePair* vp =	Find(colName);
-	if (vp)
+	SHVASSERT(colIdx != SIZE_T_MAX);
+	if (colIdx != SIZE_T_MAX)
 	{
-		RowState = (RowState != SHVDataRow::SHVDataRowState_New ? 
-			SHVDataRow::SHVDataRowState_Changed : SHVDataRow::SHVDataRowState_New);
-		vp->Value.SetBool(val);
+		SetChanged();
+		ColumnData[colIdx].Value.SetBool(val);
 	}
 }
 
-SHVBool SHVDataRow_impl::IsNull(const SHVString8C& colName) const
+/*************************************
+ * IsNull
+ *************************************/
+SHVBool SHVDataRow_impl::IsNull(size_t colIdx) const
 {
-KeyValuePair* vp =	Find(colName);
-	if (vp)
-		return SHVBool(vp->Value.IsNull());
+	SHVASSERT(colIdx != SIZE_T_MAX);
+	if (colIdx != SIZE_T_MAX )
+		return SHVBool(ColumnData[colIdx].Value.IsNull());
 	else
 		return SHVBool::True;
 }
 
-void SHVDataRow_impl::SetNull(const SHVString8C& colName)
+/*************************************
+ * SetNull
+ *************************************/
+void SHVDataRow_impl::SetNull(size_t colIdx)
 {
-KeyValuePair* vp =	Find(colName);
-	SHVASSERT(vp);
-	if (vp)
+	SHVASSERT(colIdx != SIZE_T_MAX);
+	if (colIdx != SIZE_T_MAX)
 	{
-		RowState = (RowState != SHVDataRow::SHVDataRowState_New ? 
-			SHVDataRow::SHVDataRowState_Changed : SHVDataRow::SHVDataRowState_New);
-		vp->Value.SetNull();
+		SetChanged();
+		ColumnData[colIdx].Value.SetNull();
 	}
 }
 
+/*************************************
+ * ColumnIndex
+ *************************************/
+size_t SHVDataRow_impl::ColumnIndex(const SHVString8C& columnName) const
+{
+size_t retVal;
+	SHVASSERT(RowValid());
+	if (RowValid())
+	{
+		if (!Owner->GetStruct()->FindColumnIndex(retVal, columnName))
+			retVal = SIZE_T_MAX;
+	}
+	return retVal;
+}
+
+/*************************************
+ * GetValue
+ *************************************/
 SHVDataVariant* SHVDataRow_impl::GetValue(size_t colIdx) const
 {
-	return new SHVDataVariant_impl(ColumnData[colIdx].Value);
+	SHVASSERT(colIdx != SIZE_T_MAX);
+	return (colIdx != SIZE_T_MAX ? new SHVDataVariant_impl(ColumnData[colIdx].Value) : new SHVDataVariant_impl());
 }
 
-SHVDataVariant* SHVDataRow_impl::GetValue(const SHVString8C& colName) const
+/*************************************
+ * OrginalValue
+ *************************************/
+const SHVDataVariant* SHVDataRow_impl::OriginalValue(size_t colIdx) const
 {
-KeyValuePair* vp = Find(colName);
-	return vp ? new SHVDataVariant_impl(&vp->Value) : NULL;
+	SHVASSERT(colIdx != SIZE_T_MAX);
+	return colIdx != SIZE_T_MAX ? (const SHVDataVariant*) &ColumnData[colIdx].OrgValue : NULL;
 }
 
-const SHVDataVariant* SHVDataRow_impl::OrginalValue(const SHVString8C& colName) const
-{
-KeyValuePair* vp = Find(colName);
-	return vp ? &vp->OrgValue : NULL;
-}
-
+/*************************************
+ * GetKey
+ *************************************/
 SHVDataRowKey* SHVDataRow_impl::GetKey(size_t index) const
 {
 SHVDataStructCRef st = (SHVDataStructC*) Owner->GetStruct();
@@ -195,37 +257,60 @@ SHVDataRowKey_impl* retVal = NULL;
 		retVal = new SHVDataRowKey_impl;
 		for (size_t i = 0; i < idx->Count(); i++)
 		{
-			retVal->AddKey((*idx)[i].Key, new SHVDataVariant_impl((*idx)[i].Value), (*idx)[i].Desc);
+			retVal->AddKey((*idx)[i].Key, new SHVDataVariant_impl(GetValue(ColumnIndex((*idx)[i].Key))), (*idx)[i].Desc);
 		}
 	}
 	return retVal;
 }
 
+/*************************************
+ * MatchKey
+ *************************************/
 SHVBool SHVDataRow_impl::MatchKey(const SHVDataRowKey* key) const 
 {
 SHVBool retVal = true;
 	for (size_t i = 0; i < key->Count() && retVal; i++)
 	{
-	KeyValuePair* found = Find((*key)[i].Key);
-		if (found)
-			retVal = *(*key)[i].Value == found->Value;
+	size_t colIdx = ColumnIndex((*key)[i].Key);
+		if (colIdx != SIZE_T_MAX)
+			retVal = *(*key)[i].Value == ColumnData[colIdx].Value;
 		else
 			retVal = false;
 	}
 	return retVal;
 }
 
+/*************************************
+ * RowValid
+ *************************************/
 SHVBool SHVDataRow_impl::RowValid() const
 {
-	return GetRowState() != SHVDataRow::SHVDataRowState_Unattached &&
+	return GetRowState() != SHVDataRow::SHVDataRowState_Invalid &&
 		GetRowState() != SHVDataRow::SHVDataRowState_Deleted;
 }
 
+/*************************************
+ * RowValid
+ *************************************/
+const SHVDataStructC* SHVDataRow_impl::GetStruct() const
+{
+	if (RowValid())
+		return Owner->GetStruct();
+	else
+		return NULL;
+}
+
+/*************************************
+ * GetRowState
+ *************************************/
 int SHVDataRow_impl::GetRowState() const
 {
 	return RowState;
 }
 
+/*************************************
+ * Delete
+ *************************************/
 SHVBool SHVDataRow_impl::Delete()
 {
 	SHVASSERT(RowValid());
@@ -233,59 +318,73 @@ SHVBool SHVDataRow_impl::Delete()
 SHVBool retVal(RowValid());
 
 	if (RowValid())
-		RowState = SHVDataRow::SHVDataRowState_Deleted;
+		RowState = SHVDataRow::SHVDataRowState_Deleting;
 		
 	return retVal;
 }
 
+/*************************************
+ * AcceptChanges
+ *************************************/
 SHVBool SHVDataRow_impl::AcceptChanges()
 {
-	return Owner->AcceptChanges(this);
+SHVBool retVal = Owner->GetDataSession()->UpdateRow(this);
+	if (retVal)
+	{
+		if (RowState == SHVDataRow::SHVDataRowState_Deleting)
+			RowState = SHVDataRow::SHVDataRowState_Deleted;
+		if (RowState ==SHVDataRow::SHVDataRowState_Adding)
+			RowState = SHVDataRow::SHVDataRowState_Added;
+		if (RowState ==SHVDataRow::SHVDataRowState_Changing)
+			RowState = SHVDataRow::SHVDataRowState_Changed;	
+	}
+	return retVal;
 }
 
+/*************************************
+ * RejectChanges
+ *************************************/
 SHVBool SHVDataRow_impl::RejectChanges()
 {
-	return Owner->RejectChanges(this);
+	for (size_t col = Owner->GetStruct()->GetColumnCount(); col;)
+	{
+		ColumnData[--col].Value = ColumnData[col].OrgValue;
+	}
+	RowState = SHVDataRow::SHVDataRowState_Invalid;
+	return SHVBool::True;
 }
 
+/*************************************
+ * HasChanges
+ *************************************/
 SHVBool SHVDataRow_impl::HasChanges()
 {
 SHVDataStructCRef st = (SHVDataStructC *) Owner->GetStruct();
 bool hasChanges = false;
 	for (size_t i = 0; i < st->GetColumnCount() && !hasChanges; i++)
 	{
-		hasChanges = ColumnData[i].OrgValue.GetDataType() != SHVDataVariant::SHVDataType_Undefined;
+		hasChanges = ColumnData[i].OrgValue.GetDataType() != SHVDataVariant::TypeUndefined;
 	}
-	if (!hasChanges && RowState != SHVDataRow::SHVDataRowState_New)
+	if (!hasChanges && RowState != SHVDataRow::SHVDataRowState_Adding)
 		RowState = SHVDataRow::SHVDataRowState_Unchanged;
 
 	return hasChanges;
 }
+
+/*************************************
+ * ClearOwnership
+ *************************************/
 void SHVDataRow_impl::ClearOwnership()
 {
-	RowState = SHVDataRow::SHVDataRowState_Unattached;
+	RowState = SHVDataRow::SHVDataRowState_Invalid;
 	Owner = NULL;
 }
 
+/*************************************
+ * Destructor
+ *************************************/
 SHVDataRow_impl::~SHVDataRow_impl()
 {
 	delete [] ColumnData;
 }
 
-SHVDataRow_impl::KeyValuePair* SHVDataRow_impl::Find(const SHVString8C& columnName) const
-{
-KeyValuePair* retVal = NULL;
-
-	SHVASSERT(RowState != SHVDataRow::SHVDataRowState_Unattached);
-
-	if (RowState != SHVDataRow::SHVDataRowState_Unattached)
-	{
-	SHVDataStructCRef st = (SHVDataStructC *) Owner->GetStruct();
-		for (size_t i = 0; i < st->GetColumnCount() && !retVal; i++)
-		{
-			if ((*st)[i]->GetColumnName() == columnName)
-				retVal = &ColumnData[i];
-		}
-	}
-	return retVal;
-}

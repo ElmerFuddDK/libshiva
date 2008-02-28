@@ -11,49 +11,50 @@
 #include "shvdatarowlist_sqlite.h"
 
 //-=========================================================================================================
-/// SHVDataRow_impl class - Interface for SHVDataRow
+/// SHVDataRow_impl class - Implementation for the datarow
 /**
- * Interface for a generic shiva datarow
+ * A generic row class which is a copy a SHVDataRowC object that is editable.
  */
-
 class SHVDataRow_impl: public SHVDataRow
 {
 public:
-	struct KeyValuePair
+	struct RowValues
 	{
-		SHVString8			Name;
 		SHVDataVariant_impl Value;
 		SHVDataVariant_impl	OrgValue;
 	};
 
-	SHVDataRow_impl(SHVDataRowC* copyrow, SHVDataRowList* owner);
+	SHVDataRow_impl(const SHVDataRowC* copyrow, SHVDataRowList* owner);
 	SHVDataRow_impl(SHVDataRowList* owner);
 
-	virtual SHVStringBuffer AsString(const SHVString8C& colName) const;
-	virtual void SetValue(const SHVString8C& colName, const SHVStringC& val);
+	virtual SHVStringBuffer AsString(size_t colIdx) const;
+	virtual void SetString(size_t colIdx, const SHVStringC& val);
 
-	virtual SHVInt AsInt(const SHVString8C& colName) const;
-	virtual void SetValue(const SHVString8C& colName, SHVInt val);
+	virtual SHVInt AsInt(size_t colIdx) const;
+	virtual void SetInt(size_t colIdx, SHVInt val);
 
-	virtual SHVDouble AsDouble(const SHVString8C& colName) const;
-	virtual void SetValue(const SHVString8C& colName, SHVDouble val);
+	virtual SHVDouble AsDouble(size_t colIdx) const;
+	virtual void SetDouble(size_t colIdx, SHVDouble val);
 
-	virtual SHVTime AsTime(const SHVString8C& colName) const;
-	virtual void SetValue(const SHVString8C& colName, const SHVTime& time);
+	virtual SHVTime AsTime(size_t colIdx) const;
+	virtual void SetTime(size_t colIdx, const SHVTime& time);
 
-	virtual SHVBool AsBool(const SHVString8C& colName) const;
-	virtual void SetValue(const SHVString8C& colName, SHVBool val);
+	virtual SHVBool AsBool(size_t colIdx) const;
+	virtual void SetBool(size_t colIdx, SHVBool val);
 
-	virtual SHVBool IsNull(const SHVString8C& colName) const;
-	virtual void SetNull(const SHVString8C& colName);
+	virtual SHVBool IsNull(size_t colIdx) const;
+	virtual void SetNull(size_t colIdx);
 
-	virtual SHVDataVariant* GetValue(const SHVString8C& colName) const;
+	virtual size_t ColumnIndex(const SHVString8C& colName) const;
+
 	virtual SHVDataVariant* GetValue(size_t colIdx) const;
-	virtual const SHVDataVariant* OrginalValue(const SHVString8C& colName) const;
+	virtual const SHVDataVariant* OriginalValue(size_t colIdx) const;
 
 	virtual SHVDataRowKey* GetKey(size_t index = 0) const;
 	virtual SHVBool MatchKey(const SHVDataRowKey* key) const;
 	virtual SHVBool RowValid() const;
+	virtual const SHVDataStructC* GetStruct() const;
+
 	virtual int GetRowState() const;
 
 	virtual SHVBool Delete();
@@ -64,13 +65,20 @@ public:
 
 protected:
 	virtual ~SHVDataRow_impl();
-	virtual KeyValuePair* Find(const SHVString8C& columnName) const;
+	inline void SetChanged();
 private:
 	friend class SHVDataRowList_SQLite;
-	KeyValuePair* ColumnData;
+	RowValues* ColumnData;
 	SHVDataRowList* Owner;
 	int RowState;
+	int OrgRowState;
 };
 typedef SHVRefObjectContainer<SHVDataRow_impl> SHVDataRow_implRef;
+
+void SHVDataRow_impl::SetChanged()
+{
+	if (RowState != SHVDataRow::SHVDataRowState_Adding)
+		RowState = SHVDataRow::SHVDataRowState_Changing;
+}
 
 #endif

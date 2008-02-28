@@ -7,7 +7,6 @@
 ///  SHVDataStructColumn class - The non const interface for a datastruct column definition.
 /**
  */
-
 class SHVDataStructColumn: public SHVDataStructColumnC
 {
 public:
@@ -21,9 +20,6 @@ public:
 
 	virtual int GetDataLength() const = 0;
 	virtual void SetDataLength(int len) = 0;
-
-	virtual SHVBool GetPrimaryKey() const = 0;
-	virtual void SetPrimaryKey(SHVBool flag) = 0;
 
 	virtual SHVBool GetAllowNull() const = 0;
 	virtual void SetAllowNull(SHVBool flag) = 0;
@@ -55,10 +51,12 @@ public:
 	virtual const SHVDataRowKey* GetPrimaryIndex() const = 0;
 	virtual const SHVDataRowKey* GetIndex(size_t IdxID) const = 0;
 	virtual const size_t IndexCount() const = 0;
+	virtual SHVDataRowKey* CreateIndexKey() const = 0;
 	virtual void AddIndex(SHVDataRowKey* index) = 0;
 
 	virtual void SetPrimaryIndex(const SHVDataRowKey* key) = 0;
 	virtual SHVBool IsEqual(const SHVDataStructC* dataStruct) const = 0;
 };
+typedef SHVRefObjectContainer<SHVDataStruct> SHVDataStructRef;
 
 #endif

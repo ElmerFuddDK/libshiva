@@ -6,13 +6,13 @@
 #include "../../../../include/utils/shvstring.h"
 #include "../../../../include/utils/shvvectorref.h"
 #include "../../../../include/shvtypes.h"
-#include "../shvdatatable.h"
-#include "shvdatatable_sqlite.h"
+#include "../shvdatarowlist.h"
+#include "../shvdatasession.h"
 
 //-=========================================================================================================
-/// SHVDataRowList class - Interface for SHVDataRowList
+/// SHVDataRowList_SQLite class - SQLite implementation of a datarow list.
 /**
- * Interface for a generic shiva datarow list
+ * Objects of this class handles all the necessary logic for maintaining a sqlite datatable.
  */
 class SHVDataRowC_SQLite;
 class SHVDataRowList_SQLite: public SHVDataRowList
@@ -20,38 +20,27 @@ class SHVDataRowList_SQLite: public SHVDataRowList
 protected:
 	~SHVDataRowList_SQLite();
 public:
-	SHVDataRowList_SQLite(SHVDataTable_SQLite* dataTable, const SHVStringC& sql);
+	SHVDataRowList_SQLite(SHVDataSession* dataSession, SHVDataRowListC *rowList);
 	virtual const SHVDataRowC* GetCurrentRow() const;
-	virtual SHVBool NextRow();
-	virtual SHVBool Reset();
-	virtual SHVDataRow* EditCurrentRow();
-	virtual SHVDataRow* AddRow();
-	virtual SHVBool CommitChanges();
-	virtual SHVBool CancelChanges();
-	virtual const SHVDataRowVector* GetChangedRows();
-	virtual SHVBool AcceptChanges(SHVDataRow* dataRow);
-	virtual SHVBool RejectChanges(SHVDataRow* dataRow);
-	virtual const SHVDataStructC* GetStruct() const;
-	virtual const void* GetProvider() const;
 	virtual SHVBool IsOk() const;
-protected:
-	SHVDataRow* Find(const SHVDataRowVector& vector, const SHVDataRowKey* key, size_t& idx) const;
-	bool EmptySlot(const SHVDataRowVector& vector, size_t& idx);
-private:
-	friend class SHVDataRowC_SQLite;
+	virtual const SHVDataStructC* GetStruct() const;
 
-	SHVDataRowCRef CurrentRow;
-	SHVSQLiteStatementRef Statement;
-	SHVDataRowVector ChangedRows;
-	SHVDataRowVector NewRows;
-	SHVDataRowVector CommittedRows;
-	SHVDataTable_SQLiteRef Table;
-	SHVBool Ok;
-	SHVBool Eof;
+	virtual SHVDataRowC* Find(const SHVDataRowKey* key);
+	virtual SHVBool NextRow();
+	virtual SHVDataRowListC* Reverse(const SHVStringC& condition);
+	virtual SHVBool Reset();
+
+	virtual const void* GetRowProvider() const;
+	virtual SHVDataSession* GetDataSession();
+
+	virtual SHVDataRow* EditCurrentRow();
+	virtual SHVDataRow* AddRow();	
+private:
+	SHVDataRowListCRef RowList;
+	SHVDataSessionRef DataSession;
 };
 typedef SHVRefObjectContainer<SHVDataRowList_SQLite> SHVDataRowList_SQLiteRef;
 
-// ==================================== implementation - SHVDataRowList ==================================== //
 
 
 #endif

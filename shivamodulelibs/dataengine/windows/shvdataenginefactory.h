@@ -23,6 +23,7 @@ public:
 	virtual SHVInt GetMinor();
 	virtual SHVInt GetRelease();
 	virtual SHVInt GetBuild();
+	virtual SHVStringBuffer GetName();
 
 
 	// Get description

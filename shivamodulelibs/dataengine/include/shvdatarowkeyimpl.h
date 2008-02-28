@@ -6,9 +6,9 @@
 #include "../shvdatarowkey.h"
 
 //-=========================================================================================================
-/// SHVDataRowKey class - Interface for the a key
+/// SHVDataRowKey_impl class - Implementation for the data key
 /**
- * Interface for a generic shiva datarow
+ * A key is actually a list of column name and maybe associated with value
  */
 class SHVDataRowKey_impl: public SHVDataRowKey
 {
@@ -18,8 +18,15 @@ public:
 	SHVDataRowKey_impl();
 	SHVDataRowKey_impl(const SHVDataRowKey* key);
 	virtual const SHVDataRowKey::KeyValuePair& operator[](size_t idx) const;
+	virtual void SetKeyValue(size_t idx, SHVInt val);
+	virtual void SetKeyValue(size_t idx, SHVDouble val);
+	virtual void SetKeyValue(size_t idx, SHVBool val);
+	virtual void SetKeyValue(size_t idx, const SHVTime& val);
+	virtual void SetKeyValue(size_t idx, const SHVStringC& val);
+	virtual void SetKeyNull(size_t idx);
 
-	virtual void AddKey(const SHVString8C& columnName, SHVDataVariant* value, SHVBool desc);
+	virtual void AddKey(const SHVString8C& columnName, SHVDataVariant* value, bool desc);
+	virtual SHVDataRowKey& AddKey(const SHVString8C& columnName, bool desc);
 
 	virtual size_t Count() const;
 	virtual SHVBool Unique() const;

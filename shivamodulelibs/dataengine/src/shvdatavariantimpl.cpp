@@ -6,9 +6,9 @@
 
 SHVDataVariant_impl::~SHVDataVariant_impl()
 {
-	if (DataType == SHVDataVariant::SHVDataType_Time && Data.timeVal)
+	if (DataType == SHVDataVariant::TypeTime && Data.timeVal)
 		delete Data.timeVal;
-	if (DataType == SHVDataVariant::SHVDataType_String && Data.stringVal)
+	if (DataType == SHVDataVariant::TypeString && Data.stringVal)
 		delete Data.stringVal;
 }
 
@@ -24,19 +24,19 @@ SHVString retVal;
 	{
 	switch (DataType)
 	{
-		case SHVDataVariant::SHVDataType_Int:
+		case SHVDataVariant::TypeInt:
 			retVal = SHVStringC::LongToString(Data.intVal);
 			break;
-		case SHVDataVariant::SHVDataType_Bool:
+		case SHVDataVariant::TypeBool:
 			retVal = Data.boolVal ? SHVString(_T("1")) : SHVString(_T("0"));
 			break;
-		case SHVDataVariant::SHVDataType_Double:
+		case SHVDataVariant::TypeDouble:
 			retVal.Format(_T("%g"), Data.doubleVal);
 			break;
-		case SHVDataVariant::SHVDataType_String:
+		case SHVDataVariant::TypeString:
 			retVal = Data.stringVal->GetBuffer();
 			break;
-		case SHVDataVariant::SHVDataType_Time:
+		case SHVDataVariant::TypeTime:
 			retVal = Data.timeVal->ToDateString();
 			break;
 		}
@@ -46,42 +46,43 @@ SHVString retVal;
 
 void SHVDataVariant_impl::SetString(const SHVStringC& val)
 {
-	if (DataType == SHVDataVariant::SHVDataType_Undefined)
-		DataType = SHVDataVariant::SHVDataType_String;
+	if (DataType == SHVDataVariant::TypeUndefined)
+		DataType = SHVDataVariant::TypeString;
 	if (val.IsNull())
 	{
-		if (DataType == SHVDataVariant::SHVDataType_Time && Data.timeVal)
+		if (DataType == SHVDataVariant::TypeTime && Data.timeVal)
 			delete Data.timeVal;
-		if (DataType == SHVDataVariant::SHVDataType_String && Data.stringVal)
+		if (DataType == SHVDataVariant::TypeString && Data.stringVal)
 			delete Data.stringVal;
 		Data.stringVal = NULL;
 		isNull = true;
 	}
 	else
 	{
-		if (DataType == SHVDataVariant::SHVDataType_Time && Data.timeVal)
+		isNull = false;
+		if (DataType == SHVDataVariant::TypeTime && Data.timeVal)
 			delete Data.timeVal;
-		if (DataType == SHVDataVariant::SHVDataType_String && Data.stringVal)
+		if (DataType == SHVDataVariant::TypeString && Data.stringVal)
 			delete Data.stringVal;
 		switch (DataType)
 		{
-		case SHVDataVariant::SHVDataType_Int:
+		case SHVDataVariant::TypeInt:
 			Data.intVal = SHVStringC::StrToL(val.GetSafeBuffer(), NULL, 10);
 			break;
-		case SHVDataVariant::SHVDataType_Bool:
+		case SHVDataVariant::TypeBool:
 			Data.boolVal = val == _T("1");
 			break;
-		case SHVDataVariant::SHVDataType_Double:
+		case SHVDataVariant::TypeDouble:
 #ifdef UNICODE
 			Data.doubleVal = wcstod(val.GetSafeBuffer(), NULL);
 #else
 			Data.doubleVal = strtod(val.GetSafeBuffer(), NULL);
 #endif
 			break;
-		case SHVDataVariant::SHVDataType_String:
+		case SHVDataVariant::TypeString:
 			Data.stringVal = new SHVString(val);
 			break;
-		case SHVDataVariant::SHVDataType_Time:
+		case SHVDataVariant::TypeTime:
 			Data.timeVal->SetFromDateString(val);
 			break;
 		}
@@ -91,26 +92,26 @@ void SHVDataVariant_impl::SetString(const SHVStringC& val)
 SHVInt SHVDataVariant_impl::AsInt() const
 {
 SHVInt retVal;
-	SHVASSERT(DataType != SHVDataVariant::SHVDataType_Time);
-	if (DataType != SHVDataVariant::SHVDataType_Time)
+	SHVASSERT(DataType != SHVDataVariant::TypeTime);
+	if (DataType != SHVDataVariant::TypeTime)
 	{
 		if (!isNull)
 		{
 		switch (DataType)
 		{
-			case SHVDataVariant::SHVDataType_Int:
+			case SHVDataVariant::TypeInt:
 				retVal = Data.intVal;
 				break;
-			case SHVDataVariant::SHVDataType_Bool:
+			case SHVDataVariant::TypeBool:
 				retVal = SHVBool(Data.boolVal).GetError();
 				break;
-			case SHVDataVariant::SHVDataType_Double:
+			case SHVDataVariant::TypeDouble:
 				retVal = (int) Data.doubleVal;
 				break;
-			case SHVDataVariant::SHVDataType_String:
+			case SHVDataVariant::TypeString:
 				retVal = SHVStringC::StrToL(Data.stringVal->GetSafeBuffer(), NULL, 10);
 				break;
-			case SHVDataVariant::SHVDataType_Time:
+			case SHVDataVariant::TypeTime:
 				break;
 			}
 		}
@@ -120,33 +121,34 @@ SHVInt retVal;
 
 void SHVDataVariant_impl::SetInt(SHVInt val)
 {
-	SHVASSERT(DataType != SHVDataVariant::SHVDataType_Time);
-	if (DataType == SHVDataVariant::SHVDataType_Undefined)
-		DataType = SHVDataVariant::SHVDataType_Int;
+	SHVASSERT(DataType != SHVDataVariant::TypeTime);
+	if (DataType == SHVDataVariant::TypeUndefined)
+		DataType = SHVDataVariant::TypeInt;
 	if (val.IsNull())
 	{
-		if (DataType == SHVDataVariant::SHVDataType_String && Data.stringVal)
+		if (DataType == SHVDataVariant::TypeString && Data.stringVal)
 			delete Data.stringVal;
 		Data.stringVal = NULL;
 		isNull = true;
 	}
 	else
-	if (DataType != SHVDataVariant::SHVDataType_Time)
+	if (DataType != SHVDataVariant::TypeTime)
 	{
-		if (DataType == SHVDataVariant::SHVDataType_String && Data.stringVal)
+		isNull = false;
+		if (DataType == SHVDataVariant::TypeString && Data.stringVal)
 			delete Data.stringVal;
 		switch (DataType)
 		{
-		case SHVDataVariant::SHVDataType_Int:
+		case SHVDataVariant::TypeInt:
 			Data.intVal = val;
 			break;
-		case SHVDataVariant::SHVDataType_Bool:
+		case SHVDataVariant::TypeBool:
 			Data.boolVal = val != 0;
 			break;
-		case SHVDataVariant::SHVDataType_Double:
+		case SHVDataVariant::TypeDouble:
 			Data.doubleVal = (double) val;
 			break;
-		case SHVDataVariant::SHVDataType_String:
+		case SHVDataVariant::TypeString:
 			Data.stringVal = new SHVString(SHVStringC::LongToString(val));
 			break;
 		}
@@ -156,30 +158,30 @@ void SHVDataVariant_impl::SetInt(SHVInt val)
 SHVDouble SHVDataVariant_impl::AsDouble() const
 {
 SHVDouble retVal;
-	SHVASSERT(DataType != SHVDataVariant::SHVDataType_Time);
-	if (DataType != SHVDataVariant::SHVDataType_Time)
+	SHVASSERT(DataType != SHVDataVariant::TypeTime);
+	if (DataType != SHVDataVariant::TypeTime)
 	{
 		if (!isNull)
 		{
 		switch (DataType)
 		{
-			case SHVDataVariant::SHVDataType_Int:
+			case SHVDataVariant::TypeInt:
 				retVal = (double) Data.intVal;
 				break;
-			case SHVDataVariant::SHVDataType_Bool:
+			case SHVDataVariant::TypeBool:
 				retVal = (double) SHVBool(Data.boolVal).GetError();
 				break;
-			case SHVDataVariant::SHVDataType_Double:
+			case SHVDataVariant::TypeDouble:
 				retVal = Data.doubleVal;
 				break;
-			case SHVDataVariant::SHVDataType_String:
+			case SHVDataVariant::TypeString:
 #ifdef UNICODE
 				retVal = wcstod(Data.stringVal->GetSafeBuffer(), NULL);
 #else
 				retVal = strtod(Data.stringVal->GetSafeBuffer(), NULL);
 #endif
 				break;
-			case SHVDataVariant::SHVDataType_Time:
+			case SHVDataVariant::TypeTime:
 				break;
 			}
 		}
@@ -189,35 +191,36 @@ SHVDouble retVal;
 
 void SHVDataVariant_impl::SetDouble(SHVDouble val)
 {
-	SHVASSERT(DataType != SHVDataVariant::SHVDataType_Time);
-	if (DataType == SHVDataVariant::SHVDataType_Undefined)
-		DataType = SHVDataVariant::SHVDataType_Double;
+	SHVASSERT(DataType != SHVDataVariant::TypeTime);
+	if (DataType == SHVDataVariant::TypeUndefined)
+		DataType = SHVDataVariant::TypeDouble;
 	if (val.IsNull())
 	{
-		if (DataType == SHVDataVariant::SHVDataType_Time && Data.timeVal)
+		if (DataType == SHVDataVariant::TypeTime && Data.timeVal)
 			delete Data.timeVal;
-		if (DataType == SHVDataVariant::SHVDataType_String && Data.stringVal)
+		if (DataType == SHVDataVariant::TypeString && Data.stringVal)
 			delete Data.stringVal;
 		Data.stringVal = NULL;
 		isNull = true;
 	}
 	else
-	if (DataType != SHVDataVariant::SHVDataType_Time)
+	if (DataType != SHVDataVariant::TypeTime)
 	{
-		if (DataType == SHVDataVariant::SHVDataType_String && Data.stringVal)
+		isNull = false;
+		if (DataType == SHVDataVariant::TypeString && Data.stringVal)
 			delete Data.stringVal;
 		switch (DataType)
 		{
-		case SHVDataVariant::SHVDataType_Int:
+		case SHVDataVariant::TypeInt:
 			Data.intVal = (int) val;
 			break;
-		case SHVDataVariant::SHVDataType_Bool:
+		case SHVDataVariant::TypeBool:
 			Data.boolVal = val != 0;
 			break;
-		case SHVDataVariant::SHVDataType_Double:
+		case SHVDataVariant::TypeDouble:
 			Data.doubleVal = val;
 			break;
-		case SHVDataVariant::SHVDataType_String:
+		case SHVDataVariant::TypeString:
 			Data.stringVal = new SHVString();
 			Data.stringVal->Format(_T("%g"), val);
 			break;
@@ -228,8 +231,8 @@ void SHVDataVariant_impl::SetDouble(SHVDouble val)
 SHVTime SHVDataVariant_impl::AsTime() const
 {
 SHVTime retVal;
-	SHVASSERT(DataType == SHVDataVariant::SHVDataType_Time);
-	if (DataType == SHVDataVariant::SHVDataType_Time)
+	SHVASSERT(DataType == SHVDataVariant::TypeTime);
+	if (DataType == SHVDataVariant::TypeTime)
 	{
 		retVal = *Data.timeVal;
 	}
@@ -237,31 +240,32 @@ SHVTime retVal;
 }
 void SHVDataVariant_impl::SetTime(const SHVTime& val)
 {
-	SHVASSERT(DataType == SHVDataVariant::SHVDataType_Time || DataType == SHVDataVariant::SHVDataType_String);
-	if (DataType == SHVDataVariant::SHVDataType_Undefined)
-		DataType = SHVDataVariant::SHVDataType_Time;
+	if (DataType == SHVDataVariant::TypeUndefined)
+		DataType = SHVDataVariant::TypeTime;
+	SHVASSERT(DataType == SHVDataVariant::TypeTime || DataType == SHVDataVariant::TypeString);
 	if (val.IsNull())
 	{
-		if (DataType == SHVDataVariant::SHVDataType_Time && Data.timeVal)
+		if (DataType == SHVDataVariant::TypeTime && Data.timeVal)
 			delete Data.timeVal;
-		if (DataType == SHVDataVariant::SHVDataType_String && Data.stringVal)
+		if (DataType == SHVDataVariant::TypeString && Data.stringVal)
 			delete Data.stringVal;
 		Data.stringVal = NULL;
 		isNull = true;
 	}
 	else
-	if (DataType == SHVDataVariant::SHVDataType_Time || DataType == SHVDataVariant::SHVDataType_String)
+	if (DataType == SHVDataVariant::TypeTime || DataType == SHVDataVariant::TypeString)
 	{
-		if (DataType == SHVDataVariant::SHVDataType_Time && Data.timeVal)
+		isNull = false;
+		if (DataType == SHVDataVariant::TypeTime && Data.timeVal)
 			delete Data.timeVal;
-		if (DataType == SHVDataVariant::SHVDataType_String && Data.stringVal)
+		if (DataType == SHVDataVariant::TypeString && Data.stringVal)
 			delete Data.stringVal;
 		switch (DataType)
 		{
-		case SHVDataVariant::SHVDataType_String:
+		case SHVDataVariant::TypeString:
 			Data.stringVal = new SHVString(val.ToDateString());
 			break;
-		case SHVDataVariant::SHVDataType_Time:
+		case SHVDataVariant::TypeTime:
 			Data.timeVal = new SHVTime(val);
 			break;
 		}
@@ -271,26 +275,26 @@ void SHVDataVariant_impl::SetTime(const SHVTime& val)
 SHVBool SHVDataVariant_impl::AsBool() const
 {
 SHVBool retVal;
-	SHVASSERT(DataType != SHVDataVariant::SHVDataType_Time);
-	if (DataType != SHVDataVariant::SHVDataType_Time)
+	SHVASSERT(DataType != SHVDataVariant::TypeTime);
+	if (DataType != SHVDataVariant::TypeTime)
 	{
 		if (!isNull)
 		{
 		switch (DataType)
 		{
-			case SHVDataVariant::SHVDataType_Int:
+			case SHVDataVariant::TypeInt:
 				retVal = SHVBool(Data.intVal != 0);
 				break;
-			case SHVDataVariant::SHVDataType_Bool:
+			case SHVDataVariant::TypeBool:
 				retVal = SHVBool(Data.boolVal);
 				break;
-			case SHVDataVariant::SHVDataType_Double:
+			case SHVDataVariant::TypeDouble:
 				retVal = SHVBool(Data.intVal != 0);
 				break;
-			case SHVDataVariant::SHVDataType_String:
+			case SHVDataVariant::TypeString:
 				return *Data.stringVal == _T("1");
 				break;
-			case SHVDataVariant::SHVDataType_Time:
+			case SHVDataVariant::TypeTime:
 				break;
 			}
 		}
@@ -300,25 +304,26 @@ SHVBool retVal;
 
 void SHVDataVariant_impl::SetBool(SHVBool val)
 {
-	SHVASSERT(DataType != SHVDataVariant::SHVDataType_Time);
-	if (DataType == SHVDataVariant::SHVDataType_Undefined)
-		DataType = SHVDataVariant::SHVDataType_Bool;
-	if (DataType != SHVDataVariant::SHVDataType_Time)
+	if (DataType == SHVDataVariant::TypeUndefined)
+		DataType = SHVDataVariant::TypeBool;
+	SHVASSERT(DataType != SHVDataVariant::TypeTime);
+	if (DataType != SHVDataVariant::TypeTime)
 	{
-		if (DataType == SHVDataVariant::SHVDataType_String && Data.stringVal)
+		isNull = false;
+		if (DataType == SHVDataVariant::TypeString && Data.stringVal)
 			delete Data.stringVal;
 		switch (DataType)
 		{
-		case SHVDataVariant::SHVDataType_Int:
+		case SHVDataVariant::TypeInt:
 			Data.intVal = val.GetError();
 			break;
-		case SHVDataVariant::SHVDataType_Bool:
+		case SHVDataVariant::TypeBool:
 			Data.boolVal = val;
 			break;
-		case SHVDataVariant::SHVDataType_Double:
+		case SHVDataVariant::TypeDouble:
 			Data.doubleVal = (double) val.GetError();
 			break;
-		case SHVDataVariant::SHVDataType_String:
+		case SHVDataVariant::TypeString:
 			Data.stringVal = new SHVString(val ? _T("1") : _T("0"));
 			break;
 		}
@@ -332,9 +337,9 @@ SHVBool SHVDataVariant_impl::IsNull() const
 
 void SHVDataVariant_impl::SetNull()
 {
-	if (DataType == SHVDataVariant::SHVDataType_Time && Data.timeVal)
+	if (DataType == SHVDataVariant::TypeTime && Data.timeVal)
 		delete Data.timeVal;
-	if (DataType == SHVDataVariant::SHVDataType_String && Data.stringVal)
+	if (DataType == SHVDataVariant::TypeString && Data.stringVal)
 		delete Data.stringVal;
 	isNull = true;
 }
@@ -343,19 +348,19 @@ SHVDataVariant& SHVDataVariant_impl::operator=(const SHVDataVariant& val)
 {
 	switch (val.GetDataType())
 	{
-		case SHVDataVariant::SHVDataType_Int:
+		case SHVDataVariant::TypeInt:
 			SetInt(val.AsInt());
 			break;
-		case SHVDataVariant::SHVDataType_Bool:
+		case SHVDataVariant::TypeBool:
 			SetBool(val.AsBool());
 			break;
-		case SHVDataVariant::SHVDataType_Double:
+		case SHVDataVariant::TypeDouble:
 			SetDouble(val.AsDouble());
 			break;
-		case SHVDataVariant::SHVDataType_String:
+		case SHVDataVariant::TypeString:
 			SetString(val.AsString());
 			break;
-		case SHVDataVariant::SHVDataType_Time:
+		case SHVDataVariant::TypeTime:
 			SetTime(val.AsTime());
 			break;
 	}
@@ -368,15 +373,15 @@ bool SHVDataVariant_impl::operator==(const SHVDataVariant& val) const
 	{
 		switch (DataType)
 		{
-		case SHVDataVariant::SHVDataType_Int:
+		case SHVDataVariant::TypeInt:
 			return AsInt() == val.AsInt();
-		case SHVDataVariant::SHVDataType_Bool:
+		case SHVDataVariant::TypeBool:
 			return AsBool() == val.AsBool();
-		case SHVDataVariant::SHVDataType_Double:
+		case SHVDataVariant::TypeDouble:
 			return AsDouble() == val.AsDouble();
-		case SHVDataVariant::SHVDataType_String:
+		case SHVDataVariant::TypeString:
 			return AsString() == val.AsString();
-		case SHVDataVariant::SHVDataType_Time:
+		case SHVDataVariant::TypeTime:
 			return (AsTime() == val.AsTime() ? true : false);
 			break;
 		}
