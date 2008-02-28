@@ -1,8 +1,9 @@
-#ifndef __SHIVA_GUI_SHVFORM_H
-#define __SHIVA_GUI_SHVFORM_H
+#ifndef __SHIVA_GUI_FORM_H
+#define __SHIVA_GUI_FORM_H
 
 
-#include "../../include/framework/shveventtargetdynamic.h"
+#include "shvformbase.h"
+#include "shvformimplementer.h"
 #include "shvcontrol.h"
 #include "shvcontrolcontainer.h"
 
@@ -12,13 +13,14 @@
  * This class is the basis of all forms in SHIVA.
  */
 
-class SHVForm: public SHVEventTargetDynamic
+template <class T = SHVFormBase>
+class SHVForm : public T
 {
 public:
+
 	SHVForm(SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVString8C entityName);
 
-	virtual void InitializeForm(SHVControlLayout* layout) = 0;
-	virtual void InitializeForm();
+	virtual void InitializeForm() = 0;
 
 	virtual void Show();
 	virtual void Hide();
@@ -33,16 +35,153 @@ public:
 	virtual SHVBool PreClose();
 
 protected:
-	virtual void OnEvent(SHVEvent* event);
-	virtual void OnPreDestroyEvent(SHVEvent* event);
+
+	inline SHVGUIManager* GetManager();
+	inline SHVControlContainer* GetContainer();
+
+	virtual void SetStandardLayoutEngine(); // sets a standard layout engine that calls onresizeform
 	virtual void OnResizeForm(SHVControlContainer* container, SHVControlLayout* layout);
 
-	SHVControlContainerRef ControlContainer;
-	SHVString8C EntityName;
-	SHVGUIManager* GUIManager;
+	// From event target
+	virtual void OnEvent(SHVEvent* event);
+
+private:
+	///\cond INTERNAL
+	SHVFormImplementerPtr Base;
+	///\endcond
 };
 
-typedef SHVRefObjectContainer<SHVForm> SHVFormRef;
 
+
+// ============================================ implementation ============================================ //
+
+/*************************************
+ * Constructor
+ *************************************/
+template <class T>
+SHVForm<T>::SHVForm(SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVString8C entityName)
+{
+	Base = manager->ContructFormImplementer(this,manager,controlContainer,entityName);
+}
+
+/*************************************
+ * SetStandardLayoutEngine
+ *************************************/
+template <class T>
+void SHVForm<T>::SetStandardLayoutEngine()
+{
+	Base->GetContainer()->SetLayoutEngine(new SHVControlLayoutCallback< SHVForm<T> >(this, &SHVForm<T>::OnResizeForm));
+}
+
+/*************************************
+ * Show
+ *************************************/
+template <class T>
+void SHVForm<T>::Show()
+{
+	Base->Show();
+}
+
+/*************************************
+ * Hide
+ *************************************/
+template <class T>
+void SHVForm<T>::Hide()
+{
+	Base->Hide();
+}
+
+/*************************************
+ * Enable
+ *************************************/
+template <class T>
+void SHVForm<T>::Enable()
+{
+	Base->Enable();
+}
+
+/*************************************
+ * Disable
+ *************************************/
+template <class T>
+void SHVForm<T>::Disable()
+{
+	Base->Disable();
+}
+
+/*************************************
+ * GetData
+ *************************************/
+template <class T>
+SHVBool SHVForm<T>::GetData(SHVControlData* data)
+{
+	return Base->GetData(data);
+}
+
+/*************************************
+ * SetData
+ *************************************/
+template <class T>
+SHVBool SHVForm<T>::SetData(SHVControlData* data)
+{
+	return Base->SetData(data);
+}
+
+/*************************************
+ * GetEntityName
+ *************************************/
+template <class T>
+SHVString8C SHVForm<T>::GetEntityName()
+{
+	return Base->GetEntityName();
+}
+
+/*************************************
+ * PreClose
+ *************************************/
+/// Called before the control container is closed
+/** 
+ * Return false to prevent the window/dialog from closing
+ */
+template <class T>
+SHVBool SHVForm<T>::PreClose()
+{
+	return SHVBool::True;
+}
+
+
+/*************************************
+ * OnEvent
+ *************************************/
+template <class T>
+void SHVForm<T>::OnEvent(SHVEvent* event)
+{
+}
+
+/*************************************
+ * OnResizeForm
+ *************************************/
+template <class T>
+void SHVForm<T>::OnResizeForm(SHVControlContainer* container, SHVControlLayout* layout)
+{
+}
+
+/*************************************
+ * GetManager
+ *************************************/
+template <class T>
+SHVGUIManager* SHVForm<T>::GetManager()
+{
+	return Base->GetManager();
+}
+
+/*************************************
+ * GetContainer
+ *************************************/
+template <class T>
+SHVControlContainer* SHVForm<T>::GetContainer()
+{
+	return Base->GetContainer();
+}
 
 #endif

@@ -13,7 +13,7 @@
 /**
  */
 
-class SHVMessageBox : public SHVForm
+class SHVMessageBox : public SHVForm<>
 {
 public:
 
@@ -30,7 +30,7 @@ public:
 
 
 	// From SHVForm
-	virtual void InitializeForm(SHVControlLayout* layout);
+	virtual void InitializeForm();
 
 	virtual SHVBool PreClose();
 

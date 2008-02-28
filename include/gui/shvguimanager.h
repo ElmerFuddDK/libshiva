@@ -7,6 +7,8 @@
 #include "shvcontroledit.h"
 #include "shvcontrollabel.h"
 #include "shvcontrolbutton.h"
+#include "shvformimplementer.h"
+#include "shvform.h"
 #include "utils/shvfont.h"
 #include "utils/shvcolor.h"
 #include "utils/shvpen.h"
@@ -80,6 +82,9 @@ public:
 	virtual SHVPen* CreatePen(SHVColor* color, int style = SHVPen::StyleDefault, int width = 1) = 0;
 	virtual SHVBrush* CreateBrush(SHVColor* color, int style = SHVBrush::StyleDefault) = 0;
 	virtual SHVRegion* CreateRegion(SHVControlContainer* container) = 0;
+
+	// Factories for template inherited classes
+	virtual SHVFormImplementer* ContructFormImplementer(SHVFormBase* owner, SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVString8C entityName) = 0;
 
 
 	// Register controls

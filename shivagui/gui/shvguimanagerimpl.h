@@ -41,6 +41,9 @@ public:
 	virtual SHVBrush* CreateBrush(SHVColor* color, int style = SHVBrush::StyleDefault) = 0;
 	virtual SHVRegion* CreateRegion(SHVControlContainer* container) = 0;
 
+	// Factories for template inherited classes
+	virtual SHVFormImplementer* ContructFormImplementer(SHVFormBase* owner, SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVString8C entityName) = 0;
+
 
 	// Register controls
 	virtual SHVBool RegisterFactory(int controlType, int controlSubType, SHVControlCreatorBase* factory);

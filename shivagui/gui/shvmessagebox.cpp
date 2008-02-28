@@ -75,29 +75,29 @@ void SHVMessageBox::ResultSubscribe(SHVEventSubscriberBase* resultSubscriber)
 /*************************************
  * InitializeForm
  *************************************/
-void SHVMessageBox::InitializeForm(SHVControlLayout* layout)
+void SHVMessageBox::InitializeForm()
 {
 
-	SHVASSERT(!ControlContainer->IsCreated());
+	SHVASSERT(!GetContainer()->IsCreated());
 
-	ControlContainer->Create(0);
-	ControlContainer->SetTitle(Title.IsNull() ? GUIManager->GetMainWindow()->GetTitle() : Title);
+	GetContainer()->Create(0);
+	GetContainer()->SetTitle(Title.IsNull() ? GetManager()->GetMainWindow()->GetTitle() : Title);
 
-	ControlContainer->SetSize(240,120);
+	GetContainer()->SetSize(240,120);
 
-	if (ControlContainer->IsCreated())
+	if (GetContainer()->IsCreated())
 	{
-	SHVRegionRef rgn = GUIManager->CreateRegion(ControlContainer);
+	SHVRegionRef rgn = GetManager()->CreateRegion(GetContainer());
 
-		((SHVGUIManagerImpl*)GUIManager)->MessageBoxes.AddTail(this);
+		((SHVGUIManagerImpl*)GetManager())->MessageBoxes.AddTail(this);
 
-		TextBox = GUIManager->NewEdit(SHVControlEdit::SubTypeMultiLine);
-		OK = GUIManager->NewButton();
-		Cancel = GUIManager->NewButton();
+		TextBox = GetManager()->NewEdit(SHVControlEdit::SubTypeMultiLine);
+		OK = GetManager()->NewButton();
+		Cancel = GetManager()->NewButton();
 
-		OK->SetParent(ControlContainer);
-		Cancel->SetParent(ControlContainer);
-		TextBox->SetParent(ControlContainer,SHVControl::FlagVisible|
+		OK->SetParent(GetContainer());
+		Cancel->SetParent(GetContainer());
+		TextBox->SetParent(GetContainer(),SHVControl::FlagVisible|
 											SHVControlEdit::FlagFlat|
 											SHVControlEdit::FlagReadonly);
 
@@ -126,7 +126,7 @@ void SHVMessageBox::InitializeForm(SHVControlLayout* layout)
  *************************************/
 SHVBool SHVMessageBox::PreClose()
 {
-SHVGUIManagerImpl* manager = (SHVGUIManagerImpl*)GUIManager;
+SHVGUIManagerImpl* manager = (SHVGUIManagerImpl*)GetManager();
 SHVMessageBoxRef self = this;
 	
 	for (SHVListPos pos = manager->MessageBoxes.Find(this);pos;pos = manager->MessageBoxes.Find(this))
@@ -135,7 +135,7 @@ SHVMessageBoxRef self = this;
 	}
 
 	if (!ResultSubscriber.IsNull())
-		ResultSubscriber->EmitNow(GUIManager->GetModuleList(),new SHVEvent(NULL,EventClicked,SHVInt(0),this));
+		ResultSubscriber->EmitNow(GetManager()->GetModuleList(),new SHVEvent(NULL,EventClicked,SHVInt(0),this));
 
 	return SHVBool::True;
 }
@@ -154,21 +154,21 @@ void SHVMessageBox::OnEvent(SHVEvent* event)
 			removeSelf = true;
 
 			if (!ResultSubscriber.IsNull())
-				ResultSubscriber->EmitNow(GUIManager->GetModuleList(),new SHVEvent(NULL,EventClicked,SHVInt(1),this));
-			ControlContainer->Close();
+				ResultSubscriber->EmitNow(GetManager()->GetModuleList(),new SHVEvent(NULL,EventClicked,SHVInt(1),this));
+			GetContainer()->Close();
 		}
 		else if (event->GetObject() == Cancel)
 		{
 			removeSelf = true;
 
 			if (!ResultSubscriber.IsNull())
-				ResultSubscriber->EmitNow(GUIManager->GetModuleList(),new SHVEvent(NULL,EventClicked,SHVInt(0),this));
-			ControlContainer->Close();
+				ResultSubscriber->EmitNow(GetManager()->GetModuleList(),new SHVEvent(NULL,EventClicked,SHVInt(0),this));
+			GetContainer()->Close();
 		}
 
 		if (removeSelf)
 		{
-		SHVGUIManagerImpl* manager = (SHVGUIManagerImpl*)GUIManager;
+		SHVGUIManagerImpl* manager = (SHVGUIManagerImpl*)GetManager();
 		SHVMessageBoxRef self = this;
 
 			for (SHVListPos pos = manager->MessageBoxes.Find(this);pos;pos = manager->MessageBoxes.Find(this))

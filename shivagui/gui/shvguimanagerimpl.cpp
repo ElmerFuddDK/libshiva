@@ -80,7 +80,7 @@ SHVMessageBox* msgBox = SHVMessageBox::Create(this,text,title,type);
 	if (msgBox)
 	{
 		msgBox->ResultSubscribe(resultSubscriber);
-		msgBox->InitializeForm(NULL);
+		msgBox->InitializeForm();
 	}
 
 	return (msgBox ? SHVBool::True : SHVBool::False);

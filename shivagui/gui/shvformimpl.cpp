@@ -2,34 +2,27 @@
 #include "../../include/platformspc.h"
 
 
-#include "../include/shvform.h"
+#include "shvformimpl.h"
 #include "../../include/framework/shveventsubscriber.h"
 #include "../../include/framework/shvevent.h"
 #include "../../include/framework/shveventstructs.h"
 
 //=========================================================================================================
-// SHVForm - base form interface
+// SHVFormImpl - base form interface
 //=========================================================================================================
-SHVForm::SHVForm(SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVString8C entityName): 
+SHVFormImpl::SHVFormImpl(SHVFormBase* owner, SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVString8C entityName): 
+	Owner(owner),
 	GUIManager(manager), 
 	ControlContainer(controlContainer),
 	EntityName(entityName)
 {
-	ControlContainer->SubscribePreDestroy(new SHVEventSubscriberFunc<SHVForm>(this,&SHVForm::OnPreDestroyEvent));
-}
-
-/*************************************
- * InitializeForm
- *************************************/
-void SHVForm::InitializeForm()
-{
-	InitializeForm(new SHVControlLayoutCallback<SHVForm>(this, &SHVForm::OnResizeForm));
+	ControlContainer->SubscribePreDestroy(new SHVEventSubscriberFunc<SHVFormImpl>(this,&SHVFormImpl::OnPreDestroyEvent));
 }
 
 /*************************************
  * Show
  *************************************/
-void SHVForm::Show()
+void SHVFormImpl::Show()
 {
 	ControlContainer->SetFlag(SHVControl::FlagVisible, true);
 }
@@ -37,7 +30,7 @@ void SHVForm::Show()
 /*************************************
  * Hide
  *************************************/
-void SHVForm::Hide()
+void SHVFormImpl::Hide()
 {
 	ControlContainer->SetFlag(SHVControl::FlagVisible, false);
 }
@@ -45,7 +38,7 @@ void SHVForm::Hide()
 /*************************************
  * Enable
  *************************************/
-void SHVForm::Enable()
+void SHVFormImpl::Enable()
 {
 	ControlContainer->SetFlag(SHVControl::FlagDisabled, false);
 }
@@ -53,7 +46,7 @@ void SHVForm::Enable()
 /*************************************
  * Disable
  *************************************/
-void SHVForm::Disable()
+void SHVFormImpl::Disable()
 {
 	ControlContainer->SetFlag(SHVControl::FlagDisabled, true);
 }
@@ -61,7 +54,7 @@ void SHVForm::Disable()
 /*************************************
  * GetData
  *************************************/
-SHVBool SHVForm::GetData(SHVControlData* data)
+SHVBool SHVFormImpl::GetData(SHVControlData* data)
 {
 	return ControlContainer->GetData(data);
 }
@@ -69,7 +62,7 @@ SHVBool SHVForm::GetData(SHVControlData* data)
 /*************************************
  * SetData
  *************************************/
-SHVBool SHVForm::SetData(SHVControlData* data)
+SHVBool SHVFormImpl::SetData(SHVControlData* data)
 {
 	return ControlContainer->SetData(data);
 }
@@ -77,46 +70,31 @@ SHVBool SHVForm::SetData(SHVControlData* data)
 /*************************************
  * GetEntityName
  *************************************/
-SHVString8C SHVForm::GetEntityName()
+SHVString8C SHVFormImpl::GetEntityName()
 {
 	return EntityName;
 }
 
 /*************************************
- * PreClose
+ * GetManager
  *************************************/
-/// Called before the control container is closed
-/** 
- * Return false to prevent the window/dialog from closing
- */
-SHVBool SHVForm::PreClose()
+SHVGUIManager* SHVFormImpl::GetManager()
 {
-	return SHVBool(true);
+	return GUIManager;
 }
 
-
 /*************************************
- * OnEvent
+ * GetContainer
  *************************************/
-void SHVForm::OnEvent(SHVEvent* event)
+SHVControlContainer* SHVFormImpl::GetContainer()
 {
+	return ControlContainer;
 }
 
 /*************************************
  * OnPreDestroyEvent
  *************************************/
-void SHVForm::OnPreDestroyEvent(SHVEvent* event)
+void SHVFormImpl::OnPreDestroyEvent(SHVEvent* event)
 {
-	SHVEventDataBool::SetValue(event, PreClose());
-}
-
-/*************************************
- * OnResizeForm
- *************************************/
-/// Override this to place the controls within the ControlContainer
-/**
- * Default behaviour when no layout engine is used
- */
-void SHVForm::OnResizeForm(SHVControlContainer* container, SHVControlLayout* layout)
-{
+	SHVEventDataBool::SetValue(event, Owner->PreClose());
 }
