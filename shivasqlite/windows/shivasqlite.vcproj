@@ -1333,6 +1333,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\shvstringsqlite.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\sqlitestatement.h"
 				>
 			</File>
