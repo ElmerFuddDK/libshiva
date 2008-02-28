@@ -455,6 +455,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\include\utils\shvhashvalue.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\utils\shvlist.h"
 						>
 					</File>
