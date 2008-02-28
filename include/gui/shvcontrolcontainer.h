@@ -55,7 +55,7 @@ public:
 
 
 	// top level container functions
-	virtual SHVBool Create(int flags = SHVControl::FlagVisible);
+	virtual SHVBool Create(int flags = 0);
 	virtual SHVBool Close();
 	virtual SHVControlContainer* SetSize(int widthInFontUnits, int heightInFontUnits, PosModes mode = PosDefault);
 

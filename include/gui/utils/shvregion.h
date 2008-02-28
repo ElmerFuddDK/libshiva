@@ -34,6 +34,12 @@ public:
 		AlignBottom = 32,
 		AlignVCenter = AlignTop+AlignBottom
 	};
+	enum Unify {
+		UnifyFixed = 0,
+		UnifyMin,
+		UnifyMax,
+		UnifyAverage
+	};
 
 
 	// operators
@@ -99,6 +105,9 @@ public:
 	virtual SHVRegionAction* CtrlFixedWidth() = 0;
 	virtual SHVRegionAction* CtrlFixedHeight() = 0;
 
+	// Unify the boundaries of all added controls
+	virtual SHVRegionAction* UnifyWidth(int unify = SHVRegion::UnifyMax, int limit = -1) = 0;
+
 
 	// placement methods
 	virtual SHVRegionAction* Top(int leftMargin = -1, int topMargin = -1) = 0;
@@ -116,8 +125,8 @@ public:
 
 	virtual SHVRegionAction* FillPercent(int x = -1, int y = -1, int width = -1, int height = -1, SHVRect margins = SHVRect(-1,-1,-1,-1)) = 0;
 
-	virtual SHVRegionAction* AlignLeftRight(SHVControl* left = NULL, SHVControl* right = NULL, int alignment = SHVRegion::AlignLeft, int margin = -1) = 0;
-	virtual SHVRegionAction* FillLeftRight(SHVControl* left = NULL, SHVControl* right = NULL, int margin = -1) = 0;
+	virtual SHVRegionAction* AlignHorizontal(SHVControl* left = NULL, SHVControl* right = NULL, int alignment = SHVRegion::AlignLeft, int margin = -1) = 0;
+	virtual SHVRegionAction* FillHorizontal(SHVControl* left = NULL, SHVControl* right = NULL, int margin = -1) = 0;
 
 
 	// desctructor

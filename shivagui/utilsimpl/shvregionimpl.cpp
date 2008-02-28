@@ -243,7 +243,7 @@ SHVListWndIterator itr(Wnds);
  *************************************/
 SHVRegionAction* SHVRegionActionImpl::And(SHVControl* extraControl)
 {
-	if (extraControl && extraControl->IsCreated())
+	if (extraControl && extraControl->IsCreated() && extraControl->GetFlag(SHVControl::FlagVisible))
 	{
 		Commit();
 		Wnds.AddTail(new Control(extraControl));
@@ -309,6 +309,85 @@ SHVRegionAction* SHVRegionActionImpl::CtrlFixedHeight()
 		Wnds.GetLast()->MaxHeight.SetToNull();
 	}
 	
+	return this;
+}
+
+/*************************************
+ * UnifyWidth
+ *************************************/
+SHVRegionAction* SHVRegionActionImpl::UnifyWidth(int unify, int limit)
+{
+	if (limit >= 0)
+	{
+		CalculateHMargin(limit);
+	}
+	else if (unify == SHVRegion::UnifyFixed && limit < 0)
+	{
+		SHVASSERT(false);
+		return this;
+	}
+
+	if (Wnds.GetCount())
+	{
+	bool resize = false;
+	SHVListWndIterator itr(Wnds);
+	int interimValue;
+
+		Commit();
+
+		// Get unified width
+		switch(unify)
+		{
+		case SHVRegion::UnifyMax:
+		case SHVRegion::UnifyMin:
+		case SHVRegion::UnifyAverage:
+			itr.MoveNext();
+			interimValue = itr.Get()->Rect.GetWidth();
+
+			while (itr.MoveNext())
+			{
+				switch(unify)
+				{
+				case SHVRegion::UnifyMin:
+					if (itr.Get()->Rect.GetWidth() < interimValue)
+						interimValue = itr.Get()->Rect.GetWidth();
+					break;
+				case SHVRegion::UnifyMax:
+					if (itr.Get()->Rect.GetWidth() > interimValue)
+						interimValue = itr.Get()->Rect.GetWidth();
+					break;
+				case SHVRegion::UnifyAverage:
+					interimValue += itr.Get()->Rect.GetWidth();
+					break;
+				}
+			}
+
+			// calculate the new width
+			switch(unify)
+			{
+			case SHVRegion::UnifyMax:
+			case SHVRegion::UnifyMin:
+				if (limit >= 0 && interimValue > limit)
+					interimValue = limit;
+				break;
+			case SHVRegion::UnifyAverage:
+				interimValue = ((interimValue*10+5)/Wnds.GetCount())/10;
+				break;
+			}
+
+			break;
+		case SHVRegion::UnifyFixed:
+			interimValue = limit;
+			break;
+		}
+
+		// set the width
+		while (itr.MoveNext())
+		{
+			itr.Get()->Rect.SetWidth(interimValue);
+		}
+	}
+
 	return this;
 }
 
@@ -454,10 +533,10 @@ SHVRegionAction* SHVRegionActionImpl::ClipRight(int extraMargin)
 }
 
 /*************************************
- * AlignLeftRight
+ * AlignHorizontal
  *************************************/
 /// Aligns the control between 2 optional controls
-SHVRegionAction* SHVRegionActionImpl::AlignLeftRight(SHVControl* left, SHVControl* right, int alignment, int margin)
+SHVRegionAction* SHVRegionActionImpl::AlignHorizontal(SHVControl* left, SHVControl* right, int alignment, int margin)
 {
 	if (Initialize())
 	{
@@ -689,10 +768,10 @@ SHVRegionAction* SHVRegionActionImpl::FillPercent(int x, int y, int width, int h
 }
 
 /*************************************
- * FillLeftRight
+ * FillHorizontal
  *************************************/
 /// Sizes the control between 2 optional controls, and places it on the X axis
-SHVRegionAction* SHVRegionActionImpl::FillLeftRight(SHVControl* left, SHVControl* right, int margin)
+SHVRegionAction* SHVRegionActionImpl::FillHorizontal(SHVControl* left, SHVControl* right, int margin)
 {
 	if (Initialize())
 	{
@@ -797,23 +876,36 @@ void SHVRegionActionImpl::Commit()
 		SHVListWndIterator itr(Wnds);
 		SHVRect tmpRect;
 		SHVDouble pixelWidthOffset;
+		bool pixelWidthInf;
 		SHVDouble pixelHeightOffset;
+		bool pixelHeightInf;
+
+			pixelWidthInf = pixelHeightInf = false;
 
 			// Check if we need to resize the windows first and move them a bit
 			if (OrigRect.GetWidth() != WindowRect.GetWidth())
 			{
-				pixelWidthOffset = double(WindowRect.GetWidth()) / double(OrigRect.GetWidth());
+				pixelWidthInf = ( OrigRect.GetWidth() ? false : true );
+				if (!pixelWidthInf)
+					pixelWidthOffset = double(WindowRect.GetWidth()) / double(OrigRect.GetWidth());
 			}
 			if (OrigRect.GetHeight() != WindowRect.GetHeight())
 			{
-				pixelHeightOffset = double(WindowRect.GetHeight()) / double(OrigRect.GetHeight());
+				pixelHeightInf = ( OrigRect.GetHeight() ? false : true );
+				if (!pixelHeightInf)
+					pixelHeightOffset = double(WindowRect.GetHeight()) / double(OrigRect.GetHeight());
 			}
 
 			while (itr.MoveNext())
 			{
 				tmpRect = itr.Get()->Rect;
 
-				if (pixelWidthOffset.IsNull())
+				if (pixelWidthInf)
+				{
+					tmpRect.SetLeft(WindowRect.GetLeft());
+					tmpRect.SetRight(WindowRect.GetRight());
+				}
+				else if (pixelWidthOffset.IsNull())
 				{
 					tmpRect.SetX( WindowRect.GetX() + (tmpRect.GetX() - OrigRect.GetX()) );
 				}
@@ -823,7 +915,12 @@ void SHVRegionActionImpl::Commit()
 					tmpRect.SetWidth( int(double(tmpRect.GetWidth()) * pixelWidthOffset + 0.5) );
 				}
 
-				if (pixelHeightOffset.IsNull())
+				if (pixelHeightInf)
+				{
+					tmpRect.SetTop(WindowRect.GetTop());
+					tmpRect.SetBottom(WindowRect.GetBottom());
+				}
+				else if (pixelHeightOffset.IsNull())
 				{
 					tmpRect.SetY( WindowRect.GetY() + (tmpRect.GetY() - OrigRect.GetY()) );
 				}

@@ -98,9 +98,6 @@ void SHVMainThreadEventDispatcherWin32::RunEventLoop()
 {
 MSG msg;
 
-	ShowWindow(Win32::GetHandle(MainWindow), SW_SHOW);
-	UpdateWindow(Win32::GetHandle(MainWindow));
-
 	while (Running() && GetMessage(&msg, NULL, 0, 0)) 
 	{
 		if (!GUIManager->PreTranslateMessage(&msg))

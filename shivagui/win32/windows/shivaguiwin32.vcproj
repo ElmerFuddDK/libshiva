@@ -212,10 +212,6 @@
 				Name="gui"
 				>
 				<File
-					RelativePath="..\..\gui\shvcompoundform.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\..\gui\shvcontrol.cpp"
 					>
 				</File>
@@ -236,11 +232,15 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\gui\shvform.cpp"
+					RelativePath="..\..\gui\shvformimpl.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\..\gui\shvguimanagerimpl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\gui\shvmessagebox.cpp"
 					>
 				</File>
 			</Filter>
@@ -514,11 +514,23 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\gui\shvformimpl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\shvformimplementer.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\shvguimanager.h"
 					>
 				</File>
 				<File
 					RelativePath="..\..\gui\shvguimanagerimpl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\gui\shvmessagebox.h"
 					>
 				</File>
 				<Filter

@@ -98,6 +98,9 @@ public:
 	virtual SHVRegionAction* CtrlFixedWidth();
 	virtual SHVRegionAction* CtrlFixedHeight();
 
+	// Unify the boundaries of all added controls
+	virtual SHVRegionAction* UnifyWidth(int unify = SHVRegion::UnifyMax, int limit = -1);
+
 
 	// placement methods
 	virtual SHVRegionAction* Top(int leftMargin = -1, int topMargin = -1);
@@ -115,8 +118,8 @@ public:
 
 	virtual SHVRegionAction* FillPercent(int x = -1, int y = -1, int width = -1, int height = -1, SHVRect margins = SHVRect(-1,-1,-1,-1));
 
-	virtual SHVRegionAction* AlignLeftRight(SHVControl* left = NULL, SHVControl* right = NULL, int alignment = SHVRegion::AlignLeft, int margin = -1);
-	virtual SHVRegionAction* FillLeftRight(SHVControl* left = NULL, SHVControl* right = NULL, int margin = -1);
+	virtual SHVRegionAction* AlignHorizontal(SHVControl* left = NULL, SHVControl* right = NULL, int alignment = SHVRegion::AlignLeft, int margin = -1);
+	virtual SHVRegionAction* FillHorizontal(SHVControl* left = NULL, SHVControl* right = NULL, int margin = -1);
 
 
 private:

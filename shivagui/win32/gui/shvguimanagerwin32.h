@@ -39,6 +39,9 @@ public:
 	virtual SHVBrush* CreateBrush(SHVColor* color, int style = SHVBrush::StyleDefault);
 	virtual SHVRegion* CreateRegion(SHVControlContainer* container);
 
+	// Factories for template inherited classes
+	virtual SHVFormImplementer* ContructFormImplementer(SHVFormBase* owner, SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVString8C entityName);
+
 	// Create draw context
 	virtual SHVDrawWin32* CreateDraw(HDC dc);
 	virtual SHVDrawPaintWin32* CreateDrawPaint(HWND window);

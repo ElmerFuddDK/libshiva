@@ -46,6 +46,8 @@
 #include "../../include/shvcontrolcreatorsubtype.h"
 #include "../../utilsimpl/shvregionimpl.h"
 
+#include "../../gui/shvformimpl.h"
+
 
 //=========================================================================================================
 // SHVGUIManagerWin32 - Module for registering control types, and instantiating them
@@ -154,6 +156,14 @@ SHVBrush* SHVGUIManagerWin32::CreateBrush(SHVColor* color, int style)
 SHVRegion* SHVGUIManagerWin32::CreateRegion(SHVControlContainer* container)
 {
 	return new SHVRegionImpl(container);
+}
+
+/*************************************
+ * ContructFormImplementer
+ *************************************/
+SHVFormImplementer* SHVGUIManagerWin32::ContructFormImplementer(SHVFormBase* owner, SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVString8C entityName)
+{
+	return new SHVFormImpl(owner,manager,controlContainer,entityName);
 }
 
 /*************************************
