@@ -13,9 +13,24 @@ SHVDataEngine_impl::SHVDataEngine_impl(SHVModuleList& modules): SHVDataEngine(mo
 {
 SHVString database = modules.GetConfig().Find(__DATAENGINE_DEFAULT_DATABASE, _T("database.db")).ToString();
 SHVString datapath = modules.GetConfig().Find(__DATAENGINE_DATAPATH, _T("./")).ToString();
+SHVBool ok;
 	datapath += database;
 	
-	Factory = new SHVDataFactory_impl(*this, datapath);
+	ok = SQLiteDll.Load(SQLiteDll.CreateLibFileName(_T("shivasqlite")));
+	if (!ok)
+	{
+		Modules.AddStartupError(_T("Could not load shvsqlite.dll"));
+	}
+	else
+	{
+	SHVSQLiteWrapperRef sqlite = CreateConnection(ok, datapath);
+		if (!ok)
+		{
+			Modules.AddStartupError(sqlite->GetErrorMsg());
+		}
+		else
+			Factory = new SHVDataFactory_impl(*this, sqlite, datapath);
+	}
 }
 
 /*************************************
@@ -23,16 +38,7 @@ SHVString datapath = modules.GetConfig().Find(__DATAENGINE_DATAPATH, _T("./")).T
  *************************************/
 SHVBool SHVDataEngine_impl::Register()
 {
-SHVBool retVal = SQLiteDll.Load(SQLiteDll.CreateLibFileName(_T("shivasqlite")));
-	if (!retVal)
-	{
-		Modules.AddStartupError(_T("Could not load shvsqlite.dll"));
-	}
-	else
-	{
-		((SHVDataFactory_impl&) *Factory).SetSQLite(CreateConnection(retVal, Factory->GetDatabase()));
-	}
-	return SHVModule::Register() && retVal;
+	return SHVModule::Register();
 }
 
 /*************************************
