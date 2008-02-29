@@ -214,7 +214,7 @@ SHVBool SHVDataRowListC_SQLite::IsOk() const
 /*************************************
  * BuildQuery
  *************************************/
-SHVStringUTF8 SHVDataRowListC_SQLite::BuildQuery(const SHVStringC& condition, bool reverse)
+SHVStringBufferUTF8 SHVDataRowListC_SQLite::BuildQuery(const SHVStringC& condition, bool reverse)
 {
 SHVStringUTF8 queryUTF8;
 SHVStringUTF8 conditionUTF8;
@@ -244,5 +244,5 @@ const SHVDataRowKey& Key = *StructCache->GetIndex(SortIndex);
 		StructCache->GetTableName().GetSafeBuffer(),
 		conditionUTF8.GetSafeBuffer(),
 		orderbyUTF8.GetSafeBuffer());
-	return queryUTF8;
+	return queryUTF8.ReleaseBuffer();
 }

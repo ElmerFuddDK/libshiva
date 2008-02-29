@@ -28,7 +28,7 @@ public:
 	virtual SHVBool IsOk() const;
 protected:
 	~SHVDataRowListC_SQLite();
-	virtual SHVStringUTF8 BuildQuery(const SHVStringC& condition, bool reverse);
+	virtual SHVStringBufferUTF8 BuildQuery(const SHVStringC& condition, bool reverse);
 private:
 	SHVDataRowListC_SQLite(SHVSQLiteWrapper* sqlLite, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, size_t index);
 	SHVBool Eof;
