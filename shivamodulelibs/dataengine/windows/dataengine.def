@@ -1,4 +1,4 @@
-LIBRARY	"DataEngine"
+LIBRARY	"dataengine"
 
 EXPORTS
   CreateObjectInt

@@ -1,4 +1,4 @@
-// DataEngine.cpp : Defines the entry point for the DLL application.
+// dataengine.cpp : Defines the entry point for the DLL application.
 //
 
 #include "stdafx.h"
@@ -22,7 +22,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	if (ul_reason_for_call == DLL_PROCESS_ATTACH &&
 		!SHVModuleList::CheckVersion(__SHIVA_VERSION_MAJOR,__SHIVA_VERSION_MINOR,__SHIVA_VERSION_RELEASE))
 	{
-		::MessageBox(NULL,_T("Invalid version of libshiva.dll in module library DataEngine"),_T("Error"),MB_ICONERROR);
+		::MessageBox(NULL,_T("Invalid version of libshiva.dll in module library dataengine"),_T("Error"),MB_ICONERROR);
 		return FALSE;
 	}
 */

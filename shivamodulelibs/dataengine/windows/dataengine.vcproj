@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="DataEngine"
+	Name="dataengine"
 	ProjectGUID="{A6510CDA-65D4-4CAF-99D3-18C89C2416A8}"
-	RootNamespace="DataEngine"
+	RootNamespace="dataengine"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -62,7 +62,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="../../../shivalib/windows/$(ConfigurationName)/libshiva.lib"
 				LinkIncremental="2"
-				ModuleDefinitionFile="DataEngine.def"
+				ModuleDefinitionFile="dataengine.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -137,7 +137,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="../../../shivalib/windows/$(ConfigurationName)/libshiva.lib"
 				LinkIncremental="1"
-				ModuleDefinitionFile="DataEngine.def"
+				ModuleDefinitionFile="dataengine.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -179,11 +179,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\DataEngine.cpp"
+				RelativePath=".\dataengine.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\DataEngine.def"
+				RelativePath=".\dataengine.def"
 				>
 			</File>
 			<File

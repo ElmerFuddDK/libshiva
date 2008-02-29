@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DataEngine", "DataEngine.vcproj", "{A6510CDA-65D4-4CAF-99D3-18C89C2416A8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dataengine", "dataengine.vcproj", "{A6510CDA-65D4-4CAF-99D3-18C89C2416A8}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dataenginetester", "dataenginetester\dataenginetester.vcproj", "{6A5DB1E0-F757-40D3-A165-ACBD87FC71D3}"
 EndProject
