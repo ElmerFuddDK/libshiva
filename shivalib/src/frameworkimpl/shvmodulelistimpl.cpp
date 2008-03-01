@@ -479,13 +479,13 @@ SHVBool retVal(false);
 		while (registeredModules.GetCount())
 			registeredModules.PopHead()->PostRegister();
 	
-		if (State == StateRunning)
+		if (State == StateRunning || State == StateRunningClosing)
 		{
 			EmitEvent(new SHVEvent(this,SHVModuleList::EventEndRegister));
 		}
 
 		// if there wasn't any errors set in the bool object, set it to false
-		if (retVal && State != StateRunning)
+		if (retVal && State != StateRunning && State != StateRunningClosing)
 			retVal = false;
 	}
 
