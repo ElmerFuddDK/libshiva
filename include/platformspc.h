@@ -60,6 +60,10 @@
 # define SHVAPI
 #endif
 
+#ifndef SHVUNUSED_PARAM
+# define SHVUNUSED_PARAM(x) (void) x
+#endif
+
 #include "utils/shvassert.h"
 #include "shvtypes.h"
 
