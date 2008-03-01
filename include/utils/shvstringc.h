@@ -100,11 +100,11 @@ public:
 #ifdef __SHVSTRING_INCLUDE_UNICODE
 	SHVStringBuffer16 ToStr16() const;
 	SHVStringBufferUTF8 ToStrUTF8() const;
-	SHVStringBuffer8 ToStr8() const;
-	inline SHVStringBuffer ToStrT() const;
 	bool ConvertBufferToWChar(SHVWChar* buffer, size_t len) const;
 	bool ConvertBufferToUTF8(SHVChar* buffer, size_t& len) const;
 #endif
+	SHVStringBuffer8 ToStr8() const;
+	inline SHVStringBuffer ToStrT() const;
 #ifdef __SHIVA_EPOC
 	inline TPtrC8 ToPtr() const;
 #endif
@@ -258,6 +258,7 @@ SHVStringBuffer SHVString8C::ToStrT() const
 /*************************************
  * ToStrT
  *************************************/
+#ifdef __SHVSTRING_INCLUDE_UNICODE
 SHVStringBuffer SHVString16C::ToStrT() const
 {
 #ifdef UNICODE
@@ -266,6 +267,7 @@ SHVStringBuffer SHVString16C::ToStrT() const
 	return ToStr8();
 #endif
 }
+#endif
 
 
 // ===================================== implementation - SHVStringCRef ===================================== //
