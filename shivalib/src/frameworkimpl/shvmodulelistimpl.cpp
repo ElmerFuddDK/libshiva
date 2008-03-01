@@ -475,9 +475,11 @@ SHVBool retVal(false);
 
 		Lock.Unlock();
 
-		// always call postregister, even if we failed
-		while (registeredModules.GetCount())
-			registeredModules.PopHead()->PostRegister();
+		if (State == StateRunning)
+		{
+			while (registeredModules.GetCount())
+				registeredModules.PopHead()->PostRegister();
+		}
 	
 		if (State == StateRunning || State == StateRunningClosing)
 		{
