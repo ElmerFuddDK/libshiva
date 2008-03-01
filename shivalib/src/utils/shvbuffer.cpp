@@ -108,6 +108,8 @@ size_t sz = Size();
  */
 SHVBool SHVBuffer::SetBufferSize(size_t newSize, size_t toCopyFromOld)
 {
+	SHVUNUSED_PARAM(newSize);
+	SHVUNUSED_PARAM(toCopyFromOld);
 	return SHVBufferC::ErrNotSupported;
 }
 

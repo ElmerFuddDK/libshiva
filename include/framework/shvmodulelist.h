@@ -111,6 +111,10 @@ friend class SHVEventQueueList;
 
 	// from event target
 	virtual void OnEvent(SHVEvent* event) = 0;
+
+
+protected:
+	virtual ~SHVModuleList() {}
 };
 
 

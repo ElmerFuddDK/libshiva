@@ -98,10 +98,10 @@ size_t iLeft;
 size_t oLeft;
 unicode_iconv_t conv = unicode_iconv_open("UCS-2",SHVStringC_Get8BitCharSet());
 
-	if ((size_t)conv == -1) // failure, try ascii as fallback
+	if (conv == (unicode_iconv_t)-1) // failure, try ascii as fallback
 		conv = unicode_iconv_open("UCS-2","ASCII");
 
-	if ((size_t)conv == -1)
+	if (conv == (unicode_iconv_t)-1)
 	{
 		fprintf(stderr, "local->UNICODE conversion error %d\n", errno);
 		outBuffer[0] = 0;
@@ -183,10 +183,10 @@ size_t iLeft;
 size_t oLeft;
 unicode_iconv_t conv = unicode_iconv_open(SHVStringC_Get8BitCharSet(),"UCS-2");
 
-	if ((size_t)conv == -1) // failure, try ascii as fallback
+	if (conv == (unicode_iconv_t)-1) // failure, try ascii as fallback
 		conv = unicode_iconv_open("ASCII","UCS-2");
 
-	if ((size_t)conv == -1)
+	if (conv == (unicode_iconv_t)-1)
 	{
 		fprintf(stderr, "UNICODE->local conversion error %d\n", errno);
 		outBuffer[0] = '\0';
@@ -262,15 +262,17 @@ size_t iLeft;
 size_t oLeft;
 unicode_iconv_t conv = unicode_iconv_open(SHVStringC_Get8BitCharSet(),"UTF-8");
 
-	if ((size_t)conv == -1) // failure, try ascii as fallback
+	if (conv == (unicode_iconv_t)-1) // failure, try ascii as fallback
 		conv = unicode_iconv_open("ASCII","UTF-8");
 
-	if ((size_t)conv == -1)
+	if (conv == (unicode_iconv_t)-1)
 	{
 		fprintf(stderr, "UTF-8 conversion error %d\n", errno);
 		return false;
 	}
 #endif
+
+	SHVUNUSED_PARAM(len);
 
 	while (*utf8Str)
 	{
@@ -366,13 +368,15 @@ size_t iLeft;
 size_t oLeft;
 unicode_iconv_t conv = unicode_iconv_open("UCS-2","UTF-8");
 
-	if ((size_t)conv == -1)
+	if (conv == (unicode_iconv_t)-1)
 	{
 		fprintf(stderr, "UTF-8 conversion error %d\n", errno);
 		return false;
 	}
 #endif
 
+	SHVUNUSED_PARAM(len);
+	
 	while (*utf8Str)
 	{
 		if (!((*utf8Str)&0x80))
@@ -485,10 +489,10 @@ size_t iLeft;
 size_t oLeft;
 unicode_iconv_t conv = unicode_iconv_open("UTF-8",SHVStringC_Get8BitCharSet());
 
-	if ((size_t)conv == -1) // failure, try ascii as fallback
+	if (conv == (unicode_iconv_t)-1) // failure, try ascii as fallback
 		conv = unicode_iconv_open("UTF-8","ASCII");
 
-	if ((size_t)conv == -1)
+	if (conv == (unicode_iconv_t)-1)
 	{
 		fprintf(stderr, "UTF-8 conversion error %d\n", errno);
 		return false;
@@ -655,7 +659,7 @@ size_t iLeft;
 size_t oLeft;
 unicode_iconv_t conv = unicode_iconv_open("UTF-8","UCS-2");
 
-	if ((size_t)conv == -1)
+	if (conv == (unicode_iconv_t)-1)
 	{
 		fprintf(stderr, "UTF-8 conversion error %d\n", errno);
 		return false;

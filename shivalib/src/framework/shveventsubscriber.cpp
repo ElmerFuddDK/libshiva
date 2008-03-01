@@ -54,6 +54,8 @@ SHVEventQueue* SHVEventSubscriber::Emit(SHVModuleList& modules, SHVEvent* event)
 {
 SHVEventQueue* retVal = Queue;
 
+	SHVUNUSED_PARAM(modules);
+
 	if ( Queue && (!DirectIfSameThread || SHVThreadBase::GetCurrentThreadID() != Queue->GetThreadID()) )
 	{
 		Queue->EnqueueEvent(event,this);

@@ -69,6 +69,8 @@ public:
 
 protected:
 	virtual void OnEvent(SHVEvent* event) = 0;
+	
+	virtual ~SHVEventTarget() {}
 };
 
 
@@ -92,6 +94,8 @@ public:
 protected:
 	SHVBool EventActiveInQueue(SHVModuleList& modules);
 	void EventDeactivatedInQueue(SHVModuleList& modules);
+	
+	virtual ~SHVEventQueue() {}
 };
 
 

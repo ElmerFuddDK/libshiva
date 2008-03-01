@@ -211,7 +211,6 @@ SHVString8 retVal;
 	{
 	size_t strLen = GetLength();
 		if (len>strLen) len=strLen;
-		if (len<0) len=0;
 
 		retVal.SetBufferSize(len+1);
 		if (len>0) memcpy(retVal.Buffer,Buffer+(strLen-len),len*sizeof(SHVChar));
@@ -231,7 +230,6 @@ SHVString8 retVal;
 	{
 	size_t strLen = GetLength();
 		if (len>strLen) len=strLen;
-		if (len<0) len=0;
 
 		retVal.SetBufferSize(len+1);
 		if (len>0) memcpy(retVal.Buffer,Buffer,len*sizeof(SHVChar));
@@ -255,7 +253,6 @@ size_t strLen = GetLength();
 	else
 	{
 		if ( (first+len) >= strLen) len = strLen - first;
-		if (len<0) len=0;
 
 		retVal.SetBufferSize(len+1);
 		if (len>0) ::memcpy(retVal.Buffer,Buffer+first,len*sizeof(SHVChar));
@@ -492,7 +489,7 @@ SHVString8CRef::SHVString8CRef(const SHVChar* buffer)
 		Buffer = NULL;
 	}
 }
-SHVString8CRef::SHVString8CRef(const SHVString8CRef& buffer)
+SHVString8CRef::SHVString8CRef(const SHVString8CRef& buffer) : SHVString8C()
 {
 	if (buffer.Buffer)
 	{
@@ -600,7 +597,7 @@ void SHVStr8_DestroyBufferFunc(SHVChar* chars) { delete [] chars; }
 // ========================================================================================================
 
 // constructor
-SHVStringBuffer8::SHVStringBuffer8(const SHVStringBuffer8& buffer)
+SHVStringBuffer8::SHVStringBuffer8(const SHVStringBuffer8& buffer) : SHVString8C()
 {
 	BUFFER_MOVE(((SHVStringBuffer8*)&buffer)->Buffer,((SHVStringBuffer8*)&buffer)->DestroyFunc);
 }
@@ -669,7 +666,7 @@ SHVString8::SHVString8(const SHVString8C& str)
 	
 	*this = str;
 }
-SHVString8::SHVString8(const SHVString8& str)
+SHVString8::SHVString8(const SHVString8& str) : SHVString8C()
 {
 	Buffer = NULL;
 	BufferLen = 0;

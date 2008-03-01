@@ -90,6 +90,8 @@ SHVEventSubscriberFunc<T>::SHVEventSubscriberFunc(T* target, OnEvent func, SHVEv
 template <class T>
 SHVEventQueue* SHVEventSubscriberFunc<T>::Emit(SHVModuleList& modules, SHVEvent* event)
 {
+	SHVUNUSED_PARAM(modules);
+
 	if ( Queue && (!DirectIfSameThread || SHVThreadBase::GetCurrentThreadID() != Queue->GetThreadID()) )
 		Queue->EnqueueEvent(event,this);
 	else

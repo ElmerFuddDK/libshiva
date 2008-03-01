@@ -107,7 +107,9 @@ void SHVModule::EventSubscribe(const SHVChar* name, SHVEventSubscriberBase* subs
  * OnEvent
  *************************************/
 void SHVModule::OnEvent(SHVEvent* event)
-{}
+{
+	SHVUNUSED_PARAM(event);
+}
 
 /*************************************
  * EmitEvent

@@ -169,6 +169,8 @@ int min,max;
 pthread_mutex_t* mutex;
 void** tmpData = (void**)::malloc(sizeof(void*)*3);
 
+	SHVUNUSED_PARAM(name);
+
 	mutex = (pthread_mutex_t*)::malloc(sizeof(pthread_mutex_t));
 	pthread_mutex_init(mutex,NULL);
 	pthread_mutex_lock(mutex);

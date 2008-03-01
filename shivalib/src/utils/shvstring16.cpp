@@ -267,7 +267,6 @@ SHVString16 retVal;
 	{
 	size_t strLen = GetLength();
 		if (len>strLen) len=strLen;
-		if (len<0) len=0;
 
 		retVal.SetBufferSize(len+1);
 		if (len>0) memcpy(retVal.Buffer,Buffer+(strLen-len),len*sizeof(SHVWChar));
@@ -287,7 +286,6 @@ SHVString16 retVal;
 	{
 	size_t strLen = GetLength();
 		if (len>strLen) len=strLen;
-		if (len<0) len=0;
 
 		retVal.SetBufferSize(len+1);
 		if (len>0) memcpy(retVal.Buffer,Buffer,len*sizeof(SHVWChar));
@@ -311,7 +309,6 @@ size_t strLen = GetLength();
 	else
 	{
 		if ( (first+len) >= strLen) len = strLen - first;
-		if (len<0) len=0;
 
 		retVal.SetBufferSize(len+1);
 		if (len>0) ::memcpy(retVal.Buffer,Buffer+first,len*sizeof(SHVWChar));
@@ -548,7 +545,7 @@ SHVString16CRef::SHVString16CRef(const SHVWChar* buffer)
 		Buffer = NULL;
 	}
 }
-SHVString16CRef::SHVString16CRef(const SHVString16CRef& buffer)
+SHVString16CRef::SHVString16CRef(const SHVString16CRef& buffer) : SHVString16C()
 {
 	if (buffer.Buffer)
 	{
@@ -656,7 +653,7 @@ void SHVStr16_DestroyBufferFunc(SHVWChar* chars) { delete [] chars; }
 // ========================================================================================================
 
 // constructor
-SHVStringBuffer16::SHVStringBuffer16(const SHVStringBuffer16& buffer)
+SHVStringBuffer16::SHVStringBuffer16(const SHVStringBuffer16& buffer) : SHVString16C()
 {
 	BUFFER_MOVE(((SHVStringBuffer16*)&buffer)->Buffer,((SHVStringBuffer16*)&buffer)->DestroyFunc);
 }
@@ -725,7 +722,7 @@ SHVString16::SHVString16(const SHVString16C& str)
 	
 	*this = str;
 }
-SHVString16::SHVString16(const SHVString16& str)
+SHVString16::SHVString16(const SHVString16& str) : SHVString16C()
 {
 	Buffer = NULL;
 	BufferLen = 0;
@@ -952,6 +949,9 @@ SHVVA_LIST args;
 void SHVString16::FormatList(const SHVWChar* s, SHVVA_LIST args)
 {
 #ifdef __SHIVA_LINUX
+	SHVUNUSED_PARAM(s);
+	SHVUNUSED_PARAM(args);
+
 	BUFFER_DESTROY(Buffer); // Doesn't work on this platform yet
 #elif defined(__SHIVA_EPOC)
 size_t newSize = CalcFormatBufferSize(s,args);

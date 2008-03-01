@@ -27,6 +27,9 @@ public:
 	// status
 	virtual SHVBool IsNull() = 0;
 
+
+protected:
+	virtual ~SHVConfigNode() {}
 };
 
 
@@ -77,6 +80,9 @@ public:
 	virtual SHVConfigNode& SetRef(const SHVInt& enumerator, SHVRefObject* val) = 0;
 	virtual void Remove(const SHVInt& enumerator) = 0;
 
+
+protected:
+	virtual ~SHVConfig() {}
 };
 
 

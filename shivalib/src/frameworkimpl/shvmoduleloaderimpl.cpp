@@ -75,6 +75,7 @@ SHVListIterator<SHVModuleLibraryImplPtr,SHVModuleLibraryImpl*> itr(ModuleLibs);
 void SHVModuleLoaderImpl::AddModuleLibs(const SHVStringC modulePath)
 {
 	///\todo implement SHVModuleLoaderImpl::AddModuleLibs
+	SHVUNUSED_PARAM(modulePath);
 }
 
 /*************************************

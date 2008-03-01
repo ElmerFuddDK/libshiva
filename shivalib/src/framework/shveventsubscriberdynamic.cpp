@@ -43,6 +43,7 @@
  * Constructor
  *************************************/
 SHVEventSubscriberDynamic::SHVEventSubscriberDynamic(SHVEventQueue* queue, bool directIfSameThread)
+	: Queue(queue), DirectIfSameThread(directIfSameThread)
 {
 }
 
@@ -118,6 +119,8 @@ size_t i,count;
 SHVEventQueue* SHVEventSubscriberDynamic::Emit(SHVModuleList& modules, SHVEvent* event)
 {
 SHVEventQueue* retVal = NULL;
+
+	SHVUNUSED_PARAM(modules);
 
 	if (Subscribers.CalculateCount())
 	{

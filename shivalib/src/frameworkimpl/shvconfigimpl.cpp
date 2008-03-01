@@ -351,11 +351,13 @@ SHVString retVal;
 SHVStringBuffer SHVConfigNodeImplPointer::GetStorageString(const SHVStringC& name)
 {
 SHVString retVal;
+	SHVUNUSED_PARAM(name);
 	return retVal.ReleaseBuffer();
 }
 SHVStringBuffer SHVConfigNodeImplRef::GetStorageString(const SHVStringC& name)
 {
 SHVString retVal;
+	SHVUNUSED_PARAM(name);
 	return retVal.ReleaseBuffer();
 }
 

@@ -34,6 +34,10 @@
 #include "../../../include/utils/shvdllbase.h"
 #include "../../../include/utils/shvdir.h"
 
+#ifdef __SHIVA_LINUX
+# include <dlfcn.h>
+#endif
+
 
 //=========================================================================================================
 // SHVDllBase class - Base class for loading dlls
@@ -123,7 +127,7 @@ SHVBool retVal(SHVBool::False);
 #elif defined(__SHIVA_LINUX)
 	dlerror(); // reset error
 	hDll = dlopen(libFile.GetBufferConst(), RTLD_NOW);
-	if (hDll == NULL) fprintf(stderr, "dlopen(%s) %d, %s\n", libFile.GetBufferConst(), hDll, dlerror());
+	if (hDll == NULL) fprintf(stderr, "dlopen(%s) %d, %s\n", libFile.GetBufferConst(), *(int*)&hDll, dlerror());
 	retVal = IsLoaded();
 #elif defined(__SHIVA_EPOC)
 TInt errNum;

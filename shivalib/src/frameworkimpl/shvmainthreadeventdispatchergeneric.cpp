@@ -102,4 +102,5 @@ void SHVMainThreadEventDispatcherGeneric::StopEventLoop(SHVBool errors)
  *************************************/
 void SHVMainThreadEventDispatcherGeneric::OnEvent(SHVEvent* event)
 {
+	SHVUNUSED_PARAM(event);
 }

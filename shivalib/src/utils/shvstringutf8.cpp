@@ -260,8 +260,6 @@ SHVStringUTF8 retVal;
 
 	if (!IsNull())
 	{
-	size_t strLen = SHVString8C::StrLen(Buffer);
-
 		len = SizeOfChars(Buffer,len);
 
 		retVal.SetBufferSize(len+1);
@@ -377,7 +375,7 @@ SHVStringUTF8CRef::SHVStringUTF8CRef(const SHVChar* buffer)
 		Buffer = NULL;
 	}
 }
-SHVStringUTF8CRef::SHVStringUTF8CRef(const SHVStringUTF8CRef& buffer)
+SHVStringUTF8CRef::SHVStringUTF8CRef(const SHVStringUTF8CRef& buffer) : SHVStringUTF8C()
 {
 	if (buffer.Buffer)
 	{
@@ -485,7 +483,7 @@ void SHVStrUTF8_DestroyBufferFunc(SHVChar* chars) { delete [] chars; }
 // ========================================================================================================
 
 // constructor
-SHVStringBufferUTF8::SHVStringBufferUTF8(const SHVStringBufferUTF8& buffer)
+SHVStringBufferUTF8::SHVStringBufferUTF8(const SHVStringBufferUTF8& buffer) : SHVStringUTF8C()
 {
 	BUFFER_MOVE(((SHVStringBufferUTF8*)&buffer)->Buffer,((SHVStringBufferUTF8*)&buffer)->DestroyFunc);
 }
@@ -554,7 +552,7 @@ SHVStringUTF8::SHVStringUTF8(const SHVStringUTF8C& str)
 	
 	*this = str;
 }
-SHVStringUTF8::SHVStringUTF8(const SHVStringUTF8& str)
+SHVStringUTF8::SHVStringUTF8(const SHVStringUTF8& str) : SHVStringUTF8C()
 {
 	Buffer = NULL;
 	BufferLen = 0;
