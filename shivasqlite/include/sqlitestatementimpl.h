@@ -14,7 +14,7 @@ class SQLiteWrapper;
 class SHVSQLiteStatement_impl: public SHVSQLiteStatement
 {
 public:
-	SHVSQLiteStatement_impl(sqlite3_stmt* statement, SHVSQLiteWrapper* owner);
+	SHVSQLiteStatement_impl(sqlite3_stmt* statement, SHVSQLiteWrapper* owner, int rowcount);
 	virtual ~SHVSQLiteStatement_impl();
 
 	virtual SHVBool GetLong(long& val, int columnIdx) const;
@@ -31,6 +31,7 @@ public:
 	virtual SHVBool GetColumnType16(SHVString16& colType, int columnIdx) const;
 
 	virtual int GetColumnCount() const;
+	virtual int GetRowCount() const;
 
 	virtual SHVBool SetParameterLongUTF8(const SHVStringUTF8C& name, long val);
 	virtual SHVBool SetParameterDoubleUTF8(const SHVStringUTF8C& name, double val);
@@ -41,6 +42,7 @@ public:
 	virtual SHVBool Reset();
 private:
 	sqlite3_stmt* Statement;
+	int RowCount;
 	SHVMutex Lock;
 	SHVSQLiteWrapperRef Owner;
 };

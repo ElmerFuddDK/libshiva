@@ -9,10 +9,11 @@
 /*************************************
  * Constructor
  *************************************/
-SHVSQLiteStatement_impl::SHVSQLiteStatement_impl(sqlite3_stmt* statement, SHVSQLiteWrapper* owner)
+SHVSQLiteStatement_impl::SHVSQLiteStatement_impl(sqlite3_stmt* statement, SHVSQLiteWrapper* owner, int rowcount)
 {
 	Statement = statement;	
 	Owner = owner;
+	RowCount = rowcount;
 }
 
 SHVSQLiteStatement_impl::~SHVSQLiteStatement_impl()
@@ -185,6 +186,15 @@ int SHVSQLiteStatement_impl::GetColumnCount() const
 {
 SHVMutexLocker lock(Lock);
 	return sqlite3_column_count(Statement);
+}
+
+/*************************************
+ * GetRowCount
+ *************************************/
+int SHVSQLiteStatement_impl::GetRowCount() const
+{
+SHVMutexLocker lock(Lock);
+	return RowCount;
 }
 
 /*************************************

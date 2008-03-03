@@ -43,6 +43,14 @@ const SHVDataStructC* SHVDataRowList_SQLite::GetStruct() const
 }
 
 /*************************************
+ * GetRowCount
+ *************************************/
+int SHVDataRowList_SQLite::GetRowCount() const
+{
+	return RowList->GetRowCount();
+}
+
+/*************************************
  * Find
  *************************************/
 SHVDataRowC* SHVDataRowList_SQLite::Find(const SHVDataRowKey* key)

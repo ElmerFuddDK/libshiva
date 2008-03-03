@@ -41,6 +41,7 @@ public:
 
 	// GetColumnCount
 	virtual int GetColumnCount() const = 0;
+	virtual int GetRowCount() const = 0;
 
 	// SetParameter
 	virtual SHVBool SetParameterLongUTF8(const SHVStringUTF8C& name, long val) = 0;
@@ -57,7 +58,7 @@ public:
 
 	// Iteration methods
 	virtual SHVBool NextResult() = 0;
-	virtual SHVBool Reset() = 0;	
+	virtual SHVBool Reset() = 0;
 };
 typedef SHVRefObjectContainer<SHVSQLiteStatement> SHVSQLiteStatementRef;
 

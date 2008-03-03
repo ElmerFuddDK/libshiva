@@ -196,6 +196,14 @@ const SHVDataStructC* SHVDataRowListC_SQLite::GetStruct() const
 }
 
 /*************************************
+ * GetRowCount
+ *************************************/
+int SHVDataRowListC_SQLite::GetRowCount() const
+{
+	return Statement->GetRowCount();
+}
+
+/*************************************
  * GetRowProvider
  *************************************/
 const void* SHVDataRowListC_SQLite::GetRowProvider() const

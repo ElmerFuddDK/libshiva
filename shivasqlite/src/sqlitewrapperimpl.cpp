@@ -55,15 +55,15 @@ SHVMutexLocker lock(Lock);
 SHVSQLiteStatement* SHVSQLiteWrapper_Impl::PrepareUTF8(SHVBool& ok, const SHVStringUTF8C& sql, SHVStringSQLite& notparsed)
 {
 SHVMutexLocker lock(Lock);
-sqlite3_stmt* sqllite_statement;
+sqlite3_stmt* sqlite_statement;
 int res = SHVSQLiteWrapper::SQLite_ERROR;;
 const char* rest = NULL;
 SHVSQLiteStatement* retVal = NULL;
 	if (Sqlite)
 	{
-		ok = SHVBool(sqlite3_prepare_v2(Sqlite, sql.GetSafeBuffer(), -1, &sqllite_statement, &rest));
+		ok = SHVBool(sqlite3_prepare_v2(Sqlite, sql.GetSafeBuffer(), -1, &sqlite_statement, &rest));
 		notparsed = rest;
-		retVal = new SHVSQLiteStatement_impl(sqllite_statement, this);
+		retVal = new SHVSQLiteStatement_impl(sqlite_statement, this, sqlite3_data_count(sqlite_statement));
 	}
 	return retVal;
 } 
@@ -71,16 +71,16 @@ SHVSQLiteStatement* retVal = NULL;
 SHVSQLiteStatement* SHVSQLiteWrapper_Impl::ExecuteUTF8(SHVBool& ok, const SHVStringUTF8C& sql, SHVStringSQLite& notparsed)
 {
 SHVMutexLocker lock(Lock);
-sqlite3_stmt* sqllite_statement;
+sqlite3_stmt* sqlite_statement;
 int res = SHVSQLiteWrapper::SQLite_ERROR;;
 SHVSQLiteStatement* retVal = NULL;
 const char* rest = NULL;
 	if (Sqlite)
 	{
-		ok = SHVBool(sqlite3_prepare_v2(Sqlite, sql.GetSafeBuffer(), -1, &sqllite_statement, &rest));
+		ok = SHVBool(sqlite3_prepare_v2(Sqlite, sql.GetSafeBuffer(), -1, &sqlite_statement, &rest));
 		if (ok)
 		{
-			retVal = new SHVSQLiteStatement_impl(sqllite_statement, this);
+			retVal = new SHVSQLiteStatement_impl(sqlite_statement, this, sqlite3_data_count(sqlite_statement));
 			ok = SHVBool(retVal->NextResult().GetError());
 		}
 		notparsed = rest;

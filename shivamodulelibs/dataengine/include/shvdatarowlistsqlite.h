@@ -24,6 +24,7 @@ public:
 	virtual const SHVDataRowC* GetCurrentRow() const;
 	virtual SHVBool IsOk() const;
 	virtual const SHVDataStructC* GetStruct() const;
+	virtual int GetRowCount() const;
 
 	virtual SHVDataRowC* Find(const SHVDataRowKey* key);
 	virtual SHVBool NextRow();

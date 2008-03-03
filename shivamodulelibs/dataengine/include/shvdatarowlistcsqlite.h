@@ -18,14 +18,19 @@ class SHVDataRowListC_SQLite: public SHVDataRowListC
 public:
 	SHVDataRowListC_SQLite(SHVSQLiteWrapper* sqlLite, const SHVStringC& sql, const SHVDataRowKey* sortKey);
 	SHVDataRowListC_SQLite(SHVSQLiteWrapper* sqlLite, const SHVDataStructC* dataStruct, const SHVStringC& condition, size_t index);
+
 	virtual const SHVDataRowC* GetCurrentRow() const;
-	virtual SHVBool NextRow();
-	virtual SHVBool Reset();
-	virtual SHVDataRowC* Find(const SHVDataRowKey* key);
-	virtual SHVDataRowListC* Reverse(const SHVStringC& condition);
-	virtual const SHVDataStructC* GetStruct() const;
-	virtual const void* GetRowProvider() const;
 	virtual SHVBool IsOk() const;
+	virtual const SHVDataStructC* GetStruct() const;
+	virtual int GetRowCount() const;
+
+	virtual SHVDataRowC* Find(const SHVDataRowKey* key);
+	virtual SHVBool NextRow();
+	virtual SHVDataRowListC* Reverse(const SHVStringC& condition);
+	virtual SHVBool Reset();
+
+	virtual const void* GetRowProvider() const;
+
 protected:
 	~SHVDataRowListC_SQLite();
 	virtual SHVStringBufferUTF8 BuildQuery(const SHVStringC& condition, bool reverse);
