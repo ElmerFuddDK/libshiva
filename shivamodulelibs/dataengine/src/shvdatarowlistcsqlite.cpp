@@ -200,7 +200,9 @@ const SHVDataStructC* SHVDataRowListC_SQLite::GetStruct() const
  *************************************/
 int SHVDataRowListC_SQLite::GetRowCount() const
 {
-	return Statement->GetRowCount();
+	///\todo Implemented at a later point. Needs to be keept upto date
+	return 0;
+	// return Statement->GetRowCount();
 }
 
 /*************************************
