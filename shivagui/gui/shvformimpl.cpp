@@ -13,8 +13,8 @@
 SHVFormImpl::SHVFormImpl(SHVFormBase* owner, SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVString8C entityName): 
 	Owner(owner),
 	GUIManager(manager), 
-	ControlContainer(controlContainer),
-	EntityName(entityName)
+	EntityName(entityName),
+	ControlContainer(controlContainer)
 {
 	ControlContainer->SubscribePreDestroy(new SHVEventSubscriberFunc<SHVFormImpl>(this,&SHVFormImpl::OnPreDestroyEvent));
 }

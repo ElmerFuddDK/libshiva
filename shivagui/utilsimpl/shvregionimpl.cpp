@@ -329,7 +329,6 @@ SHVRegionAction* SHVRegionActionImpl::UnifyWidth(int unify, int limit)
 
 	if (Wnds.GetCount())
 	{
-	bool resize = false;
 	SHVListWndIterator itr(Wnds);
 	int interimValue;
 

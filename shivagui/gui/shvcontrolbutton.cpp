@@ -60,7 +60,7 @@ void SHVControlButton::PerformClicked()
 {
 	if (!Clicked.IsNull())
 	{
-		Clicked->EmitNow(GetModuleList(),new SHVEvent(NULL,EventClicked,NULL,this));
+		Clicked->EmitNow(GetModuleList(),new SHVEvent(NULL,EventClicked,SHVInt(),this));
 	}
 }
 

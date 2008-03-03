@@ -6,6 +6,8 @@
 #include "shvformimplementer.h"
 #include "shvcontrol.h"
 #include "shvcontrolcontainer.h"
+#include "shvguimanager.h"
+
 
 //-=========================================================================================================
 /// SHVForm - base form for coordinating 1..n ControlContainers/Controls
@@ -156,6 +158,7 @@ SHVBool SHVForm<T>::PreClose()
 template <class T>
 void SHVForm<T>::OnEvent(SHVEvent* event)
 {
+	SHVUNUSED_PARAM(event);
 }
 
 /*************************************
@@ -164,6 +167,8 @@ void SHVForm<T>::OnEvent(SHVEvent* event)
 template <class T>
 void SHVForm<T>::OnResizeForm(SHVControlContainer* container, SHVControlLayout* layout)
 {
+	SHVUNUSED_PARAM(container);
+	SHVUNUSED_PARAM(layout);
 }
 
 /*************************************

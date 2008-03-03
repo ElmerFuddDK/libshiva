@@ -42,7 +42,7 @@
 /*************************************
  * Constructor
  *************************************/
-SHVMessageBox::SHVMessageBox(SHVGUIManager* manager, SHVControlContainer* controlContainer) : SHVForm(manager,controlContainer,"MessageBox")
+SHVMessageBox::SHVMessageBox(SHVGUIManager* manager, SHVControlContainer* controlContainer) : SHVForm<>(manager,controlContainer,"MessageBox")
 {
 	ButtonSubscriber = new SHVEventSubscriber(this);
 }

@@ -8,7 +8,7 @@
 #include "shvcontrollabel.h"
 #include "shvcontrolbutton.h"
 #include "shvformimplementer.h"
-#include "shvform.h"
+#include "shvformbase.h"
 #include "utils/shvfont.h"
 #include "utils/shvcolor.h"
 #include "utils/shvpen.h"
