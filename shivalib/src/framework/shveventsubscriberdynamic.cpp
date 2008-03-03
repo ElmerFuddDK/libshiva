@@ -32,6 +32,7 @@
 #include "../../../include/platformspc.h"
 
 #include "../../../include/framework/shveventsubscriberdynamic.h"
+#include "../../../include/framework/shvmodulelist.h"
 
 
 //=========================================================================================================
