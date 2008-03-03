@@ -12,7 +12,7 @@
  * Contains a data item of type SHVInt, SHVDouble, SHVString or void*
  */
 
-class SHVConfigNode
+class SHVAPI SHVConfigNode
 {
 public:
 
@@ -40,7 +40,7 @@ protected:
  * This class is a container for static vars in a module list.
  */
 
-class SHVConfig
+class SHVAPI SHVConfig
 {
 public:
 
