@@ -79,17 +79,20 @@ SHVDllBase::~SHVDllBase()
 SHVStringBuffer SHVDllBase::CreateLibFileName(const SHVStringC libName, const SHVStringC defaultPath)
 {
 SHVString retVal;
-#ifdef __REEFT_LINUX
+#ifdef __SHIVA_LINUX
+SHVString prefix(libName.Left(3) == _T("lib") ? NULL : _T("lib"));
 SHVString extension(_T(".so"));
 const int extLen = 3;
 #else
+SHVString prefix;
 SHVString extension(_T(".dll"));
 const int extLen = 4;
 #endif
 
-	retVal.Format(_T("%s%s%s%s"),
+	retVal.Format(_T("%s%s%s%s%s"),
 		defaultPath.GetSafeBuffer(),
 		defaultPath.IsNull() || defaultPath.Right(1) == SHVDir::Delimiter() ? _T("") : SHVDir::Delimiter().GetBufferConst(),
+		prefix.GetSafeBuffer(),
 		libName.GetSafeBuffer(),
 		libName.Right(extLen) == extension ? _T("") : extension.GetBufferConst());
 
