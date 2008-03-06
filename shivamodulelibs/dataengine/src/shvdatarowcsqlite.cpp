@@ -205,11 +205,3 @@ const SHVDataStructC* SHVDataRowC_SQLite::GetStruct() const
 		return NULL;
 }
 
-/*************************************
- * ClearOwnership
- *************************************/
-void SHVDataRowC_SQLite::ClearOwnership()
-{
-	Select = NULL;
-}
-

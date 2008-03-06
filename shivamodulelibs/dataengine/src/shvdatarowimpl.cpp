@@ -13,6 +13,7 @@ SHVDataRow_impl::SHVDataRow_impl(const SHVDataRowC* copyrow, SHVDataRowList* own
 {
 SHVDataStructCRef st = (SHVDataStructC*) owner->GetStruct();
 ColumnData = new RowValues[st->GetColumnCount()];
+	Owner = owner;
 	for (size_t i = 0; i < st->GetColumnCount(); i++)
 	{
 		switch ((*st)[i]->GetDataType())
@@ -39,7 +40,7 @@ ColumnData = new RowValues[st->GetColumnCount()];
 			break;
 		}
 	}
-	RowState = SHVDataRow::SHVDataRowState_Unchanged;
+	RowState = SHVDataRow::RowStateUnchanged;
 }
 
 SHVDataRow_impl::SHVDataRow_impl(SHVDataRowList* owner)
@@ -73,7 +74,7 @@ ColumnData = new RowValues[st->GetColumnCount()];
 			break;
 		}
 	}
-	RowState = SHVDataRow::SHVDataRowState_Adding;
+	RowState = SHVDataRow::RowStateAdding;
 }
 
 /*************************************
@@ -285,8 +286,8 @@ SHVBool retVal = true;
  *************************************/
 SHVBool SHVDataRow_impl::RowValid() const
 {
-	return GetRowState() != SHVDataRow::SHVDataRowState_Invalid &&
-		GetRowState() != SHVDataRow::SHVDataRowState_Deleted;
+	return GetRowState() != SHVDataRow::RowStateInvalid &&
+		GetRowState() != SHVDataRow::RowStateDeleted;
 }
 
 /*************************************
@@ -318,40 +319,9 @@ SHVBool SHVDataRow_impl::Delete()
 SHVBool retVal(RowValid());
 
 	if (RowValid())
-		RowState = SHVDataRow::SHVDataRowState_Deleting;
+		RowState = SHVDataRow::RowStateDeleting;
 		
 	return retVal;
-}
-
-/*************************************
- * AcceptChanges
- *************************************/
-SHVBool SHVDataRow_impl::AcceptChanges()
-{
-SHVBool retVal = Owner->GetDataSession()->UpdateRow(this);
-	if (retVal)
-	{
-		if (RowState == SHVDataRow::SHVDataRowState_Deleting)
-			RowState = SHVDataRow::SHVDataRowState_Deleted;
-		if (RowState ==SHVDataRow::SHVDataRowState_Adding)
-			RowState = SHVDataRow::SHVDataRowState_Added;
-		if (RowState ==SHVDataRow::SHVDataRowState_Changing)
-			RowState = SHVDataRow::SHVDataRowState_Changed;	
-	}
-	return retVal;
-}
-
-/*************************************
- * RejectChanges
- *************************************/
-SHVBool SHVDataRow_impl::RejectChanges()
-{
-	for (size_t col = Owner->GetStruct()->GetColumnCount(); col;)
-	{
-		ColumnData[--col].Value = ColumnData[col].OrgValue;
-	}
-	RowState = SHVDataRow::SHVDataRowState_Invalid;
-	return SHVBool::True;
 }
 
 /*************************************
@@ -365,19 +335,39 @@ bool hasChanges = false;
 	{
 		hasChanges = ColumnData[i].OrgValue.GetDataType() != SHVDataVariant::TypeUndefined;
 	}
-	if (!hasChanges && RowState != SHVDataRow::SHVDataRowState_Adding)
-		RowState = SHVDataRow::SHVDataRowState_Unchanged;
+	if (!hasChanges && RowState != SHVDataRow::RowStateAdding)
+		RowState = SHVDataRow::RowStateUnchanged;
 
 	return hasChanges;
 }
 
 /*************************************
- * ClearOwnership
+ * InternalAcceptChanges
  *************************************/
-void SHVDataRow_impl::ClearOwnership()
+void SHVDataRow_impl::InternalAcceptChanges()
 {
-	RowState = SHVDataRow::SHVDataRowState_Invalid;
-	Owner = NULL;
+	if (RowState == SHVDataRow::RowStateDeleting)
+		RowState = SHVDataRow::RowStateDeleted;
+	if (RowState ==SHVDataRow::RowStateAdding)
+		RowState = SHVDataRow::RowStateAdded;
+	if (RowState ==SHVDataRow::RowStateChanging)
+		RowState = SHVDataRow::RowStateChanged;	
+}
+
+/*************************************
+ * InternalRejectChanges
+ *************************************/
+void SHVDataRow_impl::InternalRejectChanges()
+{
+	RowState = SHVDataRow::RowStateInvalid;
+}
+
+/*************************************
+ * GetRowList
+ *************************************/
+SHVDataRowList* SHVDataRow_impl::GetRowList()
+{
+	return Owner;
 }
 
 /*************************************

@@ -3,6 +3,9 @@
 
 #include "../shvdatafactory.h"
 #include "../shvdataengine.h"
+#include "../shvdatarow.h"
+
+#include "../../../../include/utils/shvlist.h"
 #include "../../../../shivasqlite/include/sqlitewrapper.h"
 
 //-=========================================================================================================
@@ -26,9 +29,17 @@ public:
 	virtual SHVDataRowKey* CreateKey() const;
 	virtual const SHVStringC& GetDatabase() const;
 	virtual void BuildKeySQL(const SHVDataRowKey* key, SHVString8& condition, SHVString8& orderby, bool reverse = false) const;
+	virtual void SubscribeRowChange(SHVEventSubscriberBase* sub);
+	virtual SHVDataEngine& GetDataEngine();
 
 protected:
 	virtual ~SHVDataFactory_impl();
+	virtual void RegisterDataList(SHVDataRowListC* rowList);
+	virtual void UnregisterDataList(SHVDataRowListC* rowList);
+	virtual void RegisterDataSession(SHVDataSession* session);
+	virtual void UnregisterDataSession(SHVDataSession* session);
+	virtual void RowChanged(SHVDataRow* row);
+
 	virtual SHVBool CreateTable(const SHVDataStructC* dataStruct);
 	virtual SHVBool CreateIndex(const SHVDataStructC* dataStruct, size_t index);
 	virtual void SetSQLite(SHVSQLiteWrapper* sqlite);
@@ -38,6 +49,9 @@ private:
 	SHVSQLiteWrapperRef SQLite;
 	SHVString Database;
 	SHVDataSchema Schema;
+	SHVList<SHVDataRowListC*> ActiveDataLists;
+	SHVList<SHVDataSession*> ActiveSessions;
+	SHVEventSubscriberBaseRef DataChangedSubscription;
 };
 
 #endif

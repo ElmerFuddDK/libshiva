@@ -5,18 +5,20 @@
 #include "../../../include/framework/shvmodule.h"
 #include "../../../include/utils/shvdll.h"
 #include "shvdatafactory.h"
+
 #define __DATAENGINE_VERSION_MAJOR     0
 #define __DATAENGINE_VERSION_MINOR     1
 #define __DATAENGINE_VERSION_RELEASE   0
 #define __DATAENGINE_DEFAULT_DATABASE _T("DefaultDatabase")
 #define __DATAENGINE_DATAPATH         _T("DataPath")
+
 //-=========================================================================================================
 /// SHVDataEngine class - Interface for the shiva data engine module
 /**
  * Is a factory for DataFactory objects, which enables multible connections to one or more
  * SQLite databases (files)
  */
-class SHVDataEngine: public SHVModule, public SHVDataFactory
+class SHVDataEngine: public SHVModule
 {
 public:
 	virtual ~SHVDataEngine() {}
@@ -34,9 +36,27 @@ public:
 	virtual SHVSQLiteWrapper* CreateConnection(SHVBool& Ok, const SHVStringC& dataBase) = 0;
 
 	virtual SHVDataFactory* CreateFactory(const SHVString& database, const SHVDataSchema* schema = NULL) = 0;
+	virtual SHVDataFactory* GetDefaultFactory() = 0;
+	inline void FactoryRowChanged(SHVDataRow* row);
 protected:
+	virtual void SubscribeRowChange(SHVEventSubscriberBase* sub) = 0;
+	virtual void RegisterDataList(SHVDataRowListC* rowList) = 0;
+	virtual void UnregisterDataList(SHVDataRowListC* rowList) = 0;
+	virtual void RowChanged(SHVDataRow* row) = 0;
 	inline SHVDataEngine(SHVModuleList& modules): SHVModule(modules, "DataEngine") { }
 };
+// ============================================ implementation ============================================ //
+#ifndef __SHIVA_DATAENGINE_INL
+#define __SHIVA_DATAENGINE_INL
+
+/*************************************
+ * FactoryRowChanged
+ *************************************/
+void SHVDataEngine::FactoryRowChanged(SHVDataRow* row)
+{
+	RowChanged(row);
+}
+#endif
 
 
 #endif

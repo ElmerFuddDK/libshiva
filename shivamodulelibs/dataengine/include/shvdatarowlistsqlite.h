@@ -5,9 +5,11 @@
 #include "../../../../include/utils/shvrefobject.h"
 #include "../../../../include/utils/shvstring.h"
 #include "../../../../include/utils/shvvectorref.h"
+#include "../../../../include/utils/shvlist.h"
 #include "../../../../include/shvtypes.h"
 #include "../shvdatarowlist.h"
 #include "../shvdatasession.h"
+#include "../shvdatarow.h"
 
 //-=========================================================================================================
 /// SHVDataRowList_SQLite class - SQLite implementation of a datarow list.
@@ -17,8 +19,6 @@
 class SHVDataRowC_SQLite;
 class SHVDataRowList_SQLite: public SHVDataRowList
 {
-protected:
-	~SHVDataRowList_SQLite();
 public:
 	SHVDataRowList_SQLite(SHVDataSession* dataSession, SHVDataRowListC *rowList);
 	virtual const SHVDataRowC* GetCurrentRow() const;
@@ -35,10 +35,29 @@ public:
 	virtual SHVDataSession* GetDataSession();
 
 	virtual SHVDataRow* EditCurrentRow();
-	virtual SHVDataRow* AddRow();	
+	virtual SHVDataRow* AddRow();
+	virtual void EnableEvents(bool enable);
+	virtual bool GetEventsEnabled() const;
+	virtual void EnableNonAccepted(bool enable);
+	virtual bool GetNonAcceptedEnabled() const;
+
+	virtual SHVBool RowListValid() const;
+protected:
+	virtual ~SHVDataRowList_SQLite();
+	virtual SHVBool AcceptChanges(SHVDataRow* row);
+	virtual SHVBool RejectChanges(SHVDataRow* row);
+	virtual void AdjustRowCount(int delta);
+	
+	SHVDataRow* FindPending(const SHVDataRowKey* key);
+	bool NextPendingAdded();
 private:
 	SHVDataRowListCRef RowList;
 	SHVDataSessionRef DataSession;
+	SHVDataRowCollection PendingRows;
+	SHVListPos PendingPosAdded;
+	int InsertedRows;
+	bool EventsEnabled;
+	bool NonAcceptedEnabled;
 };
 typedef SHVRefObjectContainer<SHVDataRowList_SQLite> SHVDataRowList_SQLiteRef;
 

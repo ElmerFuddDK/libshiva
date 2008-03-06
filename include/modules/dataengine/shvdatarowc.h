@@ -5,8 +5,11 @@
 #include "../../../include/utils/shvstring.h"
 #include "../../../include/shvtypes.h"
 #include "../../../include/utils/shvtime.h"
-#include "shvdatarowkey.h"
-#include "shvdatastructc.h"
+#include "shvdatavariant.h"
+
+// forward declares
+class SHVDataRowKey;
+class SHVDataStructC;
 
 //-=========================================================================================================
 /// SHVDataRow class - Interface for SHVDataRow
@@ -50,7 +53,6 @@ public:
 	inline SHVBool GetValue(const SHVString8C& colName, SHVDouble& value) const;
 	inline SHVBool GetValue(const SHVString8C& colName, SHVTime& value) const;
 	inline SHVBool GetValue(const SHVString8C& colName, SHVBool& value) const;	
-	virtual void ClearOwnership() = 0;
 
 protected:
 	virtual ~SHVDataRowC() { }
@@ -58,8 +60,11 @@ protected:
 
 typedef SHVRefObjectContainer<SHVDataRowC> SHVDataRowCRef;
 
+#endif
 
 // ====================================== implementation - SHVDataRowC ==================================== //
+#ifndef __SHIVA_DATAENGINE_DATAROWC_INL
+#define __SHIVA_DATAENGINE_DATAROWC_INL
 
 /*************************************
  * AsString

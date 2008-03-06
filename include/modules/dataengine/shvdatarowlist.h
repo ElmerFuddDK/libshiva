@@ -2,8 +2,10 @@
 #define __SHIVA_DATAENGINE_DATAROWLIST_H
 
 #include "shvdatarowlistc.h"
-#include "shvdatarow.h"
 #include "shvdatavariant.h"
+
+// forward declare
+class SHVDataRow;
 
 //-=========================================================================================================
 /// SHVDataRowListC class - Interface for SHVDataRowList
@@ -12,8 +14,6 @@
  */
 class SHVDataRowList: public SHVDataRowListC
 {
-protected:
-	~SHVDataRowList() {}
 public:
 	virtual const SHVDataRowC* GetCurrentRow() const = 0;
 	virtual SHVBool IsOk() const = 0;
@@ -30,10 +30,72 @@ public:
 
 	virtual SHVDataRow* EditCurrentRow() = 0;
 	virtual SHVDataRow* AddRow() = 0;	
+	virtual void EnableEvents(bool enable) = 0;
+	virtual bool GetEventsEnabled() const = 0;
+	virtual void EnableNonAccepted(bool enable) = 0;
+	virtual bool GetNonAcceptedEnabled() const = 0;
+
+	virtual SHVBool RowListValid() const = 0;
+protected:
+	friend class SHVDataRow;
+	virtual ~SHVDataRowList() {}
+	virtual SHVBool AcceptChanges(SHVDataRow* row) = 0;
+	virtual SHVBool RejectChanges(SHVDataRow* row) = 0;
+
+	inline SHVBool UpdateRow(SHVDataRow* row);
+	inline void RowChanged(SHVDataRow* row);
+	inline void InternalAcceptChanges(SHVDataRow* row);
+	inline void InternalRejectChanges(SHVDataRow* row);
+	inline void InternalAdjustRowCount(SHVDataRowListC* rowList, int delta);
+	virtual void AdjustRowCount(int delta) = 0;
 };
 typedef SHVRefObjectContainer<SHVDataRowList> SHVDataRowListRef;
+#endif
 
 // ==================================== implementation - SHVDataRowList ==================================== //
+#ifndef __SHIVA_DATAENGINE_DATAROWLIST_INL
+#define __SHIVA_DATAENGINE_DATAROWLIST_INL
 
+#include "shvdatasession.h"
+#include "shvdatarow.h"
+
+/*************************************
+ * UpdateRow
+ *************************************/
+SHVBool SHVDataRowList::UpdateRow(SHVDataRow* row)
+{ 
+	return GetDataSession()->UpdateRow(row); 
+}
+
+/*************************************
+ * RowChanged
+ *************************************/
+void SHVDataRowList::RowChanged(SHVDataRow* row)
+{
+	if (GetEventsEnabled())
+		GetDataSession()->RowChanged(row); 
+}
+/*************************************
+ * InternalAcceptChanges
+ *************************************/
+void SHVDataRowList::InternalAcceptChanges(SHVDataRow* row)
+{
+	row->InternalAcceptChanges();
+}
+
+/*************************************
+ * InternalRejectChanges
+ *************************************/
+void SHVDataRowList::InternalRejectChanges(SHVDataRow* row)
+{
+	row->InternalRejectChanges();
+}
+/*************************************
+ * AdjustRowCount
+ *************************************/
+void SHVDataRowList::InternalAdjustRowCount(SHVDataRowListC* rowList, int delta)
+{
+	rowList->AdjustRowCount(delta);
+}
 
 #endif

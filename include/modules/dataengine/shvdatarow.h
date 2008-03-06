@@ -4,8 +4,12 @@
 #include "../../../include/utils/shvrefobject.h"
 #include "../../../include/utils/shvstring.h"
 #include "../../../include/utils/shvvectorref.h"
+#include "../../../include/framework/shveventdata.h"
 #include "../../../include/shvtypes.h"
 #include "shvdatarowc.h"
+
+//forward declares
+class SHVDataRowList;
 
 //-=========================================================================================================
 /// SHVDataRow class - Interface for SHVDataRow
@@ -17,14 +21,14 @@ class SHVDataRow: public SHVDataRowC
 public:
 	enum SHVDataRowState
 	{
-		SHVDataRowState_Invalid,
-		SHVDataRowState_Deleted,
-		SHVDataRowState_Added,
-		SHVDataRowState_Changed,
-		SHVDataRowState_Unchanged,
-		SHVDataRowState_Deleting,
-		SHVDataRowState_Adding,
-		SHVDataRowState_Changing
+		RowStateInvalid = -1,
+		RowStateDeleted,
+		RowStateAdded,
+		RowStateChanged,
+		RowStateUnchanged,
+		RowStateDeleting,
+		RowStateAdding,
+		RowStateChanging
 	};
 	virtual SHVStringBuffer AsString(size_t colIdx) const = 0;
 	virtual void SetString(size_t colIdx, const SHVStringC& val) = 0;
@@ -64,19 +68,33 @@ public:
 	virtual int GetRowState() const = 0;
 
 	virtual SHVBool Delete() = 0;
-	virtual SHVBool AcceptChanges() = 0;
-	virtual SHVBool RejectChanges() = 0;
+	inline SHVBool AcceptChanges();
+	inline SHVBool RejectChanges();
 	virtual SHVBool HasChanges() = 0;
-	virtual void ClearOwnership() = 0;
 
 protected:
+	friend class SHVDataRowList;
+	virtual SHVDataRowList* GetRowList() = 0;
 	virtual ~SHVDataRow() { }
+	virtual void InternalAcceptChanges() = 0;
+	virtual void InternalRejectChanges() = 0;
 };
 
 typedef SHVRefObjectContainer<SHVDataRow> SHVDataRowRef;
 typedef SHVVectorRef<SHVDataRow> SHVDataRowVector;
+typedef SHVList<SHVDataRowRef, SHVDataRow*> SHVDataRowCollection;
+typedef SHVPtrContainer<SHVDataRowVector> SHVDataRowVectorPtr;
+
+typedef SHVEventData<SHVDataRowRef, SHVDataRow*> SHVEventDataRowChanged;
+typedef SHVEventData<SHVDataRowVectorPtr> SHVEventDataChangeSet;
+
+#endif
 
 // ====================================== implementation - SHVDataRow ===================================== //
+#ifndef __SHIVA_DATAENGINE_DATAROW_INL
+#define __SHIVA_DATAENGINE_DATAROW_INL
+
+#include "shvdatarowlist.h"
 
 /*************************************
  * SetValue
@@ -112,6 +130,22 @@ void SHVDataRow::SetNull(const SHVString8C& colName)
 const SHVDataVariant* SHVDataRow::OriginalValue(const SHVString8C& colName) const
 {
 	return OriginalValue(ColumnIndex(colName));
+}
+
+/*************************************
+ * AcceptChanges
+ *************************************/
+SHVBool SHVDataRow::AcceptChanges()
+{
+	return GetRowList()->AcceptChanges(this);
+}
+
+/*************************************
+ * RejectChanges
+ *************************************/
+SHVBool SHVDataRow::RejectChanges()
+{
+	return GetRowList()->AcceptChanges(this);
 }
 
 #endif

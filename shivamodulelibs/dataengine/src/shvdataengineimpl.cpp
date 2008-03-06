@@ -127,9 +127,20 @@ SHVSQLiteWrapper* SHVDataEngine_impl::CreateConnection(SHVBool& Ok, const SHVStr
 {
 SHVSQLiteWrapper* retVal = (SHVSQLiteWrapper*) SQLiteDll.CreateObjectInt(&Modules, SHVDll::ClassTypeUser);
 	Ok = retVal->Open(dataBase);
+	if (Ok)
+	{
+	SHVStringSQLite rest("");
+	// Lets setup a default memory database
+		retVal->ExecuteUTF8(Ok, "attach database :memory as memdb", rest);
+		if (Ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+			Ok = SHVBool::True;
+	}
 	return retVal;
 }
 
+/*************************************
+ * CreateFactory
+ *************************************/
 SHVDataFactory* SHVDataEngine_impl::CreateFactory(const SHVString& database, const SHVDataSchema* schema)
 {
 SHVBool ok;
@@ -140,3 +151,39 @@ SHVSQLiteWrapper* sqlite = CreateConnection(ok, database);
 		return NULL;
 }
 
+/*************************************
+ * GetDefaultFactory
+ *************************************/
+SHVDataFactory* SHVDataEngine_impl::GetDefaultFactory()
+{
+	return Factory;
+}
+
+/*************************************
+ * SubscribeRowChange
+ *************************************/
+void SHVDataEngine_impl::SubscribeRowChange(SHVEventSubscriberBase* sub)
+{
+}
+
+/*************************************
+ * RegisterDataList
+ *************************************/
+void SHVDataEngine_impl::RegisterDataList(SHVDataRowListC* rowList)
+{
+}
+
+/*************************************
+ * UnregisterDataList
+ *************************************/
+void SHVDataEngine_impl::UnregisterDataList(SHVDataRowListC* rowList)
+{
+}
+
+/*************************************
+ * RowChanged
+ *************************************/
+void SHVDataEngine_impl::RowChanged(SHVDataRow* row)
+{
+	EmitEvent(new SHVEventDataRowChanged(row, this, SHVDataFactory::EventRowChanged, SHVInt(), Factory));
+}

@@ -7,6 +7,7 @@
 #include "../../../../include/utils/shvvectorref.h"
 #include "../../../../include/shvtypes.h"
 #include "../shvdatarowlistc.h"
+#include "../shvdatarowc.h"
 
 //-=========================================================================================================
 /// SHVDataRowListC_SQLite class - SQLite implementation of a constant datarow list.
@@ -16,8 +17,9 @@
 class SHVDataRowListC_SQLite: public SHVDataRowListC
 {
 public:
-	SHVDataRowListC_SQLite(SHVSQLiteWrapper* sqlLite, const SHVStringC& sql, const SHVDataRowKey* sortKey);
-	SHVDataRowListC_SQLite(SHVSQLiteWrapper* sqlLite, const SHVDataStructC* dataStruct, const SHVStringC& condition, size_t index);
+	SHVDataRowListC_SQLite(SHVDataSession* session, const SHVDataStructC* dataStruct);
+	SHVDataRowListC_SQLite(SHVDataSession* session, const SHVStringC& sql, const SHVDataRowKey* sortKey);
+	SHVDataRowListC_SQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVStringC& condition, size_t index);
 
 	virtual const SHVDataRowC* GetCurrentRow() const;
 	virtual SHVBool IsOk() const;
@@ -30,19 +32,23 @@ public:
 	virtual SHVBool Reset();
 
 	virtual const void* GetRowProvider() const;
+	virtual SHVDataSession* GetDataSession();
+	virtual SHVBool RowListValid() const;
 
 protected:
 	~SHVDataRowListC_SQLite();
 	virtual SHVStringBufferUTF8 BuildQuery(const SHVStringC& condition, bool reverse);
-private:
-	SHVDataRowListC_SQLite(SHVSQLiteWrapper* sqlLite, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, size_t index);
-	SHVBool Eof;
-	SHVBool Ok;
-	SHVDataStructCRef StructCache;
+	virtual void AdjustRowCount(int delta);
 	size_t SortIndex;
 	SHVSQLiteStatementRef Statement;
+	SHVBool Eof;
+	SHVBool Ok;
+private:
+	SHVDataRowListC_SQLite(SHVDataSession* session, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, size_t index);
+	SHVDataStructCRef StructCache;
 	SHVDataRowCRef CurrentRow;
-	SHVSQLiteWrapperRef SQLite;
+	SHVDataSessionRef DataSession;
+	int RowCount;
 };
 typedef SHVRefObjectContainer<SHVDataRowListC> SHVDataRowListCRef;
 

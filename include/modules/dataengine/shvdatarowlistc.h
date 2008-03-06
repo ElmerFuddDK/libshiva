@@ -4,11 +4,15 @@
 #include "../../../include/utils/shvrefobject.h"
 #include "../../../include/utils/shvstring.h"
 #include "../../../include/shvtypes.h"
-#include "shvdatarowc.h"
-#include "shvdatastructc.h"
 
-// forward declare
+// forward declares
+class SHVDataRowC;
+class SHVDataStructC;
+class SHVDataRowList;
 class SHVDataSession;
+class SHVDataRowKey;
+class SHVDataFactory;
+
 //-=========================================================================================================
 /// SHVDataRowList class - Interface for SHVDataRowList
 /**
@@ -16,8 +20,6 @@ class SHVDataSession;
  */
 class SHVDataRowListC: public SHVRefObject
 {
-protected:
-	~SHVDataRowListC() {}
 public:
 	virtual const SHVDataRowC* GetCurrentRow() const = 0;
 	virtual SHVBool IsOk() const = 0;
@@ -30,11 +32,35 @@ public:
 	virtual SHVBool Reset() = 0;
 
 	virtual const void* GetRowProvider() const = 0;
+	virtual SHVDataSession* GetDataSession() = 0;
+	virtual SHVBool RowListValid() const = 0;
+protected:
+	friend class SHVDataFactory;
+	friend class SHVDataRowList;
+	virtual void AdjustRowCount(int delta) = 0;
+	virtual ~SHVDataRowListC() {}
+	inline void UnregisterDataList();
+private:
+	int RowCount;
 };
 typedef SHVRefObjectContainer<SHVDataRowListC> SHVDataRowListCRef;
 
+#endif
 
-// ==================================== implementation - SHVDataRowList ==================================== //
 
+// =========================================== implementation ============================================ //
 
+#ifndef __SHIVA_DATAENGINE_DATAROWLISTC_INL
+#define __SHIVA_DATAENGINE_DATAROWLISTC_INL
+
+#include "shvdatasession.h"
+
+/*************************************
+ * UnregisterDataList
+ *************************************/
+void SHVDataRowListC::UnregisterDataList()
+{ 
+	if (GetDataSession())
+		GetDataSession()->UnregisterDataList(this);   
+}
 #endif

@@ -175,10 +175,31 @@ const SHVDataRowKey& Key = *key;
 }
 
 /*************************************
+ * SubscribeRowChange
+ *************************************/
+void SHVDataFactory_impl::SubscribeRowChange(SHVEventSubscriberBase* sub)
+{
+	DataChangedSubscription = sub;
+}
+
+/*************************************
+ * GetDataEngine
+ *************************************/
+SHVDataEngine& SHVDataFactory_impl::GetDataEngine()
+{
+	return DataEngine;
+}
+
+/*************************************
  * Destructor
  *************************************/
 SHVDataFactory_impl::~SHVDataFactory_impl()
 {
+SHVListPos p = NULL;
+	while (ActiveSessions.MoveNext(p))
+	{
+		ReleaseDataSession(ActiveSessions.GetAt(p));
+	}
 }
 
 /*************************************
@@ -186,7 +207,9 @@ SHVDataFactory_impl::~SHVDataFactory_impl()
  *************************************/
 SHVDataSession* SHVDataFactory_impl::CreateSession()
 {
-	return new SHVDataSession_SQLite(DataEngine.GetModuleList(), SQLite, this);
+SHVDataSession* retVal = new SHVDataSession_SQLite(DataEngine.GetModuleList(), SQLite, this);
+	RegisterDataSession(retVal);
+	return retVal;
 }
 
 /*************************************
@@ -278,4 +301,57 @@ SHVSQLiteStatementRef statement;
 void SHVDataFactory_impl::SetSQLite(SHVSQLiteWrapper* sqlite)
 {
 	SQLite = sqlite;
+}
+
+/*************************************
+ * RegisterDataList
+ *************************************/
+void SHVDataFactory_impl::RegisterDataList(SHVDataRowListC* rowList)
+{
+	ActiveDataLists.AddTail(rowList);
+}
+
+/*************************************
+ * UnregisterDataList
+ *************************************/
+void SHVDataFactory_impl::UnregisterDataList(SHVDataRowListC* rowList)
+{
+SHVListPos pos = ActiveDataLists.Find(rowList);
+	if (pos)
+		ActiveDataLists.RemoveAt(pos);
+}
+
+/*************************************
+ * RegisterDataSession
+ *************************************/
+void SHVDataFactory_impl::RegisterDataSession(SHVDataSession* session)
+{
+	ActiveSessions.AddTail(session);
+}
+
+/*************************************
+ * UnregisterDataSession
+ *************************************/
+void SHVDataFactory_impl::UnregisterDataSession(SHVDataSession* session)
+{
+SHVListPos pos = ActiveSessions.Find(session);
+	if (pos)
+	{
+		ActiveSessions.RemoveAt(pos);
+		ReleaseDataSession(session);
+	}
+}
+
+/*************************************
+ * RowChanged
+ *************************************/
+void SHVDataFactory_impl::RowChanged(SHVDataRow* row)
+{
+	DataEngine.FactoryRowChanged(row);
+	if (!DataChangedSubscription.IsNull())
+	{
+		if (row->GetRowState() != SHVDataRow::RowStateUnchanged &&
+			row->GetRowState() == SHVDataRow::RowStateInvalid)
+			DataChangedSubscription->EmitNow(DataEngine.GetModuleList(), new SHVEventDataRowChanged(row, NULL, SHVDataFactory::EventRowChanged, SHVInt(), this));
+	}
 }

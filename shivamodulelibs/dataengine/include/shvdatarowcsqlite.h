@@ -35,7 +35,6 @@ public:
 	virtual SHVBool RowValid() const;
 	virtual const SHVDataStructC* GetStruct() const;
 
-	virtual void ClearOwnership();
 private:
 friend class SHVDataRowList_SQLite;
 friend class SHVDataRowListC_SQLite;

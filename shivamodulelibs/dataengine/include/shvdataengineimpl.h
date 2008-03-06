@@ -35,6 +35,12 @@ public:
 	virtual SHVSQLiteWrapper* CreateConnection(SHVBool& Ok, const SHVStringC& dataBase);
 
 	virtual SHVDataFactory* CreateFactory(const SHVString& database, const SHVDataSchema* schema = NULL);
+	virtual SHVDataFactory* GetDefaultFactory();
+protected:
+	virtual void SubscribeRowChange(SHVEventSubscriberBase* sub);
+	virtual void RegisterDataList(SHVDataRowListC* rowList);
+	virtual void UnregisterDataList(SHVDataRowListC* rowList);
+	virtual void RowChanged(SHVDataRow* row);
 private:
 	SHVDll SQLiteDll;
 	SHVDataFactoryRef Factory;

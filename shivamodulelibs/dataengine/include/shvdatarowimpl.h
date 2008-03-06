@@ -58,14 +58,14 @@ public:
 	virtual int GetRowState() const;
 
 	virtual SHVBool Delete();
-	virtual SHVBool AcceptChanges();
-	virtual SHVBool RejectChanges();
 	virtual SHVBool HasChanges();
-	virtual void ClearOwnership();
 
 protected:
 	virtual ~SHVDataRow_impl();
 	inline void SetChanged();
+	virtual void InternalAcceptChanges();
+	virtual void InternalRejectChanges();
+	virtual SHVDataRowList* GetRowList();
 private:
 	friend class SHVDataRowList_SQLite;
 	RowValues* ColumnData;
@@ -77,8 +77,8 @@ typedef SHVRefObjectContainer<SHVDataRow_impl> SHVDataRow_implRef;
 
 void SHVDataRow_impl::SetChanged()
 {
-	if (RowState != SHVDataRow::SHVDataRowState_Adding)
-		RowState = SHVDataRow::SHVDataRowState_Changing;
+	if (RowState != SHVDataRow::RowStateAdding)
+		RowState = SHVDataRow::RowStateChanging;
 }
 
 #endif

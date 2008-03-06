@@ -242,6 +242,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\dataengineimpl\shvdatarowlistc_indexed.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\dataengineimpl\shvdatarowlistc_sqlite.cpp"
 					>
 				</File>
@@ -310,10 +314,6 @@
 			</File>
 			<File
 				RelativePath="..\include\shvdatastructc.h"
-				>
-			</File>
-			<File
-				RelativePath="..\include\shvdatatable.h"
 				>
 			</File>
 			<File
@@ -409,6 +409,10 @@
 				</File>
 				<File
 					RelativePath="..\include\dataengineimpl\shvdatarowlist_sqlite.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\dataengineimpl\shvdatarowlistc_indexed.h"
 					>
 				</File>
 				<File
