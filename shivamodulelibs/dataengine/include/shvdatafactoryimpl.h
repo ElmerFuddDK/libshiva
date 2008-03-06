@@ -31,6 +31,7 @@ public:
 	virtual void BuildKeySQL(const SHVDataRowKey* key, SHVString8& condition, SHVString8& orderby, const SHVString8C& table, bool reverse = false) const;
 	virtual void SubscribeRowChange(SHVEventSubscriberBase* sub);
 	virtual SHVDataEngine& GetDataEngine();
+	virtual SHVStringBuffer GetErrorMessage() const;
 
 protected:
 	virtual ~SHVDataFactory_impl();

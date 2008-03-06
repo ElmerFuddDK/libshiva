@@ -201,6 +201,14 @@ SHVDataEngine& SHVDataFactory_impl::GetDataEngine()
 }
 
 /*************************************
+ * GetDataEngine
+ *************************************/
+SHVStringBuffer SHVDataFactory_impl::GetErrorMessage() const
+{
+	return SQLite->GetErrorMsg();
+}
+
+/*************************************
  * Destructor
  *************************************/
 SHVDataFactory_impl::~SHVDataFactory_impl()
