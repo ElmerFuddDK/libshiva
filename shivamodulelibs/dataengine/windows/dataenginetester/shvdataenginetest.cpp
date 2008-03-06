@@ -427,7 +427,17 @@ SHVDataRowKeyRef key;
 		key->AddKey("timecol", true);
 		dataStruct->AddIndex(key);
 		DataEngine->RegisterTable(dataStruct);
-		dataStruct = DataEngine->CreateStruct();		dataStruct->SetTableName("person");		dataStruct->Add("pk_person", SHVDataVariant::TypeInt);		dataStruct->Add("firstName", SHVDataVariant::TypeString,40);		dataStruct->Add("middleName", SHVDataVariant::TypeString,30);		dataStruct->Add("lastName", SHVDataVariant::TypeString,40);		key = dataStruct->CreateIndexKey();		key->AddKey("pk_person", false);		dataStruct->AddIndex(key);		DataEngine->RegisterTable(dataStruct);
+
+		dataStruct = DataEngine->CreateStruct();
+		dataStruct->SetTableName("person");
+		dataStruct->Add("pk_person", SHVDataVariant::TypeInt);
+		dataStruct->Add("firstName", SHVDataVariant::TypeString,40);
+		dataStruct->Add("middleName", SHVDataVariant::TypeString,30);
+		dataStruct->Add("lastName", SHVDataVariant::TypeString,40);
+		key = dataStruct->CreateIndexKey();
+		key->AddKey("pk_person", false);
+		dataStruct->AddIndex(key);
+		DataEngine->RegisterTable(dataStruct);
 	}
 
 	return SHVTestModule::Register() && retVal;
