@@ -19,6 +19,7 @@ SHVDataRowList_SQLite::SHVDataRowList_SQLite(SHVDataSession* dataSession, SHVDat
 
 SHVDataRowList_SQLite::~SHVDataRowList_SQLite()
 {
+	UnregisterDataList();
 	DataSession = NULL;
 }
 

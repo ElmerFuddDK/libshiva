@@ -49,12 +49,6 @@ void DumpData(SHVTestResult* result, SHVDataRowListC* data)
 SHVBool SHVDataEngineTest::TestInsert(SHVTestResult* result)
 {
 SHVDataSessionRef Test = DataEngine->CreateSession();
-SHVDataRowListRef list;
-
-	list = Test->GetRowsIndexed("person",_T(""),0);
-	return list->IsOk();
-/*
-SHVDataSessionRef Test = DataEngine->CreateSession();
 SHVDataRowListRef data;
 SHVDataRowListRef childdata;
 SHVDataRowRef r;
@@ -102,8 +96,8 @@ SHVTime now;
 	else
 		return SHVBool::False;
 	return SHVBool::True;
-*/
 }
+
 SHVBool SHVDataEngineTest::TestUpdate(SHVTestResult* result)
 {
 SHVDataSessionRef Test = DataEngine->CreateSession();
@@ -144,6 +138,8 @@ SHVTime now;
 		}
 		data->Reset();
 		DumpData(result, data);
+		data->Reset();
+		data->NextRow();
 		if (Test->Commit())
 		{
 			data->Reset();
@@ -360,9 +356,9 @@ SHVBool ok;
 	Result = result;
 	result->AddLog(_T("Insert test"));
 	ok = TestInsert(result); 
-	/*
 	if (ok)
 		ok = TestUpdate(result);
+	/*
 	if (ok)
 		ok = TestQuery(result);
 	if (ok)

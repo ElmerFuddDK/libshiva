@@ -43,6 +43,7 @@ protected:
 	virtual void ClearOwnership() = 0;
 	virtual SHVBool UpdateRow(SHVDataRow* row) = 0;
 	virtual SHVBool IsValid() const = 0;
+	inline SHVBool SessionReset();
 	inline void RegisterDataList(SHVDataRowListC* rowList);
 	inline void UnregisterDataList(SHVDataRowListC* rowList);
 	inline void UnregisterDataSession();
@@ -58,6 +59,15 @@ typedef SHVRefObjectContainer<SHVDataSession> SHVDataSessionRef;
 #define __SHIVA_DATASESSION_INL
 
 #include "shvdatafactory.h"
+
+/*************************************
+ * SessionReset
+ *************************************/
+SHVBool SHVDataSession::SessionReset()
+{
+	return GetFactory() != NULL && GetFactory()->SessionReset(this);
+}
+
 /*************************************
  * SessionValid
  *************************************/

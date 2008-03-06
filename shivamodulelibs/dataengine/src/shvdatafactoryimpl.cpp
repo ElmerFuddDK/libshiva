@@ -152,7 +152,7 @@ SHVString8 colCondition;
 const SHVDataRowKey& Key = *key;
 	for (size_t i = 0; i < Key.Count(); i++)
 	{
-		if (table.IsNull() && table == "")
+		if (table.IsNull() || table == "")
 		{
 			if (Key[i].Desc != reverse)
 				colCondition.Format("(@%s is null or %s <= @%s)", Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer());
@@ -372,4 +372,19 @@ void SHVDataFactory_impl::RowChanged(SHVDataRow* row)
 			row->GetRowState() == SHVDataRow::RowStateInvalid)
 			DataChangedSubscription->EmitNow(DataEngine.GetModuleList(), new SHVEventDataRowChanged(row, NULL, SHVDataFactory::EventRowChanged, SHVInt(), this));
 	}
+}
+
+/*************************************
+ * SessionReset
+ *************************************/
+SHVBool SHVDataFactory_impl::SessionReset(SHVDataSession* session)
+{
+SHVBool retVal = SHVBool::True;
+SHVListIterator<SHVDataRowListC*> iter(ActiveDataLists);
+	while (retVal && iter.MoveNext())
+	{
+		if (iter.Get()->GetDataSession() == session)
+			retVal = iter.Get()->Reset();
+	}
+	return retVal;
 }

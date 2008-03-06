@@ -45,6 +45,7 @@ protected:
 	virtual void RegisterDataSession(SHVDataSession* session) = 0;
 	virtual void UnregisterDataSession(SHVDataSession* session) = 0;
 	virtual void RowChanged(SHVDataRow* row) = 0;
+	virtual SHVBool SessionReset(SHVDataSession* session) = 0;
 	inline void ReleaseDataSession(SHVDataSession* session);
 	virtual ~SHVDataFactory() {}
 };

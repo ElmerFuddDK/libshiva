@@ -35,7 +35,12 @@ SHVBool SHVDataSession_SQLite::Commit()
 {
 SHVStringSQLite rest(NULL);
 SHVBool ok;
-SHVSQLiteStatementRef statement = SQLite->ExecuteUTF8(ok, "END TRANSACTION", rest);
+SHVSQLiteStatementRef statement;
+	ok = SessionReset();
+	if (ok)
+		statement = SQLite->ExecuteUTF8(ok, "END TRANSACTION", rest);
+	if (ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+		ok = SHVBool::True;
 	if (ok && !ChangeSubscriber.IsNull())
 	{
 	SHVDataRowVector* RowVector = new SHVDataRowVector();
