@@ -146,17 +146,27 @@ const SHVStringC& SHVDataFactory_impl::GetDatabase() const
 /*************************************
  * BuildKeySQL
  *************************************/
-void SHVDataFactory_impl::BuildKeySQL(const SHVDataRowKey* key, SHVString8& condition, SHVString8& orderby, bool reverse) const
+void SHVDataFactory_impl::BuildKeySQL(const SHVDataRowKey* key, SHVString8& condition, SHVString8& orderby, const SHVString8C& table, bool reverse) const
 {
 SHVString8 colCondition;
 const SHVDataRowKey& Key = *key;
-
 	for (size_t i = 0; i < Key.Count(); i++)
 	{
-		if (Key[i].Desc != reverse)
-			colCondition.Format("(@%s is null or %s <= @%s)", Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer());
+		if (table.IsNull() && table == "")
+		{
+			if (Key[i].Desc != reverse)
+				colCondition.Format("(@%s is null or %s <= @%s)", Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer());
+			else
+				colCondition.Format("(@%s is null or %s >= @%s)", Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer());
+		}
 		else
-			colCondition.Format("(@%s is null or %s >= @%s)", Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer());
+		{
+			if (Key[i].Desc != reverse)
+				colCondition.Format("(@%s is null or %s.%s <= @%s)", Key[i].Key.GetSafeBuffer(), table.GetSafeBuffer(), Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer());
+			else
+				colCondition.Format("(@%s is null or %s.%s >= @%s)", Key[i].Key.GetSafeBuffer(), table.GetSafeBuffer(), Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer());
+		}
+		
 		if (!i)
 		{
 			condition = colCondition;

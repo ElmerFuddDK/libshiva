@@ -99,9 +99,9 @@ SHVDataRowKey* SHVDataEngine_impl::CreateKey() const
 /*************************************
  * BuildKeySQL
  *************************************/
-void SHVDataEngine_impl::BuildKeySQL(const SHVDataRowKey* key, SHVString8& condition, SHVString8& orderby, bool reverse) const
+void SHVDataEngine_impl::BuildKeySQL(const SHVDataRowKey* key, SHVString8& condition, SHVString8& orderby, const SHVString8C& table, bool reverse) const
 {
-	return Factory->BuildKeySQL(key, condition, orderby, reverse);
+	return Factory->BuildKeySQL(key, condition, orderby, table, reverse);
 }
 
 /*************************************

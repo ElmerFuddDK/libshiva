@@ -30,7 +30,7 @@ public:
 	virtual SHVDataStruct* CreateStruct() const;
 	virtual SHVDataVariant* CreateVariant() const;
 	virtual SHVDataRowKey* CreateKey() const;
-	virtual void BuildKeySQL(const SHVDataRowKey* key, SHVString8& condition, SHVString8& orderby, bool reverse = false) const;
+	virtual void BuildKeySQL(const SHVDataRowKey* key, SHVString8& condition, SHVString8& orderby, const SHVString8C& table, bool reverse = false) const;
 
 	virtual SHVSQLiteWrapper* CreateConnection(SHVBool& Ok, const SHVStringC& dataBase);
 

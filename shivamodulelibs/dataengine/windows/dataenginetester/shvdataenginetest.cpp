@@ -49,6 +49,12 @@ void DumpData(SHVTestResult* result, SHVDataRowListC* data)
 SHVBool SHVDataEngineTest::TestInsert(SHVTestResult* result)
 {
 SHVDataSessionRef Test = DataEngine->CreateSession();
+SHVDataRowListRef list;
+
+	list = Test->GetRowsIndexed("person",_T(""),0);
+	return list->IsOk();
+/*
+SHVDataSessionRef Test = DataEngine->CreateSession();
 SHVDataRowListRef data;
 SHVDataRowListRef childdata;
 SHVDataRowRef r;
@@ -96,6 +102,7 @@ SHVTime now;
 	else
 		return SHVBool::False;
 	return SHVBool::True;
+*/
 }
 SHVBool SHVDataEngineTest::TestUpdate(SHVTestResult* result)
 {
@@ -420,6 +427,7 @@ SHVDataRowKeyRef key;
 		key->AddKey("timecol", true);
 		dataStruct->AddIndex(key);
 		DataEngine->RegisterTable(dataStruct);
+		dataStruct = DataEngine->CreateStruct();		dataStruct->SetTableName("person");		dataStruct->Add("pk_person", SHVDataVariant::TypeInt);		dataStruct->Add("firstName", SHVDataVariant::TypeString,40);		dataStruct->Add("middleName", SHVDataVariant::TypeString,30);		dataStruct->Add("lastName", SHVDataVariant::TypeString,40);		key = dataStruct->CreateIndexKey();		key->AddKey("pk_person", false);		dataStruct->AddIndex(key);		DataEngine->RegisterTable(dataStruct);
 	}
 
 	return SHVTestModule::Register() && retVal;

@@ -120,7 +120,7 @@ long rc;
 		statement = SQLite->ExecuteUTF8(Ok, queryUTF8, rest);
 		if (Ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 			Ok = SHVBool::True;
-		GetDataSession()->GetFactory()->GetDataEngine().BuildKeySQL(Struct.GetIndex(SortIndex), condition8, orderby8, reverse);
+		GetDataSession()->GetFactory()->GetDataEngine().BuildKeySQL(Struct.GetIndex(SortIndex), condition8, orderby8, Struct.GetTableName().GetSafeBuffer(), reverse);
 		if (Ok)
 		{
 			queryUTF8.Format("insert into memdb.%s(%s) select %s from %s %s %s order by %s", 
