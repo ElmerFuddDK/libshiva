@@ -2,6 +2,7 @@
 
 #include "../../../../include/platformspc.h"
 #include "../../include/dataengineimpl/shvdatarowc_sqlite.h"
+#include "../../include/dataengineimpl/shvdatarow_impl.h"
 #include "../../include/dataengineimpl/shvdatarowkey_impl.h"
 #include "../../include/dataengineimpl/shvdatavariant_impl.h"
 
@@ -205,3 +206,10 @@ const SHVDataStructC* SHVDataRowC_SQLite::GetStruct() const
 		return NULL;
 }
 
+/*************************************
+ * GetRowState
+ *************************************/
+int SHVDataRowC_SQLite::GetRowState() const
+{
+	return (RowValid() ? SHVDataRow::RowStateUnchanged : SHVDataRow::RowStateInvalid);
+}
