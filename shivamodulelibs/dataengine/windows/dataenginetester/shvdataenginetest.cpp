@@ -360,16 +360,16 @@ SHVBool ok;
 	Result = result;
 	result->AddLog(_T("Insert test"));
 	ok = TestInsert(result); 
+	/*
 	if (ok)
 		ok = TestUpdate(result);
-	/*
 	if (ok)
 		ok = TestQuery(result);
 	if (ok)
 		ok = TestSpeed(result);
-	*/
 	if (ok)
 		ok = TestSpeed2(result);
+	*/
 	*result = ok;
 }
 

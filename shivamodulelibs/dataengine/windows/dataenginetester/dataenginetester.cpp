@@ -115,11 +115,10 @@ SHVBool retVal;
 		_putts(_T("Could not load dataengine"));
 		return 1;
 	}
-	SHVModuleFactory* engine = (SHVModuleFactory*) dll.CreateObjectInt(&mainqueue.GetModuleList(), SHVDll::ClassTypeModuleFactory);
+	SHVModuleFactoryPtr engine = (SHVModuleFactory*) dll.CreateObjectInt(&mainqueue.GetModuleList(), SHVDll::ClassTypeModuleFactory);
 	engine->ResolveModules(__MODULESYMBOL_DEFAULTS);
 
 	retVal = mainqueue.Run();
-	delete engine;
 	getchar();
 	return retVal;
 }

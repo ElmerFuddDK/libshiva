@@ -32,6 +32,10 @@ SHVBool ok;
 			Factory = new SHVDataFactory_impl(*this, sqlite, datapath);
 	}
 }
+SHVDataEngine_impl::~SHVDataEngine_impl()
+{
+	Factory = NULL;
+}
 
 /*************************************
  * Register
@@ -125,17 +129,17 @@ const SHVStringC& SHVDataEngine_impl::GetDatabase() const
  *************************************/
 SHVSQLiteWrapper* SHVDataEngine_impl::CreateConnection(SHVBool& Ok, const SHVStringC& dataBase)
 {
-SHVSQLiteWrapper* retVal = (SHVSQLiteWrapper*) SQLiteDll.CreateObjectInt(&Modules, SHVDll::ClassTypeUser);
+SHVSQLiteWrapperRef retVal = (SHVSQLiteWrapper*) SQLiteDll.CreateObjectInt(&Modules, SHVDll::ClassTypeUser);
 	Ok = retVal->Open(dataBase);
 	if (Ok)
 	{
 	SHVStringSQLite rest("");
 	// Lets setup a default memory database
-		retVal->ExecuteUTF8(Ok, "attach database :memory as memdb", rest);
+		retVal->ExecuteUTF8(Ok, "attach database :memory as memdb", rest)->ValidateRefCount();
 		if (Ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 			Ok = SHVBool::True;
 	}
-	return retVal;
+	return retVal.ReleaseReference();
 }
 
 /*************************************

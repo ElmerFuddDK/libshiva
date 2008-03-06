@@ -16,7 +16,7 @@ class SHVDataEngine_impl: public SHVDataEngine
 {
 public:
 	SHVDataEngine_impl(SHVModuleList& modules);
-	virtual ~SHVDataEngine_impl() {}
+	virtual ~SHVDataEngine_impl();
 
 	virtual SHVBool Register();
 	virtual void Unregister();
