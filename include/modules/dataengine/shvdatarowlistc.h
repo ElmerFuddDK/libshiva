@@ -6,6 +6,7 @@
 #include "../../../include/shvtypes.h"
 
 // forward declares
+class SHVDataRow;
 class SHVDataRowC;
 class SHVDataStructC;
 class SHVDataRowList;
@@ -38,8 +39,14 @@ protected:
 	friend class SHVDataFactory;
 	friend class SHVDataRowList;
 	virtual void AdjustRowCount(int delta) = 0;
+	virtual SHVBool TempReset() = 0;
+	virtual void Reposition() = 0;
+	virtual SHVBool InternalRowChanged(SHVDataRow* row) = 0;
 	virtual ~SHVDataRowListC() {}
 	inline void UnregisterDataList();
+	inline SHVBool TempReset(SHVDataRowListC* list);
+	inline void Reposition(SHVDataRowListC* list);
+	inline SHVBool InternalRowChanged(SHVDataRowListC* list, SHVDataRow* row);
 private:
 	int RowCount;
 };
@@ -54,6 +61,7 @@ typedef SHVRefObjectContainer<SHVDataRowListC> SHVDataRowListCRef;
 #define __SHIVA_DATAENGINE_DATAROWLISTC_INL
 
 #include "shvdatasession.h"
+// #include "shvdatarow.h"
 
 /*************************************
  * UnregisterDataList
@@ -63,4 +71,29 @@ void SHVDataRowListC::UnregisterDataList()
 	if (GetDataSession())
 		GetDataSession()->UnregisterDataList(this);   
 }
+
+/*************************************
+ * TempReset
+ *************************************/
+SHVBool SHVDataRowListC::TempReset(SHVDataRowListC* list)
+{
+	return list->TempReset();
+}
+
+/*************************************
+ * Reposition
+ *************************************/
+void SHVDataRowListC::Reposition(SHVDataRowListC* list)
+{
+	list->Reposition();
+}
+
+/*************************************
+ * RowChanged
+ *************************************/
+SHVBool SHVDataRowListC::InternalRowChanged(SHVDataRowListC* list, SHVDataRow* row)
+{
+	return list->InternalRowChanged(row);
+}
+
 #endif

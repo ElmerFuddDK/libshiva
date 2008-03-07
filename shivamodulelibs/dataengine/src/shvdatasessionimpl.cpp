@@ -37,8 +37,9 @@ SHVStringSQLite rest(NULL);
 SHVBool ok;
 SHVSQLiteStatementRef statement;
 	ok = SessionReset();
-	if (ok)
+	if (ok)		
 		statement = SQLite->ExecuteUTF8(ok, "END TRANSACTION", rest);
+	SessionReposition();
 	if (ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 		ok = SHVBool::True;
 	if (ok && !ChangeSubscriber.IsNull())
@@ -49,7 +50,7 @@ SHVSQLiteStatementRef statement;
 		ChangedRows.Clear();
 		ChangeSubscriber->EmitNow(Modules, new SHVEventDataChangeSet(SHVDataRowVectorPtr(RowVector), NULL, EventChangeSet));
 	}
-	return ok.GetError() == SHVSQLiteWrapper::SQLite_DONE;
+	return ok;
 }
 
 /*************************************

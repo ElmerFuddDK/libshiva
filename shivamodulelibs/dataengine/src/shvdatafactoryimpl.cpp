@@ -384,7 +384,20 @@ SHVListIterator<SHVDataRowListC*> iter(ActiveDataLists);
 	while (retVal && iter.MoveNext())
 	{
 		if (iter.Get()->GetDataSession() == session)
-			retVal = iter.Get()->Reset();
+			retVal =  DataListTempReset(iter.Get());
 	}
 	return retVal;
+}
+
+/*************************************
+ * SessionReposition
+ *************************************/
+void SHVDataFactory_impl::SessionReposition(SHVDataSession* session)
+{
+SHVListIterator<SHVDataRowListC*> iter(ActiveDataLists);
+	while (iter.MoveNext())
+	{
+		if (iter.Get()->GetDataSession() == session)
+			DataListReposition(iter.Get());
+	}
 }

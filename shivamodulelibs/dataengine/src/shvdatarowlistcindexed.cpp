@@ -5,6 +5,7 @@
 #include "../../include/dataengineimpl/shvdatarowc_sqlite.h"
 #include "../../include/dataengineimpl/shvdatarow_impl.h"
 #include "../../include/dataengineimpl/shvdatastructc_sqlite.h"
+#include "../../include/dataengineimpl/shvdatarowkey_impl.h"
 #include "../../include/shvdataengine.h"
 
 
@@ -16,6 +17,7 @@ SHVDataRowListC_Indexed::SHVDataRowListC_Indexed(SHVDataSession* session, const 
 SHVStringSQLite rest(NULL);
 SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
 	SortIndex = index;
+	TempPos = -1;
 	SHVASSERT(GetStruct()->GetIndex(index));
 	if (!GetStruct()->GetIndex(index))
 	{
@@ -28,6 +30,28 @@ SHVStringUTF8 query = BuildQuery(condition, false);
 	Eof = !Ok;
 }
 
+/*************************************
+ * Reset
+ *************************************/
+SHVBool SHVDataRowListC_Indexed::Reset()
+{
+SHVBool retVal = IsOk();
+	SHVASSERT(retVal);
+	if (retVal)
+	{
+	const SHVDataRowKey& key = *GetStruct()->GetIndex(0);
+		Eof = SHVBool::False;
+		for (size_t i = 0; i < key.Count(); i++)
+		{
+			Statement->SetParameterNullUTF8(key[i].Key.GetSafeBuffer());
+		}
+		Statement->SetParameterNullUTF8("idx");
+		retVal = Statement->Reset();
+		if (!retVal)
+			Eof = SHVBool::True;
+	}
+	return retVal;
+}
 
 /*************************************
  * Destructor
@@ -120,9 +144,16 @@ long rc;
 		statement = SQLite->ExecuteUTF8(Ok, queryUTF8, rest);
 		if (Ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 			Ok = SHVBool::True;
-		GetDataSession()->GetFactory()->GetDataEngine().BuildKeySQL(Struct.GetIndex(SortIndex), condition8, orderby8, Struct.GetTableName().GetSafeBuffer(), reverse);
+		queryUTF8.Format("create index memdb.%s_index on %s(%s)",
+			IndexTableName.GetSafeBuffer(),
+			IndexTableName.GetSafeBuffer(),
+			cols.GetSafeBuffer());
+		statement = SQLite->ExecuteUTF8(Ok, queryUTF8, rest);
+		if (Ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+			Ok = SHVBool::True;
 		if (Ok)
 		{
+			GetDataSession()->GetFactory()->GetDataEngine().BuildKeySQL(Struct.GetIndex(SortIndex), condition8, orderby8, Struct.GetTableName().GetSafeBuffer(), reverse);
 			queryUTF8.Format("insert into memdb.%s(%s) select %s from %s %s %s order by %s", 
 				IndexTableName.GetSafeBuffer(), cols.GetSafeBuffer(), 
 				cols.GetSafeBuffer(), 
@@ -143,7 +174,7 @@ long rc;
 		}
 		if (Ok)
 		{
-			queryUTF8.Format("select %s.* from %s join memdb.%s on %s where %s order by idx",
+			queryUTF8.Format("select %s.*,idx from %s join memdb.%s on %s where %s and (@idx is null or idx >= @idx) order by idx",
 				Struct.GetTableName().GetSafeBuffer(),
 				Struct.GetTableName().GetSafeBuffer(),
 				IndexTableName.GetSafeBuffer(),
@@ -155,9 +186,114 @@ long rc;
 }
 
 /*************************************
- * AdjustRowCount
+ * TempReset
  *************************************/
-void SHVDataRowListC_Indexed::AdjustRowCount(int delta)
+SHVBool SHVDataRowListC_Indexed::TempReset()
 {
-	RowCount += delta;
+	if (GetCurrentRow())
+	{
+	long p;
+		if (Statement->GetLong(p, (int) GetStruct()->GetColumnCount()))
+			TempPos = p;
+	}
+	else
+		TempPos = -1;
+	Reset();
+	return SHVBool::True;
+}
+
+/*************************************
+ * Reposition
+ *************************************/
+void SHVDataRowListC_Indexed::Reposition()
+{
+	if (TempPos >= 0)
+	{
+	SHVDataRowKeyRef Key = new SHVDataRowKey_impl();
+		Key->AddKey("idx", new SHVDataVariant_impl(SHVInt(TempPos)), false);
+		Find(Key);
+		TempPos = -1;
+	}
+}
+
+/*************************************
+ * InternalRowChanged
+ *************************************/
+SHVBool SHVDataRowListC_Indexed::InternalRowChanged(SHVDataRow* row)
+{
+SHVBool retVal = SHVBool::True;
+	if (row->GetRowState() == SHVDataRow::RowStateAdding)
+	{
+	SHVStringUTF8 val;
+	SHVStringUTF8 vals;
+	SHVStringUTF8 cols;
+	SHVStringUTF8 sql;
+	SHVStringSQLite rest("");
+	SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) GetDataSession()->GetProvider();
+	SHVDataRowKeyRef key = row->GetKey(0);
+	const SHVDataRowKey& Key = *key.AsConst();
+		for (size_t i = 0; i < Key.Count(); i++)
+		{
+			if (i)
+			{
+				vals += ", ";
+				cols += ", ";
+			}
+			if (Key[i].Value && !Key[i].Value->IsNull())
+			{
+				if (Key[i].Value->GetDataType() == SHVDataVariant::TypeString ||
+					Key[i].Value->GetDataType() == SHVDataVariant::TypeTime)
+					val.Format("'%s'", Key[i].Value->AsString().ToStrUTF8().GetSafeBuffer());
+				else
+					val = Key[i].Value->AsString().ToStrUTF8().GetSafeBuffer();
+				vals += val;
+				cols += Key[i].Key.GetSafeBuffer();
+			}
+		}
+		sql.Format("insert into memdb.%s(%s) values(%s)", IndexTableName.GetSafeBuffer(), cols.GetSafeBuffer(), vals.GetSafeBuffer());
+		SQLite->ExecuteUTF8(retVal, sql, rest);
+		if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+			retVal = SHVBool::True;
+	}
+	else
+	if (row->GetRowState() == SHVDataRow::RowStateDeleting)
+	{
+	SHVStringUTF8 sql;
+	SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) GetDataSession()->GetProvider();
+	SHVStringUTF8 condition;
+	SHVStringUTF8 subcondition;
+	SHVStringSQLite rest("");
+	bool first = true;
+	const SHVDataStructC& Struct = *GetStruct();
+	const SHVDataRowKey& Key = *GetStruct()->GetIndex(0);
+
+		for (size_t i = 0; i < Key.Count(); i++)
+		{
+		size_t colIdx;
+			if (Struct.FindColumnIndex(colIdx, Key[i].Key))
+			{
+			const SHVDataVariant* value = row->OriginalValue(colIdx);
+				if (!value->IsNull())
+				{
+					if (!first)
+					{
+						condition += " and ";
+					}
+					else
+						first = false;
+					if (Struct[colIdx]->GetDataType() == SHVDataVariant::TypeString ||
+						Struct[colIdx]->GetDataType() == SHVDataVariant::TypeTime)
+						subcondition.Format("%s = '%s'", Key[i].Key.GetSafeBuffer(), value->AsString().ToStrUTF8().GetSafeBuffer());
+					else
+						subcondition.Format("%s = %s", Key[i].Key.GetSafeBuffer(), value->AsString().ToStrUTF8().GetSafeBuffer());
+					condition += subcondition;
+				}
+			}
+		}
+		sql.Format("delete from memdb.%s where %s", IndexTableName.GetSafeBuffer(), condition.GetSafeBuffer());
+		SQLite->ExecuteUTF8(retVal, sql, rest);
+		if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+			retVal = SHVBool::True;
+	}
+	return retVal;
 }

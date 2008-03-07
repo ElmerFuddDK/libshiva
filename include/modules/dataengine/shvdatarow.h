@@ -4,6 +4,7 @@
 #include "../../../include/utils/shvrefobject.h"
 #include "../../../include/utils/shvstring.h"
 #include "../../../include/utils/shvvectorref.h"
+#include "../../../include/utils/shvlist.h"
 #include "../../../include/framework/shveventdata.h"
 #include "../../../include/shvtypes.h"
 #include "shvdatarowc.h"

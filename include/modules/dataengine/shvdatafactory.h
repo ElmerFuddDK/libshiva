@@ -46,7 +46,10 @@ protected:
 	virtual void UnregisterDataSession(SHVDataSession* session) = 0;
 	virtual void RowChanged(SHVDataRow* row) = 0;
 	virtual SHVBool SessionReset(SHVDataSession* session) = 0;
+	virtual void SessionReposition(SHVDataSession* session) = 0;
 	inline void ReleaseDataSession(SHVDataSession* session);
+	inline SHVBool DataListTempReset(SHVDataRowListC* dataList);
+	inline void DataListReposition(SHVDataRowListC* dataList);
 	virtual ~SHVDataFactory() {}
 };
 typedef SHVRefObjectContainer<SHVDataFactory> SHVDataFactoryRef;
@@ -55,18 +58,34 @@ typedef SHVRefObjectContainer<SHVDataFactory> SHVDataFactoryRef;
 
 // =========================================== implementation ============================================ //
 
-/*************************************
- * SessionValid
- *************************************/
 #ifndef __SHIVA_DATAFACTORY_INL
 #define __SHIVA_DATAFACTORY_INL
 
 #include "shvdatasession.h"
 #include "shvdatarowlistc.h"
 
+/*************************************
+ * ReleaseDataSession
+ *************************************/
 void SHVDataFactory::ReleaseDataSession(SHVDataSession* session)
 {
 	session->ClearOwnership();
+}
+
+/*************************************
+ * DataListTempReset
+ *************************************/
+SHVBool SHVDataFactory::DataListTempReset(SHVDataRowListC* dataList)
+{
+	return dataList->TempReset();
+}
+
+/*************************************
+ * DataListReposition
+ *************************************/
+void SHVDataFactory::DataListReposition(SHVDataRowListC* dataList)
+{
+	dataList->Reposition();
 }
 #endif
 

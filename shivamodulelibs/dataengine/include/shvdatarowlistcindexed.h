@@ -13,14 +13,17 @@ class SHVDataRowListC_Indexed: public SHVDataRowListC_SQLite
 {
 public:
 	SHVDataRowListC_Indexed(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVStringC& condition, size_t index);
+	virtual SHVBool Reset();
 protected:
 	virtual ~SHVDataRowListC_Indexed();
 	virtual int GetRowCount() const;
 	virtual SHVStringBufferUTF8 BuildQuery(const SHVStringC& condition, bool reverse);
-	virtual void AdjustRowCount(int delta);
+	virtual SHVBool TempReset();
+	virtual void Reposition();
+	virtual SHVBool InternalRowChanged(SHVDataRow* row);
 private:
 	SHVString8 IndexTableName;
-	int RowCount;
+	long TempPos;
 };
 typedef SHVRefObjectContainer<SHVDataRowListC_Indexed> SHVDataRowList_Indexed;
 

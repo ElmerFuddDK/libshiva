@@ -39,15 +39,21 @@ protected:
 	~SHVDataRowListC_SQLite();
 	virtual SHVStringBufferUTF8 BuildQuery(const SHVStringC& condition, bool reverse);
 	virtual void AdjustRowCount(int delta);
-	size_t SortIndex;
-	SHVSQLiteStatementRef Statement;
-	SHVBool Eof;
-	SHVBool Ok;
+	virtual SHVBool TempReset();
+	virtual void Reposition();
+	virtual SHVBool InternalRowChanged(SHVDataRow* row);
+
 private:
 	SHVDataRowListC_SQLite(SHVDataSession* session, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, size_t index);
 	SHVDataStructCRef StructCache;
 	SHVDataRowCRef CurrentRow;
 	SHVDataSessionRef DataSession;
+
+protected:
+	size_t SortIndex;
+	SHVSQLiteStatementRef Statement;
+	SHVBool Eof;
+	SHVBool Ok;
 	int RowCount;
 };
 typedef SHVRefObjectContainer<SHVDataRowListC> SHVDataRowListCRef;

@@ -47,6 +47,9 @@ protected:
 	virtual SHVBool AcceptChanges(SHVDataRow* row);
 	virtual SHVBool RejectChanges(SHVDataRow* row);
 	virtual void AdjustRowCount(int delta);
+	virtual SHVBool TempReset();
+	virtual void Reposition();
+	virtual SHVBool InternalRowChanged(SHVDataRow* row);
 	
 	SHVDataRow* FindPending(const SHVDataRowKey* key);
 	bool NextPendingAdded();

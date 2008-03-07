@@ -235,23 +235,27 @@ SHVListPos pos =  PendingRows.Find(rrow);
 		 row->GetRowState() == SHVDataRow::RowStateDeleting);
 	if (retVal)
 	{
-		RowChanged(rrow);
-		retVal = UpdateRow(row);
+		retVal = SHVDataRowListC::InternalRowChanged(RowList, row);
 		if (retVal)
 		{
-			if (pos)
-			{
-				PendingRows.RemoveAt(pos);
-				if (row->GetRowState() == SHVDataRow::RowStateAdding)
-					InsertedRows--;
-			}
-			InternalAcceptChanges(rrow);
-			if (rrow->GetRowState() == SHVDataRow::RowStateAdded)
-				AdjustRowCount(1);
-			if (rrow->GetRowState() == SHVDataRow::RowStateDeleted)
-				AdjustRowCount(-1);
 			RowChanged(rrow);
-			((SHVDataRow_impl*) row)->Owner = NULL;
+			retVal = UpdateRow(row);
+			if (retVal)
+			{
+				if (pos)
+				{
+					PendingRows.RemoveAt(pos);
+					if (row->GetRowState() == SHVDataRow::RowStateAdding)
+						InsertedRows--;
+				}
+				InternalAcceptChanges(rrow);
+				if (rrow->GetRowState() == SHVDataRow::RowStateAdded)
+					AdjustRowCount(1);
+				if (rrow->GetRowState() == SHVDataRow::RowStateDeleted)
+					AdjustRowCount(-1);
+				RowChanged(rrow);
+				((SHVDataRow_impl*) row)->Owner = NULL;
+			}
 		}
 	}
 	return retVal;
@@ -291,6 +295,29 @@ SHVBool retVal = SHVBool::True;
 void SHVDataRowList_SQLite::AdjustRowCount(int delta)
 {
 	InternalAdjustRowCount(RowList, delta);
+}
+
+/*************************************
+ * TempReset
+ *************************************/
+SHVBool SHVDataRowList_SQLite::TempReset()
+{
+	return SHVDataRowListC::TempReset(RowList);
+}
+
+/*************************************
+ * Reposition
+ *************************************/
+void SHVDataRowList_SQLite::Reposition()
+{
+	SHVDataRowListC::Reposition(RowList);
+}
+/*************************************
+ * InternalRowChanged
+ *************************************/
+SHVBool SHVDataRowList_SQLite::InternalRowChanged(SHVDataRow* row)
+{
+	return SHVBool::True;
 }
 
 /*************************************

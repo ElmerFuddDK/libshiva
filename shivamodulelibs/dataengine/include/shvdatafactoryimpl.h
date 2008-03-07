@@ -41,6 +41,7 @@ protected:
 	virtual void UnregisterDataSession(SHVDataSession* session);
 	virtual void RowChanged(SHVDataRow* row);
 	virtual SHVBool SessionReset(SHVDataSession* session);
+	virtual void SessionReposition(SHVDataSession* session);
 
 	virtual SHVBool CreateTable(const SHVDataStructC* dataStruct);
 	virtual SHVBool CreateIndex(const SHVDataStructC* dataStruct, size_t index);

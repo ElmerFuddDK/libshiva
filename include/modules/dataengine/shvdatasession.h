@@ -44,6 +44,7 @@ protected:
 	virtual SHVBool UpdateRow(SHVDataRow* row) = 0;
 	virtual SHVBool IsValid() const = 0;
 	inline SHVBool SessionReset();
+	inline void SessionReposition();
 	inline void RegisterDataList(SHVDataRowListC* rowList);
 	inline void UnregisterDataList(SHVDataRowListC* rowList);
 	inline void UnregisterDataSession();
@@ -66,6 +67,15 @@ typedef SHVRefObjectContainer<SHVDataSession> SHVDataSessionRef;
 SHVBool SHVDataSession::SessionReset()
 {
 	return GetFactory() != NULL && GetFactory()->SessionReset(this);
+}
+
+/*************************************
+ * SessionReposition
+ *************************************/
+void SHVDataSession::SessionReposition()
+{
+	if (GetFactory() != NULL) 
+		GetFactory()->SessionReposition(this);
 }
 
 /*************************************

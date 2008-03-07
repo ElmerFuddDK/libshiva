@@ -212,10 +212,6 @@
 					/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath="..\Debug\test.db"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -254,7 +250,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Copy libshiva"
-					CommandLine="xcopy /D /Y &quot;$(SolutionDir)..\..\..\shivalib\windows\$(ConfigurationName)\libshiva.dll&quot; &quot;$(OutDir)&quot;"
+					CommandLine="xcopy /D /Y &quot;$(SolutionDir)..\..\..\shivalib\windows\$(ConfigurationName)\libshiva.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
 					Outputs="libshiva.dll"
 				/>
 			</FileConfiguration>
@@ -263,7 +259,7 @@
 				>
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="xcopy /D /Y &quot;$(SolutionDir)..\..\..\shivalib\windows\$(ConfigurationName)\libshiva.dll&quot; &quot;$(OutDir)&quot;"
+					CommandLine="xcopy /D /Y &quot;$(SolutionDir)..\..\..\shivalib\windows\$(ConfigurationName)\libshiva.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
 					Outputs="libshiva.dll"
 				/>
 			</FileConfiguration>
@@ -281,7 +277,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Copy shivasqlite"
-					CommandLine="xcopy /D /Y &quot;$(SolutionDir)..\..\..\shivasqlite\windows\$(ConfigurationName)\shivasqlite.dll&quot; &quot;$(OutDir)&quot;"
+					CommandLine="xcopy /D /Y &quot;$(SolutionDir)..\..\..\shivasqlite\windows\$(ConfigurationName)\shivasqlite.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
 					Outputs="shivasqlite.dll"
 				/>
 			</FileConfiguration>
@@ -291,7 +287,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Copy shivasqlite"
-					CommandLine="xcopy /D /Y &quot;$(SolutionDir)..\..\..\shivasqlite\windows\$(ConfigurationName)\shivasqlite.dll&quot; &quot;$(OutDir)&quot;"
+					CommandLine="xcopy /D /Y &quot;$(SolutionDir)..\..\..\shivasqlite\windows\$(ConfigurationName)\shivasqlite.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
 					Outputs="shivasqlite.dll"
 				/>
 			</FileConfiguration>

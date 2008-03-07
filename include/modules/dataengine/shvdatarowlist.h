@@ -41,13 +41,15 @@ protected:
 	virtual ~SHVDataRowList() {}
 	virtual SHVBool AcceptChanges(SHVDataRow* row) = 0;
 	virtual SHVBool RejectChanges(SHVDataRow* row) = 0;
+	virtual void AdjustRowCount(int delta) = 0;
+	virtual SHVBool TempReset() = 0;
+	virtual void Reposition() = 0;
 
 	inline SHVBool UpdateRow(SHVDataRow* row);
 	inline void RowChanged(SHVDataRow* row);
 	inline void InternalAcceptChanges(SHVDataRow* row);
 	inline void InternalRejectChanges(SHVDataRow* row);
 	inline void InternalAdjustRowCount(SHVDataRowListC* rowList, int delta);
-	virtual void AdjustRowCount(int delta) = 0;
 };
 typedef SHVRefObjectContainer<SHVDataRowList> SHVDataRowListRef;
 #endif

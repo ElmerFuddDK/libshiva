@@ -64,7 +64,7 @@ SHVTime now;
 	else
 		return SHVBool::False;
 
-	data = Test->GetRows("test", _T(""), 0);
+	data = Test->GetRowsIndexed("test", _T(""), 0);
 	if(data->IsOk()) 
 		result->AddLog(_T("Initialized"));
 	else
@@ -104,11 +104,11 @@ SHVDataSessionRef Test = DataEngine->CreateSession();
 SHVDataRowListRef data;
 SHVDataRowRef editRow;
 SHVTime now;
+SHVDataRowKeyRef key;
 	now.SetNow();
 	if (Test->StartEdit())
 	{
 		data = Test->GetRowsIndexed("test", _T("key = 5"), 1);
-
 		if (data->NextRow())
 		{
 			result->AddLog(_T("Found row key = 5"));
@@ -118,15 +118,20 @@ SHVTime now;
 			now.AddSeconds(60*60*24);
 			editRow->AcceptChanges();
 		}
-		data = Test->GetRows("test", _T("key = 4"), 0);
-		if (data->NextRow())
+		data = Test->GetRowsIndexed("test", _T(""), 0);
+		SHVDataVariant* v = DataEngine->CreateVariant();
+		v->SetInt(5);
+		key = DataEngine->CreateKey();
+		key->AddKey("idx", v, false);
+		if (data->Find(key))
 		{
-			result->AddLog(_T("Found row key = 4"));
+			result->AddLog(_T("Found row at index 4"));
 			editRow = data->EditCurrentRow();
 			editRow->Delete();
 			editRow->AcceptChanges();
 		}
-		data = Test->GetRows("test", _T(""), 0);
+		data = Test->GetRowsIndexed("test", _T(""), 0);
+		data->EnableNonAccepted(true);
 		for (int i = 0; i < 5; i++)
 		{
 			editRow = data->AddRow();
@@ -135,17 +140,21 @@ SHVTime now;
 			editRow->SetString(2, _T("Tisse"));
 			editRow->SetString(3, _T("Kat"));
 			now.AddSeconds(1);
+			editRow->AcceptChanges();
 		}
-		data->Reset();
-		DumpData(result, data);
-		data->Reset();
-		data->NextRow();
+		key->SetKeyValue(0, SHVInt(6));
+		DumpRow(result, data->Find(key));
 		if (Test->Commit())
 		{
-			data->Reset();
-			DumpData(result, data);
+			result->AddLog(_T("Position after commit"));
+			DumpRow(result, data->Find(key));
+			return SHVBool::True;
 		}
-		return SHVBool::True;
+		else
+		{
+			result->AddLog(_T("Failed with %s"), Test->GetFactory()->GetErrorMessage().GetSafeBuffer());
+			return SHVBool::False;
+		}
 	}
 	else
 		return SHVBool::False;
