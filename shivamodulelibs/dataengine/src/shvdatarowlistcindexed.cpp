@@ -49,7 +49,7 @@ SHVSQLiteStatementRef statement;
  *************************************/
 int SHVDataRowListC_Indexed::GetRowCount() const
 {
-	return 0;
+	return RowCount;
 }
 
 /*************************************

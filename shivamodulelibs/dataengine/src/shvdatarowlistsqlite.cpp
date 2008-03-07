@@ -15,6 +15,7 @@ SHVDataRowList_SQLite::SHVDataRowList_SQLite(SHVDataSession* dataSession, SHVDat
 	RowList = rowList;
 	DataSession = dataSession;
 	PendingPosAdded = NULL;
+	InsertedRows = 0;
 }
 
 SHVDataRowList_SQLite::~SHVDataRowList_SQLite()
