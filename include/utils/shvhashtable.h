@@ -19,7 +19,7 @@ class SHVHashTableStringIterator;
  * Fast hashtable designed with low memory footprint in mind. Unfortunately this means it has no logic for
  * auto-rehashing. You must provide this logic yourself, by monitoring the amount of items compared to buckets
  * and then calling one of the rehashing functions.\n
- * It uses the size_t operator on the key data type for creating hash values.
+ * It uses the SHVHashValue operator on the key data type for creating hash values.
  */
 
 template<class K, class D, class CopyK = const K, class CopyD = const D>

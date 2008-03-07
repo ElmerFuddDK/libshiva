@@ -77,24 +77,6 @@ protected:
 
 // ============================================= implementation ============================================= //
 
-/** \fn void SHVMainThreadEventQueue::InitializeEventLoop()
- \brief Is called from Run in order to initialize the event loop
- *
- * When implementing a main thread event queue you can put code here to
- * initialize data used by the event loop and startup process.\n
- * On GUI based platforms this could be the main GUI window.\n
- * If an error should occur you can report this by setting the RunReturnVal
- * member to false or an error code.
- */
-
-/** \fn void SHVMainThreadEventQueue::RunEventLoop()
- \brief Is called from Run after the module list has been started
- *
- * This is where you put your code to run the event loop. After the
- * Running boolean has been set to false you will need to exit when
- * returning to the loop.
- */
-
 /*************************************
  * GetModuleList
  *************************************/

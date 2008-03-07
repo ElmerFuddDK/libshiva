@@ -45,11 +45,14 @@ protected:
  * thread to execute DispatchEvents.
  */
 
-/** \fn void SHVMainThreadEventDispatcher::InitializeEventLoop()
+/** \fn SHVBool SHVMainThreadEventDispatcher::InitializeEventLoop()
  \brief Is called before the application is started
+ \return false if initalization failed
  *
- * Use this function to initialize data used by the event loop
- * just before the application is started.
+ * When implementing a main thread event queue you can put code here to
+ * initialize data used by the event loop and startup process.\n
+ * On GUI based platforms this could be the main GUI window.\n
+ * If an error should occur you must return false or an error value.
  */
 
 /** \fn void SHVMainThreadEventDispatcher::RunEventLoop()
@@ -59,8 +62,9 @@ protected:
  * the Running() function to query when to exit the event loop.
  */
 
-/** \fn void SHVMainThreadEventDispatcher::StopEventLoop()
+/** \fn void SHVMainThreadEventDispatcher::StopEventLoop(SHVBool errors)
  \brief Is called in order to signal the event loop to stop
+ \param errors Indicates whether we are stopping because of errors
  *
  */
 
