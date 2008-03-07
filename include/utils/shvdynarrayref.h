@@ -1,43 +1,209 @@
 #ifndef __SHIVA_UTILS_DYNARRAYREF_H
 #define __SHIVA_UTILS_DYNARRAYREF_H
 
-#include "shvrefcount.h"
+#include "shvrefobject.h"
+#include "shvdynarraybase.h"
 
 
 // ========================================================================================================
-///  SHVDynArrayRefBase class - containing reference counting pointers
+///  SHVDynArrayRef class - containing reference counting pointers
 /**
  * Use this class when you want a dynamic array that contains objects based on SHVRefObject.
  */
 
-class SHVAPI SHVDynArrayRefBase : protected SHVDynArrayBase
+template< class T >
+class SHVDynArrayRef : protected SHVDynArrayBase
 {
-private:
-	inline void Destroy(void* val) { ((SHVRefObject*)val)->DestroyRef(); }
 public:
 
 
-	inline SHVDynArrayRef(int growSize = 50, int initSize=0) : SHVDynArrayBase(growSize,initSize) {}
-	inline ~SHVDynArrayRef() { SHVDynArrayBase::ClearAndInit(0,Destroy); }
+	SHVDynArrayRef(int growSize = 50, int initSize=0, bool zeroed=false);
+	~SHVDynArrayRef();
 
 
 	// properties
-	inline size_t GetCount()			{ return SHVDynArrayBase::GetCount(); }
-	inline size_t GetArrayLen()			{ return SHVDynArrayBase::GetArrayLen(); }
-	inline size_t GetGrowSize()			{ return SHVDynArrayBase::GetGrowSize(); }
-	inline void   SetGrowSize(size_t s) { SHVDynArrayBase::SetGrowSize(s); }
+	size_t GetCount();
+	size_t GetArrayLen();
+	size_t GetGrowSize();
+	void   SetGrowSize(size_t s);
 
 
 	// array management
-	inline void ClearAndInit(int initSize=0) { SHVDynArrayBase::ClearAndInit(initSize, Destroy); }
-	inline bool Resize(int count)			 { return SHVDynArrayBase::Resize(count); }
+	void ClearAndInit(int initSize=0);
+	bool Resize(int count);
 
-	inline SHVRefObject* operator[](size_t index)	{ return (SHVRefObject*)(*(SHVDynArrayBase*)this)[index]; }
-	inline size_t Add(SHVRefObject* item)			{ return SHVDynArrayBase::Add((void*)item->CreateRef()); }
-	inline void   Remove(size_t index);				{ Destroy((SHVRefObject*)SHVDynArrayBase::Remove(index)); }
+	T* operator[](size_t index);
+	size_t Add(T* item);
+	bool   InsertAt(size_t index, T* item); ///< only works if zeroed and if the index is NULL  .. for now
+	SHVRefObjectContainer<T> Remove(size_t index);
+	SHVRefObjectContainer<T> Replace(size_t index, T* item);
 
-	inline void Truncate()	{ SHVDynArrayBase::Truncate(); }
-	inline void Compress()	{ SHVDynArrayBase::Compress(); }
+	void Truncate();
+	void Compress();
+
+private:
+	static void Destroy(void* val);
 };
+
+
+// ============================================= implementation ============================================= //
+
+
+/*************************************
+ * Constructor
+ *************************************/
+template< class T >
+SHVDynArrayRef<T>::SHVDynArrayRef(int growSize, int initSize, bool zeroed) : SHVDynArrayBase(growSize,initSize)
+{}
+
+/*************************************
+ * Destructor
+ *************************************/
+template< class T >
+SHVDynArrayRef<T>::~SHVDynArrayRef()
+{
+	SHVDynArrayBase::ClearAndInit(0,&SHVDynArrayRef<T>::Destroy);
+}
+
+/*************************************
+ * GetCount
+ *************************************/
+template< class T >
+size_t SHVDynArrayRef<T>::GetCount()
+{
+	return SHVDynArrayBase::GetCount();
+}
+
+/*************************************
+ * GetArrayLen
+ *************************************/
+template< class T >
+size_t SHVDynArrayRef<T>::GetArrayLen()
+{
+	return SHVDynArrayBase::GetArrayLen();
+}
+
+/*************************************
+ * GetGrowSize
+ *************************************/
+template< class T >
+size_t SHVDynArrayRef<T>::GetGrowSize()
+{
+	return SHVDynArrayBase::GetGrowSize();
+}
+
+/*************************************
+ * SetGrowSize
+ *************************************/
+template< class T >
+void  SHVDynArrayRef<T>::SetGrowSize(size_t s)
+{
+	SHVDynArrayBase::SetGrowSize(s);
+}
+
+/*************************************
+ * ClearAndInit
+ *************************************/
+template< class T >
+void SHVDynArrayRef<T>::ClearAndInit(int initSize)
+{
+	SHVDynArrayBase::ClearAndInit(initSize, Destroy);
+}
+
+/*************************************
+ * Resize
+ *************************************/
+template< class T >
+bool SHVDynArrayRef<T>::Resize(int count)
+{
+	return SHVDynArrayBase::Resize(count);
+}
+
+/*************************************
+ * index operator
+ *************************************/
+template< class T >
+T* SHVDynArrayRef<T>::operator[](size_t index)
+{
+	return (T*)(*(SHVDynArrayBase*)this)[index];
+}
+
+/*************************************
+ * Add
+ *************************************/
+template< class T >
+size_t SHVDynArrayRef<T>::Add(T* item)
+{
+	return SHVDynArrayBase::Add((void*)item->CreateRef());
+}
+
+/*************************************
+ * InsertAt
+ *************************************/
+template< class T >
+bool SHVDynArrayRef<T>::InsertAt(size_t index, T* item)
+{
+bool retVal = (T*)SHVDynArrayBase::InsertAt(index,item);
+
+	if (retVal)
+		T->CreateRef();
+
+	return retVal;
+}
+
+/*************************************
+ * Remove
+ *************************************/
+template< class T >
+SHVRefObjectContainer<T> SHVDynArrayRef<T>::Remove(size_t index)
+{
+T* retVal = SHVDynArrayBase::Remove(index);
+
+	if (retVal)
+		retVal->ReleaseRef();
+
+	return retVal;
+}
+
+/*************************************
+ * Replace
+ *************************************/
+template< class T >
+SHVRefObjectContainer<T> SHVDynArrayRef<T>::Replace(size_t index, T* item)
+{
+T* retVal = (T*)SHVDynArrayBase::Replace(index,(void*)item->CreateRef());
+
+	if (retVal)
+		retVal->ReleaseRef();
+
+	return retVal;
+}
+
+/*************************************
+ * Truncate
+ *************************************/
+template< class T >
+void SHVDynArrayRef<T>::Truncate()
+{
+	SHVDynArrayBase::Truncate(); 
+}
+
+/*************************************
+ * Compress
+ *************************************/
+template< class T >
+void SHVDynArrayRef<T>::Compress()
+{
+	SHVDynArrayBase::Compress();
+}
+
+/*************************************
+ * Destroy
+ *************************************/
+template< class T >
+void SHVDynArrayRef<T>::Destroy(void* val)
+{
+	((T*)val)->DestroyRef();
+}
 
 #endif
