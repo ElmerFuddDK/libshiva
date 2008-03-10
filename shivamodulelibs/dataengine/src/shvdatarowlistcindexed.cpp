@@ -222,6 +222,7 @@ void SHVDataRowListC_Indexed::Reposition()
 SHVBool SHVDataRowListC_Indexed::InternalRowChanged(SHVDataRow* row)
 {
 SHVBool retVal = SHVBool::True;
+SHVSQLiteStatementRef statement;
 	if (row->GetRowState() == SHVDataRow::RowStateAdding)
 	{
 	SHVStringUTF8 val;
@@ -251,9 +252,19 @@ SHVBool retVal = SHVBool::True;
 			}
 		}
 		sql.Format("insert into memdb.%s(%s) values(%s)", IndexTableName.GetSafeBuffer(), cols.GetSafeBuffer(), vals.GetSafeBuffer());
-		SQLite->ExecuteUTF8(retVal, sql, rest);
+		statement = SQLite->ExecuteUTF8(retVal, sql, rest);	
 		if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 			retVal = SHVBool::True;
+		if (retVal)
+		{
+			sql.Format("select max(idx) from memdb.%s", IndexTableName.GetSafeBuffer());
+			statement = SQLite->ExecuteUTF8(retVal, sql, rest);
+			if (retVal.GetError() == SHVSQLiteWrapper::SQLite_ROW)
+			{
+				retVal = SHVBool::True;
+				statement->GetLong((long) TempPos, 0);
+			}
+		}
 	}
 	else
 	if (row->GetRowState() == SHVDataRow::RowStateDeleting)
@@ -291,7 +302,7 @@ SHVBool retVal = SHVBool::True;
 			}
 		}
 		sql.Format("delete from memdb.%s where %s", IndexTableName.GetSafeBuffer(), condition.GetSafeBuffer());
-		SQLite->ExecuteUTF8(retVal, sql, rest);
+		statement = SQLite->ExecuteUTF8(retVal, sql, rest);
 		if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 			retVal = SHVBool::True;
 	}

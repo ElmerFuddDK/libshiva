@@ -101,7 +101,8 @@ SHVBool retVal = IsOk();
 		}
 		if (CurrentRow.IsNull())
 			CurrentRow = new SHVDataRowC_SQLite(this);
-		Eof = Statement->NextResult().GetError() != SHVSQLiteWrapper::SQLite_ROW;
+		retVal = Statement->NextResult();
+		Eof = retVal.GetError() != SHVSQLiteWrapper::SQLite_ROW;
 		if (StructCache->GetColumnCount() == 0 && !Eof)
 		{
 		SHVStringSQLite colName(NULL);
@@ -136,7 +137,8 @@ SHVBool retVal = IsOk();
 				}
 			}		
 		}
-		retVal = !Eof;
+		if (retVal.GetError() == SHVSQLiteWrapper::SQLite_ROW)
+			retVal = SHVBool::True;
 	}
 	return retVal;
 }
@@ -179,7 +181,7 @@ SHVDataRowC* retVal = NULL;
 		{
 		SHVStringUTF8 keyParm;
 			keyParm.Format("@%s", k[--i].Key.GetSafeBuffer());
-			if (k[i].Value)
+			if (k[i].Value && !k[i].Value->IsNull())
 			{
 				if (k[i].Value->GetDataType() == SHVDataVariant::TypeInt)
 					Statement->SetParameterLongUTF8(keyParm, k[i].Value->AsInt());

@@ -32,11 +32,13 @@ public:
 	virtual SHVDataStruct* CreateStruct() const = 0;
 	virtual SHVDataVariant* CreateVariant() const = 0;
 	virtual SHVDataRowKey* CreateKey() const = 0;
+	virtual SHVDataRowKey* CopyKey(const SHVDataRowKey* key) const = 0;
 	virtual const SHVStringC& GetDatabase() const = 0;
 	virtual void BuildKeySQL(const SHVDataRowKey* key, SHVString8& condition, SHVString8& orderby, const SHVString8C& table, bool reverse = false) const = 0;
 	virtual void SubscribeRowChange(SHVEventSubscriberBase* sub) = 0;
 	virtual SHVDataEngine& GetDataEngine() = 0;
 	virtual SHVStringBuffer GetErrorMessage() const = 0;
+	virtual SHVBool IsOk() const = 0;
 protected:
 	friend class SHVDataSession;
 	friend class SHVDataEngine;

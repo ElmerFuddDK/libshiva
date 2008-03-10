@@ -23,15 +23,14 @@ SHVBool ok;
 	}
 	else
 	{
-	SHVSQLiteWrapperRef sqlite = CreateConnection(ok, datapath);
-		if (!ok)
+		Factory = new SHVDataFactory_impl(*this, datapath);
+		if (!Factory->IsOk())
 		{
-			Modules.AddStartupError(sqlite->GetErrorMsg());
+			Modules.AddStartupError(Factory->GetErrorMessage());
 		}
-		else
-			Factory = new SHVDataFactory_impl(*this, sqlite, datapath);
 	}
 }
+
 SHVDataEngine_impl::~SHVDataEngine_impl()
 {
 	Factory = NULL;
@@ -101,6 +100,13 @@ SHVDataRowKey* SHVDataEngine_impl::CreateKey() const
 }
 
 /*************************************
+ * CopyKey
+ *************************************/
+SHVDataRowKey* SHVDataEngine_impl::CopyKey(const SHVDataRowKey* key) const
+{
+	return Factory->CopyKey(key);
+}
+/*************************************
  * BuildKeySQL
  *************************************/
 void SHVDataEngine_impl::BuildKeySQL(const SHVDataRowKey* key, SHVString8& condition, SHVString8& orderby, const SHVString8C& table, bool reverse) const
@@ -148,9 +154,8 @@ SHVSQLiteWrapperRef retVal = (SHVSQLiteWrapper*) SQLiteDll.CreateObjectInt(&Modu
 SHVDataFactory* SHVDataEngine_impl::CreateFactory(const SHVString& database, const SHVDataSchema* schema)
 {
 SHVBool ok;
-SHVSQLiteWrapper* sqlite = CreateConnection(ok, database);
 	if (ok)
-		return new SHVDataFactory_impl(*this, sqlite, database, schema);
+		return new SHVDataFactory_impl(*this, database, schema);
 	else
 		return NULL;
 }

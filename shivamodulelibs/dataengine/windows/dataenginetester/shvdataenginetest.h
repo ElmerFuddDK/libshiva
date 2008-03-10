@@ -3,6 +3,7 @@
 
 #include "shvtestmodule.h"
 #include "../../include/shvdataengine.h"
+#include "../../../../include/threadutils/shvthread.h"
 
 
 class SHVDataEngineTest: public SHVTestModule
@@ -21,9 +22,13 @@ private:
 	SHVBool TestQuery(SHVTestResult* result);
 	SHVBool TestSpeed(SHVTestResult* result);
 	SHVBool TestSpeed2(SHVTestResult* result);
+	SHVBool TestConcurrency(SHVTestResult* result);
+	SHVBool AddPerson(SHVDataRowList* list, int pk_person, const SHVStringC& firstName, const SHVStringC& middleName, const SHVStringC& lastName);
+	void RunThread();
 	SHVDataEngine* DataEngine;
 	SHVTestResult* Result;
 	bool trace;
+	SHVThread<SHVDataEngineTest> Worker;
 };
 
 #endif

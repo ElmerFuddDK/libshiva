@@ -3,7 +3,7 @@
 #include "../../include/dataengineimpl/shvdatarowkey_impl.h"
 #include "../../include/dataengineimpl/shvdatavariant_impl.h"
 
-
+static int alloccount = 0;
 /*************************************
  * Constructor
  *************************************/
@@ -31,6 +31,8 @@ SHVDataRowKey_impl::SHVDataRowKey_impl(const SHVDataRowKey* key)
 		k->Key = (*key)[i].Key;
 		if ((*key)[i].Value)
 			k->Value = new SHVDataVariant_impl((*key)[i].Value);
+		else
+			k->Value = NULL;
 		k->Desc = (*key)[i].Desc;
 		Keys.Add(k);
 	}
@@ -49,31 +51,41 @@ const SHVDataRowKey::KeyValuePair& SHVDataRowKey_impl::operator[](size_t idx) co
  *************************************/
 void SHVDataRowKey_impl::SetKeyValue(size_t idx, SHVInt val)
 {
-	if (Keys[idx]->Value)
+	if (!Keys[idx]->Value)
+		Keys[idx]->Value = new SHVDataVariant_impl(SHVInt(val));
+	else
 		*Keys[idx]->Value = val;
 }
 
 void SHVDataRowKey_impl::SetKeyValue(size_t idx, SHVDouble val)
 {
-	if (Keys[idx]->Value)
+	if (!Keys[idx]->Value)
+		Keys[idx]->Value = new SHVDataVariant_impl(SHVDouble(val));
+	else
 		*Keys[idx]->Value = val;
 }
 
 void SHVDataRowKey_impl::SetKeyValue(size_t idx, SHVBool val)
 {
-	if (Keys[idx]->Value)
+	if (!Keys[idx]->Value)
+		Keys[idx]->Value = new SHVDataVariant_impl(SHVBool(val));
+	else
 		*Keys[idx]->Value = val;
 }
 
 void SHVDataRowKey_impl::SetKeyValue(size_t idx, const SHVTime& val)
 {
-	if (Keys[idx]->Value)
+	if (!Keys[idx]->Value)
+		Keys[idx]->Value = new SHVDataVariant_impl(val);
+	else
 		*Keys[idx]->Value = val;
 }
 
 void SHVDataRowKey_impl::SetKeyValue(size_t idx, const SHVStringC& val)
 {
-	if (Keys[idx]->Value)
+	if (!Keys[idx]->Value)
+		Keys[idx]->Value = new SHVDataVariant_impl(val);
+	else
 		*Keys[idx]->Value = val;
 }
 
@@ -145,8 +157,9 @@ const SHVDataRowKey& Key = *key;
 			retVal =
 				This[i].Key == Key[i].Key &&
 				This[i].Desc == Key[i].Desc &&
-				This[i].Value && Key[i].Value &&
-				This[i].Value == Key[i].Value;
+				((This[i].Value && Key[i].Value) ||
+				 (!This[i].Value && !Key[i].Value)) &&
+				(!This[i].Value || *This[i].Value == *Key[i].Value);
 		}
 	}
 	return retVal;

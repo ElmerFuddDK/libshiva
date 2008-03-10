@@ -13,37 +13,37 @@ void DumpRow(SHVTestResult* result, const SHVDataRowC* row)
 {
 	if (row)
 	{
-		if (row->GetStruct()->GetColumnCount() == 2)
+	SHVString val;
+	SHVString msg;
+	const SHVDataStructC& Struct = *row->GetStruct();
+		for (size_t idx = 0; idx < Struct.GetColumnCount(); idx++)
 		{
-			result->AddLog(_T("%20s %20s"), 
-				row->AsString(0).GetSafeBuffer(),
-				row->AsString(1).GetSafeBuffer());
+			if (idx)
+				msg += _T(" ");
+			if (Struct[idx]->GetDataType() == SHVDataVariant::TypeString)
+			{
+				val.Format(_T("%-20s"), row->AsString(idx).GetSafeBuffer());
+			}
+			else
+				val.Format(_T("%12s"), row->AsString(idx).GetSafeBuffer());
+			msg += val;
 		}
-		else
-		if (row->GetStruct()->GetColumnCount() == 4)
-			result->AddLog(_T("%d %s %20s %20s"), 
-				(int) row->AsInt(0),
-				row->AsString(1).GetSafeBuffer(),
-				row->AsString(2).GetSafeBuffer(),
-				row->AsString(3).GetSafeBuffer());
-		else
-			result->AddLog(_T("%d %s %20s %20s %20s"), 
-				(int) row->AsInt(0),
-				row->AsString(1).GetSafeBuffer(),
-				row->AsString(2).GetSafeBuffer(),
-				row->AsString(3).GetSafeBuffer(),
-				row->AsString(4).GetSafeBuffer());
+		result->AddLog(msg);
 	}
 	else
-		result->AddLog(_T("Empty row"));
+		result->AddLog(_T("<Empty row>"));
 }
 
-void DumpData(SHVTestResult* result, SHVDataRowListC* data)
+SHVBool DumpData(SHVTestResult* result, SHVDataRowListC* data)
 {
-	while (data->NextRow())
+SHVBool retVal;
+	while ((retVal = data->NextRow()))
 	{
 		DumpRow(result, data->GetCurrentRow());
 	}
+	if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+		retVal = SHVBool::True;
+	return retVal;
 }
 
 SHVBool SHVDataEngineTest::TestInsert(SHVTestResult* result)
@@ -359,15 +359,108 @@ DWORD delta;
 	return retVal;
 }
 
+SHVBool SHVDataEngineTest::AddPerson(SHVDataRowList* list, int pk_person, const SHVStringC& firstName, const SHVStringC& middleName, const SHVStringC& lastName)
+{
+SHVBool retVal;
+int before;
+SHVDataRowRef newRow = list->AddRow();
+	newRow->SetInt(0, pk_person);
+	newRow->SetString(1, firstName);
+	newRow->SetString(2, middleName);
+	newRow->SetString(3, lastName);
+	before = newRow->GetRefCount();
+	retVal = newRow->AcceptChanges();
+	return retVal;
+}
+
+SHVBool SHVDataEngineTest::TestConcurrency(SHVTestResult* result)
+{
+SHVDataSessionRef SRW = DataEngine->CreateSession();
+SHVDataSessionRef SR  = DataEngine->CreateSession();
+SHVBool retVal = SHVBool::True;
+
+SHVDataRowListRef RWList;
+SHVDataRowListCRef RList;
+SHVDataRowRef EmmaRow;
+SHVDataRowKeyRef EmmaSearch;
+
+    // Clear the persons table
+	SRW->ExecuteNonQuery(_T("delete from person"));
+	// Lets start by create 10 person (Realistic data this time)
+	RWList = SRW->GetRowsIndexed("person", _T(""), 0);
+	retVal = retVal && SRW->StartEdit();
+	retVal = retVal && AddPerson(RWList, 1, _T("Mogens"), _T("Bak"), _T("Nielsen"));
+	retVal = retVal && AddPerson(RWList, 2, _T("Laura"), _T("Birkemose"), _T("Nielsen"));
+	retVal = retVal && AddPerson(RWList, 3, _T("Emma"), _T("Birkemose"), _T("Nielsen"));
+	retVal = retVal && AddPerson(RWList, 4, _T("Hanne"), _T("Birkemose"), _T("Nielsen"));
+	retVal = retVal && AddPerson(RWList, 5, _T("Lars"), _T(""), _T("Eriksen"));
+	retVal = retVal && AddPerson(RWList, 6, _T("Peter"), _T(""), _T("Have"));
+	retVal = retVal && AddPerson(RWList, 7, _T("Dirty"), _T("Bad"), _T("Harry"));
+	retVal = retVal && AddPerson(RWList, 8, _T("Killer"), _T("Lame"), _T("Joe"));
+	retVal = retVal && AddPerson(RWList, 9, _T("Lamer"), _T("L."), _T("Lamest"));
+	retVal = retVal && AddPerson(RWList, 10, _T("Duke"), _T(""), _T("Man"));
+	retVal = retVal && SRW->Commit();
+	if (retVal)
+	{
+		// Lets make a select on middlename = 'Birkemose'
+		RWList = SRW->GetRowsIndexed("person", _T("middleName = 'Birkemose'"), 1);
+		retVal = RWList->IsOk();
+		// Lets find Emma and changes her last name to 'Hansen'
+		retVal = retVal && SRW->StartEdit();
+		if (retVal)
+		{
+			EmmaSearch = DataEngine->CopyKey(RWList->GetStruct()->GetIndex(1));
+			EmmaSearch->SetKeyValue(0, SHVString(_T("Emma")));
+			EmmaSearch->SetKeyValue(1, SHVString(_T("Birkemose")));
+			EmmaSearch->SetKeyValue(2, SHVString(_T("Nielsen")));
+			if (RWList->Find(EmmaSearch))
+			{
+				EmmaRow = RWList->EditCurrentRow();
+				// Now lets try the readonly list
+				RList = SR->QueryTable("person", _T(""), 0);
+				// Dump the data to see if it fails
+				SR->StartEdit(); // This is evil i know ... but
+				retVal = DumpData(result, RList);
+				if (retVal)
+				{
+					result->AddLog(_T("No locks!!!!!!!!!!!!"));
+					EmmaRow->SetString("lastName", _T("Hansen"));
+					EmmaRow->AcceptChanges();
+					// Dump the data again to see if it fails this time
+					RList->Reset();
+					retVal = DumpData(result, RList);
+					if (retVal)						
+					{
+						retVal = SRW->Commit();
+						if (!retVal)
+							result->AddLog(DataEngine->GetDefaultFactory()->GetErrorMessage());
+					}
+					if (retVal)
+						result->AddLog(_T("Commited ok"));
+				}
+				else
+				{
+					result->AddLog(DataEngine->GetDefaultFactory()->GetErrorMessage());
+				}
+			}
+			else
+				retVal = SHVBool::False;
+		}
+	}
+	return retVal;
+}
+
+
 void SHVDataEngineTest::PerformTest(SHVTestResult* result)
 {
 SHVBool ok;
 	Result = result;
 	result->AddLog(_T("Insert test"));
+	ok = TestConcurrency(result);
+	/*
 	ok = TestInsert(result); 
 	if (ok)
 		ok = TestUpdate(result);
-	/*
 	if (ok)
 		ok = TestQuery(result);
 	if (ok)
@@ -376,6 +469,10 @@ SHVBool ok;
 		ok = TestSpeed2(result);
 	*/
 	*result = ok;
+}
+
+void SHVDataEngineTest::RunThread()
+{
 }
 
 
@@ -442,6 +539,13 @@ SHVDataRowKeyRef key;
 		key = dataStruct->CreateIndexKey();
 		key->AddKey("pk_person", false);
 		dataStruct->AddIndex(key);
+
+		key = dataStruct->CreateIndexKey();
+		key->AddKey("firstName", false);
+		key->AddKey("middleName", false);
+		key->AddKey("lastName", false);
+		dataStruct->AddIndex(key);
+
 		DataEngine->RegisterTable(dataStruct);
 	}
 

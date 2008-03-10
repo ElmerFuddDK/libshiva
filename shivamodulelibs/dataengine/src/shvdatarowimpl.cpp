@@ -251,14 +251,14 @@ const SHVDataVariant* SHVDataRow_impl::OriginalValue(size_t colIdx) const
 SHVDataRowKey* SHVDataRow_impl::GetKey(size_t index) const
 {
 SHVDataStructCRef st = (SHVDataStructC*) Owner->GetStruct();
-SHVDataRowKeyRef idx = (SHVDataRowKey *) st->GetIndex(index);
+const SHVDataRowKey* idx = st->GetIndex(index);
 SHVDataRowKey_impl* retVal = NULL;
-	if (!idx.IsNull())
+	if (idx)
 	{
 		retVal = new SHVDataRowKey_impl;
 		for (size_t i = 0; i < idx->Count(); i++)
 		{
-			retVal->AddKey((*idx)[i].Key, new SHVDataVariant_impl(GetValue(ColumnIndex((*idx)[i].Key))), (*idx)[i].Desc);
+			retVal->AddKey((*idx)[i].Key, GetValue(ColumnIndex((*idx)[i].Key)), (*idx)[i].Desc);
 		}
 	}
 	return retVal;

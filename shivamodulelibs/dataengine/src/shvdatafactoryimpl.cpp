@@ -2,6 +2,7 @@
 
 #include "../../../../include/platformspc.h"
 #include "../../../../include/utils/shvstringutf8.h"
+#include "../../../../include/threadutils/shvmutexlocker.h"
 #include "../../include/dataengineimpl/shvdatafactory_impl.h"
 #include "../../include/dataengineimpl/shvdatasession_sqlite.h"
 #include "../../include/dataengineimpl/shvdatarowlistc_sqlite.h"
@@ -15,18 +16,12 @@
  *************************************/
 SHVDataFactory_impl::SHVDataFactory_impl(SHVDataEngine& engine, const SHVStringC& database): DataEngine(engine), Database(database)
 {
+	SQLite = DataEngine.CreateConnection(Ok, database);
 }
 
-SHVDataFactory_impl::SHVDataFactory_impl(SHVDataEngine& engine, SHVSQLiteWrapper* sqlite, const SHVStringC& database): DataEngine(engine), Database(database)
+SHVDataFactory_impl::SHVDataFactory_impl(SHVDataEngine& engine, const SHVStringC& database, const SHVDataSchema* schema): DataEngine(engine), Database(database)
 {
-	SQLite = sqlite;
-	Database = database;	
-}
-
-SHVDataFactory_impl::SHVDataFactory_impl(SHVDataEngine& engine, SHVSQLiteWrapper* sqlite, const SHVStringC& database, const SHVDataSchema* schema): DataEngine(engine)
-{
-	SQLite = sqlite;
-	Database = database;
+	SQLite = DataEngine.CreateConnection(Ok, database);
 	if (schema)
 	{
 		for (size_t table = 0; table < schema->CalculateCount(); table++)
@@ -48,6 +43,7 @@ SHVStringSQLite rest(NULL);
 SHVStringUTF8 sql;
 SHVSQLiteStatementRef statement;
 SHVBool retVal = SHVBool::True;
+SHVMutexLocker lock(FactoryLock);
 
 	found = FindStruct(dataStruct->GetTableName());
 	if (found)
@@ -96,6 +92,7 @@ SHVBool retVal = SHVBool::True;
 const SHVDataStructC* SHVDataFactory_impl::FindStruct(const SHVString8C& table) const
 {
 const SHVDataStructC* found = NULL;
+SHVMutexLocker lock(FactoryLock);
 	for(size_t t = Schema.CalculateCount(); t && !found;)
 	{
 		if (Schema[--t]->GetTableName() == table)
@@ -133,6 +130,14 @@ SHVDataVariant* SHVDataFactory_impl::CreateVariant() const
 SHVDataRowKey* SHVDataFactory_impl::CreateKey() const 
 {
 	return new SHVDataRowKey_impl();
+}
+
+/*************************************
+ * CopyKey
+ *************************************/
+SHVDataRowKey* SHVDataFactory_impl::CopyKey(const SHVDataRowKey* key) const 
+{
+	return new SHVDataRowKey_impl(key);
 }
 
 /*************************************
@@ -209,11 +214,20 @@ SHVStringBuffer SHVDataFactory_impl::GetErrorMessage() const
 }
 
 /*************************************
+ * IsOk
+ *************************************/
+SHVBool SHVDataFactory_impl::IsOk() const
+{
+	return Ok;
+}
+
+/*************************************
  * Destructor
  *************************************/
 SHVDataFactory_impl::~SHVDataFactory_impl()
 {
 SHVListPos p = NULL;
+SHVMutexLocker lock(FactoryLock);
 	while (ActiveSessions.MoveNext(p))
 	{
 		ReleaseDataSession(ActiveSessions.GetAt(p));
@@ -326,6 +340,7 @@ void SHVDataFactory_impl::SetSQLite(SHVSQLiteWrapper* sqlite)
  *************************************/
 void SHVDataFactory_impl::RegisterDataList(SHVDataRowListC* rowList)
 {
+SHVMutexLocker lock(FactoryLock);
 	ActiveDataLists.AddTail(rowList);
 }
 
@@ -334,6 +349,7 @@ void SHVDataFactory_impl::RegisterDataList(SHVDataRowListC* rowList)
  *************************************/
 void SHVDataFactory_impl::UnregisterDataList(SHVDataRowListC* rowList)
 {
+SHVMutexLocker lock(FactoryLock);
 SHVListPos pos = ActiveDataLists.Find(rowList);
 	if (pos)
 		ActiveDataLists.RemoveAt(pos);
@@ -344,6 +360,7 @@ SHVListPos pos = ActiveDataLists.Find(rowList);
  *************************************/
 void SHVDataFactory_impl::RegisterDataSession(SHVDataSession* session)
 {
+SHVMutexLocker lock(FactoryLock);
 	ActiveSessions.AddTail(session);
 }
 
@@ -352,6 +369,7 @@ void SHVDataFactory_impl::RegisterDataSession(SHVDataSession* session)
  *************************************/
 void SHVDataFactory_impl::UnregisterDataSession(SHVDataSession* session)
 {
+SHVMutexLocker lock(FactoryLock);
 SHVListPos pos = ActiveSessions.Find(session);
 	if (pos)
 	{
@@ -379,6 +397,7 @@ void SHVDataFactory_impl::RowChanged(SHVDataRow* row)
  *************************************/
 SHVBool SHVDataFactory_impl::SessionReset(SHVDataSession* session)
 {
+SHVMutexLocker lock(FactoryLock);
 SHVBool retVal = SHVBool::True;
 SHVListIterator<SHVDataRowListC*> iter(ActiveDataLists);
 	while (retVal && iter.MoveNext())
@@ -394,6 +413,7 @@ SHVListIterator<SHVDataRowListC*> iter(ActiveDataLists);
  *************************************/
 void SHVDataFactory_impl::SessionReposition(SHVDataSession* session)
 {
+SHVMutexLocker lock(FactoryLock);
 SHVListIterator<SHVDataRowListC*> iter(ActiveDataLists);
 	while (iter.MoveNext())
 	{
