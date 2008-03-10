@@ -41,7 +41,10 @@ SHVSQLiteStatementRef statement;
 		statement = SQLite->ExecuteUTF8(ok, "END TRANSACTION", rest);
 	SessionReposition();
 	if (ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+	{
 		ok = SHVBool::True;
+		Editting = SHVBool::False;
+	}
 	if (ok && !ChangeSubscriber.IsNull())
 	{
 	SHVDataRowVector* RowVector = new SHVDataRowVector();
@@ -61,7 +64,7 @@ SHVBool SHVDataSession_SQLite::Rollback()
 SHVStringSQLite rest(NULL);
 SHVBool ok;
 SHVSQLiteStatementRef statement = SQLite->ExecuteUTF8(ok, "ROLLBACK TRANSACTION", rest);
-	Editting = false;
+	Editting = SHVBool::False;
 	return ok.GetError() == SHVSQLiteWrapper::SQLite_DONE;
 }
 
