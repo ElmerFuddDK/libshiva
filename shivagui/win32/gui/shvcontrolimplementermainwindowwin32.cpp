@@ -94,7 +94,7 @@ SHVBool retVal(parent == NULL && !IsCreated());
 #else
 	DWORD styles = WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU|WS_MINIMIZEBOX|WS_MAXIMIZEBOX|Win32::MapFlags(flags);
 #endif
-		SetHandle(::CreateWindow(SHVWIN32CLASS_MAINWND, _T(""), styles,
+		SetHandle(::CreateWindowEx(WS_EX_CONTROLPARENT,SHVWIN32CLASS_MAINWND, _T(""), styles,
 			CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL));
 
 		retVal = IsCreated();

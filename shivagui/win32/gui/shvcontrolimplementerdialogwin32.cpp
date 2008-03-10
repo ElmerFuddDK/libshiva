@@ -78,7 +78,7 @@ SHVBool SHVControlImplementerDialogWin32::Create(SHVControl* owner, SHVControlIm
 	DWORD styles = WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU|Win32::MapFlags(flags);
 #endif
 
-		SetHandle(::CreateWindow(SHVWIN32CLASS_DIALOG, _T(" "), styles,
+		SetHandle(::CreateWindowEx(WS_EX_CONTROLPARENT, SHVWIN32CLASS_DIALOG, _T(" "), styles,
 			CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, Win32::GetMainWndHandle(owner), NULL, Win32::GetInstance(owner), NULL));
 
 		if (IsCreated())

@@ -97,13 +97,43 @@ HINSTANCE hInstance = (HINSTANCE)Queue->GetModuleList().GetConfig(SHVModuleList:
 void SHVMainThreadEventDispatcherWin32::RunEventLoop()
 {
 MSG msg;
+HWND wnd, topwnd;
+bool processed;
 
 	while (Running() && GetMessage(&msg, NULL, 0, 0)) 
 	{
 		if (!GUIManager->PreTranslateMessage(&msg))
 		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			processed = false;
+
+			// check for tab stop
+			switch (msg.message)
+			{
+			case WM_KEYDOWN:
+				
+				if (msg.wParam == VK_TAB)
+				{
+
+					// find top level wnd
+					for (wnd=msg.hwnd;wnd;wnd = ::GetParent(wnd))
+						topwnd = wnd;
+
+					wnd = ::GetNextDlgTabItem(topwnd,msg.hwnd,(GetKeyState(VK_SHIFT) & 0x8000 ? TRUE : FALSE));
+					if (wnd)
+					{
+						processed = true;
+						::SetFocus(wnd);
+					}
+				}
+				break;
+			}
+
+
+			if (!processed)
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
 		}
 	}
 
@@ -131,8 +161,9 @@ void SHVMainThreadEventDispatcherWin32::OnEvent(SHVEvent* event)
 {
 }
 
+///\cond INTERNAL
 /*************************************
- * OnEvent
+ * DispatchEvents
  *************************************/
 void SHVMainThreadEventDispatcherWin32::DispatchEvents()
 {
@@ -140,7 +171,7 @@ void SHVMainThreadEventDispatcherWin32::DispatchEvents()
 }
 
 /*************************************
- * OnEvent
+ * CloseApp
  *************************************/
 void SHVMainThreadEventDispatcherWin32::CloseApp()
 {
@@ -150,3 +181,4 @@ void SHVMainThreadEventDispatcherWin32::CloseApp()
 		Queue->GetModuleList().CloseApp();
 	}
 }
+///\endcond

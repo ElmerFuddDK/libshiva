@@ -69,7 +69,7 @@ SHVBool SHVControlImplementerContainerWindowWin32::Create(SHVControl* owner, SHV
 {
 	if (!IsCreated() && parent && parent->IsCreated())
 	{
-		SetHandle(::CreateWindow(SHVWIN32CLASS_CONTAINERWND, _T(""), WS_CHILD|Win32::MapFlags(flags),
+		SetHandle(::CreateWindowEx(WS_EX_CONTROLPARENT,SHVWIN32CLASS_CONTAINERWND, _T(""), WS_CHILD|Win32::MapFlags(flags),
 			CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, Win32::GetHandle(parent), NULL, Win32::GetInstance(owner), NULL));
 
 		if (IsCreated())
