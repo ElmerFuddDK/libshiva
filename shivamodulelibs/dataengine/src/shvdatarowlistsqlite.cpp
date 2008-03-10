@@ -244,12 +244,12 @@ SHVListPos pos =  PendingRows.Find(rrow);
 			{
 				if (pos)
 				{
-					PendingRows.RemoveAt(pos);
 					if (pos == PendingPosAdded)
 					{
 						PendingPosAdded = NULL;
 						Reposition();
 					}
+					PendingRows.RemoveAt(pos);
 					if (row->GetRowState() == SHVDataRow::RowStateAdding)
 						InsertedRows--;
 				}
