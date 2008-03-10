@@ -17,11 +17,9 @@ int SHVControlLabel::GetType()
  *************************************/
 SHVBool SHVControlLabel::GetData(SHVControlData* data)
 {
-SHVControlDataRowRef dataRow = data->GetRow();
-
-	if (!dataRow.IsNull())
+	if (data)
 	{
-		return dataRow->SetValue(GetText());
+		return data->SetValue(GetText());
 	}
 
 	return SHVBool::False;
@@ -32,11 +30,10 @@ SHVControlDataRowRef dataRow = data->GetRow();
  *************************************/
 SHVBool SHVControlLabel::SetData(SHVControlData* data)
 {
-SHVControlDataRowRef dataRow = data->GetRow();
-
-	if (!dataRow.IsNull())
+	if (data)
 	{
-		SetText(dataRow->GetValue());
+		SetText(data->GetValue());
+		return SHVBool::True;
 	}
 
 	return SHVBool::False;

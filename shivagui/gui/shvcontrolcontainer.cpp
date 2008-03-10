@@ -134,11 +134,9 @@ SHVFontRef font = GetFont();
  *************************************/
 SHVBool SHVControlContainer::GetData(SHVControlData* data)
 {
-SHVControlDataRowRef dataRow = data->GetRow();
-
-	if (!dataRow.IsNull())
+	if (data)
 	{
-		return dataRow->SetValue(GetTitle());
+		return data->SetValue(GetTitle());
 	}
 
 	return SHVBool::False;
@@ -149,11 +147,9 @@ SHVControlDataRowRef dataRow = data->GetRow();
  *************************************/
 SHVBool SHVControlContainer::SetData(SHVControlData* data)
 {
-SHVControlDataRowRef dataRow = data->GetRow();
-
-	if (!dataRow.IsNull())
+	if (data)
 	{
-		SetTitle(dataRow->GetValue());
+		SetTitle(data->GetValue());
 		return SHVBool::True;
 	}
 
