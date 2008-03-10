@@ -414,9 +414,9 @@ SHVSQLiteStatementRef statement;
 				retVal += " and ";
 			if (col.GetDataType() == SHVDataVariant::TypeString ||
 				col.GetDataType() == SHVDataVariant::TypeTime)
-				keycond.Format("%s = '%s'", Key[k].Key.GetSafeBuffer(), row->OriginalValue(Key[k].Key)->AsString());
+				keycond.Format("%s = '%s'", Key[k].Key.GetSafeBuffer(), row->OriginalValue(Key[k].Key)->AsString().ToStrUTF8().GetSafeBuffer());
 			else
-				keycond.Format("%s = %s", Key[k].Key.GetSafeBuffer(), row->OriginalValue(Key[k].Key)->AsString());
+				keycond.Format("%s = %s", Key[k].Key.GetSafeBuffer(), row->OriginalValue(Key[k].Key)->AsString().ToStrUTF8().GetSafeBuffer());
 			retVal += keycond;
 		}
 	}
