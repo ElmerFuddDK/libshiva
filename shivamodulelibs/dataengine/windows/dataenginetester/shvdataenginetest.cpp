@@ -388,6 +388,7 @@ SHVDataRowKeyRef EmmaSearch;
 	SRW->ExecuteNonQuery(_T("delete from person"));
 	// Lets start by create 10 person (Realistic data this time)
 	RWList = SRW->GetRowsIndexed("person", _T(""), 0);
+	RWList->EnableNonAccepted(true);
 	retVal = retVal && SRW->StartEdit();
 	retVal = retVal && AddPerson(RWList, 1, _T("Mogens"), _T("Bak"), _T("Nielsen"));
 	retVal = retVal && AddPerson(RWList, 2, _T("Laura"), _T("Birkemose"), _T("Nielsen"));
@@ -400,6 +401,9 @@ SHVDataRowKeyRef EmmaSearch;
 	retVal = retVal && AddPerson(RWList, 9, _T("Lamer"), _T("L."), _T("Lamest"));
 	retVal = retVal && AddPerson(RWList, 10, _T("Duke"), _T(""), _T("Man"));
 	retVal = retVal && SRW->Commit();
+	RWList->Reset();
+	DumpData(result, RWList);
+
 	if (retVal)
 	{
 		// Lets make a select on middlename = 'Birkemose'

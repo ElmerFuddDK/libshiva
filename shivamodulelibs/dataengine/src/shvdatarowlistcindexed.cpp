@@ -39,14 +39,16 @@ SHVBool retVal = IsOk();
 	SHVASSERT(retVal);
 	if (retVal)
 	{
-	const SHVDataRowKey& key = *GetStruct()->GetIndex(0);
+	const SHVDataRowKey& key = *GetStruct()->GetIndex(SortIndex);
 		Eof = SHVBool::False;
+		retVal = Statement->Reset();
 		for (size_t i = 0; i < key.Count(); i++)
 		{
-			Statement->SetParameterNullUTF8(key[i].Key.GetSafeBuffer());
+		SHVStringUTF8 parm;
+			parm.Format("@%s", key[i].Key.GetSafeBuffer());
+			Statement->SetParameterNullUTF8(parm);
 		}
-		Statement->SetParameterNullUTF8("idx");
-		retVal = Statement->Reset();
+		Statement->SetParameterNullUTF8("@idx");
 		if (!retVal)
 			Eof = SHVBool::True;
 	}
