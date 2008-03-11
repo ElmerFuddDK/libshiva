@@ -55,10 +55,27 @@ void SHVDataEngine_impl::Unregister()
 /*************************************
  * RegisterTable
  *************************************/
-SHVBool SHVDataEngine_impl::RegisterTable(const SHVDataStructC* dataStruct)
+SHVBool SHVDataEngine_impl::RegisterTable(const SHVDataStructC* dataStruct, bool createTable)
 {
-	return Factory->RegisterTable(dataStruct);
+	return Factory->RegisterTable(dataStruct, createTable);
 }
+
+/*************************************
+ * RegisterAlias
+ *************************************/
+SHVBool SHVDataEngine_impl::RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear)
+{
+	return Factory->RegisterAlias(table, alias, clear);
+}
+
+/*************************************
+ * UnregisterAlias
+ *************************************/
+SHVBool SHVDataEngine_impl::UnregisterAlias(const SHVString8C& alias)
+{
+	return Factory->UnregisterAlias(alias);
+}
+
 
 /*************************************
  * FindStruct

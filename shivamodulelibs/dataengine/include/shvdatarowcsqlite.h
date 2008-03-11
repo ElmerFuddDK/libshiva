@@ -34,6 +34,7 @@ public:
 	virtual SHVBool MatchKey(const SHVDataRowKey* key) const;
 	virtual SHVBool RowValid() const;
 	virtual const SHVDataStructC* GetStruct() const;
+	virtual const SHVString8C GetAlias() const;
 	virtual int GetRowState() const;
 
 private:

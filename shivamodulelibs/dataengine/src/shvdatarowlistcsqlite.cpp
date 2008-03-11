@@ -14,11 +14,11 @@
 /*************************************
  * Constructor
  *************************************/
-SHVDataRowListC_SQLite::SHVDataRowListC_SQLite(SHVDataSession* session, const SHVDataStructC* dataStruct): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(0)
+SHVDataRowListC_SQLite::SHVDataRowListC_SQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(0), Alias(alias)
 {
 }
 
-SHVDataRowListC_SQLite::SHVDataRowListC_SQLite(SHVDataSession* session, const SHVStringC& sql, const SHVDataRowKey* sortKey): DataSession(session), RowCount(0)
+SHVDataRowListC_SQLite::SHVDataRowListC_SQLite(SHVDataSession* session, const SHVStringC& sql, const SHVDataRowKey* sortKey): DataSession(session), RowCount(0), Alias("")
 {
 SHVString rest;
 SHVDataStruct_impl* st = new SHVDataStruct_impl();
@@ -27,11 +27,11 @@ SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
 	Statement = SQLite->Prepare(Ok, sql, rest);
 	if (sortKey)
 		st->AddIndex((SHVDataRowKey*) sortKey);
-	SortIndex = 0;
+	SortIndex = 0;	
 	Eof = !Ok;
 }
 
-SHVDataRowListC_SQLite::SHVDataRowListC_SQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVStringC& condition, size_t index): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(0)
+SHVDataRowListC_SQLite::SHVDataRowListC_SQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias, const SHVStringC& condition, size_t index): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(0), Alias(alias)
 {
 SHVStringSQLite rest(NULL);
 SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
@@ -47,7 +47,7 @@ SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
 	Eof = !Ok;
 }
 
-SHVDataRowListC_SQLite::SHVDataRowListC_SQLite(SHVDataSession* session, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, size_t index): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(0)
+SHVDataRowListC_SQLite::SHVDataRowListC_SQLite(SHVDataSession* session, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, const SHVString8C& alias, size_t index): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(0), Alias(alias)
 {
 	SHVASSERT(dataStruct->GetIndex(index));
 	Ok = SHVBool::True;
@@ -226,7 +226,7 @@ SHVDataRowListC* retVal = NULL;
 	{
 		SQLite = (SHVSQLiteWrapper*) DataSession->GetProvider();
 		statement = SQLite->PrepareUTF8(ok, BuildQuery(condition,true), rest);
-		retVal = new SHVDataRowListC_SQLite(DataSession, statement, StructCache, SortIndex);
+		retVal = new SHVDataRowListC_SQLite(DataSession, statement, StructCache, Alias, SortIndex);
 	}
 	return retVal;
 }
@@ -237,6 +237,14 @@ SHVDataRowListC* retVal = NULL;
 const SHVDataStructC* SHVDataRowListC_SQLite::GetStruct() const
 {
 	return StructCache.AsConst();
+}
+
+/*************************************
+ * GetAlias
+ *************************************/
+const SHVString8C SHVDataRowListC_SQLite::GetAlias() const
+{
+	return Alias;
 }
 
 /*************************************
@@ -292,7 +300,7 @@ SHVString8 orderby8;
 	if (!condition.IsNull() && condition != _T(""))
 	{
 		queryUTF8.Format("select * from %s where (%s) and %s order by %s", 
-			StructCache->GetTableName().GetSafeBuffer(),
+			Alias.GetSafeBuffer(),
 			condition.ToStrUTF8().GetSafeBuffer(),
 			condition8.GetSafeBuffer(),
 			orderby8.GetSafeBuffer());
@@ -300,7 +308,7 @@ SHVString8 orderby8;
 	else
 	{
 		queryUTF8.Format("select * from %s where %s order by %s", 
-			StructCache->GetTableName().GetSafeBuffer(),
+			Alias.GetSafeBuffer(),
 			condition8.GetSafeBuffer(),
 			orderby8.GetSafeBuffer());
 	}

@@ -53,6 +53,13 @@ const SHVDataStructC* SHVDataRowList_SQLite::GetStruct() const
 ///\todo Missing thread safety
 	return RowList->GetStruct();
 }
+/*************************************
+ * GetAlias
+ *************************************/
+const SHVString8C SHVDataRowList_SQLite::GetAlias() const
+{
+	return RowList->GetAlias();
+}
 
 /*************************************
  * GetRowCount

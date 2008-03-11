@@ -17,13 +17,14 @@
 class SHVDataRowListC_SQLite: public SHVDataRowListC
 {
 public:
-	SHVDataRowListC_SQLite(SHVDataSession* session, const SHVDataStructC* dataStruct);
+	SHVDataRowListC_SQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias);
 	SHVDataRowListC_SQLite(SHVDataSession* session, const SHVStringC& sql, const SHVDataRowKey* sortKey);
-	SHVDataRowListC_SQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVStringC& condition, size_t index);
+	SHVDataRowListC_SQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias, const SHVStringC& condition, size_t index);
 
 	virtual const SHVDataRowC* GetCurrentRow() const;
 	virtual SHVBool IsOk() const;
 	virtual const SHVDataStructC* GetStruct() const;
+	virtual const SHVString8C GetAlias() const;
 	virtual int GetRowCount() const;
 
 	virtual SHVDataRowC* Find(const SHVDataRowKey* key);
@@ -44,7 +45,7 @@ protected:
 	virtual SHVBool InternalRowChanged(SHVDataRow* row);
 
 private:
-	SHVDataRowListC_SQLite(SHVDataSession* session, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, size_t index);
+	SHVDataRowListC_SQLite(SHVDataSession* session, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, const SHVString8C& alias, size_t index);
 	SHVDataStructCRef StructCache;
 	SHVDataRowCRef CurrentRow;
 	SHVDataSessionRef DataSession;
@@ -55,6 +56,7 @@ protected:
 	SHVBool Eof;
 	SHVBool Ok;
 	int RowCount;
+	SHVString8 Alias;
 };
 typedef SHVRefObjectContainer<SHVDataRowListC> SHVDataRowListCRef;
 

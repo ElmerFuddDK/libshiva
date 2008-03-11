@@ -12,7 +12,7 @@
 /*************************************
  * Constructor
  *************************************/
-SHVDataRowListC_Indexed::SHVDataRowListC_Indexed(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVStringC& condition, size_t index): SHVDataRowListC_SQLite(session, dataStruct)
+SHVDataRowListC_Indexed::SHVDataRowListC_Indexed(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias, const SHVStringC& condition, size_t index): SHVDataRowListC_SQLite(session, dataStruct, alias)
 {
 SHVStringSQLite rest(NULL);
 SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
@@ -100,7 +100,7 @@ SHVSQLiteStatementRef statement;
 long rc;
 
 // Let the magic begin
-	IndexTableName.Format("%s%d", Struct.GetTableName().GetSafeBuffer(), GetDataSession()->GetFactory()->GetDataEngine().GetModuleList().CreateTag());
+	IndexTableName.Format("%s%d", Alias.GetSafeBuffer(), GetDataSession()->GetFactory()->GetDataEngine().GetModuleList().CreateTag());
 	for (size_t i = 0; i < Key.Count(); i++)
 	{
 	size_t colIdx;
@@ -135,7 +135,7 @@ long rc;
 			col.Format("memdb.%s.%s = %s.%s", 
 				IndexTableName.GetSafeBuffer(),
 				Struct[i]->GetColumnName().GetSafeBuffer(),
-				Struct.GetTableName().GetSafeBuffer(),
+				Alias.GetSafeBuffer(),
 				Struct[i]->GetColumnName().GetSafeBuffer());
 			joinCond += col;
 			cols += Struct[i]->GetColumnName().GetSafeBuffer();
@@ -155,11 +155,11 @@ long rc;
 			Ok = SHVBool::True;
 		if (Ok)
 		{
-			GetDataSession()->GetFactory()->GetDataEngine().BuildKeySQL(Struct.GetIndex(SortIndex), condition8, orderby8, Struct.GetTableName().GetSafeBuffer(), reverse);
+			GetDataSession()->GetFactory()->GetDataEngine().BuildKeySQL(Struct.GetIndex(SortIndex), condition8, orderby8, Alias.GetSafeBuffer(), reverse);
 			queryUTF8.Format("insert into memdb.%s(%s) select %s from %s %s %s order by %s", 
 				IndexTableName.GetSafeBuffer(), cols.GetSafeBuffer(), 
 				cols.GetSafeBuffer(), 
-				Struct.GetTableName(),
+				Alias.GetSafeBuffer(),
 				(condition.IsNull() || condition == _T("") ? "" : "where"),
 				condition.ToStrUTF8().GetSafeBuffer(),
 				orderby8.GetSafeBuffer()
@@ -177,8 +177,8 @@ long rc;
 		if (Ok)
 		{
 			queryUTF8.Format("select %s.*,idx from %s join memdb.%s on %s where %s and (@idx is null or idx >= @idx) order by idx",
-				Struct.GetTableName().GetSafeBuffer(),
-				Struct.GetTableName().GetSafeBuffer(),
+				Alias.GetSafeBuffer(),
+				Alias.GetSafeBuffer(),
 				IndexTableName.GetSafeBuffer(),
 				joinCond.GetSafeBuffer(),
 				condition8.GetSafeBuffer());

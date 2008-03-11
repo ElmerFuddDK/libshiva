@@ -18,6 +18,7 @@ public:
 	virtual const SHVDataRowC* GetCurrentRow() const = 0;
 	virtual SHVBool IsOk() const = 0;
 	virtual const SHVDataStructC* GetStruct() const = 0;
+	virtual const SHVString8C GetAlias() const = 0;
 	virtual int GetRowCount() const = 0;
 
 	virtual SHVDataRowC* Find(const SHVDataRowKey* key) = 0;

@@ -207,6 +207,17 @@ const SHVDataStructC* SHVDataRowC_SQLite::GetStruct() const
 }
 
 /*************************************
+ * GetAlias
+ *************************************/
+const SHVString8C SHVDataRowC_SQLite::GetAlias() const
+{
+	if (RowValid())
+		return Select->GetAlias();
+	else
+		return "";	
+}
+
+/*************************************
  * GetRowState
  *************************************/
 int SHVDataRowC_SQLite::GetRowState() const

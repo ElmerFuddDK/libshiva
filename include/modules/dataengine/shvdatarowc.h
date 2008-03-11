@@ -47,6 +47,8 @@ public:
 	virtual SHVBool MatchKey(const SHVDataRowKey* key) const = 0;
 	virtual SHVBool RowValid() const = 0;
 	virtual const SHVDataStructC* GetStruct() const = 0;
+	virtual const SHVString8C GetAlias() const = 0;
+
 	virtual int GetRowState() const = 0;
 
 	inline SHVBool GetValue(const SHVString8C& colName, SHVString& value) const;

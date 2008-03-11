@@ -12,7 +12,7 @@ class SHVDataRowC_SQLite;
 class SHVDataRowListC_Indexed: public SHVDataRowListC_SQLite
 {
 public:
-	SHVDataRowListC_Indexed(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVStringC& condition, size_t index);
+	SHVDataRowListC_Indexed(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias, const SHVStringC& condition, size_t index);
 	virtual SHVBool Reset();
 protected:
 	virtual ~SHVDataRowListC_Indexed();

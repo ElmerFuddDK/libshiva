@@ -291,7 +291,7 @@ SHVBool SHVDataRow_impl::RowValid() const
 }
 
 /*************************************
- * RowValid
+ * GetStruct
  *************************************/
 const SHVDataStructC* SHVDataRow_impl::GetStruct() const
 {
@@ -299,6 +299,17 @@ const SHVDataStructC* SHVDataRow_impl::GetStruct() const
 		return Owner->GetStruct();
 	else
 		return NULL;
+}
+
+/*************************************
+ * GetAlias
+ *************************************/
+const SHVString8C SHVDataRow_impl::GetAlias() const
+{
+	if (RowValid())
+		return Owner->GetAlias();
+	else
+		return "";
 }
 
 /*************************************

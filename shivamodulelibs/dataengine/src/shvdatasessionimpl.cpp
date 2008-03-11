@@ -83,7 +83,7 @@ SHVDataRowListC* innerList;
 		st = Factory->FindStruct(tableName);	
 		if (st)
 		{
-			innerList = new SHVDataRowListC_SQLite(this, st, condition, index);
+			innerList = new SHVDataRowListC_SQLite(this, st, tableName, condition, index);
 			retVal = new SHVDataRowList_SQLite(this, innerList);
 			RegisterDataList(retVal);
 		}
@@ -105,7 +105,7 @@ SHVDataRowListC* innerList;
 		st = Factory->FindStruct(tableName);	
 		if (st)
 		{
-			innerList = new SHVDataRowListC_Indexed(this, st, condition, index);
+			innerList = new SHVDataRowListC_Indexed(this, st, tableName, condition, index);
 			retVal = new SHVDataRowList_SQLite(this, innerList);
 			RegisterDataList(retVal);
 		}
@@ -136,7 +136,7 @@ SHVDataRowListC* retVal;
 		st = Factory->FindStruct(tableName);	
 		if (st)
 		{
-			retVal = new SHVDataRowListC_SQLite(this, st, condition, index);
+			retVal = new SHVDataRowListC_SQLite(this, st, tableName, condition, index);
 			RegisterDataList(retVal);
 		}
 	}
@@ -156,7 +156,7 @@ SHVDataRowListC* retVal;
 		st = Factory->FindStruct(tableName);	
 		if (st)
 		{
-			retVal = new SHVDataRowListC_Indexed(this, st, condition, index);
+			retVal = new SHVDataRowListC_Indexed(this, st, tableName, condition, index);
 			RegisterDataList(retVal);
 		}
 	}
@@ -320,7 +320,7 @@ const SHVDataStructC& st = *row->GetStruct();
 		cols += col;
 	}
 	sql.Format("update or fail %s set %s where %s",
-		st.GetTableName().GetSafeBuffer(),
+		row->GetAlias().GetSafeBuffer(),
 		cols.GetSafeBuffer(),
 		WhereSQL(row).GetSafeBuffer());
 	statement = SQLite->ExecuteUTF8(retVal, sql, rest);
@@ -363,7 +363,7 @@ const SHVDataStructC& st = *row->GetStruct();
 		cols += st[c]->GetColumnName().GetSafeBuffer();
 	}
 	sql.Format("insert or fail into %s (%s) values(%s)",
-		st.GetTableName().GetSafeBuffer(),
+		row->GetAlias().GetSafeBuffer(),
 		cols.GetSafeBuffer(),
 		vals.GetSafeBuffer());
 	statement = SQLite->ExecuteUTF8(retVal, sql, rest);
@@ -384,7 +384,7 @@ SHVBool retVal;
 SHVStringUTF8 sql;
 SHVStringSQLite rest(NULL);
 SHVSQLiteStatementRef statement;
-	sql.Format("delete from %s where %s", row->GetStruct()->GetTableName().GetSafeBuffer(), WhereSQL(row).GetSafeBuffer());
+	sql.Format("delete from %s where %s", row->GetAlias().GetSafeBuffer(), WhereSQL(row).GetSafeBuffer());
 	statement = SQLite->ExecuteUTF8(retVal, sql, rest);
 	if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 	{

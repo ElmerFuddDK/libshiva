@@ -21,7 +21,9 @@ public:
 	virtual SHVBool Register();
 	virtual void Unregister();
 
-	virtual SHVBool RegisterTable(const SHVDataStructC* dataStruct);
+	virtual SHVBool RegisterTable(const SHVDataStructC* dataStruct, bool createTable = false);
+	virtual SHVBool RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear = false);
+	virtual SHVBool UnregisterAlias(const SHVString8C& alias);
 	virtual const SHVDataStructC* FindStruct(const SHVString8C& table) const;
 	virtual const SHVDataSchema& GetDataSchema() const;
 	virtual const SHVStringC& GetDatabase() const;

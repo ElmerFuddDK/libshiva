@@ -385,9 +385,9 @@ SHVDataRowRef EmmaRow;
 SHVDataRowKeyRef EmmaSearch;
 
     // Clear the persons table
-	SRW->ExecuteNonQuery(_T("delete from person"));
 	// Lets start by create 10 person (Realistic data this time)
-	RWList = SRW->GetRowsIndexed("person", _T(""), 0);
+	DataEngine->RegisterAlias("person", "person1", true);
+	RWList = SRW->GetRowsIndexed("person1", _T(""), 0);
 	RWList->EnableNonAccepted(true);
 	retVal = retVal && SRW->StartEdit();
 	retVal = retVal && AddPerson(RWList, 1, _T("Mogens"), _T("Bak"), _T("Nielsen"));
@@ -403,11 +403,13 @@ SHVDataRowKeyRef EmmaSearch;
 	retVal = retVal && SRW->Commit();
 	RWList->Reset();
 	DumpData(result, RWList);
+	if (!retVal)
+		result->AddLog(DataEngine->GetDefaultFactory()->GetErrorMessage());
 
 	if (retVal)
 	{
 		// Lets make a select on middlename = 'Birkemose'
-		RWList = SRW->GetRowsIndexed("person", _T("middleName = 'Birkemose'"), 1);
+		RWList = SRW->GetRowsIndexed("person1", _T("middleName = 'Birkemose'"), 1);
 		retVal = RWList->IsOk();
 		// Lets find Emma and changes her last name to 'Hansen'
 		retVal = retVal && SRW->StartEdit();
@@ -421,7 +423,7 @@ SHVDataRowKeyRef EmmaSearch;
 			{
 				EmmaRow = RWList->EditCurrentRow();
 				// Now lets try the readonly list
-				RList = SR->QueryTable("person", _T(""), 0);
+				RList = SR->QueryTable("person1", _T(""), 0);
 				// Dump the data to see if it fails
 				SR->StartEdit(); // This is evil i know ... but
 				retVal = DumpData(result, RList);
@@ -451,7 +453,9 @@ SHVDataRowKeyRef EmmaSearch;
 				retVal = SHVBool::False;
 		}
 	}
-	return retVal;
+	RWList = NULL;
+	RList = NULL;	
+	return retVal && DataEngine->UnregisterAlias("person1");
 }
 
 
@@ -505,7 +509,7 @@ SHVDataRowKeyRef key;
 		key->AddKey("sort", true);
 		key->AddKey("descript1", false);
 		dataStruct->AddIndex(key);
-		DataEngine->RegisterTable(dataStruct);
+		DataEngine->RegisterTable(dataStruct, true);
 
 		// Table testchild
 		dataStruct = DataEngine->CreateStruct();
@@ -515,7 +519,7 @@ SHVDataRowKeyRef key;
 		key = dataStruct->CreateIndexKey();
 		key->AddKey("key", false);
 		dataStruct->AddIndex(key);
-		DataEngine->RegisterTable(dataStruct);
+		DataEngine->RegisterTable(dataStruct, true);
 
 		// Table speedtest
 		dataStruct = DataEngine->CreateStruct();
@@ -532,7 +536,7 @@ SHVDataRowKeyRef key;
 		key->AddKey("doublecol", false);
 		key->AddKey("timecol", true);
 		dataStruct->AddIndex(key);
-		DataEngine->RegisterTable(dataStruct);
+		DataEngine->RegisterTable(dataStruct, true);
 
 		dataStruct = DataEngine->CreateStruct();
 		dataStruct->SetTableName("person");
@@ -550,7 +554,7 @@ SHVDataRowKeyRef key;
 		key->AddKey("lastName", false);
 		dataStruct->AddIndex(key);
 
-		DataEngine->RegisterTable(dataStruct);
+		DataEngine->RegisterTable(dataStruct, true);
 	}
 
 	return SHVTestModule::Register() && retVal;
