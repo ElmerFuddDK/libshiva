@@ -475,6 +475,14 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\include\utils\shvstreamin.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\utils\shvstreamout.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\utils\shvstring.h"
 						>
 					</File>
