@@ -1,5 +1,5 @@
-#ifndef __SHIVA_UTILS_STREAMIN_H
-#define __SHIVA_UTILS_STREAMIN_H
+#ifndef __SHIVA_UTILS_STREAMOUT_H
+#define __SHIVA_UTILS_STREAMOUT_H
 
 #include "../shvtypes.h"
 #include "../shvstring.h"
