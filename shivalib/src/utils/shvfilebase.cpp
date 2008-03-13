@@ -319,7 +319,10 @@ SHVBool retVal( (flags&FlagRead) || (flags&FlagWrite) ? (int)SHVBool::True : (in
 		if (!File)
 			retVal.SetError(ErrGeneric);
 		else
+		if (flags&FlagWrite)
+		{
 			SetPosition(GetSize());
+		}
 	}
 
 	if (retVal) // are we all done ?
