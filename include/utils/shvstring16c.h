@@ -31,8 +31,6 @@ typedef SHVString16C SHVStringC;
 typedef SHVString16  SHVString;
 typedef SHVString16CRef SHVStringCRef;
 typedef SHVStringBuffer16 SHVStringBuffer;
-# define SHVTChar SHVWChar
-# define SHVForeignChar SHVChar
 # define _SHVS8(x)  SHVStringC(_T(x)).ToStr8()
 # define _SHVS16(x) _T(x)
 ///\cond INTERNAL

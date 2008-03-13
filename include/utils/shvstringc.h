@@ -18,7 +18,6 @@
 #else
 # define SHVWChar short
 #endif
-#define SHVChar  char
 class SHVString8C;
 class SHVString8;
 class SHVString8CRef;
@@ -29,8 +28,6 @@ typedef SHVString8C  SHVStringC;
 typedef SHVString8   SHVString;
 typedef SHVString8CRef SHVStringCRef;
 typedef SHVStringBuffer8 SHVStringBuffer;
-# define SHVTChar SHVChar 
-# define SHVForeignChar SHVWChar
 # define _SHVS8(x)  x
 # ifdef __SHVSTRING_INCLUDE_UNICODE
 #  define _SHVS16(x) SHVStringC(x).ToStr16()

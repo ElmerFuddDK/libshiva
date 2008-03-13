@@ -4,6 +4,20 @@
 #include "utils/shvhashvalue.h"
 
 typedef char SHVByte;
+#define SHVChar  char
+#ifdef __SHIVA_WIN32
+# define SHVWChar wchar_t
+#else
+# define SHVWChar short
+#endif
+#if defined(UNICODE)
+# define SHVTChar SHVWChar
+# define SHVForeignChar SHVChar
+#else
+# define SHVTChar SHVChar 
+# define SHVForeignChar SHVWChar
+#endif
+
 
 
 //-=========================================================================================================
