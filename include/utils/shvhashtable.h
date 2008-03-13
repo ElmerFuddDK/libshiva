@@ -153,6 +153,7 @@ class SHVHashPair : public SHVHashKey<K,D,CopyK,CopyD>
 	D Data;
 public:
 	SHVHashPair(CopyK& key, CopyD& data) : SHVHashKey<K,D,CopyK,CopyD>(Key), Key(key), Data(data) {}
+	SHVHashPair(CopyK& key) : SHVHashKey<K,D,CopyK,CopyD>(Key), Key(key), Data() {}
 	K& GetKey()  { return Key;  }
 	D& GetData() { return Data; }
 };
@@ -268,7 +269,7 @@ SHVHashKey<K,D,CopyK,CopyD> k(key);
 SHVHashPair<K,D,CopyK,CopyD>* pair = (SHVHashPair<K,D,CopyK,CopyD>*)SHVHashTableBase::Find(&k);
 
 	if (!pair)
-		SHVHashTableBase::Insert(pair = new SHVHashPair<K,D,CopyK,CopyD>(key,D()));
+		SHVHashTableBase::Insert(pair = new SHVHashPair<K,D,CopyK,CopyD>(key));
 
 	return pair->GetData();
 }
