@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmlstream", "xmlstream.vcproj", "{A6510CDA-65D4-4CAF-99D3-18C89C2416A8}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmlstreamtester", "xmlstreamtester\xmlstreamtester.vcproj", "{9F618BE5-469D-4D0F-85D0-6C49B8ECB9B1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -13,6 +15,10 @@ Global
 		{A6510CDA-65D4-4CAF-99D3-18C89C2416A8}.Debug|Win32.Build.0 = Debug|Win32
 		{A6510CDA-65D4-4CAF-99D3-18C89C2416A8}.Release|Win32.ActiveCfg = Release|Win32
 		{A6510CDA-65D4-4CAF-99D3-18C89C2416A8}.Release|Win32.Build.0 = Release|Win32
+		{9F618BE5-469D-4D0F-85D0-6C49B8ECB9B1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9F618BE5-469D-4D0F-85D0-6C49B8ECB9B1}.Debug|Win32.Build.0 = Debug|Win32
+		{9F618BE5-469D-4D0F-85D0-6C49B8ECB9B1}.Release|Win32.ActiveCfg = Release|Win32
+		{9F618BE5-469D-4D0F-85D0-6C49B8ECB9B1}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

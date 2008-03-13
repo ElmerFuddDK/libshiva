@@ -1,15 +1,16 @@
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
-
+#include "shvxmlstreamfactory.h"
+#include "../include/xmlstreamimpl/shvxmlstream_impl.h"
 
 //=========================================================================================================
-// SHVModuleFactoryxmlstream - factory for module library xmlstream
+// SHVModuleFactoryXmlStream - factory for module library XmlStream
 //=========================================================================================================
 
 /*************************************
  * Constructor
  *************************************/
-SHVModuleFactoryxmlstream::SHVModuleFactoryxmlstream(SHVModuleList& modules)
+SHVModuleFactoryXmlStream::SHVModuleFactoryXmlStream(SHVModuleList& modules)
 	: SHVModuleFactory(), Modules(modules)
 {
 }
@@ -17,7 +18,7 @@ SHVModuleFactoryxmlstream::SHVModuleFactoryxmlstream(SHVModuleList& modules)
 /*************************************
  * CheckVersion
  *************************************/
-SHVBool SHVModuleFactoryxmlstream::CheckVersion(int verMajor,int verMinor,int verRelease)
+SHVBool SHVModuleFactoryXmlStream::CheckVersion(int verMajor,int verMinor,int verRelease)
 {
 	return ( verMajor == __XMLSTREAM_VERSION_MAJOR &&
 			 verMinor == __XMLSTREAM_VERSION_MINOR &&
@@ -27,7 +28,7 @@ SHVBool SHVModuleFactoryxmlstream::CheckVersion(int verMajor,int verMinor,int ve
 /*************************************
  * GetMajor
  *************************************/
-SHVInt SHVModuleFactoryxmlstream::GetMajor()
+SHVInt SHVModuleFactoryXmlStream::GetMajor()
 {
 	return __XMLSTREAM_VERSION_MAJOR;
 }
@@ -35,7 +36,7 @@ SHVInt SHVModuleFactoryxmlstream::GetMajor()
 /*************************************
  * GetMinor
  *************************************/
-SHVInt SHVModuleFactoryxmlstream::GetMinor()
+SHVInt SHVModuleFactoryXmlStream::GetMinor()
 {
 	return __XMLSTREAM_VERSION_MINOR;
 }
@@ -43,7 +44,7 @@ SHVInt SHVModuleFactoryxmlstream::GetMinor()
 /*************************************
  * GetRelease
  *************************************/
-SHVInt SHVModuleFactoryxmlstream::GetRelease()
+SHVInt SHVModuleFactoryXmlStream::GetRelease()
 {
 	return __XMLSTREAM_VERSION_RELEASE;
 }
@@ -51,7 +52,7 @@ SHVInt SHVModuleFactoryxmlstream::GetRelease()
 /*************************************
  * GetBuild
  *************************************/
-SHVInt SHVModuleFactoryxmlstream::GetBuild()
+SHVInt SHVModuleFactoryXmlStream::GetBuild()
 {
 	return __XMLSTREAM_VERSION_BUILD;
 }
@@ -59,20 +60,29 @@ SHVInt SHVModuleFactoryxmlstream::GetBuild()
 /*************************************
  * GetDescription
  *************************************/
-SHVStringBuffer SHVModuleFactoryxmlstream::GetDescription()
+SHVStringBuffer SHVModuleFactoryXmlStream::GetDescription()
 {
-SHVString retVal(_T("Module library for xmlstream"));
+SHVString retVal(_T("Module library for XmlStream"));
+	return retVal.ReleaseBuffer();
+}
+
+/*************************************
+ * GetName
+ *************************************/
+SHVStringBuffer SHVModuleFactoryXmlStream::GetName()
+{
+SHVString retVal(_T("XmlStream"));
 	return retVal.ReleaseBuffer();
 }
 
 /*************************************
  * ResolveModules
  *************************************/
-SHVBool SHVModuleFactoryxmlstream::ResolveModules(const SHVString8C symbol)
+SHVBool SHVModuleFactoryXmlStream::ResolveModules(const SHVString8C symbol)
 {
 	if (symbol == __MODULESYMBOL_DEFAULTS)
 	{
-		modules.AddModule(new SHVxmlstream(Modules));
+		Modules.AddModule(new SHVXmlStream_impl(Modules));
 		return SHVBool::True;
 	}
 
@@ -82,6 +92,6 @@ SHVBool SHVModuleFactoryxmlstream::ResolveModules(const SHVString8C symbol)
 /*************************************
  * OnEvent
  *************************************/
-void SHVModuleFactoryxmlstream::OnEvent(SHVEvent* event)
+void SHVModuleFactoryXmlStream::OnEvent(SHVEvent* event)
 {
 }

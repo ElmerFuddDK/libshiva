@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
 #include "../../../include/utils/shvdll.h"
+#include "../../../include/shvversion.h"
 #include "../../../include/framework/shvmodulelist.h"
 
 #include "shvxmlstreamfactory.h"
@@ -38,7 +39,7 @@ void* CreateObjectInt(SHVModuleList* list, int id)
 	switch (id)
 	{
 	case SHVDll::ClassTypeModuleFactory:
-		return new SHVModuleFactoryxmlstream(*list);
+		return new SHVModuleFactoryXmlStream(*list);
 	default:
 		return NULL;
 	}

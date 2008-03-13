@@ -5,17 +5,17 @@
 
 
 //-=========================================================================================================
-/// SHVModuleFactoryxmlstream - factory for module library xmlstream
+/// SHVModuleFactoryXmlStream - factory for module library XmlStream
 /**
  */
 
-class SHVModuleFactoryxmlstream : public SHVModuleFactory
+class SHVModuleFactoryXmlStream : public SHVModuleFactory
 {
 public:
 
 	
 	// Constructor
-	SHVModuleFactoryxmlstream(SHVModuleList& modules);
+	SHVModuleFactoryXmlStream(SHVModuleList& modules);
 
 
 	virtual SHVBool CheckVersion(int verMajor,int verMinor,int verRelease);
@@ -26,6 +26,7 @@ public:
 
 
 	// Get description
+	virtual SHVStringBuffer GetName();
 	virtual SHVStringBuffer GetDescription();
 
 
