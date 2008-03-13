@@ -2,7 +2,7 @@
 #define __SHIVA_UTILS_STREAMIN_H
 
 #include "../shvtypes.h"
-#include "../shvstring.h"
+#include "shvstring.h"
 //-=========================================================================================================
 /// SHVStreamIn class - Stream input interface
 /**
@@ -20,6 +20,7 @@ public:
 
 	virtual SHVBool ReadString8(SHVChar* buffer, int maxlen) = 0;
 	virtual SHVChar ReadChar8() = 0;
+	virtual void Close() = 0;
 
 	inline SHVBool ReadString(SHVTChar* buffer, int maxlen);
 	inline SHVTChar ReadChar();

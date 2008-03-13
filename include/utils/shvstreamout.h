@@ -2,7 +2,7 @@
 #define __SHIVA_UTILS_STREAMOUT_H
 
 #include "../shvtypes.h"
-#include "../shvstring.h"
+#include "shvstring.h"
 //-=========================================================================================================
 /// SHVStreamOut class - Stream out interface
 /**
@@ -12,23 +12,24 @@ class SHVStreamOut
 public:
 	virtual ~SHVStreamOut() {}
 	virtual SHVBool IsOk() const =  0;
-	virtual SHVBool WriteBuffer(void* buffer, int len) = 0;
+	virtual SHVBool WriteBuffer(const void* buffer, int len) = 0;
 
-	virtual SHVBool WriteString16(SHVWChar* buffer, int maxlen = -1) = 0;
+	virtual SHVBool WriteString16(const SHVWChar* buffer, int maxlen = -1) = 0;
 	virtual SHVBool WriteChar16(SHVWChar ch) = 0;
 
-	virtual SHVBool WriteString8(SHVChar* buffer, int maxlen = -1) = 0;
-	virtual SHVBool WriteChar8(SHVChar ch) = 0;
+	virtual SHVBool WriteString8(const SHVChar* buffer, int maxlen = -1) = 0;
+	virtual SHVBool WriteChar8(const SHVChar ch) = 0;
+	virtual void Close() = 0;
 
-	inline SHVBool WriteString(SHVTChar* buffer, int maxlen = -1);
+	inline SHVBool WriteString(const SHVTChar* buffer, int maxlen = -1);
 	inline SHVBool WriteChar(SHVTChar);
 };
 
 // ============================================= implementation ============================================= //
 /*************************************
- * ReadString
+ * WriteString
  *************************************/
-SHVBool SHVStreamOut::WriteString(SHVTChar* buffer, int maxlen)
+SHVBool SHVStreamOut::WriteString(const SHVTChar* buffer, int maxlen)
 {
 #ifdef UNICODE
 	return WriteString16(buffer, maxlen);
@@ -38,7 +39,7 @@ SHVBool SHVStreamOut::WriteString(SHVTChar* buffer, int maxlen)
 }
 
 /*************************************
- * ReadChar
+ * WriteChar
  *************************************/
 SHVBool SHVStreamOut::WriteChar(SHVTChar ch)
 {
