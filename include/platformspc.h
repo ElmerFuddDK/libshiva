@@ -64,7 +64,7 @@
 # define SHVUNUSED_PARAM(x) (void) x
 #endif
 
-#include "utils/shvassert.h"
 #include "shvtypes.h"
+#include "utils/shvassert.h"
 
 #endif

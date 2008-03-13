@@ -7,9 +7,11 @@
 # endif
 # define SHVASSERT(x) (void) ((x) || !SHVAssert::ReportError(__FILE__, __LINE__) || SHVBREAKPOINT)
 # define SHVVERIFY(x) SHVASSERT(x)
+# define SHVTRACE SHVAssert::Trace
 #else
 # define SHVASSERT(x)
 # define SHVVERIFY(x) x
+# define SHVTRACE (void)
 #endif
 
 class SHVAssert
@@ -17,6 +19,7 @@ class SHVAssert
 public:
 
 	static bool SHVAPI ReportError(const char* fileName, int lineNo);
+	static void SHVAPI Trace(const SHVTChar* s, ...);
 	
 };
 

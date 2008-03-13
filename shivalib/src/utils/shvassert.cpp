@@ -31,6 +31,7 @@
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
 #include "../../../include/utils/shvassert.h"
+#include "../../../include/utils/shvstring.h"
 
 #ifdef __SHIVA_WIN32
 # include <crtdbg.h>
@@ -55,4 +56,22 @@ bool SHVAPI SHVAssert::ReportError(const char* fileName, int lineNo)
 	return false;
 #endif
 	return true;
+}
+
+void SHVAPI SHVAssert::Trace(const SHVTChar* s, ...)
+{
+SHVString str;
+SHVVA_LIST args;
+
+	SHVVA_START(args,s);
+	str.FormatList(s,args);
+	SHVVA_END(args);
+
+#if defined(__SHIVA_WIN32)
+	::OutputDebugString(str.GetSafeBuffer());
+#elif defined(__SHIVA_EPOC)
+#elif defined(UNICODE)
+#else
+	fprintf(stderr,"%s",str.GetSafeBuffer());
+#endif
 }
