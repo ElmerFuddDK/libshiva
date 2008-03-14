@@ -110,6 +110,8 @@ void SHVControlImplementerLabelWin32::SetText(SHVControlLabel* owner, const SHVS
 
 		SetRect(owner,rect);
 	}
+
+	::InvalidateRect(GetHandle(),NULL,TRUE);
 }
 
 /*************************************
