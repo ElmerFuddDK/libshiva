@@ -33,6 +33,10 @@
 #include "shvcontrolimplementerbuttonwin32.h"
 #include "shvwin32.h"
 
+#ifndef MAKEPOINTS
+# define MAKEPOINTS(l)       (*((POINTS FAR *)&(l)))
+#endif
+
 
 
 /*************************************
@@ -122,11 +126,29 @@ SHVControlButtonRef refToSelf;
 
 	switch (message) 
 	{
-	case BM_SETSTATE:
-		if (wParam)
+	case WM_KEYUP:
+		switch (wParam)
 		{
+		case VK_RETURN:
+		case VK_SPACE:
 			refToSelf = owner; // ensure the validity of the object through this function
 			owner->PerformClicked();
+			break;
+		}
+		return CallWindowProc(self->OrigProc,hWnd, message, wParam, lParam);
+	case WM_LBUTTONUP:
+		{
+		POINTS p = MAKEPOINTS(lParam);
+		RECT rect;
+
+			::GetWindowRect(hWnd,&rect);
+
+			if (p.x >= 0 && p.x < (rect.right-rect.left) &&
+				p.y >= 0 && p.y < (rect.bottom-rect.top))
+			{
+				refToSelf = owner; // ensure the validity of the object through this function
+				owner->PerformClicked();
+			}
 		}
 	default:
 		return CallWindowProc(self->OrigProc,hWnd, message, wParam, lParam);
