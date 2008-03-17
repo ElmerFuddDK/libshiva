@@ -13,7 +13,8 @@ SHVXmlWriter_Impl::SHVXmlWriter_Impl(SHVXmlWriter::WriterEncoding enc)
 	case SHVXmlWriter::WriterEncodingNative:
 #endif
 	case SHVXmlWriter::WriterEncodingUTF16:
-			InternalEncoding = Internal16;
+		InternalEncoding = Internal16;
+		break;
 #ifndef UNICODE
 	case SHVXmlWriter::WriterEncodingNative:
 		InternalEncoding = Internal8;
