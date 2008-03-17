@@ -12,6 +12,10 @@
 # include <winnls.h>
   typedef wchar_t WCHAR;
 #else
+# ifdef DEBUG
+#  include <crtdbg.h>
+#  define SHVBREAKPOINT (_CrtDbgBreak(), 0)
+# endif
 # include <afxtempl.h>
 # include <afxsock.h>
 # include <shlwapi.h>
@@ -23,6 +27,8 @@
 
 #ifdef LIBSHIVA_EXPORTS
 # define SHVAPI __declspec(dllexport)
+#elif defined(NOLIBSHIVA)
+# define SHVAPI
 #else
 # define SHVAPI __declspec(dllimport)
 #endif
