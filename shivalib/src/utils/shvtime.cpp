@@ -33,6 +33,10 @@
 
 #include "../../../include/utils/shvtime.h"
 
+///\cond INTERNAL
+#define __SHVTIME_MAXDATESTR 128
+///\endcond
+
 
 //=========================================================================================================
 // SHVTime class
@@ -278,6 +282,24 @@ SHVString retVal;
 }
 
 /*************************************
+ * Format
+ *************************************/
+SHVStringBuffer SHVTime::Format(const SHVStringC s) const
+{
+SHVTChar* retVal = (SHVTChar*)::malloc(__SHVTIME_MAXDATESTR*sizeof(SHVTChar));
+
+	retVal[0] = 0;
+
+#if defined(UNICODE)
+	wcsftime(retVal,__SHVTIME_MAXDATESTR,s.GetSafeBuffer(),&Time);
+#else
+	strftime(retVal,__SHVTIME_MAXDATESTR,s.GetSafeBuffer(),&Time);
+#endif
+
+	return SHVStringBuffer::Encapsulate(retVal);
+}
+
+/*************************************
  * SetNow
  *************************************/
 void SHVTime::SetNow(int diffInSeconds)
@@ -421,6 +443,22 @@ int SHVTime::DaysInMonth(int month, int year)
 		case 2: return ( !(year%4) && ( (year%100) || !(year%400) ) ? 29 : 28 );
 	}
 	return 31;
+}
+
+/*************************************
+ * GapInSeconds
+ *************************************/
+int SHVTime::GapInSeconds(const SHVTime& from, const SHVTime& to)
+{
+time_t ttime1;
+time_t ttime2;
+
+	///\todo Add handling for local time calculation
+
+	ttime1 = TimeGm((tm*)&from.Time);
+	ttime2 = TimeGm((tm*)&to.Time);
+
+	return int(ttime2)-int(ttime1);
 }
 
 

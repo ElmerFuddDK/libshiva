@@ -78,6 +78,7 @@ public:
 	// functions
 	SHVBool SetFromDateString(const SHVStringC& dateStr);
 	SHVStringBuffer ToDateString() const;
+	SHVStringBuffer Format(const SHVStringC s) const;
 	void SetNow(int diffInSeconds=0);
 	void AddSeconds(int seconds);
 
@@ -96,6 +97,7 @@ public:
 	static SHVStringBuffer CreateTimeStringNow(int diffInSeconds=0);
 	static int MonthToDays(int month);
 	static int DaysInMonth(int month, int year);
+	static int GapInSeconds(const SHVTime& from, const SHVTime& to);
 
 private:
 	///\cond INTERNAL
