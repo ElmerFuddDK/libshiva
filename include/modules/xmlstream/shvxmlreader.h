@@ -4,6 +4,7 @@
 #include "../../../include/utils/shvstring.h"
 #include "../../../include/utils/shvstringutf8.h"
 #include "../../../include/utils/shvstreamin.h"
+#include "../../../include/utils/shvptrcontainer.h"
 
 // forward declare
 class SHVXmlReaderCallbackBase;
@@ -55,6 +56,7 @@ public:
 	virtual void SetValueCallback(SHVXmlReaderCallbackBase* callback) = 0;
 
 };
+typedef SHVPtrContainer<SHVXmlReader> SHVXmlReaderPtr;
 
 //-=========================================================================================================
 /// SHVXmlReaderCallbackBase class - Base class for the callback template class

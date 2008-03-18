@@ -4,6 +4,7 @@
 #include "../../../include/utils/shvstring.h"
 #include "../../../include/utils/shvstringutf8.h"
 #include "../../../include/utils/shvstreamout.h"
+#include "../../../include/utils/shvptrcontainer.h"
 
 //-=========================================================================================================
 /// SHVXmlWriter class - This class is the interface for the class that writes xml.
@@ -35,6 +36,7 @@ public:
 	inline void WriteAttribute(SHVStreamOut& Streamout, const SHVStringC& attrName, const SHVStringC& value);
 	inline void WriteText(SHVStreamOut& Streamout, const SHVStringC& text);
 };
+typedef SHVPtrContainer<SHVXmlWriter> SHVXmlWriterPtr;
 
 
 // ===================================== implementation - SHVXmlWriter ===================================== //
