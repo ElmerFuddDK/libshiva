@@ -20,6 +20,10 @@
 # define GetWindowLongPtr(x,y) (LONG_PTR)GetWindowLong(x,y)
 #endif
 
+// forward declare
+class SHVControlWrapperWin32;
+class SHVControlContainerWrapperWin32;
+
 
 //-=========================================================================================================
 /// SHVControlImplementerWin32Base - implementation of base implementer methods
@@ -66,6 +70,8 @@ protected:
 	virtual void ModifyStyleEx(int set, int remove);
 
 private:
+friend class SHVControlWrapperWin32;
+friend class SHVControlContainerWrapperWin32;
 
 	HWND Window;
 	SHVFontWin32Ref Font;

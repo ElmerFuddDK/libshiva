@@ -256,6 +256,10 @@
 				Name="win32gui"
 				>
 				<File
+					RelativePath="..\gui\shvcontrolcontainerwrapperwin32.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\gui\shvcontrolimplementerbuttonwin32.cpp"
 					>
 				</File>
@@ -281,6 +285,10 @@
 				</File>
 				<File
 					RelativePath="..\gui\shvcontrolimplementerwin32base.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\gui\shvcontrolwrapperwin32.cpp"
 					>
 				</File>
 				<File
@@ -328,6 +336,10 @@
 				Name="utilsimpl"
 				>
 				<File
+					RelativePath="..\..\utilsimpl\shvcolor.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\utilsimpl\shvregionimpl.cpp"
 					>
 				</File>
@@ -345,6 +357,10 @@
 			<Filter
 				Name="win32gui"
 				>
+				<File
+					RelativePath="..\gui\shvcontrolcontainerwrapperwin32.h"
+					>
+				</File>
 				<File
 					RelativePath="..\gui\shvcontrolimplementerbuttonwin32.h"
 					>
@@ -375,6 +391,10 @@
 				</File>
 				<File
 					RelativePath="..\gui\shvcontrolimplementerwin32base.h"
+					>
+				</File>
+				<File
+					RelativePath="..\gui\shvcontrolwrapperwin32.h"
 					>
 				</File>
 				<File
