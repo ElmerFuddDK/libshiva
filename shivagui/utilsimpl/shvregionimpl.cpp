@@ -458,7 +458,7 @@ SHVRegionAction* SHVRegionActionImpl::Right(int leftMargin, int topMargin)
 		CalculateHMargin(leftMargin);
 		CalculateVMargin(topMargin);
 
-		WindowRect.SetByXY( Region.Rect.GetLeft()-leftMargin-WindowRect.GetWidth(),
+		WindowRect.SetByXY( Region.Rect.GetRight()-leftMargin-WindowRect.GetWidth(),
 							Region.Rect.GetTop()+topMargin,
 							WindowRect.GetWidth(),
 							WindowRect.GetHeight() );
