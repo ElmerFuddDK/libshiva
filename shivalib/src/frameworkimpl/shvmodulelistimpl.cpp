@@ -108,11 +108,11 @@ void SHVModuleListImpl::DestroyModules()
 {
 	if (State == StateInitialized)
 	{
+		Config.Clear();
+		UserConfigs.Clear();
 		Modules.RemoveAll();
 		StartupErrors.RemoveAll();
 		ShutdownDelays.RemoveAll();
-		Config.Clear();
-		UserConfigs.Clear();
 	}
 }
 
