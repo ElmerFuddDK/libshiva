@@ -36,6 +36,7 @@ public:
 	virtual const SHVDataStructC* GetStruct() const;
 	virtual const SHVString8C GetAlias() const;
 	virtual int GetRowState() const;
+	virtual const SHVDataRowListC* GetRowListC();
 
 private:
 friend class SHVDataRowList_SQLite;
