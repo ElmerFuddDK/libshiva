@@ -57,6 +57,7 @@ public:
 	virtual const SHVString8C GetAlias() const;
 
 	virtual int GetRowState() const;
+	virtual const SHVDataRowListC* GetRowListC();
 
 	virtual SHVBool Delete();
 	virtual SHVBool HasChanges();
@@ -64,9 +65,9 @@ public:
 protected:
 	virtual ~SHVDataRow_impl();
 	inline void SetChanged();
+	virtual SHVDataRowList* GetRowList();
 	virtual void InternalAcceptChanges();
 	virtual void InternalRejectChanges();
-	virtual SHVDataRowList* GetRowList();
 private:
 	friend class SHVDataRowList_SQLite;
 	RowValues* ColumnData;
