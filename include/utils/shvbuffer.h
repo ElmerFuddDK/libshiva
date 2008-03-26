@@ -34,12 +34,11 @@ public:
 	inline SHVBool WriteString(const SHVStringC str, size_t& pos);
 	SHVBool WriteString8(const SHVString8C str, size_t& pos);
 	SHVBool WriteString16(const SHVString16C str, size_t& pos);
-	SHVBool WriteBytes(const SHVByte* buf, size_t bufLen, size_t& pos);
+	virtual SHVBool WriteBytes(const SHVByte* buf, size_t bufLen, size_t& pos);
 	
 	
 	// Buffer operations
 	virtual SHVBool SetBufferSize(size_t newSize, size_t toCopyFromOld = 0);
-	
 	
 protected:
 	inline SHVBuffer() : SHVBufferC() {}
@@ -130,7 +129,7 @@ protected:
  */
 
 template<size_t BufferSize>
-class SHVAPI SHVBufferChunk : public SHVBuffer
+class SHVBufferChunk : public SHVBuffer
 {
 public:
 
