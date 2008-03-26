@@ -61,17 +61,17 @@ SHVListPos p = NULL;
  *************************************/
 void SHVXmlWriter_Impl::WriteStartElement16(SHVStreamOut& Streamout, const SHVString16C& elementName)
 {
-	if (CurrentShortClose())
-	{
-		Streamout.WriteChar16(L'>');
-		ClearCurrentShortClose();
-	}
 	switch (InternalEncoding)
 	{
 	case Internal8:
 		WriteStartElement8(Streamout, elementName.ToStr8());
 		break;
 	case Internal16:
+		if (CurrentShortClose())
+		{
+			Streamout.WriteChar16(L'>');
+			ClearCurrentShortClose();
+		}
 		Push16(elementName);
 		Streamout.WriteChar16(L'<');
 		Streamout.WriteString16(elementName.GetBufferConst());
@@ -88,13 +88,13 @@ void SHVXmlWriter_Impl::WriteStartElement16(SHVStreamOut& Streamout, const SHVSt
  *************************************/
 void SHVXmlWriter_Impl::WriteAttribute16(SHVStreamOut& Streamout, const SHVString16C& attrName, const SHVString16C& value)
 {
-	Streamout.WriteChar16(L' ');
 	switch (InternalEncoding)
 	{
 	case Internal8:
 		WriteAttribute8(Streamout, attrName.ToStr8(), value.ToStr8());
 		break;
 	case Internal16:
+		Streamout.WriteChar16(L' ');
 		Streamout.WriteString16(attrName.GetBufferConst());
 		Streamout.WriteString16(L"=\"");
 		InternalWriteText16(Streamout, value);
@@ -113,7 +113,16 @@ void SHVXmlWriter_Impl::WriteText16(SHVStreamOut& Streamout, const SHVStringC& t
 {
 	if (CurrentShortClose())
 	{
-		Streamout.WriteChar16(L'>');
+		switch (InternalEncoding)
+		{
+		case Internal16:
+			Streamout.WriteChar16(L'>');
+			break;
+		case Internal8:
+		case InternalUTF8:
+			Streamout.WriteChar8('>');
+			break;
+		}
 		ClearCurrentShortClose();
 	}
 	InternalWriteText16(Streamout, text);
@@ -124,14 +133,14 @@ void SHVXmlWriter_Impl::WriteText16(SHVStreamOut& Streamout, const SHVStringC& t
  *************************************/
 void SHVXmlWriter_Impl::WriteStartElement8(SHVStreamOut& Streamout, const SHVString8C& elementName)
 {
-	if (CurrentShortClose())
-	{
-		Streamout.WriteChar8('>');
-		ClearCurrentShortClose();
-	}
 	switch (InternalEncoding)
 	{
 	case Internal8:
+		if (CurrentShortClose())
+		{
+			Streamout.WriteChar8('>');
+			ClearCurrentShortClose();
+		}
 		Push8(elementName);
 		Streamout.WriteChar8('<');
 		Streamout.WriteString8(elementName.GetBufferConst());
@@ -150,10 +159,10 @@ void SHVXmlWriter_Impl::WriteStartElement8(SHVStreamOut& Streamout, const SHVStr
  *************************************/
 void SHVXmlWriter_Impl::WriteAttribute8(SHVStreamOut& Streamout, const SHVString8C& attrName, const SHVString8C& value)
 {
-	Streamout.WriteChar8(' ');
 	switch (InternalEncoding)
 	{
 	case Internal8:
+		Streamout.WriteChar8(' ');
 		Streamout.WriteString8(attrName.GetBufferConst());
 		Streamout.WriteString8("=\"");
 		InternalWriteText8(Streamout, value);
@@ -175,7 +184,16 @@ void SHVXmlWriter_Impl::WriteText8(SHVStreamOut& Streamout, const SHVString8C& t
 {
 	if (CurrentShortClose())
 	{
-		Streamout.WriteChar8('>');
+		switch (InternalEncoding)
+		{
+		case Internal16:
+			Streamout.WriteChar16(L'>');
+			break;
+		case Internal8:
+		case InternalUTF8:
+			Streamout.WriteChar8('>');
+			break;
+		}
 		ClearCurrentShortClose();
 	}
 	InternalWriteText8(Streamout, text);
@@ -186,11 +204,6 @@ void SHVXmlWriter_Impl::WriteText8(SHVStreamOut& Streamout, const SHVString8C& t
  *************************************/
 void SHVXmlWriter_Impl::WriteStartElementUTF8(SHVStreamOut& Streamout, const SHVStringUTF8C& elementName)
 {
-	if (CurrentShortClose())
-	{
-		Streamout.WriteChar8('>');
-		ClearCurrentShortClose();
-	}
 	switch (InternalEncoding)
 	{
 	case Internal8:
@@ -200,6 +213,11 @@ void SHVXmlWriter_Impl::WriteStartElementUTF8(SHVStreamOut& Streamout, const SHV
 		WriteStartElement16(Streamout, elementName.ToStr16());
 		break;
 	case InternalUTF8:
+		if (CurrentShortClose())
+		{
+			Streamout.WriteChar8('>');
+			ClearCurrentShortClose();
+		}
 		PushUTF8(elementName);
 		Streamout.WriteChar8('<');
 		Streamout.WriteString8(elementName.GetBufferConst());
@@ -212,7 +230,6 @@ void SHVXmlWriter_Impl::WriteStartElementUTF8(SHVStreamOut& Streamout, const SHV
  *************************************/
 void SHVXmlWriter_Impl::WriteAttributeUTF8(SHVStreamOut& Streamout, const SHVStringUTF8C& attrName, const SHVStringUTF8C& value)
 {
-	Streamout.WriteChar8(' ');
 	switch (InternalEncoding)
 	{
 	case Internal8:
@@ -222,6 +239,7 @@ void SHVXmlWriter_Impl::WriteAttributeUTF8(SHVStreamOut& Streamout, const SHVStr
 		WriteAttribute16(Streamout, attrName.ToStr16(), value.ToStr16());
 		break;
 	case InternalUTF8:
+		Streamout.WriteChar8(' ');
 		Streamout.WriteString8(attrName.GetBufferConst());
 		Streamout.WriteString8("=\"");
 		InternalWriteTextUTF8(Streamout, value);
@@ -237,7 +255,16 @@ void SHVXmlWriter_Impl::WriteTextUTF8(SHVStreamOut& Streamout, const SHVStringUT
 {
 	if (CurrentShortClose())
 	{
-		Streamout.WriteChar8('>');
+		switch (InternalEncoding)
+		{
+		case Internal16:
+			Streamout.WriteChar16(L'>');
+			break;
+		case Internal8:
+		case InternalUTF8:
+			Streamout.WriteChar8('>');
+			break;
+		}
 		ClearCurrentShortClose();
 	}
 	InternalWriteTextUTF8(Streamout, text);

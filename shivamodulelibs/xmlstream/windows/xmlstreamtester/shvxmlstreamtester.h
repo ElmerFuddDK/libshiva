@@ -31,12 +31,12 @@ public:
 	SHVStreamInTest(const SHVStringC& fileName);
 	virtual bool Eof() const;
 	virtual SHVBool IsOk() const;
-	virtual SHVBool ReadBuffer(void* buffer, int bufferSize, int& actualLength);
+	virtual SHVBool ReadBuffer(void* buffer, size_t bufferSize, size_t& actualLength);
 
-	virtual SHVBool ReadString16(SHVWChar* buffer, int maxlen);
+	virtual SHVBool ReadString16(SHVWChar* buffer, size_t maxlen);
 	virtual SHVWChar ReadChar16();
 
-	virtual SHVBool ReadString8(SHVChar* buffer, int maxlen);
+	virtual SHVBool ReadString8(SHVChar* buffer, size_t maxlen);
 	virtual SHVChar ReadChar8();
 	virtual void Close();
 private:
@@ -51,12 +51,12 @@ public:
 	SHVStreamOutTest(const SHVStringC& fileName);
 	virtual ~SHVStreamOutTest();
 	virtual SHVBool IsOk() const;
-	virtual SHVBool WriteBuffer(const void* buffer, int len);
+	virtual SHVBool WriteBuffer(const void* buffer, size_t len);
 
-	virtual SHVBool WriteString16(const SHVWChar* buffer, int maxlen = -1);
+	virtual SHVBool WriteString16(const SHVWChar* buffer, size_t maxlen = SIZE_T_MAX);
 	virtual SHVBool WriteChar16(SHVWChar ch);
 
-	virtual SHVBool WriteString8(const SHVChar* buffer, int maxlen = -1);
+	virtual SHVBool WriteString8(const SHVChar* buffer, size_t maxlen = SIZE_T_MAX);
 	virtual SHVBool WriteChar8(const SHVChar ch);
 	virtual void Close();
 private:

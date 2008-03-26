@@ -94,16 +94,16 @@ SHVBool SHVStreamInTest::IsOk() const
 	return Ok;
 }
 
-SHVBool SHVStreamInTest::ReadBuffer(void* buffer, int bufferSize, int& actualLength)
+SHVBool SHVStreamInTest::ReadBuffer(void* buffer, size_t bufferSize, size_t& actualLength)
 {
-	actualLength = File.Read(buffer, bufferSize);
+	actualLength = File.Read(buffer, (SHVFilePos) bufferSize);
 	IsEof = actualLength < bufferSize;
 	return actualLength != 0;
 }
 
-SHVBool SHVStreamInTest::ReadString16(SHVWChar* buffer, int maxlen)
+SHVBool SHVStreamInTest::ReadString16(SHVWChar* buffer, size_t maxlen)
 {
-int i = 0;
+size_t i = 0;
 	while (i < maxlen - 1 && (IsEof = File.Read((void *) (buffer+i), sizeof(SHVWChar)) < sizeof(SHVWChar)) && buffer[i] && buffer[i] != '\n')
 	{
 		if (buffer[i] != L'\r')
@@ -121,9 +121,9 @@ SHVWChar ch = 0;
 	return ch;
 }
 
-SHVBool SHVStreamInTest::ReadString8(SHVChar* buffer, int maxlen)
+SHVBool SHVStreamInTest::ReadString8(SHVChar* buffer, size_t maxlen)
 {
-int i = 0;
+size_t i = 0;
 	while (i < maxlen - 1 && (IsEof = File.Read((void *) (buffer+i), sizeof(SHVChar)) < sizeof(SHVWChar)) && buffer[i] && buffer[i] != '\n')
 	{
 		if (buffer[i] != L'\r')
@@ -161,23 +161,23 @@ SHVBool SHVStreamOutTest::IsOk() const
 	return Ok;
 }
 
-SHVBool SHVStreamOutTest::WriteBuffer(const void* buffer, int len)
+SHVBool SHVStreamOutTest::WriteBuffer(const void* buffer, size_t len)
 {
 	if (Ok)
 	{
-		File.Write(buffer, len);
+		File.Write(buffer, (SHVFilePos) len);
 	}
 	return Ok;
 }
 
-SHVBool SHVStreamOutTest::WriteString16(const SHVWChar* buffer, int maxlen)
+SHVBool SHVStreamOutTest::WriteString16(const SHVWChar* buffer, size_t maxlen)
 {
 	if (Ok)
 	{
-	int writeLen = (int) SHVString::StrLen(buffer);
-		if (maxlen >= 0 && maxlen < writeLen)
+	size_t writeLen = SHVString::StrLen(buffer);
+		if (maxlen < writeLen)
 			writeLen = maxlen;
-		Ok = File.Write(buffer, writeLen*2);
+		Ok = File.Write(buffer, (SHVFilePos) writeLen*2);
 	}
 	return Ok;
 }
@@ -191,14 +191,14 @@ SHVBool SHVStreamOutTest::WriteChar16(SHVWChar ch)
 	return Ok;
 }
 
-SHVBool SHVStreamOutTest::WriteString8(const SHVChar* buffer, int maxlen)
+SHVBool SHVStreamOutTest::WriteString8(const SHVChar* buffer, size_t maxlen)
 {
 	if (Ok)
 	{
-	int writeLen = (int) SHVString8::StrLen(buffer);
-		if (maxlen >= 0 && maxlen < writeLen)
+	size_t writeLen = SHVString8::StrLen(buffer);
+		if (maxlen < writeLen)
 			writeLen = maxlen;
-		Ok = File.Write(buffer, writeLen);
+		Ok = File.Write(buffer, (SHVFilePos) writeLen);
 	}
 	return Ok;
 }
