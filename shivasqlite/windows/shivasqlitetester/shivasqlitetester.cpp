@@ -15,21 +15,54 @@ void DumpRow(SHVSQLiteStatement* statement)
 		SHVString value;
 		SHVString columnName;
 		SHVString columnType;
+		short aff;
 		int len = 0;
 		if (statement->GetColumnName(columnName, i))
 		{
 			statement->GetColumnType(columnType, i);
 			if (statement->GetString(value, len, i))
 			{
-
-				_tprintf(_T("%s:%s = %s\r\n"), columnName.GetSafeBuffer(), columnType.GetSafeBuffer(), value.GetSafeBuffer());
+				if (columnType.Left(7) == _T("varchar"))
+					_tprintf(_T("%-20s "), value.GetSafeBuffer());
+				else
+				{
+					if (statement->GetColumnAffinity(aff, i))
+					{
+						if (aff == SHVSQLiteWrapper::Affinity_Int)
+							_tprintf(_T("%10s "), value.GetSafeBuffer());
+						else
+							_tprintf(_T("%20s "), value.GetSafeBuffer());
+					}
+				}
 			}
 		}
 	}
+	_tprintf(_T("\r\n"));
 }
 SHVBool DumpData(SHVSQLiteStatement* statement)
 {
 SHVBool errorCode;
+SHVString columnName;
+SHVString columnType;
+short aff;
+	for (int i = 0; i < statement->GetColumnCount(); i++)
+	{
+		if (statement->GetColumnName(columnName, i))
+		{
+			statement->GetColumnType(columnType, i);
+			if (columnType.Left(7) == _T("varchar"))
+				_tprintf(_T("%-20s "), columnName.GetSafeBuffer());
+			else
+			if (statement->GetColumnAffinity(aff, i))
+			{
+				if (aff == SHVSQLiteWrapper::Affinity_Int)
+					_tprintf(_T("%10s "), columnName.GetSafeBuffer());
+				else
+					_tprintf(_T("%20s "), columnName.GetSafeBuffer());
+			}
+		}
+	}
+	_tprintf(_T("\r\n=======================================================================\r\n"));
 	do 
 	{
 		DumpRow(statement);
@@ -37,7 +70,42 @@ SHVBool errorCode;
 	return errorCode;
 }
 
+void TerrorTest(SHVDll& dll, const SHVStringC& fileName)
+{
+SHVStringSQLite rest("");
+SHVBool ok;
+SHVSQLiteWrapperRef sqlLite1 = (SHVSQLiteWrapper*) dll.CreateObjectInt(NULL, SHVDll::ClassTypeUser);
+SHVSQLiteWrapperRef sqlLite2 = (SHVSQLiteWrapper*) dll.CreateObjectInt(NULL, SHVDll::ClassTypeUser);
+SHVSQLiteStatementRef statement1;
+SHVSQLiteStatementRef statement2;
 
+	sqlLite1->Open(fileName);
+	sqlLite2->Open(fileName);
+
+	statement1 = sqlLite1->ExecuteUTF8(ok, "drop table ctest", rest);
+	statement1 = sqlLite1->ExecuteUTF8(ok, "create table ctest(key integer primary key, val varchar(30))", rest);
+	statement1 = sqlLite1->ExecuteUTF8(ok, "begin transaction", rest);
+	statement1 = sqlLite1->ExecuteUTF8(ok, "insert into ctest values(1, 'a')", rest);
+	statement1 = sqlLite1->ExecuteUTF8(ok, "insert into ctest values(2, 'b')", rest);
+	statement1 = sqlLite1->ExecuteUTF8(ok, "insert into ctest values(3, 'c')", rest);
+	statement1 = sqlLite1->ExecuteUTF8(ok, "insert into ctest values(4, 'd')", rest);
+	statement1 = sqlLite1->ExecuteUTF8(ok, "insert into ctest values(5, 'e')", rest);
+	statement1 = sqlLite1->ExecuteUTF8(ok, "insert into ctest values(6, 'f')", rest);
+	statement1 = sqlLite1->ExecuteUTF8(ok, "insert into ctest values(7, 'g')", rest);
+	statement1 = sqlLite1->ExecuteUTF8(ok, "insert into ctest values(8, 'h')", rest);
+	statement1 = sqlLite1->ExecuteUTF8(ok, "insert into ctest values(9, 'i')", rest);
+	statement1 = sqlLite1->ExecuteUTF8(ok, "insert into ctest values(10, 'j')", rest);
+	statement1 = sqlLite1->ExecuteUTF8(ok, "end transaction", rest);
+	statement1 = sqlLite1->ExecuteUTF8(ok, "update ctest set val = 'dette' where key = 3", rest);
+
+	statement2 = sqlLite2->ExecuteUTF8(ok, "select * from ctest where (@key is null or key = @key)", rest);
+	statement2->Reset();
+	statement2->SetParameterLongUTF8("@key", 5);
+	DumpData(statement2);
+	statement2->Reset();
+	statement2->SetParameterNullUTF8("@key");
+	DumpData(statement2);
+}
 
 int _tmain(int argc, _TCHAR* argv[])
 {
