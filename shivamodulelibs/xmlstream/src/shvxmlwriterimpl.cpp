@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
-#include "../include/xmlstreamimpl/shvxmlwriter_impl.h"
+#include "../include/shvxmlwriterimpl.h"
 
 /*************************************
  * Constructor
  *************************************/
-SHVXmlWriter_Impl::SHVXmlWriter_Impl(SHVXmlWriter::WriterEncoding enc)
+SHVXmlWriterImpl::SHVXmlWriterImpl(SHVXmlWriter::WriterEncoding enc)
 {
 	switch (enc)
 	{
@@ -36,7 +36,7 @@ SHVXmlWriter_Impl::SHVXmlWriter_Impl(SHVXmlWriter::WriterEncoding enc)
 /*************************************
  * Destructor
  *************************************/
-SHVXmlWriter_Impl::~SHVXmlWriter_Impl()
+SHVXmlWriterImpl::~SHVXmlWriterImpl()
 {
 SHVListPos p = NULL;
 	while (TagStack.MoveNext(p))
@@ -59,7 +59,7 @@ SHVListPos p = NULL;
 /*************************************
  * WriteStartElement16
  *************************************/
-void SHVXmlWriter_Impl::WriteStartElement16(SHVStreamOut& Streamout, const SHVString16C& elementName)
+void SHVXmlWriterImpl::WriteStartElement16(SHVStreamOut& Streamout, const SHVString16C& elementName)
 {
 	switch (InternalEncoding)
 	{
@@ -86,7 +86,7 @@ void SHVXmlWriter_Impl::WriteStartElement16(SHVStreamOut& Streamout, const SHVSt
 /*************************************
  * WriteAttribute16
  *************************************/
-void SHVXmlWriter_Impl::WriteAttribute16(SHVStreamOut& Streamout, const SHVString16C& attrName, const SHVString16C& value)
+void SHVXmlWriterImpl::WriteAttribute16(SHVStreamOut& Streamout, const SHVString16C& attrName, const SHVString16C& value)
 {
 	switch (InternalEncoding)
 	{
@@ -109,7 +109,7 @@ void SHVXmlWriter_Impl::WriteAttribute16(SHVStreamOut& Streamout, const SHVStrin
 /*************************************
  * WriteText16
  *************************************/
-void SHVXmlWriter_Impl::WriteText16(SHVStreamOut& Streamout, const SHVStringC& text)
+void SHVXmlWriterImpl::WriteText16(SHVStreamOut& Streamout, const SHVStringC& text)
 {
 	if (CurrentShortClose())
 	{
@@ -131,7 +131,7 @@ void SHVXmlWriter_Impl::WriteText16(SHVStreamOut& Streamout, const SHVStringC& t
 /*************************************
  * WriteStartElement8
  *************************************/
-void SHVXmlWriter_Impl::WriteStartElement8(SHVStreamOut& Streamout, const SHVString8C& elementName)
+void SHVXmlWriterImpl::WriteStartElement8(SHVStreamOut& Streamout, const SHVString8C& elementName)
 {
 	switch (InternalEncoding)
 	{
@@ -157,7 +157,7 @@ void SHVXmlWriter_Impl::WriteStartElement8(SHVStreamOut& Streamout, const SHVStr
 /*************************************
  * WriteAttribute8
  *************************************/
-void SHVXmlWriter_Impl::WriteAttribute8(SHVStreamOut& Streamout, const SHVString8C& attrName, const SHVString8C& value)
+void SHVXmlWriterImpl::WriteAttribute8(SHVStreamOut& Streamout, const SHVString8C& attrName, const SHVString8C& value)
 {
 	switch (InternalEncoding)
 	{
@@ -180,7 +180,7 @@ void SHVXmlWriter_Impl::WriteAttribute8(SHVStreamOut& Streamout, const SHVString
 /*************************************
  * WriteText8
  *************************************/
-void SHVXmlWriter_Impl::WriteText8(SHVStreamOut& Streamout, const SHVString8C& text)
+void SHVXmlWriterImpl::WriteText8(SHVStreamOut& Streamout, const SHVString8C& text)
 {
 	if (CurrentShortClose())
 	{
@@ -202,7 +202,7 @@ void SHVXmlWriter_Impl::WriteText8(SHVStreamOut& Streamout, const SHVString8C& t
 /*************************************
  * WriteStartElementUTF8
  *************************************/
-void SHVXmlWriter_Impl::WriteStartElementUTF8(SHVStreamOut& Streamout, const SHVStringUTF8C& elementName)
+void SHVXmlWriterImpl::WriteStartElementUTF8(SHVStreamOut& Streamout, const SHVStringUTF8C& elementName)
 {
 	switch (InternalEncoding)
 	{
@@ -228,7 +228,7 @@ void SHVXmlWriter_Impl::WriteStartElementUTF8(SHVStreamOut& Streamout, const SHV
 /*************************************
  * WriteAttributeUTF8
  *************************************/
-void SHVXmlWriter_Impl::WriteAttributeUTF8(SHVStreamOut& Streamout, const SHVStringUTF8C& attrName, const SHVStringUTF8C& value)
+void SHVXmlWriterImpl::WriteAttributeUTF8(SHVStreamOut& Streamout, const SHVStringUTF8C& attrName, const SHVStringUTF8C& value)
 {
 	switch (InternalEncoding)
 	{
@@ -251,7 +251,7 @@ void SHVXmlWriter_Impl::WriteAttributeUTF8(SHVStreamOut& Streamout, const SHVStr
 /*************************************
  * WriteTextUTF8
  *************************************/
-void SHVXmlWriter_Impl::WriteTextUTF8(SHVStreamOut& Streamout, const SHVStringUTF8C& text)
+void SHVXmlWriterImpl::WriteTextUTF8(SHVStreamOut& Streamout, const SHVStringUTF8C& text)
 {
 	if (CurrentShortClose())
 	{
@@ -273,7 +273,7 @@ void SHVXmlWriter_Impl::WriteTextUTF8(SHVStreamOut& Streamout, const SHVStringUT
 /*************************************
  * WriteEndElement
  *************************************/
-void SHVXmlWriter_Impl::WriteEndElement(SHVStreamOut& Streamout)
+void SHVXmlWriterImpl::WriteEndElement(SHVStreamOut& Streamout)
 {
 bool ShortClose;
 	switch (InternalEncoding)
@@ -323,7 +323,7 @@ bool ShortClose;
 /*************************************
  * Push16
  *************************************/
-void SHVXmlWriter_Impl::Push16(const SHVString16C& tag)
+void SHVXmlWriterImpl::Push16(const SHVString16C& tag)
 {
 	TagStackElem* elm = new TagStackElem();
 	elm->ShortClose = true;
@@ -334,7 +334,7 @@ void SHVXmlWriter_Impl::Push16(const SHVString16C& tag)
 /*************************************
  * Push8
  *************************************/
-void SHVXmlWriter_Impl::Push8(const SHVString8C& tag)
+void SHVXmlWriterImpl::Push8(const SHVString8C& tag)
 {
 	TagStackElem* elm = new TagStackElem();
 	elm->ShortClose = true;
@@ -345,7 +345,7 @@ void SHVXmlWriter_Impl::Push8(const SHVString8C& tag)
 /*************************************
  * PushUTF8
  *************************************/
-void SHVXmlWriter_Impl::PushUTF8(const SHVStringUTF8C& tag)
+void SHVXmlWriterImpl::PushUTF8(const SHVStringUTF8C& tag)
 {
 	TagStackElem* elm = new TagStackElem();
 	elm->ShortClose = true;
@@ -356,7 +356,7 @@ void SHVXmlWriter_Impl::PushUTF8(const SHVStringUTF8C& tag)
 /*************************************
  * Pop16
  *************************************/
-SHVStringBuffer16 SHVXmlWriter_Impl::Pop16(bool& shortClose)
+SHVStringBuffer16 SHVXmlWriterImpl::Pop16(bool& shortClose)
 {
 TagStackElem* elm = TagStack.PopTail();
 SHVStringBuffer16 retVal = elm->Tag.Tag16->ReleaseBuffer();
@@ -369,7 +369,7 @@ SHVStringBuffer16 retVal = elm->Tag.Tag16->ReleaseBuffer();
 /*************************************
  * Pop8
  *************************************/
-SHVStringBuffer8 SHVXmlWriter_Impl::Pop8(bool& shortClose)
+SHVStringBuffer8 SHVXmlWriterImpl::Pop8(bool& shortClose)
 {
 TagStackElem* elm = TagStack.PopTail();
 SHVStringBuffer8 retVal = elm->Tag.Tag8->ReleaseBuffer();
@@ -382,7 +382,7 @@ SHVStringBuffer8 retVal = elm->Tag.Tag8->ReleaseBuffer();
 /*************************************
  * PopUTF8
  *************************************/
-SHVStringBufferUTF8 SHVXmlWriter_Impl::PopUTF8(bool& shortClose)
+SHVStringBufferUTF8 SHVXmlWriterImpl::PopUTF8(bool& shortClose)
 {
 TagStackElem* elm = TagStack.PopTail();
 SHVStringBufferUTF8 retVal = elm->Tag.TagUTF8->ReleaseBuffer();
@@ -395,7 +395,7 @@ SHVStringBufferUTF8 retVal = elm->Tag.TagUTF8->ReleaseBuffer();
 /*************************************
  * ClearCurrentShortClose
  *************************************/
-void SHVXmlWriter_Impl::ClearCurrentShortClose()
+void SHVXmlWriterImpl::ClearCurrentShortClose()
 {
 SHVListPos tail = TagStack.GetTailPosition();
 	if (tail)
@@ -407,7 +407,7 @@ SHVListPos tail = TagStack.GetTailPosition();
 /*************************************
  * CurrentShortClose
  *************************************/
-const bool SHVXmlWriter_Impl::CurrentShortClose() const
+const bool SHVXmlWriterImpl::CurrentShortClose() const
 {
 SHVListPos tail = ((SHVList<TagStackElem>*) &TagStack)->GetTailPosition();
 	if (tail)
@@ -421,7 +421,7 @@ SHVListPos tail = ((SHVList<TagStackElem>*) &TagStack)->GetTailPosition();
 /*************************************
  * InternalWriteText16
  *************************************/
-void SHVXmlWriter_Impl::InternalWriteText16(SHVStreamOut& Streamout, const SHVStringC& text)
+void SHVXmlWriterImpl::InternalWriteText16(SHVStreamOut& Streamout, const SHVStringC& text)
 {
 size_t len;
 	switch (InternalEncoding)
@@ -467,7 +467,7 @@ size_t len;
 /*************************************
  * InternalWriteText8
  *************************************/
-void SHVXmlWriter_Impl::InternalWriteText8(SHVStreamOut& Streamout, const SHVString8C& text)
+void SHVXmlWriterImpl::InternalWriteText8(SHVStreamOut& Streamout, const SHVString8C& text)
 {
 size_t len;
 	switch (InternalEncoding)
@@ -514,7 +514,7 @@ size_t len;
 /*************************************
  * InternalWriteTextUTF8
  *************************************/
-void SHVXmlWriter_Impl::InternalWriteTextUTF8(SHVStreamOut& Streamout, const SHVStringUTF8C& text)
+void SHVXmlWriterImpl::InternalWriteTextUTF8(SHVStreamOut& Streamout, const SHVStringUTF8C& text)
 {
 size_t len;
 	switch (InternalEncoding)

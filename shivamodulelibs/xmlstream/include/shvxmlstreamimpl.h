@@ -1,7 +1,7 @@
 #ifndef __SHIVA_XMLSTREAM_IMPL_H
 #define __SHIVA_XMLSTREAM_IMPL_H
 
-#include "../shvxmlstream.h"
+#include "../../../include/modules/xmlstream/shvxmlstream.h"
 
 #define __XMLSTREEAM_VERSION_MAJOR     0
 #define __XMLSTREEAM_VERSION_MINOR     1
@@ -14,10 +14,10 @@
  * Factory for the SHVXmlReader & SHVXmlWriter objects
  */
 
-class SHVXmlStream_impl: public SHVXmlStream
+class SHVXmlStreamImpl: public SHVXmlStream
 {
 public:
-	SHVXmlStream_impl(SHVModuleList& modules);
+	SHVXmlStreamImpl(SHVModuleList& modules);
 	virtual SHVXmlReader* CreateReader(SHVXmlReader::ParserEncoding enc, size_t bufferSize = 1024);
 	virtual SHVXmlWriter* CreateWriter(SHVXmlWriter::WriterEncoding enc);
 };

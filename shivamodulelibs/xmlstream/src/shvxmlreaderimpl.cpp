@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
-#include "../include/xmlstreamimpl/shvxmlreader_impl.h"
+#include "../include/shvxmlreaderimpl.h"
 
 
 /*************************************
  * Constructor
  *************************************/
-SHVXmlReader_Impl::SHVXmlReader_Impl(ParserEncoding enc, size_t bufferSize)
+SHVXmlReaderImpl::SHVXmlReaderImpl(ParserEncoding enc, size_t bufferSize)
 {
 const TCHAR* encoding;
 	StartElementCallback = EndElementCallback = ValueCallback = NULL;
@@ -31,16 +31,16 @@ const TCHAR* encoding;
 	Encoding = enc;
 	Parser = XML_ParserCreate(encoding);
 	XML_SetElementHandler(Parser,
-		&SHVXmlReader_Impl::StartElementHandler,
-		&SHVXmlReader_Impl::EndElementHandler);
-	XML_SetCharacterDataHandler(Parser, &SHVXmlReader_Impl::DefaultHandler);
+		&SHVXmlReaderImpl::StartElementHandler,
+		&SHVXmlReaderImpl::EndElementHandler);
+	XML_SetCharacterDataHandler(Parser, &SHVXmlReaderImpl::DefaultHandler);
 	XML_SetUserData(Parser, this);
 }
 
 /*************************************
  * Destructor
  *************************************/
-SHVXmlReader_Impl::~SHVXmlReader_Impl()
+SHVXmlReaderImpl::~SHVXmlReaderImpl()
 {
 	if (StartElementCallback)
 		delete StartElementCallback;
@@ -54,7 +54,7 @@ SHVXmlReader_Impl::~SHVXmlReader_Impl()
 /*************************************
  * CalculateAttributeCount
  *************************************/
-size_t SHVXmlReader_Impl::CalculateAttributeCount() const
+size_t SHVXmlReaderImpl::CalculateAttributeCount() const
 {
 size_t retVal = 0;
 size_t i = 0;
@@ -68,7 +68,7 @@ size_t i = 0;
 /*************************************
  * GetElementName16
  *************************************/
-SHVStringBuffer16 SHVXmlReader_Impl::GetElementName16() const
+SHVStringBuffer16 SHVXmlReaderImpl::GetElementName16() const
 {
 	return XML_Char2String16(Value);
 }
@@ -76,7 +76,7 @@ SHVStringBuffer16 SHVXmlReader_Impl::GetElementName16() const
 /*************************************
  * GetAttributeName16
  *************************************/
-SHVStringBuffer16 SHVXmlReader_Impl::GetAttributeName16(size_t idx) const
+SHVStringBuffer16 SHVXmlReaderImpl::GetAttributeName16(size_t idx) const
 {
 	return XML_Char2String16(Attributes[idx*2]);
 }
@@ -84,7 +84,7 @@ SHVStringBuffer16 SHVXmlReader_Impl::GetAttributeName16(size_t idx) const
 /*************************************
  * GetAttributeValue16
  *************************************/
-SHVStringBuffer16 SHVXmlReader_Impl::GetAttributeValue16(size_t idx) const
+SHVStringBuffer16 SHVXmlReaderImpl::GetAttributeValue16(size_t idx) const
 {
 	return XML_Char2String16(Attributes[idx*2+1]);
 }
@@ -92,7 +92,7 @@ SHVStringBuffer16 SHVXmlReader_Impl::GetAttributeValue16(size_t idx) const
 /*************************************
  * GetAttributeValueByName16
  *************************************/
-SHVStringBuffer16 SHVXmlReader_Impl::GetAttributeValueByName16(const SHVString16C& name) const
+SHVStringBuffer16 SHVXmlReaderImpl::GetAttributeValueByName16(const SHVString16C& name) const
 {
 size_t idx = 0;
 	for (; Attributes && Attributes[idx] && SHVStringC::StrCmp(name.GetBufferConst(), Attributes[idx]); idx+=2);
@@ -105,7 +105,7 @@ size_t idx = 0;
 /*************************************
  * GetCharacterData16
  *************************************/
-SHVStringBuffer16 SHVXmlReader_Impl::GetValue16() const
+SHVStringBuffer16 SHVXmlReaderImpl::GetValue16() const
 {
 	return SHVString(ValueCol).ReleaseBuffer();
 }
@@ -113,7 +113,7 @@ SHVStringBuffer16 SHVXmlReader_Impl::GetValue16() const
 /*************************************
  * GetElementName8
  *************************************/
-SHVStringBuffer8 SHVXmlReader_Impl::GetElementName8() const
+SHVStringBuffer8 SHVXmlReaderImpl::GetElementName8() const
 {
 	return XML_Char2String8(Value);
 }
@@ -121,7 +121,7 @@ SHVStringBuffer8 SHVXmlReader_Impl::GetElementName8() const
 /*************************************
  * GetAttributeName8
  *************************************/
-SHVStringBuffer8 SHVXmlReader_Impl::GetAttributeName8(size_t idx) const
+SHVStringBuffer8 SHVXmlReaderImpl::GetAttributeName8(size_t idx) const
 {
 	return XML_Char2String8(Attributes[idx*2]);
 }
@@ -129,7 +129,7 @@ SHVStringBuffer8 SHVXmlReader_Impl::GetAttributeName8(size_t idx) const
 /*************************************
  * GetAttributeValue8
  *************************************/
-SHVStringBuffer8 SHVXmlReader_Impl::GetAttributeValue8(size_t idx) const
+SHVStringBuffer8 SHVXmlReaderImpl::GetAttributeValue8(size_t idx) const
 {
 	return XML_Char2String8(Attributes[idx*2+1]);
 }
@@ -137,7 +137,7 @@ SHVStringBuffer8 SHVXmlReader_Impl::GetAttributeValue8(size_t idx) const
 /*************************************
  * GetAttributeValueByName8
  *************************************/
-SHVStringBuffer8 SHVXmlReader_Impl::GetAttributeValueByName8(const SHVString8C& name) const
+SHVStringBuffer8 SHVXmlReaderImpl::GetAttributeValueByName8(const SHVString8C& name) const
 {
 #ifdef UNICODE
 SHVString str = name.ToStrT();
@@ -155,7 +155,7 @@ size_t idx = 0;
 /*************************************
  * GetCharacterData8
  *************************************/
-SHVStringBuffer8 SHVXmlReader_Impl::GetValue8() const
+SHVStringBuffer8 SHVXmlReaderImpl::GetValue8() const
 {
 #ifdef UNICODE
 	return ValueCol.ToStr8();
@@ -167,7 +167,7 @@ SHVStringBuffer8 SHVXmlReader_Impl::GetValue8() const
 /*************************************
  * GetElementNameUTF8
  *************************************/
-SHVStringBufferUTF8 SHVXmlReader_Impl::GetElementNameUTF8() const
+SHVStringBufferUTF8 SHVXmlReaderImpl::GetElementNameUTF8() const
 {
 	return XML_Char2StringUTF8(Value);
 }
@@ -175,7 +175,7 @@ SHVStringBufferUTF8 SHVXmlReader_Impl::GetElementNameUTF8() const
 /*************************************
  * GetAttributeNameUTF8
  *************************************/
-SHVStringBufferUTF8 SHVXmlReader_Impl::GetAttributeNameUTF8(size_t idx) const
+SHVStringBufferUTF8 SHVXmlReaderImpl::GetAttributeNameUTF8(size_t idx) const
 {
 	return XML_Char2StringUTF8(Attributes[idx*2]);
 }
@@ -183,7 +183,7 @@ SHVStringBufferUTF8 SHVXmlReader_Impl::GetAttributeNameUTF8(size_t idx) const
 /*************************************
  * GetAttributeValueUTF8
  *************************************/
-SHVStringBufferUTF8 SHVXmlReader_Impl::GetAttributeValueUTF8(size_t idx) const
+SHVStringBufferUTF8 SHVXmlReaderImpl::GetAttributeValueUTF8(size_t idx) const
 {
 	return XML_Char2StringUTF8(Attributes[idx*2+1]);
 }
@@ -191,7 +191,7 @@ SHVStringBufferUTF8 SHVXmlReader_Impl::GetAttributeValueUTF8(size_t idx) const
 /*************************************
  * GetAttributeValueByNameUTF8
  *************************************/
-SHVStringBufferUTF8 SHVXmlReader_Impl::GetAttributeValueByNameUTF8(const SHVStringUTF8C& name) const
+SHVStringBufferUTF8 SHVXmlReaderImpl::GetAttributeValueByNameUTF8(const SHVStringUTF8C& name) const
 {
 SHVString str = name.ToStrT();
 size_t idx = 0;
@@ -205,7 +205,7 @@ size_t idx = 0;
 /*************************************
  * GetCharacterDataUTF8
  *************************************/
-SHVStringBufferUTF8 SHVXmlReader_Impl::GetValueUTF8() const
+SHVStringBufferUTF8 SHVXmlReaderImpl::GetValueUTF8() const
 {
 	return ValueCol.ToStrUTF8();
 }
@@ -213,7 +213,7 @@ SHVStringBufferUTF8 SHVXmlReader_Impl::GetValueUTF8() const
 /*************************************
  * Parse
  *************************************/
-SHVBool SHVXmlReader_Impl::Parse(SHVStreamIn& stream)
+SHVBool SHVXmlReaderImpl::Parse(SHVStreamIn& stream)
 {
 void* buffer = malloc(BufferSize);
 size_t actualLen;
@@ -228,7 +228,7 @@ SHVBool retVal = SHVBool::True;
 	return retVal;
 }
 
-int SHVXmlReader_Impl::GetErrorCode() const
+int SHVXmlReaderImpl::GetErrorCode() const
 {
 	return XML_GetErrorCode(Parser);
 }
@@ -236,7 +236,7 @@ int SHVXmlReader_Impl::GetErrorCode() const
 /*************************************
  * SetStartElementCallBack
  *************************************/
-void SHVXmlReader_Impl::SetStartElementCallBack(SHVXmlReaderCallbackBase* callback)
+void SHVXmlReaderImpl::SetStartElementCallBack(SHVXmlReaderCallbackBase* callback)
 {
 	if (StartElementCallback)
 		delete StartElementCallback;
@@ -246,7 +246,7 @@ void SHVXmlReader_Impl::SetStartElementCallBack(SHVXmlReaderCallbackBase* callba
 /*************************************
  * SetEndElementCallBack
  *************************************/
-void SHVXmlReader_Impl::SetEndElementCallBack(SHVXmlReaderCallbackBase* callback)
+void SHVXmlReaderImpl::SetEndElementCallBack(SHVXmlReaderCallbackBase* callback)
 {
 	if (EndElementCallback)
 		delete EndElementCallback;
@@ -256,7 +256,7 @@ void SHVXmlReader_Impl::SetEndElementCallBack(SHVXmlReaderCallbackBase* callback
 /*************************************
  * SetValueCallback
  *************************************/
-void SHVXmlReader_Impl::SetValueCallback(SHVXmlReaderCallbackBase* callback)
+void SHVXmlReaderImpl::SetValueCallback(SHVXmlReaderCallbackBase* callback)
 {
 	if (ValueCallback)
 		delete ValueCallback;
@@ -266,9 +266,9 @@ void SHVXmlReader_Impl::SetValueCallback(SHVXmlReaderCallbackBase* callback)
 /*************************************
  * StartElementHandler
  *************************************/
-void SHVXmlReader_Impl::StartElementHandler(void *userData, const XML_Char *name, const XML_Char **atts)
+void SHVXmlReaderImpl::StartElementHandler(void *userData, const XML_Char *name, const XML_Char **atts)
 {
-SHVXmlReader_Impl* self = (SHVXmlReader_Impl*) userData;
+SHVXmlReaderImpl* self = (SHVXmlReaderImpl*) userData;
 	if (self->ValueCol.GetLength())
 	{
 		if (self->ValueCallback)
@@ -286,9 +286,9 @@ SHVXmlReader_Impl* self = (SHVXmlReader_Impl*) userData;
 /*************************************
  * EndElementHandler
  *************************************/
-void SHVXmlReader_Impl::EndElementHandler(void *userData, const XML_Char *name)
+void SHVXmlReaderImpl::EndElementHandler(void *userData, const XML_Char *name)
 {
-SHVXmlReader_Impl* self = (SHVXmlReader_Impl*) userData;
+SHVXmlReaderImpl* self = (SHVXmlReaderImpl*) userData;
 	if (self->ValueCol.GetLength())
 	{
 		if (self->ValueCallback)
@@ -304,9 +304,9 @@ SHVXmlReader_Impl* self = (SHVXmlReader_Impl*) userData;
 /*************************************
  * CharacterDataHandler
  *************************************/
-void SHVXmlReader_Impl::DefaultHandler(void *userData, const XML_Char *s, int len)
+void SHVXmlReaderImpl::DefaultHandler(void *userData, const XML_Char *s, int len)
 {
-SHVXmlReader_Impl* self = (SHVXmlReader_Impl*) userData;
+SHVXmlReaderImpl* self = (SHVXmlReaderImpl*) userData;
 SHVString Str;
 	Str.SetBufferSize(len + 1);
 	Str[0] = 0;
@@ -317,7 +317,7 @@ SHVString Str;
 /*************************************
  * XML_Char2String16
  *************************************/
-SHVStringBuffer16 SHVXmlReader_Impl::XML_Char2String16(const XML_Char *str) const
+SHVStringBuffer16 SHVXmlReaderImpl::XML_Char2String16(const XML_Char *str) const
 {
 #ifdef UNICODE
 	return SHVString16(str).ReleaseBuffer();
@@ -329,7 +329,7 @@ SHVStringBuffer16 SHVXmlReader_Impl::XML_Char2String16(const XML_Char *str) cons
 /*************************************
  * XML_Char2String8
  *************************************/
-SHVStringBuffer8 SHVXmlReader_Impl::XML_Char2String8(const XML_Char *str) const
+SHVStringBuffer8 SHVXmlReaderImpl::XML_Char2String8(const XML_Char *str) const
 {
 #ifdef UNICODE
 	return SHVString16(str).ToStr8();
@@ -341,7 +341,7 @@ SHVStringBuffer8 SHVXmlReader_Impl::XML_Char2String8(const XML_Char *str) const
 /*************************************
  * XML_Char2StringUTF8
  *************************************/
-SHVStringBufferUTF8 SHVXmlReader_Impl::XML_Char2StringUTF8(const XML_Char *str) const
+SHVStringBufferUTF8 SHVXmlReaderImpl::XML_Char2StringUTF8(const XML_Char *str) const
 {
 #ifdef UNICODE
 	return SHVString16(str).ToStrUTF8();

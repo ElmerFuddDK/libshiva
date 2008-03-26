@@ -1,20 +1,20 @@
 #ifndef __SHIVA_XMLSTREAM_READER_IMPL_H
 #define __SHIVA_XMLSTREAM_READER_IMPL_H
 
-#include "../../include/shvxmlreader.h"
-#include "../../src/expat/expat.h"
+#include "../../../include/modules/xmlstream/shvxmlreader.h"
+#include "../src/expat/expat.h"
 
 //-=========================================================================================================
-/// SHVXmlReader_Impl class - Implementation of an simple xml parser
+/// SHVXmlReaderImpl class - Implementation of an simple xml parser
 /**
  * This is a very simple, cut to the bone xml parser class.
  */
 
-class SHVXmlReader_Impl: public SHVXmlReader
+class SHVXmlReaderImpl: public SHVXmlReader
 {
 public:
-	SHVXmlReader_Impl(ParserEncoding enc, size_t bufferSize = 1024);
-	virtual ~SHVXmlReader_Impl();
+	SHVXmlReaderImpl(ParserEncoding enc, size_t bufferSize = 1024);
+	virtual ~SHVXmlReaderImpl();
 
 	virtual size_t CalculateAttributeCount() const;
 

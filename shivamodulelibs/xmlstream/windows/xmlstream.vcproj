@@ -179,7 +179,19 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\src\shvxmlreaderimpl.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\shvxmlstreamfactory.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\shvxmlstreamimpl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\shvxmlwriterimpl.cpp"
 				>
 			</File>
 			<File
@@ -274,22 +286,6 @@
 					</FileConfiguration>
 				</File>
 			</Filter>
-			<Filter
-				Name="xmlstreamimpl"
-				>
-				<File
-					RelativePath="..\src\shvxmlreader_impl.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\shvxmlstream_impl.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\shvxmlwriter_impl.cpp"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -308,33 +304,17 @@
 				Name="include"
 				>
 				<File
-					RelativePath="..\include\shvxmlreader.h"
+					RelativePath="..\include\shvxmlreaderimpl.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\shvxmlstream.h"
+					RelativePath="..\include\shvxmlstreamimpl.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\shvxmlwriter.h"
+					RelativePath="..\include\shvxmlwriterimpl.h"
 					>
 				</File>
-				<Filter
-					Name="xmlstreamimpl"
-					>
-					<File
-						RelativePath="..\include\xmlstreamimpl\shvxmlreader_impl.h"
-						>
-					</File>
-					<File
-						RelativePath="..\include\xmlstreamimpl\shvxmlstream_impl.h"
-						>
-					</File>
-					<File
-						RelativePath="..\include\xmlstreamimpl\shvxmlwriter_impl.h"
-						>
-					</File>
-				</Filter>
 				<Filter
 					Name="expat"
 					>
@@ -383,26 +363,46 @@
 						>
 					</File>
 				</Filter>
-			</Filter>
-			<Filter
-				Name="framwork"
-				>
-				<File
-					RelativePath="..\..\..\include\framework\shvevent.h"
+				<Filter
+					Name="framwork"
 					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\framework\shveventdata.h"
+					<File
+						RelativePath="..\..\..\include\framework\shvevent.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\framework\shveventdata.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\framework\shvmodule.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\framework\shvmodulelist.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="modules"
 					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\framework\shvmodule.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\framework\shvmodulelist.h"
-					>
-				</File>
+					<Filter
+						Name="xmlstream"
+						>
+						<File
+							RelativePath="..\..\..\include\modules\xmlstream\shvxmlreader.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\modules\xmlstream\shvxmlstream.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\modules\xmlstream\shvxmlwriter.h"
+							>
+						</File>
+					</Filter>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="utils"

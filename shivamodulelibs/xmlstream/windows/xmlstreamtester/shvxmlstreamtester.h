@@ -2,7 +2,7 @@
 #define __SHIVA_XMLSTREAM_TEST_H
 
 #include "shvtestmodule.h"
-#include "../../include/shvxmlstream.h"
+#include "../../../../include/modules/xmlstream/shvxmlstream.h"
 #include "../../../../include/threadutils/shvthread.h"
 #include "../../../../include/utils/shvstreamin.h"
 #include "../../../../include/utils/shvfile.h"

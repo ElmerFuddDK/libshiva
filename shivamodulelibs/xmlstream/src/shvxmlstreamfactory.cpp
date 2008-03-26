@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
 #include "shvxmlstreamfactory.h"
-#include "../include/xmlstreamimpl/shvxmlstream_impl.h"
+#include "../include/shvxmlstreamimpl.h"
 
 //=========================================================================================================
 // SHVModuleFactoryXmlStream - factory for module library XmlStream
@@ -82,7 +82,7 @@ SHVBool SHVModuleFactoryXmlStream::ResolveModules(const SHVString8C symbol)
 {
 	if (symbol == __MODULESYMBOL_DEFAULTS)
 	{
-		Modules.AddModule(new SHVXmlStream_impl(Modules));
+		Modules.AddModule(new SHVXmlStreamImpl(Modules));
 		return SHVBool::True;
 	}
 

@@ -1,7 +1,7 @@
 #ifndef __SHIVA_XMLSTREAM_WRITE_IMPL_H
 #define __SHIVA_XMLSTREAM_WRITE_IMPL_H
 
-#include "../shvxmlwriter.h"
+#include "../../../include/modules/xmlstream/shvxmlwriter.h"
 #include "../../../include/utils/shvlist.h"
 #include "../../../include/utils/shvptrcontainer.h"
 #include "../../../include/utils/shvstreamout.h"
@@ -12,11 +12,11 @@
 /**
  * This is a very simple, cut to the bone xml writer class.
  */
-class SHVXmlWriter_Impl: public SHVXmlWriter
+class SHVXmlWriterImpl: public SHVXmlWriter
 {
 public:
-	SHVXmlWriter_Impl(SHVXmlWriter::WriterEncoding enc);
-	virtual ~SHVXmlWriter_Impl();
+	SHVXmlWriterImpl(SHVXmlWriter::WriterEncoding enc);
+	virtual ~SHVXmlWriterImpl();
 
 	virtual void WriteStartElement16(SHVStreamOut& Streamout, const SHVString16C& elementName);
 	virtual void WriteAttribute16(SHVStreamOut& Streamout, const SHVString16C& attrName, const SHVStringC& value);
