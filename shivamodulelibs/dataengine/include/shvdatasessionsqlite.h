@@ -29,6 +29,8 @@ protected:
 	virtual ~SHVDataSession_SQLite();
 	virtual void ClearOwnership();
 	virtual SHVBool IsValid() const;
+	virtual bool SchemaChanged();
+	virtual void CheckSchema();
 	virtual SHVBool DoUpdateRow(SHVDataRow* row);
 	virtual SHVBool DoInsertRow(SHVDataRow* row);
 	virtual SHVBool DoDeleteRow(SHVDataRow* row);
@@ -44,6 +46,7 @@ private:
 	SHVEventSubscriberBaseRef ChangeSubscriber; 
 	SHVBool Editting;
 	SHVModuleList& Modules;
+	bool Valid;
 };
 typedef SHVRefObjectContainer<SHVDataSession_SQLite> SHVDataSession_SQLiteRef;
 
