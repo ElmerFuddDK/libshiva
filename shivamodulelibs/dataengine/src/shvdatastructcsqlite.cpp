@@ -22,7 +22,6 @@ SHVBool ok;
 	query.Format("PRAGMA table_info(%s)", tableName.GetSafeBuffer());
 
 	statement = sqlite->PrepareUTF8(ok, query, notparsed);
-	SHVASSERT(ok);
 
 	if (ok)
 	{
