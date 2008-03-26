@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "../../include/platformspc.h"
 
-#include "../include/shvcontrolbutton.h"
+#include "../../include/gui/shvcontrolbutton.h"
 
 //=========================================================================================================
 // SHVControlButton - base button control class

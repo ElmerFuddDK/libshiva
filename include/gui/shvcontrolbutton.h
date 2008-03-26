@@ -1,7 +1,7 @@
 #ifndef __SHIVA_GUI_CONTROLBUTTON_H
 #define __SHIVA_GUI_CONTROLBUTTON_H
 
-#include "../include/shvcontrol.h"
+#include "shvcontrol.h"
 
 
 // forward declare

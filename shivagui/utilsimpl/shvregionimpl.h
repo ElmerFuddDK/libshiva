@@ -1,8 +1,8 @@
 #ifndef __SHIVA_GUIIMPL_REGION_H
 #define __SHIVA_GUIIMPL_REGION_H
 
-#include "../include/utils/shvregion.h"
-#include "../include/utils/shvfont.h"
+#include "../../include/gui/utils/shvregion.h"
+#include "../../include/gui/utils/shvfont.h"
 #include "../../include/utils/shvlist.h"
 
 // forward declare

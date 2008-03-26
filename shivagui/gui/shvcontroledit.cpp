@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "../../include/platformspc.h"
 
-#include "../include/shvcontroledit.h"
+#include "../../include/gui/shvcontroledit.h"
 
 //=========================================================================================================
 // SHVControlEdit - base edit control class

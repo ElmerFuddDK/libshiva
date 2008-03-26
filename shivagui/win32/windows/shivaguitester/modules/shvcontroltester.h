@@ -2,7 +2,7 @@
 #define __SHIVA_GUITESTER_CONTROLTESTER_H
 
 #include "../../../../../include/framework/shvmodule.h"
-#include "../../../../include/shvguimanager.h"
+#include "../../../../../include/gui/shvguimanager.h"
 
 //-=========================================================================================================
 /// SHVControlTester - Module for testing controls

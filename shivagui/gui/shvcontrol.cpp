@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "../../include/platformspc.h"
 
-#include "../include/shvcontrol.h"
-#include "../include/shvcontrolcontainer.h"
-#include "../include/shvguimanager.h"
+#include "../../include/gui/shvcontrol.h"
+#include "../../include/gui/shvcontrolcontainer.h"
+#include "../../include/gui/shvguimanager.h"
 
 //=========================================================================================================
 // SHVControl - base control interface

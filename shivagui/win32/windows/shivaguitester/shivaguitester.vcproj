@@ -210,14 +210,6 @@
 					>
 				</File>
 			</Filter>
-			<Filter
-				Name="guiutils"
-				>
-				<File
-					RelativePath="..\..\..\utils\shvrect.cpp"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"

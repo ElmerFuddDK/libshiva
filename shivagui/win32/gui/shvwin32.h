@@ -5,8 +5,8 @@
 # include "shvcontrolimplementerwin32base.h"
 #endif
 #include "shvguimanagerwin32.h"
-#include "../../include/shvcontrol.h"
-#include "../../include/shvcontrolimplementer.h"
+#include "../../../include/gui/shvcontrol.h"
+#include "../../../include/gui/shvcontrolimplementer.h"
 
 #ifndef __SHIVA_WIN32
 # error This code only works for win32

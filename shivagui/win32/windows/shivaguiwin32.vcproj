@@ -245,14 +245,6 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="utils"
-				>
-				<File
-					RelativePath="..\..\utils\shvrect.cpp"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="win32gui"
 				>
 				<File
@@ -477,129 +469,117 @@
 						>
 					</File>
 				</Filter>
-			</Filter>
-			<Filter
-				Name="gui"
-				>
-				<File
-					RelativePath="..\..\include\shvcompoundform.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\shvcontrol.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\shvcontrolbutton.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\shvcontrolcontainer.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\shvcontrolcreator.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\shvcontrolcreatorbase.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\shvcontrolcreatorsubtype.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\shvcontroldata.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\shvcontroledit.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\shvcontrolimplementer.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\shvcontrollabel.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\shvcontrollayout.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\shvform.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\gui\shvformimpl.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\shvformimplementer.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\shvguimanager.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\gui\shvguimanagerimpl.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\gui\shvmessagebox.h"
-					>
-				</File>
 				<Filter
-					Name="utils"
+					Name="gui"
 					>
 					<File
-						RelativePath="..\..\include\utils\shvbitmap.h"
+						RelativePath="..\..\..\include\gui\shvcompoundform.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\include\utils\shvbrush.h"
+						RelativePath="..\..\..\include\gui\shvcontrol.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\include\utils\shvcolor.h"
+						RelativePath="..\..\..\include\gui\shvcontrolbutton.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\include\utils\shvdraw.h"
+						RelativePath="..\..\..\include\gui\shvcontrolcontainer.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\include\utils\shvfont.h"
+						RelativePath="..\..\..\include\gui\shvcontrolcreator.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\include\utils\shvpen.h"
+						RelativePath="..\..\..\include\gui\shvcontrolcreatorbase.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\include\utils\shvpoint.h"
+						RelativePath="..\..\..\include\gui\shvcontrolcreatorsubtype.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\include\utils\shvrect.h"
+						RelativePath="..\..\..\include\gui\shvcontroldata.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\include\utils\shvregion.h"
+						RelativePath="..\..\..\include\gui\shvcontroledit.h"
 						>
 					</File>
-				</Filter>
-				<Filter
-					Name="utilsimpl"
-					>
 					<File
-						RelativePath="..\..\utilsimpl\shvregionimpl.h"
+						RelativePath="..\..\..\include\gui\shvcontrolimplementer.h"
 						>
 					</File>
+					<File
+						RelativePath="..\..\..\include\gui\shvcontrollabel.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\gui\shvcontrollayout.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\gui\shvform.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\gui\shvformbase.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\gui\shvformimplementer.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\gui\shvguimanager.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\gui\shvmainwnd.h"
+						>
+					</File>
+					<Filter
+						Name="utils"
+						>
+						<File
+							RelativePath="..\..\..\include\gui\utils\shvbitmap.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\gui\utils\shvbrush.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\gui\utils\shvcolor.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\gui\utils\shvdraw.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\gui\utils\shvfont.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\gui\utils\shvpen.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\gui\utils\shvpoint.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\gui\utils\shvrect.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\gui\utils\shvregion.h"
+							>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 		</Filter>

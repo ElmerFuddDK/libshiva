@@ -1,10 +1,10 @@
 #ifndef __SHIVA_GUIIMPL_MESSAGEBOX_H
 #define __SHIVA_GUIIMPL_MESSAGEBOX_H
 
-#include "../include/shvform.h"
-#include "../include/shvguimanager.h"
-#include "../include/shvcontroledit.h"
-#include "../include/shvcontrolbutton.h"
+#include "../../include/gui/shvform.h"
+#include "../../include/gui/shvguimanager.h"
+#include "../../include/gui/shvcontroledit.h"
+#include "../../include/gui/shvcontrolbutton.h"
 #include "../../include/framework/shveventsubscriber.h"
 
 

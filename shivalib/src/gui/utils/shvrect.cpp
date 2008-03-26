@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "../../include/platformspc.h"
+#include "../../../../include/platformspc.h"
 
-#include "../include/utils/shvrect.h"
+#include "../../../../include/gui/utils/shvrect.h"
 
 //=========================================================================================================
 // SHVRect - Rectangle for the GUI

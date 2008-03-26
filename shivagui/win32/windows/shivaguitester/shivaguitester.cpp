@@ -8,7 +8,7 @@
 #include "../../../../include/frameworkimpl/shvmainthreadeventqueue.h"
 #include "../../../../include/utils/shvdll.h"
 
-#include "../../../include/shvguimanager.h"
+#include "../../../../include/gui/shvguimanager.h"
 
 #include "modules/shvcontroltester.h"
 

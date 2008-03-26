@@ -2,9 +2,9 @@
 #include "../../../../../include/platformspc.h"
 
 #include "shvcontroltester.h"
-#include "../../../../include/shvcontrollayout.h"
-#include "../../../../include/utils/shvregion.h"
-#include "../../../../include/utils/shvdraw.h"
+#include "../../../../../include/gui/shvcontrollayout.h"
+#include "../../../../../include/gui/utils/shvregion.h"
+#include "../../../../../include/gui/utils/shvdraw.h"
 
 
 //=========================================================================================================

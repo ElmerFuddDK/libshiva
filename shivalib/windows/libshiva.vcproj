@@ -449,6 +449,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="gui"
+				>
+				<Filter
+					Name="utils"
+					>
+					<File
+						RelativePath="..\src\gui\utils\shvrect.cpp"
+						>
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -737,6 +749,18 @@
 						RelativePath="..\..\include\frameworkimpl\shvtimerimpl.h"
 						>
 					</File>
+				</Filter>
+				<Filter
+					Name="gui"
+					>
+					<Filter
+						Name="utils"
+						>
+						<File
+							RelativePath="..\..\include\gui\utils\shvrect.h"
+							>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 		</Filter>

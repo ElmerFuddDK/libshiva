@@ -2,7 +2,7 @@
 #define __SHIVA_WIN32GUI_SHVCONTROLIMPLEMENTEREDIT_H
 
 
-#include "../../include/shvcontroledit.h"
+#include "../../../include/gui/shvcontroledit.h"
 #include "shvcontrolimplementerwin32.h"
 
 #ifndef __SHIVA_WIN32

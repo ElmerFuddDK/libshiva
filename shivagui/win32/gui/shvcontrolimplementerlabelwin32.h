@@ -1,7 +1,7 @@
 #ifndef __SHIVA_WIN32GUI_SHVCONTROLIMPLEMENTERLABEL_H
 #define __SHIVA_WIN32GUI_SHVCONTROLIMPLEMENTERLABEL_H
 
-#include "../../include/shvcontrollabel.h"
+#include "../../../include/gui/shvcontrollabel.h"
 #include "shvcontrolimplementerwin32.h"
 
 #ifndef __SHIVA_WIN32

@@ -1,7 +1,7 @@
 #ifndef __SHIVA_GUIIMPL_MANAGER_H
 #define __SHIVA_GUIIMPL_MANAGER_H
 
-#include "../include/shvguimanager.h"
+#include "../../include/gui/shvguimanager.h"
 #include "../../include/utils/shvhashtable.h"
 #include "shvmessagebox.h"
 

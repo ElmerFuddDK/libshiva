@@ -2,7 +2,7 @@
 #define __SHIVA_GUIUTILSWIN32_BRUSH_H
 
 
-#include "../../../include/utils/shvbrush.h"
+#include "../../../../include/gui/utils/shvbrush.h"
 #include "shvcolorwin32.h"
 
 

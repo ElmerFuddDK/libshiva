@@ -2,7 +2,7 @@
 #define __SHIVA_WIN32GUI_SHVCONTROLIMPLEMENTERCONTAINERWINDOW_H
 
 
-#include "../../include/shvcontrolcontainer.h"
+#include "../../../include/gui/shvcontrolcontainer.h"
 #include "shvcontrolimplementerwin32.h"
 
 #ifndef __SHIVA_WIN32

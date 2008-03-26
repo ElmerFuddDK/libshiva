@@ -2,8 +2,8 @@
 #define __SHIVA_WIN32GUI_CONTROLIMPLEMENTERBASE_H
 
 
-#include "../../include/shvcontrolimplementer.h"
-#include "../../include/utils/shvpoint.h"
+#include "../../../include/gui/shvcontrolimplementer.h"
+#include "../../../include/gui/utils/shvpoint.h"
 #include "utils/shvfontwin32.h"
 
 #ifndef __SHIVA_WIN32

@@ -1,7 +1,7 @@
 #ifndef __SHIVA_GUI_CONTROLLABEL_H
 #define __SHIVA_GUI_CONTROLLABEL_H
 
-#include "../include/shvcontrol.h"
+#include "shvcontrol.h"
 
 // forward declares
 class SHVControlImplementerLabel;

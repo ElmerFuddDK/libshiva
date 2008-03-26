@@ -8,7 +8,7 @@
  * Used for getting and manipulating dimensions of controls.
  */
 
-class SHVRect
+class SHVAPI SHVRect
 {
 public:
 

@@ -2,7 +2,7 @@
 #define __SHIVA_GUIUTILSWIN32_COLOR_H
 
 
-#include "../../../include/utils/shvcolor.h"
+#include "../../../../include/gui/utils/shvcolor.h"
 
 
 //-=========================================================================================================

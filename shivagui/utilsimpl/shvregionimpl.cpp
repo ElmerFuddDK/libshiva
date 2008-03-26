@@ -32,7 +32,7 @@
 #include "../../include/platformspc.h"
 
 #include "shvregionimpl.h"
-#include "../include/shvguimanager.h"
+#include "../../include/gui/shvguimanager.h"
 
 //=========================================================================================================
 // SHVRegionImpl - Control placement class

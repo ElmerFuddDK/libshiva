@@ -42,8 +42,8 @@
 #include "shvcontrolimplementerlabelwin32.h"
 #include "shvcontrolimplementereditwin32.h"
 #include "shvcontrolimplementerbuttonwin32.h"
-#include "../../include/shvcontrolcreator.h"
-#include "../../include/shvcontrolcreatorsubtype.h"
+#include "../../../include/gui/shvcontrolcreator.h"
+#include "../../../include/gui/shvcontrolcreatorsubtype.h"
 #include "../../utilsimpl/shvregionimpl.h"
 
 #include "../../gui/shvformimpl.h"

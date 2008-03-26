@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "../../include/platformspc.h"
 
-#include "../include/shvcontrollabel.h"
+#include "../../include/gui/shvcontrollabel.h"
 
 /*************************************
  * GetType

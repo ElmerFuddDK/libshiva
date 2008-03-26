@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "../../include/platformspc.h"
 
-#include "../include/shvcontrolcontainer.h"
+#include "../../include/gui/shvcontrolcontainer.h"
 #include "shvguimanagerimpl.h"
 #include "../../include/framework/shveventstructs.h"
 

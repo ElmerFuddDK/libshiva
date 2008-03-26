@@ -1,7 +1,7 @@
 #ifndef __SHIVA_GUI_CONTROLEDIT_H
 #define __SHIVA_GUI_CONTROLEDIT_H
 
-#include "../include/shvcontrol.h"
+#include "shvcontrol.h"
 
 
 // forward declare

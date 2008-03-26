@@ -1,7 +1,7 @@
 #ifndef __SHIVA_WIN32GUI_CONTROLCONTAINERWRAPPER_H
 #define __SHIVA_WIN32GUI_CONTROLCONTAINERWRAPPER_H
 
-#include "../../include/shvcontrolcontainer.h"
+#include "../../../include/gui/shvcontrolcontainer.h"
 #include "shvcontrolimplementerwin32.h"
 
 

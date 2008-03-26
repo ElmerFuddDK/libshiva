@@ -2,7 +2,7 @@
 #define __SHIVA_GUIUTILSWIN32_PEN_H
 
 
-#include "../../../include/utils/shvpen.h"
+#include "../../../../include/gui/utils/shvpen.h"
 #include "shvcolorwin32.h"
 
 

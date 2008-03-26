@@ -2,7 +2,7 @@
 #define __SHIVA_GUIUTILSWIN32_FONT_H
 
 
-#include "../../../include/utils/shvfont.h"
+#include "../../../../include/gui/utils/shvfont.h"
 
 
 //-=========================================================================================================

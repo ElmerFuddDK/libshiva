@@ -3,7 +3,7 @@
 
 
 #include "../../../include/framework/shvmainthreadeventdispatcher.h"
-#include "../../include/shvcontrolcontainer.h"
+#include "../../../include/gui/shvcontrolcontainer.h"
 #include "shvguimanagerwin32.h"
 
 #ifndef __SHIVA_WIN32

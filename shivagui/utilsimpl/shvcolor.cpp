@@ -31,8 +31,8 @@
 #include "stdafx.h"
 #include "../../include/platformspc.h"
 
-#include "../include/utils/shvcolor.h"
-#include "../include/shvguimanager.h"
+#include "../../include/gui/utils/shvcolor.h"
+#include "../../include/gui/shvguimanager.h"
 
 
 //=========================================================================================================

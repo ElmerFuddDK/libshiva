@@ -1,9 +1,9 @@
 #ifndef __SHIVA_GUIIMPL_FORM_H
 #define __SHIVA_GUIIMPL_FORM_H
 
-#include "../include/shvformbase.h"
-#include "../include/shvformimplementer.h"
-#include "../include/shvguimanager.h"
+#include "../../include/gui/shvformbase.h"
+#include "../../include/gui/shvformimplementer.h"
+#include "../../include/gui/shvguimanager.h"
 
 
 //-=========================================================================================================
