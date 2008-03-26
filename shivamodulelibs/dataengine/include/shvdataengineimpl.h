@@ -22,7 +22,7 @@ public:
 	virtual void Unregister();
 
 	virtual SHVBool RegisterTable(const SHVDataStructC* dataStruct, bool createTable = false);
-	virtual SHVBool RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear = false);
+	virtual SHVBool RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear = false, SHVDataSession* useSession = NULL);
 	virtual SHVBool UnregisterAlias(const SHVString8C& alias);
 	virtual const SHVDataStructC* FindStruct(const SHVString8C& table) const;
 	virtual const SHVDataSchema& GetDataSchema() const;
@@ -37,7 +37,7 @@ public:
 
 	virtual SHVSQLiteWrapper* CreateConnection(SHVBool& Ok, const SHVStringC& dataBase);
 
-	virtual SHVDataFactory* CreateFactory(const SHVString& database, const SHVDataSchema* schema = NULL);
+	virtual SHVDataFactory* CreateFactory(const SHVStringC& database, const SHVDataSchema* schema = NULL);
 	virtual SHVDataFactory* GetDefaultFactory();
 protected:
 	virtual void SubscribeRowChange(SHVEventSubscriberBase* sub);
