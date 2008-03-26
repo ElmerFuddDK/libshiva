@@ -6,11 +6,12 @@
 #include "../../include/dataengineimpl/shvdatarowlist_sqlite.h"
 #include "../../include/dataengineimpl/shvdatarowlistc_sqlite.h"
 #include "../../include/dataengineimpl/shvdatarowlistc_indexed.h"
+#include "../../include/shvdataengine.h"
 
 /*************************************
  * Constructor
  *************************************/
-SHVDataSession_SQLite::SHVDataSession_SQLite(SHVModuleList& modules, SHVSQLiteWrapper* sqlite, SHVDataFactory* factory): Modules(modules)
+SHVDataSession_SQLite::SHVDataSession_SQLite(SHVModuleList& modules, SHVSQLiteWrapper* sqlite, SHVDataFactory* factory): Modules(modules), Valid(true)
 {
 	SQLite = sqlite;
 	Factory = factory;
@@ -51,7 +52,7 @@ SHVSQLiteStatementRef statement;
 		for (size_t i = 0;  i < ChangedRows.CalculateCount(); i++)
 			RowVector->Add(ChangedRows[i]);
 		ChangedRows.Clear();
-		ChangeSubscriber->EmitNow(Modules, new SHVEventDataChangeSet(SHVDataRowVectorPtr(RowVector), NULL, EventChangeSet));
+		ChangeSubscriber->EmitNow(Modules, new SHVEventDataChangeSet(SHVDataRowVectorPtr(RowVector), NULL, EventChangeSet, SHVInt(), this));
 	}
 	return ok;
 }
@@ -173,12 +174,20 @@ SHVStringSQLite rest("");
 SHVStringUTF8 sqlUTF8 = sql.ToStrUTF8();
 SHVStringSQLite blank("");
 SHVSQLiteStatementRef statement = SQLite->ExecuteUTF8(ok, sqlUTF8, rest);
-
-	while (!rest.IsNull() && rest != blank && ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
-	{
+	if (ok.GetError() == SHVSQLiteWrapper::SQLite_SCHEMA && SchemaChanged())
 		statement = SQLite->ExecuteUTF8(ok, sqlUTF8, rest);
+	if (ok.GetError() == SHVSQLiteWrapper::SQLite_ROW ||
+		ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+	{
+		while (!rest.IsNull() && rest != blank && 
+			(ok.GetError() == SHVSQLiteWrapper::SQLite_ROW ||
+			 ok.GetError() == SHVSQLiteWrapper::SQLite_DONE))
+		{
+			statement = SQLite->ExecuteUTF8(ok, sqlUTF8, rest);
+		}
 	}
-	if (ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+	if (ok.GetError() == SHVSQLiteWrapper::SQLite_ROW ||
+		ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 		return SHVBool::True;
 	else
 		return ok;
@@ -266,7 +275,32 @@ void SHVDataSession_SQLite::ClearOwnership()
  *************************************/
 SHVBool SHVDataSession_SQLite::IsValid() const
 {
-	return SHVBool::True;
+	return Valid;
+}
+
+/*************************************
+ * SchemaChanged
+ *************************************/
+bool SHVDataSession_SQLite::SchemaChanged()
+{
+	if (!HasPendingDataLists() && Factory)
+	{
+	SHVBool valid;
+		SQLite = Factory->GetDataEngine().CreateConnection(valid, Factory->GetDatabase());
+		Valid = valid;
+	}
+	else
+		Valid = false;
+	return Valid;
+}
+
+/*************************************
+ * CheckSchema
+ *************************************/
+void SHVDataSession_SQLite::CheckSchema()
+{
+	if (!Valid)
+		SchemaChanged();
 }
 
 /*************************************

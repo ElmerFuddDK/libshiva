@@ -374,7 +374,15 @@ void SHVDataRow_impl::InternalRejectChanges()
 }
 
 /*************************************
- * GetRowList
+ * GetRowListC
+ *************************************/
+const SHVDataRowListC* SHVDataRow_impl::GetRowListC()
+{
+	return GetRowList();
+}
+
+/*************************************
+ * GetRowListC
  *************************************/
 SHVDataRowList* SHVDataRow_impl::GetRowList()
 {

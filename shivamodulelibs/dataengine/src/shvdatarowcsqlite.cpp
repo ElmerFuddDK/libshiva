@@ -180,9 +180,50 @@ SHVDataVariant* retVal = NULL;
 SHVBool SHVDataRowC_SQLite::MatchKey(const SHVDataRowKey* key) const
 {
 SHVBool match(SHVBool::True);
-	for (size_t i = 0; i < key->Count() && match; i++)
+	if (RowValid())
 	{
-		match = (*(*key)[i].Value == *GetValue(ColumnIndex((*key)[i].Key)));
+	const SHVDataRowKey& Keys = *key;
+	const SHVDataStructC& Struct = *Select->GetStruct();
+		for (size_t i = 0; i < Keys.Count() && match; i++)
+		{
+		size_t colIdx;
+			if (Struct.FindColumnIndex(colIdx, Keys[i].Key))
+			{
+				switch (Struct[colIdx]->GetDataType())
+				{
+				case SHVDataVariant::TypeInt:
+					if (Keys[i].Value)
+						match = Keys[i].Value->AsInt() == AsInt(colIdx);
+					else
+						match = AsInt(colIdx).IsNull();
+					break;
+				case SHVDataVariant::TypeDouble:
+					if (Keys[i].Value)
+						match = Keys[i].Value->AsDouble() == AsDouble(colIdx);
+					else
+						match = AsDouble(colIdx).IsNull();
+					break;
+				case SHVDataVariant::TypeString:
+					if (Keys[i].Value)
+						match = Keys[i].Value->AsString() == AsString(colIdx);
+					else
+						match = AsString(colIdx).IsNull();
+					break;
+				case SHVDataVariant::TypeTime:
+					if (Keys[i].Value)
+						match = Keys[i].Value->AsTime() == AsTime(colIdx);
+					else
+						match = AsTime(colIdx).IsNull();
+					break;
+				case SHVDataVariant::TypeBool:
+					if (Keys[i].Value)
+						match = Keys[i].Value->AsBool() == AsBool(colIdx);
+					else
+						match = AsBool(colIdx);
+					break;
+				}
+			}
+		}
 	}
 	return match;
 }
@@ -217,6 +258,15 @@ const SHVString8C SHVDataRowC_SQLite::GetAlias() const
 		return "";	
 }
 
+
+/*************************************
+ * GetRowListC
+ *************************************/
+const SHVDataRowListC* SHVDataRowC_SQLite::GetRowListC()
+{
+	return Select;
+}
+
 /*************************************
  * GetRowState
  *************************************/
@@ -224,3 +274,4 @@ int SHVDataRowC_SQLite::GetRowState() const
 {
 	return (RowValid() ? SHVDataRow::RowStateUnchanged : SHVDataRow::RowStateInvalid);
 }
+

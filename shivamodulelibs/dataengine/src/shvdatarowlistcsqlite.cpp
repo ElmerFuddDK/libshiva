@@ -25,6 +25,11 @@ SHVDataStruct_impl* st = new SHVDataStruct_impl();
 SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
 	StructCache = st;
 	Statement = SQLite->Prepare(Ok, sql, rest);
+	if (Ok.GetError() == SHVSQLiteWrapper::SQLite_SCHEMA)
+	{
+		if (SchemaChanged())
+			Statement = SQLite->Prepare(Ok, sql, rest);
+	}
 	if (sortKey)
 		st->AddIndex((SHVDataRowKey*) sortKey);
 	SortIndex = 0;	
@@ -35,6 +40,7 @@ SHVDataRowListC_SQLite::SHVDataRowListC_SQLite(SHVDataSession* session, const SH
 {
 SHVStringSQLite rest(NULL);
 SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
+SHVStringUTF8 sql;
 
 	SHVASSERT(dataStruct->GetIndex(index));
 	if (!dataStruct->GetIndex(index))
@@ -43,7 +49,15 @@ SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
 		return;
 	}
 	SortIndex = index;
-	Statement = SQLite->PrepareUTF8(Ok, BuildQuery(condition, false), rest);
+	sql = BuildQuery(condition, false);
+	if (Ok.GetError() == SHVSQLiteWrapper::SQLite_SCHEMA)
+		sql = BuildQuery(condition, false);
+	Statement = SQLite->PrepareUTF8(Ok, sql, rest);
+	if (Ok.GetError() == SHVSQLiteWrapper::SQLite_SCHEMA)
+	{
+		if (SchemaChanged())
+			Statement = SQLite->PrepareUTF8(Ok, sql, rest);
+	}
 	Eof = !Ok;
 }
 
