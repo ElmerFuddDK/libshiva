@@ -1,8 +1,8 @@
 #ifndef __SHIVA_XMLSTREAM_H
 #define __SHIVA_XMLSTREAM_H
 
-#include "../../../include/framework/shvmodule.h"
-#include "../../../include/utils/shvdll.h"
+#include "../../framework/shvmodule.h"
+#include "../../utils/shvdll.h"
 #include "shvxmlreader.h"
 #include "shvxmlwriter.h"
 

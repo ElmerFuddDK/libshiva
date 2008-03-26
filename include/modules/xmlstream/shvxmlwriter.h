@@ -1,10 +1,10 @@
 #ifndef __SHIVA_XMLSTREAM_WRITE_H
 #define __SHIVA_XMLSTREAM_WRITE_H
 
-#include "../../../include/utils/shvstring.h"
-#include "../../../include/utils/shvstringutf8.h"
-#include "../../../include/utils/shvstreamout.h"
-#include "../../../include/utils/shvptrcontainer.h"
+#include "../../utils/shvstring.h"
+#include "../../utils/shvstringutf8.h"
+#include "../../utils/shvstreamout.h"
+#include "../../utils/shvptrcontainer.h"
 
 //-=========================================================================================================
 /// SHVXmlWriter class - This class is the interface for the class that writes xml.

@@ -3,10 +3,10 @@
 
 
 #include "sqlitestatement.h"
-#include "../../include/utils/shvstring.h"
-#include "../../include/utils/shvstringutf8.h"
-#include "../../include/utils/shvrefobject.h"
-#include "../../include/threadutils/shvmutex.h"
+#include "../utils/shvstring.h"
+#include "../utils/shvstringutf8.h"
+#include "../utils/shvrefobject.h"
+#include "../threadutils/shvmutex.h"
 
 #define __SHVSQLITEWRAPPER_CREATE_SYMBOL _T("CreateSHVSQLiteWrapper")
 

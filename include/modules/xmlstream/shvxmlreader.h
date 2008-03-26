@@ -1,10 +1,10 @@
 #ifndef __SHIVA_XMLSTREAM_READER_H
 #define __SHIVA_XMLSTREAM_READER_H
 
-#include "../../../include/utils/shvstring.h"
-#include "../../../include/utils/shvstringutf8.h"
-#include "../../../include/utils/shvstreamin.h"
-#include "../../../include/utils/shvptrcontainer.h"
+#include "../../utils/shvstring.h"
+#include "../../utils/shvstringutf8.h"
+#include "../../utils/shvstreamin.h"
+#include "../../utils/shvptrcontainer.h"
 
 // forward declare
 class SHVXmlReaderCallbackBase;
