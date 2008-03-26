@@ -63,9 +63,9 @@ SHVBool SHVDataEngine_impl::RegisterTable(const SHVDataStructC* dataStruct, bool
 /*************************************
  * RegisterAlias
  *************************************/
-SHVBool SHVDataEngine_impl::RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear)
+SHVBool SHVDataEngine_impl::RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear, SHVDataSession* useSession)
 {
-	return Factory->RegisterAlias(table, alias, clear);
+	return Factory->RegisterAlias(table, alias, clear, useSession);
 }
 
 /*************************************
@@ -158,7 +158,8 @@ SHVSQLiteWrapperRef retVal = (SHVSQLiteWrapper*) SQLiteDll.CreateObjectInt(&Modu
 	{
 	SHVStringSQLite rest("");
 	// Lets setup a default memory database
-		retVal->ExecuteUTF8(Ok, "attach database :memory as memdb", rest)->ValidateRefCount();
+		if (dataBase != _T(":memory"))
+			retVal->ExecuteUTF8(Ok, "attach database :memory as memdb", rest)->ValidateRefCount();
 		if (Ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 			Ok = SHVBool::True;
 	}
@@ -168,13 +169,9 @@ SHVSQLiteWrapperRef retVal = (SHVSQLiteWrapper*) SQLiteDll.CreateObjectInt(&Modu
 /*************************************
  * CreateFactory
  *************************************/
-SHVDataFactory* SHVDataEngine_impl::CreateFactory(const SHVString& database, const SHVDataSchema* schema)
+SHVDataFactory* SHVDataEngine_impl::CreateFactory(const SHVStringC& database, const SHVDataSchema* schema)
 {
-SHVBool ok;
-	if (ok)
-		return new SHVDataFactory_impl(*this, database, schema);
-	else
-		return NULL;
+	return new SHVDataFactory_impl(*this, database, schema);
 }
 
 /*************************************

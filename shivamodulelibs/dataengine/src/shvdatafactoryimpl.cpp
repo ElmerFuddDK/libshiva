@@ -22,7 +22,7 @@ SHVDataFactory_impl::SHVDataFactory_impl(SHVDataEngine& engine, const SHVStringC
 SHVDataFactory_impl::SHVDataFactory_impl(SHVDataEngine& engine, const SHVStringC& database, const SHVDataSchema* schema): DataEngine(engine), Database(database)
 {
 	SQLite = DataEngine.CreateConnection(Ok, database);
-	if (schema)
+	if (Ok && schema)
 	{
 		for (size_t table = 0; table < schema->CalculateCount(); table++)
 		{
@@ -54,7 +54,7 @@ SHVMutexLocker lock(FactoryLock);
 	{
 		if (createTable)
 		{
-			create = !TableMatch(dataStruct, dataStruct->GetTableName(), drop);
+			create = !TableMatch(SQLite, dataStruct, dataStruct->GetTableName(), drop);
 			if (!create)
 				drop = false;
 		}
@@ -67,12 +67,12 @@ SHVMutexLocker lock(FactoryLock);
 	}
 	if (retVal && create) 
 	{
-		retVal = CreateTable(dataStruct, dataStruct->GetTableName());
+		retVal = CreateTable(SQLite, dataStruct, dataStruct->GetTableName());
 		if (retVal)
 		{
 			for (size_t key = 1; key < dataStruct->IndexCount() && retVal; key++)
 			{
-				retVal = CreateIndex(dataStruct, dataStruct->GetTableName(), key);
+				retVal = CreateIndex(SQLite, dataStruct, dataStruct->GetTableName(), key);
 			}
 			if (!retVal)
 			{
@@ -90,7 +90,7 @@ SHVMutexLocker lock(FactoryLock);
 /*************************************
  * RegisterAlias
  *************************************/
-SHVBool SHVDataFactory_impl::RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear)
+SHVBool SHVDataFactory_impl::RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear, SHVDataSession* useSession)
 {
 const SHVDataStructC* found;
 SHVDataStructCRef aliasfound;
@@ -100,40 +100,53 @@ SHVBool retVal = SHVBool::True;
 SHVMutexLocker lock(FactoryLock);
 SHVBool dropOk;
 bool create;
-bool drop;
+bool exists;
+SHVSQLiteWrapperRef sqlite;
+	if (useSession)
+		sqlite = (SHVSQLiteWrapper*) useSession->GetProvider();
+	else
+		sqlite = SQLite;
 
 	aliasfound = (SHVDataStructC*) InternalFindAlias(alias);
-	if (!aliasfound.IsNull())
-		UnregisterAlias(alias);
 	found = InternalFindStruct(table);	
 	if (found)
 	{
-		create = !TableMatch(found, alias, drop) || clear;
-		if (drop)
+		create = !TableMatch(sqlite, found, alias, exists) || clear;
+		if (create && exists)
 		{
-			sql.Format("drop table %s", alias);
-			SQLite->ExecuteUTF8(dropOk, sql, rest)->ValidateRefCount();
+			if (aliasfound)
+			{
+				InternalUnregisterAlias(sqlite, alias);
+				aliasfound = NULL;
+			}
+			else
+			{
+				sql.Format("drop table %s", alias);
+				sqlite->ExecuteUTF8(dropOk, sql, rest)->ValidateRefCount();
+			}
 		}
 		if (create)
-			retVal = CreateTable(found, alias);
-		if (retVal)
 		{
-			for (size_t key = 1; key < found->IndexCount() && retVal; key++)
+			retVal = CreateTable(sqlite, found, alias);
+			if (retVal)
 			{
-				retVal = CreateIndex(found, alias, key);
-			}
-			if (!retVal)
-			{
-			SHVBool dropOk;
-				sql.Format("drop table %s", alias);
-				SQLite->ExecuteUTF8(dropOk, sql, rest)->ValidateRefCount();
+				for (size_t key = 1; key < found->IndexCount() && retVal; key++)
+				{
+					retVal = CreateIndex(sqlite, found, alias, key);
+				}
+				if (!retVal)
+				{
+				SHVBool dropOk;
+					sql.Format("drop table %s", alias);
+					sqlite->ExecuteUTF8(dropOk, sql, rest)->ValidateRefCount();
+				}
 			}
 		}
 	}
 	else
 		retVal = SHVBool::False;
 
-	if (retVal && !aliasfound)
+	if (retVal && aliasfound.IsNull())
 		Alias.AddTail(SHVDataStructReg(alias, found));
 	return retVal;
 }
@@ -143,41 +156,7 @@ bool drop;
  *************************************/
 SHVBool SHVDataFactory_impl::UnregisterAlias(const SHVString8C& alias)
 {
-const SHVDataStructC* aliasfound;
-SHVBool retVal = SHVBool::False;
-SHVMutexLocker lock(FactoryLock);
-	aliasfound = FindStruct(alias);	
-	if (aliasfound)
-	{
-	SHVStringUTF8 sql;
-	SHVStringSQLite rest("");
-	SHVBool dropOk;
-	SHVListIterator<SHVDataStructReg> Iter(Alias);
-	// Lets see if there's any active list with that alias
-	SHVListIterator<SHVDataRowListC*> DLIter(ActiveDataLists);
-	retVal = SHVBool::True;
-		while (DLIter.MoveNext() && retVal) 
-		{
-			retVal = DLIter.Get()->GetAlias() != alias;
-		}	
-		if (retVal)
-		{
-			sql.Format("drop table %s", alias);
-			SQLite->ExecuteUTF8(retVal, sql, rest)->ValidateRefCount();
-			if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
-			{
-				while (Iter.MoveNext() && Iter.Get().GetAlias() != alias);
-				if (Iter)
-				{
-					Alias.RemoveAt(Iter.Pos());
-				}
-				retVal = SHVBool::True;
-			}
-		}
-		else
-			retVal = SHVBool(SHVSQLiteWrapper::SQLite_LOCKED);
-	}
-	return retVal;
+	return InternalUnregisterAlias(SQLite, alias);
 }
 
 
@@ -334,7 +313,8 @@ SHVMutexLocker lock(FactoryLock);
  *************************************/
 SHVDataSession* SHVDataFactory_impl::CreateSession()
 {
-SHVDataSession* retVal = new SHVDataSession_SQLite(DataEngine.GetModuleList(), SQLite, this);
+SHVBool ok;
+SHVDataSession* retVal = new SHVDataSession_SQLite(DataEngine.GetModuleList(), DataEngine.CreateConnection(ok, Database), this);
 	RegisterDataSession(retVal);
 	return retVal;
 }
@@ -342,7 +322,7 @@ SHVDataSession* retVal = new SHVDataSession_SQLite(DataEngine.GetModuleList(), S
 /*************************************
  * CreateTable
  *************************************/
-SHVBool SHVDataFactory_impl::CreateTable(const SHVDataStructC* dataStruct, const SHVString8C& tableName)
+SHVBool SHVDataFactory_impl::CreateTable(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct, const SHVString8C& tableName)
 {
 SHVStringUTF8 query;
 SHVStringUTF8 col;
@@ -385,14 +365,14 @@ SHVBool ok;
 	}
 	query.Format("create table %s(%s,primary key (%s), unique(%s))", tableName.GetSafeBuffer(), cols.GetSafeBuffer(), pkey.GetSafeBuffer(), pkey.GetSafeBuffer());
 	
-	SHVSQLiteStatementRef statement = SQLite->ExecuteUTF8(ok, query, notparsed);
+	SHVSQLiteStatementRef statement = sqlite->ExecuteUTF8(ok, query, notparsed);
 	return SHVBool(ok.GetError() == SHVSQLiteWrapper::SQLite_DONE);
 }
 
 /*************************************
  * CreateIndex
  *************************************/
-SHVBool SHVDataFactory_impl::CreateIndex(const SHVDataStructC* dataStruct, const SHVString8C& tableName, size_t index)
+SHVBool SHVDataFactory_impl::CreateIndex(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct, const SHVString8C& tableName, size_t index)
 {
 SHVStringUTF8 keys;
 SHVStringUTF8 sql;
@@ -417,7 +397,7 @@ SHVSQLiteStatementRef statement;
 			index,
 			tableName.GetSafeBuffer(),
 			keys);
-		statement = SQLite->ExecuteUTF8(retVal, sql, rest);
+		statement = sqlite->ExecuteUTF8(retVal, sql, rest);
 		retVal = SHVBool(retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE);
 	}
 	return retVal;
@@ -426,9 +406,9 @@ SHVSQLiteStatementRef statement;
 /*************************************
  * TableMatch
  *************************************/
-bool SHVDataFactory_impl::TableMatch(const SHVDataStructC* dataStruct, const SHVString8C& tableName, bool& exists)
+bool SHVDataFactory_impl::TableMatch(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct, const SHVString8C& tableName, bool& exists)
 {
-SHVDataStructCRef sqliteStruct = new SHVDataStructC_SQLite(SQLite, tableName);
+SHVDataStructCRef sqliteStruct = new SHVDataStructC_SQLite(sqlite, tableName);
 	exists = sqliteStruct->GetColumnCount() != 0;
 	return sqliteStruct->IsEqual(dataStruct);
 }
@@ -451,6 +431,19 @@ SHVMutexLocker lock(FactoryLock);
 SHVListPos pos = ActiveDataLists.Find(rowList);
 	if (pos)
 		ActiveDataLists.RemoveAt(pos);
+}
+
+/*************************************
+ * HasPendingDataLists
+ *************************************/
+bool SHVDataFactory_impl::HasPendingDataLists(const SHVDataSession* session) const
+{
+SHVMutexLocker lock(FactoryLock);
+SHVListIterator<SHVDataRowListC*> Iter(ActiveDataLists);
+bool retVal = false;
+	while(!retVal && Iter.MoveNext())
+		retVal = Iter.Get()->GetDataSession() == session;
+	return retVal;
 }
 
 /*************************************
@@ -555,4 +548,46 @@ const SHVDataStructC* found = NULL;
 			found = Schema[t];
 	}
 	return found;
+}
+
+/*************************************
+ * InternalUnregisterAlias
+ *************************************/
+SHVBool SHVDataFactory_impl::InternalUnregisterAlias(SHVSQLiteWrapper* sqlite, const SHVString8C& alias)
+{
+const SHVDataStructC* aliasfound;
+SHVBool retVal = SHVBool::False;
+SHVMutexLocker lock(FactoryLock);
+	aliasfound = FindStruct(alias);	
+	if (aliasfound)
+	{
+	SHVStringUTF8 sql;
+	SHVStringSQLite rest("");
+	SHVBool dropOk;
+	SHVListIterator<SHVDataStructReg> Iter(Alias);
+	// Lets see if there's any active list with that alias
+	SHVListIterator<SHVDataRowListC*> DLIter(ActiveDataLists);
+	retVal = SHVBool::True;
+		while (DLIter.MoveNext() && retVal) 
+		{
+			retVal = DLIter.Get()->GetAlias() != alias;
+		}	
+		if (retVal)
+		{
+			sql.Format("drop table %s", alias);
+			sqlite->ExecuteUTF8(retVal, sql, rest)->ValidateRefCount();
+			if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+			{
+				while (Iter.MoveNext() && Iter.Get().GetAlias() != alias);
+				if (Iter)
+				{
+					Alias.RemoveAt(Iter.Pos());
+				}
+				retVal = SHVBool::True;
+			}
+		}
+		else
+			retVal = SHVBool(SHVSQLiteWrapper::SQLite_LOCKED);
+	}
+	return retVal;
 }
