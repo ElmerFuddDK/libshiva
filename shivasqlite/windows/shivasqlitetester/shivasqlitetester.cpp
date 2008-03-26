@@ -5,8 +5,8 @@
 #include "../../../include/platformspc.h"
 #include "../../../include/utils/shvdll.h"
 #include "../../../include/utils/shvstring.h"
-#include "../../include/sqlitewrapper.h"
-#include "../../include/sqlitestatement.h"
+#include "../../../include/sqlite/sqlitewrapper.h"
+#include "../../../include/sqlite/sqlitestatement.h"
 
 void DumpRow(SHVSQLiteStatement* statement)
 {

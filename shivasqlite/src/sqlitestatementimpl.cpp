@@ -1,21 +1,21 @@
-#include "StdAfx.h"
-#include "../../../include/platformspc.h"
+#include "stdafx.h"
+#include "../../include/platformspc.h"
 
-#include "../SQLite/sqlite3.h"
-#include "../../include/sqliteimpl/sqlitewrapper_impl.h"
-#include "../../include/sqliteimpl/sqlitestatement_impl.h"
-#include "../../../include/threadutils/shvmutexlocker.h"
+#include "sqlite/sqlite3.h"
+#include "../include/sqlitewrapperimpl.h"
+#include "../include/sqlitestatementimpl.h"
+#include "../../include/threadutils/shvmutexlocker.h"
 
 /*************************************
  * Constructor
  *************************************/
-SHVSQLiteStatement_impl::SHVSQLiteStatement_impl(sqlite3_stmt* statement, SHVSQLiteWrapper* owner, int rowcount)
+SHVSQLiteStatementImpl::SHVSQLiteStatementImpl(sqlite3_stmt* statement, SHVSQLiteWrapper* owner, int rowcount)
 {
 	Statement = statement;	
 	Owner = owner;
 }
 
-SHVSQLiteStatement_impl::~SHVSQLiteStatement_impl()
+SHVSQLiteStatementImpl::~SHVSQLiteStatementImpl()
 {
 SHVMutexLocker lock(Owner->GetMutex());
 	if (Statement)
@@ -25,7 +25,7 @@ SHVMutexLocker lock(Owner->GetMutex());
 /*************************************
  * GetLong
  *************************************/
-SHVBool SHVSQLiteStatement_impl::GetLong(long& val, int columnIdx) const
+SHVBool SHVSQLiteStatementImpl::GetLong(long& val, int columnIdx) const
 {
 SHVMutexLocker lock(Lock);
 	if (columnIdx < sqlite3_column_count(Statement) && columnIdx >= 0)
@@ -40,7 +40,7 @@ SHVMutexLocker lock(Lock);
 /*************************************
  * GetDouble
  *************************************/
-SHVBool SHVSQLiteStatement_impl::GetDouble(double& val, int columnIdx) const
+SHVBool SHVSQLiteStatementImpl::GetDouble(double& val, int columnIdx) const
 {
 SHVMutexLocker lock(Lock);
 	if (columnIdx < sqlite3_column_count(Statement) && columnIdx >= 0)
@@ -55,7 +55,7 @@ SHVMutexLocker lock(Lock);
 /*************************************
  * GetBlob
  *************************************/
-SHVBool SHVSQLiteStatement_impl::GetBlob(const void*& blob, int& len, int columnIdx) const
+SHVBool SHVSQLiteStatementImpl::GetBlob(const void*& blob, int& len, int columnIdx) const
 {
 SHVMutexLocker lock(Lock);
 	if (columnIdx < sqlite3_column_count(Statement) && columnIdx >= 0)
@@ -71,7 +71,7 @@ SHVMutexLocker lock(Lock);
 /*************************************
  * GetValueUTF8
  *************************************/
-SHVBool SHVSQLiteStatement_impl::GetStringUTF8(SHVStringSQLite& text, int& len, int columnIdx) const
+SHVBool SHVSQLiteStatementImpl::GetStringUTF8(SHVStringSQLite& text, int& len, int columnIdx) const
 {
 SHVMutexLocker lock(Lock);
 	if (columnIdx < sqlite3_column_count(Statement) && columnIdx >= 0)
@@ -87,7 +87,7 @@ SHVMutexLocker lock(Lock);
 /*************************************
  * GetColumnNameUTF8
  *************************************/
-SHVBool SHVSQLiteStatement_impl::GetColumnNameUTF8(SHVStringSQLite& name, int columnIdx) const
+SHVBool SHVSQLiteStatementImpl::GetColumnNameUTF8(SHVStringSQLite& name, int columnIdx) const
 {
 SHVMutexLocker lock(Lock);
 	if (columnIdx < sqlite3_column_count(Statement) && columnIdx >= 0)
@@ -102,7 +102,7 @@ SHVMutexLocker lock(Lock);
 /*************************************
  * GetColumnName8
  *************************************/
-SHVBool SHVSQLiteStatement_impl::GetColumnName8(SHVString8& name, int columnIdx) const
+SHVBool SHVSQLiteStatementImpl::GetColumnName8(SHVString8& name, int columnIdx) const
 {
 	SHVStringSQLite res(NULL);
 	SHVBool retVal = GetColumnNameUTF8(res, columnIdx);
@@ -114,7 +114,7 @@ SHVBool SHVSQLiteStatement_impl::GetColumnName8(SHVString8& name, int columnIdx)
 /*************************************
  * GetColumnName16
  *************************************/
-SHVBool SHVSQLiteStatement_impl::GetColumnName16(SHVString16& name, int columnIdx) const
+SHVBool SHVSQLiteStatementImpl::GetColumnName16(SHVString16& name, int columnIdx) const
 {
 	SHVStringSQLite res(NULL);
 	SHVBool retVal = GetColumnNameUTF8(res, columnIdx);
@@ -127,7 +127,7 @@ SHVBool SHVSQLiteStatement_impl::GetColumnName16(SHVString16& name, int columnId
 /*************************************
  * GetColumnType
  *************************************/
-SHVBool SHVSQLiteStatement_impl::GetColumnAffinity(short& type, int columnIdx) const
+SHVBool SHVSQLiteStatementImpl::GetColumnAffinity(short& type, int columnIdx) const
 {
 SHVMutexLocker lock(Lock);
 	if (columnIdx < sqlite3_column_count(Statement) && columnIdx >= 0)
@@ -142,7 +142,7 @@ SHVMutexLocker lock(Lock);
 /*************************************
  * GetColumnTypeUTF8
  *************************************/
-SHVBool SHVSQLiteStatement_impl::GetColumnTypeUTF8(SHVStringSQLite& colType, int columnIdx) const
+SHVBool SHVSQLiteStatementImpl::GetColumnTypeUTF8(SHVStringSQLite& colType, int columnIdx) const
 {
 SHVMutexLocker lock(Lock);
 	if (columnIdx < sqlite3_column_count(Statement) && columnIdx >= 0)
@@ -157,7 +157,7 @@ SHVMutexLocker lock(Lock);
 /*************************************
  * GetColumnType8
  *************************************/
-SHVBool SHVSQLiteStatement_impl::GetColumnType8(SHVString8& colType, int columnIdx) const
+SHVBool SHVSQLiteStatementImpl::GetColumnType8(SHVString8& colType, int columnIdx) const
 {
 SHVStringSQLite res(NULL);
 	SHVBool retVal = GetColumnTypeUTF8(res, columnIdx);
@@ -169,7 +169,7 @@ SHVStringSQLite res(NULL);
 /*************************************
  * GetColumnType16
  *************************************/
-SHVBool SHVSQLiteStatement_impl::GetColumnType16(SHVString16& colType, int columnIdx) const
+SHVBool SHVSQLiteStatementImpl::GetColumnType16(SHVString16& colType, int columnIdx) const
 {
 SHVStringSQLite res(NULL);
 	SHVBool retVal = GetColumnTypeUTF8(res, columnIdx);
@@ -181,7 +181,7 @@ SHVStringSQLite res(NULL);
 /*************************************
  * GetColumnCount
  *************************************/
-int SHVSQLiteStatement_impl::GetColumnCount() const
+int SHVSQLiteStatementImpl::GetColumnCount() const
 {
 SHVMutexLocker lock(Lock);
 	return sqlite3_column_count(Statement);
@@ -190,7 +190,7 @@ SHVMutexLocker lock(Lock);
 /*************************************
  * SetParameterLongUTF8
  *************************************/
-SHVBool SHVSQLiteStatement_impl::SetParameterLongUTF8(const SHVStringUTF8C& name, long val)
+SHVBool SHVSQLiteStatementImpl::SetParameterLongUTF8(const SHVStringUTF8C& name, long val)
 {
 SHVMutexLocker lock(Lock);
 	int pIdx = sqlite3_bind_parameter_index(Statement, name.GetSafeBuffer());
@@ -205,7 +205,7 @@ SHVMutexLocker lock(Lock);
 /*************************************
  * SetParameterDoubleUTF8
  *************************************/
-SHVBool SHVSQLiteStatement_impl::SetParameterDoubleUTF8(const SHVStringUTF8C& name, double val)
+SHVBool SHVSQLiteStatementImpl::SetParameterDoubleUTF8(const SHVStringUTF8C& name, double val)
 {
 SHVMutexLocker lock(Lock);
 	int pIdx = sqlite3_bind_parameter_index(Statement, name.GetSafeBuffer());
@@ -220,7 +220,7 @@ SHVMutexLocker lock(Lock);
 /*************************************
  * SetParameterStringUTF8
  *************************************/
-SHVBool SHVSQLiteStatement_impl::SetParameterStringUTF8(const SHVStringUTF8C& name, const SHVStringUTF8C& val)
+SHVBool SHVSQLiteStatementImpl::SetParameterStringUTF8(const SHVStringUTF8C& name, const SHVStringUTF8C& val)
 {
 SHVMutexLocker lock(Lock);
 	int pIdx = sqlite3_bind_parameter_index(Statement, name.GetSafeBuffer());
@@ -235,7 +235,7 @@ SHVMutexLocker lock(Lock);
 /*************************************
  * SetParameterNullUTF8
  *************************************/
-SHVBool SHVSQLiteStatement_impl::SetParameterNullUTF8(const SHVStringUTF8C& name)
+SHVBool SHVSQLiteStatementImpl::SetParameterNullUTF8(const SHVStringUTF8C& name)
 {
 SHVMutexLocker lock(Lock);
 	int pIdx = sqlite3_bind_parameter_index(Statement, name.GetSafeBuffer());
@@ -250,7 +250,7 @@ SHVMutexLocker lock(Lock);
 /*************************************
  * NextResult
  *************************************/
-SHVBool SHVSQLiteStatement_impl::NextResult()
+SHVBool SHVSQLiteStatementImpl::NextResult()
 {
 SHVMutexLocker lock(Lock);
 	return SHVBool(sqlite3_step(Statement));
@@ -259,7 +259,7 @@ SHVMutexLocker lock(Lock);
 /*************************************
  * Reset
  *************************************/
-SHVBool SHVSQLiteStatement_impl::Reset()
+SHVBool SHVSQLiteStatementImpl::Reset()
 {
 SHVMutexLocker lock(Lock);
 	return SHVBool(sqlite3_reset(Statement));

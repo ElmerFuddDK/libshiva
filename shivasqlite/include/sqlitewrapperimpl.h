@@ -1,21 +1,21 @@
 #ifndef __SHIVA_SQLITE_WRAPPER_IMPL_H
 #define __SHIVA_SQLITE_WRAPPER_IMPL_H
 
-#include "../sqlitewrapper.h"
-#include "../../src/sqlite/sqlite3.h"
-#include "../sqlitestatement.h"
-#include "../../../include/threadutils/shvmutex.h"
+#include "../src/sqlite/sqlite3.h"
+#include "../../include/sqlite/sqlitewrapper.h"
+#include "../../include/sqlite/sqlitestatement.h"
+#include "../../include/threadutils/shvmutex.h"
 
 //-=========================================================================================================
-///  SHVSQLiteWrapper_Impl class - Implement the shiva C++ interface for SQLite
+///  SHVSQLiteWrapperImpl class - Implement the shiva C++ interface for SQLite
 /**
  */
 	
-class SHVSQLiteWrapper_Impl: public SHVSQLiteWrapper
+class SHVSQLiteWrapperImpl: public SHVSQLiteWrapper
 {
 public:
-	SHVSQLiteWrapper_Impl(void);
-	virtual ~SHVSQLiteWrapper_Impl(void);
+	SHVSQLiteWrapperImpl(void);
+	virtual ~SHVSQLiteWrapperImpl(void);
 
 	virtual SHVBool OpenUTF8(const SHVStringUTF8C& fileName, int option = 6);
 	virtual SHVBool OpenInMemory();

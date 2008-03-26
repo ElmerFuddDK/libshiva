@@ -5,8 +5,7 @@
 
 #include "../../include/utils/shvdll.h"
 #include "../../include/framework/shvmodulelist.h"
-#include "../include/sqlitewrapper.h"
-#include "../include/sqliteimpl/sqlitewrapper_impl.h"
+#include "../include/sqlitewrapperimpl.h"
 
 
 #ifdef _MANAGED
@@ -29,7 +28,7 @@ void* CreateObjectInt(SHVModuleList* list, int id)
 	switch (id)
 	{
 	case SHVDll::ClassTypeUser:
-		return new SHVSQLiteWrapper_Impl();
+		return new SHVSQLiteWrapperImpl();
 	default:
 		return NULL;
 	}

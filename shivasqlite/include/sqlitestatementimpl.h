@@ -1,21 +1,21 @@
 #ifndef __SHIVA_SQLITE_SQLITESTATEMENT_IMPL_H
 #define __SHIVA_SQLITE_SQLITESTATEMENT_IMPL_H
 
-#include "../sqlitewrapper.h"
-#include "../sqlitestatement.h"
-#include "../../../include/threadutils/shvmutexlocker.h"
+#include "../../include/sqlite/sqlitewrapper.h"
+#include "../../include/sqlite/sqlitestatement.h"
+#include "../../include/threadutils/shvmutexlocker.h"
 
 // forward declares
 class SQLiteWrapper;
 //-=========================================================================================================
-///  SHVSQLiteStatement_impl class - Implements the shiva C++ interface for a SQLite statement
+///  SHVSQLiteStatementImpl class - Implements the shiva C++ interface for a SQLite statement
 /**
  */
-class SHVSQLiteStatement_impl: public SHVSQLiteStatement
+class SHVSQLiteStatementImpl: public SHVSQLiteStatement
 {
 public:
-	SHVSQLiteStatement_impl(sqlite3_stmt* statement, SHVSQLiteWrapper* owner, int rowcount);
-	virtual ~SHVSQLiteStatement_impl();
+	SHVSQLiteStatementImpl(sqlite3_stmt* statement, SHVSQLiteWrapper* owner, int rowcount);
+	virtual ~SHVSQLiteStatementImpl();
 
 	virtual SHVBool GetLong(long& val, int columnIdx) const;
 	virtual SHVBool GetDouble(double& val, int columnIdx) const;
