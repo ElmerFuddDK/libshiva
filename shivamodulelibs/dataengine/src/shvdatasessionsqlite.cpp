@@ -1,12 +1,12 @@
 #include "stdafx.h"
 
-#include "../../../../include/platformspc.h"
-#include "../../../../include/utils/shvstringutf8.h"
-#include "../../include/shvdatasessionsqlite.h"
-#include "../../include/shvdatarowlistsqlite.h"
-#include "../../include/shvdatarowlistcsqlite.h"
-#include "../../include/shvdatarowlistcindexed.h"
-#include "../../../../include/modules/dataengine/shvdataengine.h"
+#include "../../../include/platformspc.h"
+#include "../../../include/utils/shvstringutf8.h"
+#include "../include/shvdatasessionsqlite.h"
+#include "../include/shvdatarowlistsqlite.h"
+#include "../include/shvdatarowlistcsqlite.h"
+#include "../include/shvdatarowlistcindexed.h"
+#include "../../../include/modules/dataengine/shvdataengine.h"
 
 /*************************************
  * Constructor
