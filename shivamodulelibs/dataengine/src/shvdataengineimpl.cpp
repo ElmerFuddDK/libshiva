@@ -1,15 +1,15 @@
 #include "stdafx.h"
 
-#include "../../../../include/platformspc.h"
-#include "../../include/shvdatasessionsqlite.h"
-#include "../../include/shvdataengineimpl.h"
-#include "../../include/shvdatafactoryimpl.h"
+#include "../../../include/platformspc.h"
+#include "../include/shvdatasessionsqlite.h"
+#include "../include/shvdataengineimpl.h"
+#include "../include/shvdatafactoryimpl.h"
 
 
 /*************************************
  * Constructor
  *************************************/
-SHVDataEngine_impl::SHVDataEngine_impl(SHVModuleList& modules): SHVDataEngine(modules)
+SHVDataEngineImpl::SHVDataEngineImpl(SHVModuleList& modules): SHVDataEngine(modules)
 {
 SHVString database = modules.GetConfig().Find(__DATAENGINE_DEFAULT_DATABASE, _T("database.db")).ToString();
 SHVString datapath = modules.GetConfig().Find(__DATAENGINE_DATAPATH, _T("./")).ToString();
@@ -23,7 +23,7 @@ SHVBool ok;
 	}
 	else
 	{
-		Factory = new SHVDataFactory_impl(*this, datapath);
+		Factory = new SHVDataFactoryImpl(*this, datapath);
 		if (!Factory->IsOk())
 		{
 			Modules.AddStartupError(Factory->GetErrorMessage());
@@ -31,7 +31,7 @@ SHVBool ok;
 	}
 }
 
-SHVDataEngine_impl::~SHVDataEngine_impl()
+SHVDataEngineImpl::~SHVDataEngineImpl()
 {
 	Factory = NULL;
 }
@@ -39,7 +39,7 @@ SHVDataEngine_impl::~SHVDataEngine_impl()
 /*************************************
  * Register
  *************************************/
-SHVBool SHVDataEngine_impl::Register()
+SHVBool SHVDataEngineImpl::Register()
 {
 	return SHVModule::Register();
 }
@@ -47,7 +47,7 @@ SHVBool SHVDataEngine_impl::Register()
 /*************************************
  * Unregister
  *************************************/
-void SHVDataEngine_impl::Unregister()
+void SHVDataEngineImpl::Unregister()
 {
 	SHVModule::Unregister();
 }
@@ -55,7 +55,7 @@ void SHVDataEngine_impl::Unregister()
 /*************************************
  * RegisterTable
  *************************************/
-SHVBool SHVDataEngine_impl::RegisterTable(const SHVDataStructC* dataStruct, bool createTable)
+SHVBool SHVDataEngineImpl::RegisterTable(const SHVDataStructC* dataStruct, bool createTable)
 {
 	return Factory->RegisterTable(dataStruct, createTable);
 }
@@ -63,7 +63,7 @@ SHVBool SHVDataEngine_impl::RegisterTable(const SHVDataStructC* dataStruct, bool
 /*************************************
  * RegisterAlias
  *************************************/
-SHVBool SHVDataEngine_impl::RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear, SHVDataSession* useSession)
+SHVBool SHVDataEngineImpl::RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear, SHVDataSession* useSession)
 {
 	return Factory->RegisterAlias(table, alias, clear, useSession);
 }
@@ -71,7 +71,7 @@ SHVBool SHVDataEngine_impl::RegisterAlias(const SHVString8C& table, const SHVStr
 /*************************************
  * UnregisterAlias
  *************************************/
-SHVBool SHVDataEngine_impl::UnregisterAlias(const SHVString8C& alias)
+SHVBool SHVDataEngineImpl::UnregisterAlias(const SHVString8C& alias)
 {
 	return Factory->UnregisterAlias(alias);
 }
@@ -80,7 +80,7 @@ SHVBool SHVDataEngine_impl::UnregisterAlias(const SHVString8C& alias)
 /*************************************
  * FindStruct
  *************************************/
-const SHVDataStructC* SHVDataEngine_impl::FindStruct(const SHVString8C& table) const
+const SHVDataStructC* SHVDataEngineImpl::FindStruct(const SHVString8C& table) const
 {
 	return Factory->FindStruct(table);
 }
@@ -88,7 +88,7 @@ const SHVDataStructC* SHVDataEngine_impl::FindStruct(const SHVString8C& table) c
 /*************************************
  * CreateSession
  *************************************/
-SHVDataSession* SHVDataEngine_impl::CreateSession()
+SHVDataSession* SHVDataEngineImpl::CreateSession()
 {
 	return Factory->CreateSession();
 }
@@ -96,7 +96,7 @@ SHVDataSession* SHVDataEngine_impl::CreateSession()
 /*************************************
  * CreateStruct
  *************************************/
-SHVDataStruct* SHVDataEngine_impl::CreateStruct() const
+SHVDataStruct* SHVDataEngineImpl::CreateStruct() const
 {
 	return Factory->CreateStruct();
 }
@@ -104,14 +104,14 @@ SHVDataStruct* SHVDataEngine_impl::CreateStruct() const
 /*************************************
  * CreateVariant
  *************************************/
-SHVDataVariant* SHVDataEngine_impl::CreateVariant() const
+SHVDataVariant* SHVDataEngineImpl::CreateVariant() const
 {
 	return Factory->CreateVariant();
 }
 /*************************************
  * CreateKey
  *************************************/
-SHVDataRowKey* SHVDataEngine_impl::CreateKey() const
+SHVDataRowKey* SHVDataEngineImpl::CreateKey() const
 {
 	return Factory->CreateKey();
 }
@@ -119,14 +119,14 @@ SHVDataRowKey* SHVDataEngine_impl::CreateKey() const
 /*************************************
  * CopyKey
  *************************************/
-SHVDataRowKey* SHVDataEngine_impl::CopyKey(const SHVDataRowKey* key) const
+SHVDataRowKey* SHVDataEngineImpl::CopyKey(const SHVDataRowKey* key) const
 {
 	return Factory->CopyKey(key);
 }
 /*************************************
  * BuildKeySQL
  *************************************/
-void SHVDataEngine_impl::BuildKeySQL(const SHVDataRowKey* key, SHVString8& condition, SHVString8& orderby, const SHVString8C& table, bool reverse) const
+void SHVDataEngineImpl::BuildKeySQL(const SHVDataRowKey* key, SHVString8& condition, SHVString8& orderby, const SHVString8C& table, bool reverse) const
 {
 	return Factory->BuildKeySQL(key, condition, orderby, table, reverse);
 }
@@ -134,7 +134,7 @@ void SHVDataEngine_impl::BuildKeySQL(const SHVDataRowKey* key, SHVString8& condi
 /*************************************
  * GetDataSchema
  *************************************/
-const SHVDataSchema& SHVDataEngine_impl::GetDataSchema() const
+const SHVDataSchema& SHVDataEngineImpl::GetDataSchema() const
 {
 	return Factory->GetDataSchema();
 }
@@ -142,7 +142,7 @@ const SHVDataSchema& SHVDataEngine_impl::GetDataSchema() const
 /*************************************
  * GetDatabase
  *************************************/
-const SHVStringC& SHVDataEngine_impl::GetDatabase() const
+const SHVStringC& SHVDataEngineImpl::GetDatabase() const
 {
 	return Factory->GetDatabase();
 }
@@ -150,7 +150,7 @@ const SHVStringC& SHVDataEngine_impl::GetDatabase() const
 /*************************************
  * CreateConnection
  *************************************/
-SHVSQLiteWrapper* SHVDataEngine_impl::CreateConnection(SHVBool& Ok, const SHVStringC& dataBase)
+SHVSQLiteWrapper* SHVDataEngineImpl::CreateConnection(SHVBool& Ok, const SHVStringC& dataBase)
 {
 SHVSQLiteWrapperRef retVal = (SHVSQLiteWrapper*) SQLiteDll.CreateObjectInt(&Modules, SHVDll::ClassTypeUser);
 	Ok = retVal->Open(dataBase);
@@ -169,15 +169,15 @@ SHVSQLiteWrapperRef retVal = (SHVSQLiteWrapper*) SQLiteDll.CreateObjectInt(&Modu
 /*************************************
  * CreateFactory
  *************************************/
-SHVDataFactory* SHVDataEngine_impl::CreateFactory(const SHVStringC& database, const SHVDataSchema* schema)
+SHVDataFactory* SHVDataEngineImpl::CreateFactory(const SHVStringC& database, const SHVDataSchema* schema)
 {
-	return new SHVDataFactory_impl(*this, database, schema);
+	return new SHVDataFactoryImpl(*this, database, schema);
 }
 
 /*************************************
  * GetDefaultFactory
  *************************************/
-SHVDataFactory* SHVDataEngine_impl::GetDefaultFactory()
+SHVDataFactory* SHVDataEngineImpl::GetDefaultFactory()
 {
 	return Factory;
 }
@@ -185,28 +185,28 @@ SHVDataFactory* SHVDataEngine_impl::GetDefaultFactory()
 /*************************************
  * SubscribeRowChange
  *************************************/
-void SHVDataEngine_impl::SubscribeRowChange(SHVEventSubscriberBase* sub)
+void SHVDataEngineImpl::SubscribeRowChange(SHVEventSubscriberBase* sub)
 {
 }
 
 /*************************************
  * RegisterDataList
  *************************************/
-void SHVDataEngine_impl::RegisterDataList(SHVDataRowListC* rowList)
+void SHVDataEngineImpl::RegisterDataList(SHVDataRowListC* rowList)
 {
 }
 
 /*************************************
  * UnregisterDataList
  *************************************/
-void SHVDataEngine_impl::UnregisterDataList(SHVDataRowListC* rowList)
+void SHVDataEngineImpl::UnregisterDataList(SHVDataRowListC* rowList)
 {
 }
 
 /*************************************
  * RowChanged
  *************************************/
-void SHVDataEngine_impl::RowChanged(SHVDataRow* row)
+void SHVDataEngineImpl::RowChanged(SHVDataRow* row)
 {
 	EmitEvent(new SHVEventDataRowChanged(row, this, SHVDataFactory::EventRowChanged, SHVInt(), Factory));
 }

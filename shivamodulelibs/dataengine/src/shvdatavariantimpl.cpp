@@ -1,10 +1,13 @@
 #include "stdafx.h"
 #include <stdlib.h>
-#include "../../../../include/platformspc.h"
-#include "../../include/shvdatavariantimpl.h"
+#include "../../../include/platformspc.h"
+#include "../include/shvdatavariantimpl.h"
 
 
-SHVDataVariant_impl::~SHVDataVariant_impl()
+/*************************************
+ * Destructor
+ *************************************/
+SHVDataVariantImpl::~SHVDataVariantImpl()
 {
 	if (DataType == SHVDataVariant::TypeTime && Data.timeVal)
 		delete Data.timeVal;
@@ -12,12 +15,18 @@ SHVDataVariant_impl::~SHVDataVariant_impl()
 		delete Data.stringVal;
 }
 
-int SHVDataVariant_impl::GetDataType() const
+/*************************************
+ * GetDataType
+ *************************************/
+int SHVDataVariantImpl::GetDataType() const
 {
 	return DataType;
 }
 
-SHVStringBuffer SHVDataVariant_impl::AsString() const
+/*************************************
+ * AsString
+ *************************************/
+SHVStringBuffer SHVDataVariantImpl::AsString() const
 {
 SHVString retVal;
 	if (!isNull)
@@ -44,7 +53,10 @@ SHVString retVal;
 	return retVal.ReleaseBuffer();
 }
 
-void SHVDataVariant_impl::SetString(const SHVStringC& val)
+/*************************************
+ * SetString
+ *************************************/
+void SHVDataVariantImpl::SetString(const SHVStringC& val)
 {
 	if (DataType == SHVDataVariant::TypeUndefined)
 		DataType = SHVDataVariant::TypeString;
@@ -89,7 +101,10 @@ void SHVDataVariant_impl::SetString(const SHVStringC& val)
 	}
 }
 
-SHVInt SHVDataVariant_impl::AsInt() const
+/*************************************
+ * AsInt
+ *************************************/
+SHVInt SHVDataVariantImpl::AsInt() const
 {
 SHVInt retVal;
 	SHVASSERT(DataType != SHVDataVariant::TypeTime);
@@ -119,7 +134,10 @@ SHVInt retVal;
 	return retVal;
 }
 
-void SHVDataVariant_impl::SetInt(SHVInt val)
+/*************************************
+ * SetInt
+ *************************************/
+void SHVDataVariantImpl::SetInt(SHVInt val)
 {
 	SHVASSERT(DataType != SHVDataVariant::TypeTime);
 	if (DataType == SHVDataVariant::TypeUndefined)
@@ -155,7 +173,10 @@ void SHVDataVariant_impl::SetInt(SHVInt val)
 	}
 }
 
-SHVDouble SHVDataVariant_impl::AsDouble() const
+/*************************************
+ * AsDouble
+ *************************************/
+SHVDouble SHVDataVariantImpl::AsDouble() const
 {
 SHVDouble retVal;
 	SHVASSERT(DataType != SHVDataVariant::TypeTime);
@@ -189,7 +210,10 @@ SHVDouble retVal;
 	return retVal;
 }
 
-void SHVDataVariant_impl::SetDouble(SHVDouble val)
+/*************************************
+ * SetDouble
+ *************************************/
+void SHVDataVariantImpl::SetDouble(SHVDouble val)
 {
 	SHVASSERT(DataType != SHVDataVariant::TypeTime);
 	if (DataType == SHVDataVariant::TypeUndefined)
@@ -228,7 +252,10 @@ void SHVDataVariant_impl::SetDouble(SHVDouble val)
 	}
 }
 
-SHVTime SHVDataVariant_impl::AsTime() const
+/*************************************
+ * AsTime
+ *************************************/
+SHVTime SHVDataVariantImpl::AsTime() const
 {
 SHVTime retVal;
 	SHVASSERT(DataType == SHVDataVariant::TypeTime);
@@ -238,7 +265,11 @@ SHVTime retVal;
 	}
 	return retVal;
 }
-void SHVDataVariant_impl::SetTime(const SHVTime& val)
+
+/*************************************
+ * SetTime
+ *************************************/
+void SHVDataVariantImpl::SetTime(const SHVTime& val)
 {
 	if (DataType == SHVDataVariant::TypeUndefined)
 		DataType = SHVDataVariant::TypeTime;
@@ -272,7 +303,10 @@ void SHVDataVariant_impl::SetTime(const SHVTime& val)
 	}
 }
 
-SHVBool SHVDataVariant_impl::AsBool() const
+/*************************************
+ * AsBool
+ *************************************/
+SHVBool SHVDataVariantImpl::AsBool() const
 {
 SHVBool retVal;
 	SHVASSERT(DataType != SHVDataVariant::TypeTime);
@@ -302,7 +336,10 @@ SHVBool retVal;
 	return retVal;
 }
 
-void SHVDataVariant_impl::SetBool(SHVBool val)
+/*************************************
+ * SetBool
+ *************************************/
+void SHVDataVariantImpl::SetBool(SHVBool val)
 {
 	if (DataType == SHVDataVariant::TypeUndefined)
 		DataType = SHVDataVariant::TypeBool;
@@ -330,12 +367,18 @@ void SHVDataVariant_impl::SetBool(SHVBool val)
 	}
 }
 
-SHVBool SHVDataVariant_impl::IsNull() const
+/*************************************
+ * IsNull
+ *************************************/
+SHVBool SHVDataVariantImpl::IsNull() const
 {
 	return isNull;
 }
 
-void SHVDataVariant_impl::SetNull()
+/*************************************
+ * SetNull
+ *************************************/
+void SHVDataVariantImpl::SetNull()
 {
 	if (DataType == SHVDataVariant::TypeTime && Data.timeVal)
 		delete Data.timeVal;
@@ -344,7 +387,10 @@ void SHVDataVariant_impl::SetNull()
 	isNull = true;
 }
 
-SHVDataVariant& SHVDataVariant_impl::operator=(const SHVDataVariant& val)
+/*************************************
+ * operator =
+ *************************************/
+SHVDataVariant& SHVDataVariantImpl::operator=(const SHVDataVariant& val)
 {
 	switch (val.GetDataType())
 	{
@@ -367,7 +413,10 @@ SHVDataVariant& SHVDataVariant_impl::operator=(const SHVDataVariant& val)
 	return *this;
 }
 
-bool SHVDataVariant_impl::operator==(const SHVDataVariant& val) const
+/*************************************
+ * operator ==
+ *************************************/
+bool SHVDataVariantImpl::operator==(const SHVDataVariant& val) const
 {
 	if (DataType == val.GetDataType())
 	{

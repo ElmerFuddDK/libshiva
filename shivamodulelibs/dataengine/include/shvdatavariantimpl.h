@@ -1,25 +1,25 @@
 #ifndef __SHIVA_DATAENGINE_DATAVARIANT_IMPL_H
 #define __SHIVA_DATAENGINE_DATAVARIANT_IMPL_H
 
-#include "../shvdatavariant.h"
+#include "../../../include/modules/dataengine/shvdatavariant.h"
 
 //-=========================================================================================================
-///  SHVDataVariant_impl class - Implements the shiva variant data type.
+///  SHVDataVariantImpl class - Implements the shiva variant data type.
 /**
  * I know this is evil.. But this class makes it easier to create dynamic datastructure as a datarow or
  * a datakey.
  */
-class SHVDataVariant_impl: public SHVDataVariant
+class SHVDataVariantImpl: public SHVDataVariant
 {
 public:
-	inline SHVDataVariant_impl();
-	inline SHVDataVariant_impl(SHVInt val);
-	inline SHVDataVariant_impl(SHVDouble val);
-	inline SHVDataVariant_impl(SHVBool val);
-	inline SHVDataVariant_impl(const SHVString& val);
-	inline SHVDataVariant_impl(const SHVTime& val);
-	inline SHVDataVariant_impl(const SHVDataVariant* copy);
-	virtual ~SHVDataVariant_impl();
+	inline SHVDataVariantImpl();
+	inline SHVDataVariantImpl(SHVInt val);
+	inline SHVDataVariantImpl(SHVDouble val);
+	inline SHVDataVariantImpl(SHVBool val);
+	inline SHVDataVariantImpl(const SHVString& val);
+	inline SHVDataVariantImpl(const SHVTime& val);
+	inline SHVDataVariantImpl(const SHVDataVariant* copy);
+	virtual ~SHVDataVariantImpl();
 
 	virtual int GetDataType() const;
 	virtual SHVStringBuffer AsString() const;
@@ -41,7 +41,7 @@ public:
 	virtual void SetNull();
 
 	virtual SHVDataVariant& operator=(const SHVDataVariant& val);
-	inline SHVDataVariant& operator=(const SHVDataVariant_impl& val);
+	inline SHVDataVariant& operator=(const SHVDataVariantImpl& val);
 	virtual bool operator==(const SHVDataVariant& val) const;
 
 private:
@@ -56,48 +56,48 @@ private:
 	bool isNull;
 };
 
-// ================================ implementation - SHVDataVariant_impl ================================ //
+// ================================ implementation - SHVDataVariantImpl ================================ //
 
 /*************************************
  * Inline constructors
  *************************************/
-SHVDataVariant_impl::SHVDataVariant_impl()
+SHVDataVariantImpl::SHVDataVariantImpl()
 {
 	DataType = SHVDataVariant::TypeUndefined;
 	Data.stringVal = NULL;
 }
 
-SHVDataVariant_impl::SHVDataVariant_impl(SHVInt val)
+SHVDataVariantImpl::SHVDataVariantImpl(SHVInt val)
 {
 	DataType = SHVDataVariant::TypeInt;
 	SetInt(val);
 }
-SHVDataVariant_impl::SHVDataVariant_impl(SHVDouble val)
+SHVDataVariantImpl::SHVDataVariantImpl(SHVDouble val)
 {
 	DataType = SHVDataVariant::TypeDouble;
 	SetDouble(val);
 }
 
-SHVDataVariant_impl::SHVDataVariant_impl(SHVBool val)
+SHVDataVariantImpl::SHVDataVariantImpl(SHVBool val)
 {
 	DataType = SHVDataVariant::TypeBool;
 	SetBool(val);
 }
 
-SHVDataVariant_impl::SHVDataVariant_impl(const SHVString& val)
+SHVDataVariantImpl::SHVDataVariantImpl(const SHVString& val)
 {
 	DataType = SHVDataVariant::TypeString;
 	Data.stringVal = NULL;
 	SetString(val);
 }
 
-SHVDataVariant_impl::SHVDataVariant_impl(const SHVTime& val)
+SHVDataVariantImpl::SHVDataVariantImpl(const SHVTime& val)
 {
 	DataType = SHVDataVariant::TypeTime;
 	Data.stringVal = NULL;
 	SetTime(val);
 }
-SHVDataVariant_impl::SHVDataVariant_impl(const SHVDataVariant* copy)
+SHVDataVariantImpl::SHVDataVariantImpl(const SHVDataVariant* copy)
 {
 	DataType = SHVDataVariant::TypeUndefined;
 	Data.stringVal = NULL;
@@ -107,7 +107,7 @@ SHVDataVariant_impl::SHVDataVariant_impl(const SHVDataVariant* copy)
 /*************************************
  * operator =
  *************************************/
-SHVDataVariant& SHVDataVariant_impl::operator=(const SHVDataVariant_impl& val)
+SHVDataVariant& SHVDataVariantImpl::operator=(const SHVDataVariantImpl& val)
 {
 	*this = (const SHVDataVariant&) val;
 	return *this;

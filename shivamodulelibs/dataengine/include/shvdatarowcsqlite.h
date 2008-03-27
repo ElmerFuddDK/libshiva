@@ -1,24 +1,24 @@
 #ifndef __SHIVA_DATAENGINE_DATAROWC_SQLITE_H
 #define __SHIVA_DATAENGINE_DATAROWC_SQLITE_H
 
-#include "../../../../include/utils/shvrefobject.h"
-#include "../../../../include/utils/shvstring.h"
-#include "../../../../include/shvtypes.h"
-#include "../../../../include/utils/shvtime.h"
-#include "../../../../shivasqlite/include/sqlitewrapper.h"
-#include "../shvdatarowc.h"
-#include "shvdatarowlist_sqlite.h"
+#include "../../../include/utils/shvrefobject.h"
+#include "../../../include/utils/shvstring.h"
+#include "../../../include/shvtypes.h"
+#include "../../../include/utils/shvtime.h"
+#include "../../../include/sqlite/sqlitewrapper.h"
+#include "../../../include/modules/dataengine/shvdatarowc.h"
+#include "shvdatarowlistsqlite.h"
 
 //-=========================================================================================================
-/// SHVDataRowC_SQLite class - Implementation a sqlite datarow
+/// SHVDataRowCSQLite class - Implementation a sqlite datarow
 /**
  * This class doesn't not contain any data, but retrieves it directly from a sqlite statement object.
  */
-class SHVDataRowC_SQLite: public SHVDataRowC
+class SHVDataRowCSQLite: public SHVDataRowC
 {
 protected:
-	SHVDataRowC_SQLite(SHVDataRowListC* select);
-	virtual ~SHVDataRowC_SQLite();
+	SHVDataRowCSQLite(SHVDataRowListC* select);
+	virtual ~SHVDataRowCSQLite();
 public:
 	virtual SHVStringBuffer AsString(size_t colIdx) const;
 	virtual SHVInt AsInt(size_t colIdx) const;
@@ -39,10 +39,10 @@ public:
 	virtual const SHVDataRowListC* GetRowListC();
 
 private:
-friend class SHVDataRowList_SQLite;
-friend class SHVDataRowListC_SQLite;
+friend class SHVDataRowListSQLite;
+friend class SHVDataRowListCSQLite;
 	SHVDataRowListC* Select;
 };
-typedef SHVRefObjectContainer<SHVDataRowC_SQLite> SHVDataRowC_SQLiteRef;
+typedef SHVRefObjectContainer<SHVDataRowCSQLite> SHVDataRowCSQLiteRef;
 
 #endif

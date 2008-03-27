@@ -1,28 +1,28 @@
 #include "stdafx.h"
 
-#include "../../../../include/platformspc.h"
-#include "../../include/shvdatarowcsqlite.h"
-#include "../../include/shvdatarowimpl.h"
-#include "../../include/shvdatarowkeyimpl.h"
-#include "../../include/shvdatavariantimpl.h"
+#include "../../../include/platformspc.h"
+#include "../include/shvdatarowcsqlite.h"
+#include "../include/shvdatarowimpl.h"
+#include "../include/shvdatarowkeyimpl.h"
+#include "../include/shvdatavariantimpl.h"
 
 
 /*************************************
  * Constructor
  *************************************/
-SHVDataRowC_SQLite::SHVDataRowC_SQLite(SHVDataRowListC* select)
+SHVDataRowCSQLite::SHVDataRowCSQLite(SHVDataRowListC* select)
 {
 	Select = select;
 }
 
-SHVDataRowC_SQLite::~SHVDataRowC_SQLite()
+SHVDataRowCSQLite::~SHVDataRowCSQLite()
 {
 }
 
 /*************************************
  * AsString
  *************************************/
-SHVStringBuffer SHVDataRowC_SQLite::AsString(size_t colIdx) const
+SHVStringBuffer SHVDataRowCSQLite::AsString(size_t colIdx) const
 {
 const SHVSQLiteStatement* Statement = (const SHVSQLiteStatement*) Select->GetRowProvider();
 SHVString retVal;
@@ -35,7 +35,7 @@ int len;
 /*************************************
  * AsInt
  *************************************/
-SHVInt SHVDataRowC_SQLite::AsInt(size_t colIdx) const
+SHVInt SHVDataRowCSQLite::AsInt(size_t colIdx) const
 {
 const SHVSQLiteStatement* Statement = (const SHVSQLiteStatement*) Select->GetRowProvider();
 SHVInt retVal;
@@ -51,7 +51,7 @@ long val;
 /*************************************
  * AsDouble
  *************************************/
-SHVDouble SHVDataRowC_SQLite::AsDouble(size_t colIdx) const
+SHVDouble SHVDataRowCSQLite::AsDouble(size_t colIdx) const
 {
 const SHVSQLiteStatement* Statement = (const SHVSQLiteStatement*) Select->GetRowProvider();
 SHVDouble retVal;
@@ -67,7 +67,7 @@ double val;
 /*************************************
  * AsTime
  *************************************/
-SHVTime SHVDataRowC_SQLite::AsTime(size_t colIdx) const
+SHVTime SHVDataRowCSQLite::AsTime(size_t colIdx) const
 {
 const SHVSQLiteStatement* Statement = (const SHVSQLiteStatement*) Select->GetRowProvider();
 int len;
@@ -84,7 +84,7 @@ SHVString val;
 /*************************************
  * AsBool
  *************************************/
-SHVBool SHVDataRowC_SQLite::AsBool(size_t colIdx) const
+SHVBool SHVDataRowCSQLite::AsBool(size_t colIdx) const
 {
 const SHVSQLiteStatement* Statement = (const SHVSQLiteStatement*) Select->GetRowProvider();
 SHVBool retVal;
@@ -100,7 +100,7 @@ long val;
 /*************************************
  * IsNull
  *************************************/
-SHVBool SHVDataRowC_SQLite::IsNull(size_t colIdx) const
+SHVBool SHVDataRowCSQLite::IsNull(size_t colIdx) const
 {
 const SHVSQLiteStatement* Statement = (const SHVSQLiteStatement*) Select->GetRowProvider();
 SHVBool retVal(SHVBool::True);
@@ -114,7 +114,7 @@ short type;
 /*************************************
  * ColumnIndex
  *************************************/
-size_t SHVDataRowC_SQLite::ColumnIndex(const SHVString8C& columnName) const
+size_t SHVDataRowCSQLite::ColumnIndex(const SHVString8C& columnName) const
 {
 size_t retVal;
 	SHVASSERT(RowValid());
@@ -130,12 +130,12 @@ size_t retVal;
 /*************************************
  * GetKey
  *************************************/
-SHVDataRowKey* SHVDataRowC_SQLite::GetKey(size_t index) const
+SHVDataRowKey* SHVDataRowCSQLite::GetKey(size_t index) const
 {
 	SHVASSERT(RowValid());
 
 SHVDataRowKeyRef ResultDef = (SHVDataRowKey*) Select->GetStruct()->GetIndex(index);
-SHVDataRowKey_impl* Result = new SHVDataRowKey_impl();
+SHVDataRowKeyImpl* Result = new SHVDataRowKeyImpl();
 	if (RowValid())
 	{
 		for (size_t i = 0; i < ResultDef->Count(); i++)
@@ -149,26 +149,26 @@ SHVDataRowKey_impl* Result = new SHVDataRowKey_impl();
 /*************************************
  * GetValue
  *************************************/
-SHVDataVariant* SHVDataRowC_SQLite::GetValue(size_t colIdx) const
+SHVDataVariant* SHVDataRowCSQLite::GetValue(size_t colIdx) const
 {
 	SHVASSERT(RowValid());
 SHVDataVariant* retVal = NULL;
 	switch ((*Select->GetStruct())[colIdx]->GetDataType())
 	{
 		case SHVDataVariant::TypeInt:
-			retVal = new SHVDataVariant_impl(AsInt(colIdx));
+			retVal = new SHVDataVariantImpl(AsInt(colIdx));
 			break;
 		case SHVDataVariant::TypeBool:
-			retVal = new SHVDataVariant_impl(AsBool(colIdx));
+			retVal = new SHVDataVariantImpl(AsBool(colIdx));
 			break;
 		case SHVDataVariant::TypeDouble:
-			retVal = new SHVDataVariant_impl(AsDouble(colIdx));
+			retVal = new SHVDataVariantImpl(AsDouble(colIdx));
 			break;
 		case SHVDataVariant::TypeString:
-			retVal = new SHVDataVariant_impl(AsString(colIdx));
+			retVal = new SHVDataVariantImpl(AsString(colIdx));
 			break;
 		case SHVDataVariant::TypeTime:
-			retVal = new SHVDataVariant_impl(AsTime(colIdx));
+			retVal = new SHVDataVariantImpl(AsTime(colIdx));
 			break;
 	}
 	return retVal;
@@ -177,7 +177,7 @@ SHVDataVariant* retVal = NULL;
 /*************************************
  * MatchKey
  *************************************/
-SHVBool SHVDataRowC_SQLite::MatchKey(const SHVDataRowKey* key) const
+SHVBool SHVDataRowCSQLite::MatchKey(const SHVDataRowKey* key) const
 {
 SHVBool match(SHVBool::True);
 	if (RowValid())
@@ -231,7 +231,7 @@ SHVBool match(SHVBool::True);
 /*************************************
  * RowValid
  *************************************/
-SHVBool SHVDataRowC_SQLite::RowValid() const
+SHVBool SHVDataRowCSQLite::RowValid() const
 {
 	return Select != NULL && Select->GetRowProvider() != NULL;
 }
@@ -239,7 +239,7 @@ SHVBool SHVDataRowC_SQLite::RowValid() const
 /*************************************
  * GetStruct
  *************************************/
-const SHVDataStructC* SHVDataRowC_SQLite::GetStruct() const
+const SHVDataStructC* SHVDataRowCSQLite::GetStruct() const
 {
 	if (RowValid())
 		return Select->GetStruct();
@@ -250,7 +250,7 @@ const SHVDataStructC* SHVDataRowC_SQLite::GetStruct() const
 /*************************************
  * GetAlias
  *************************************/
-const SHVString8C SHVDataRowC_SQLite::GetAlias() const
+const SHVString8C SHVDataRowCSQLite::GetAlias() const
 {
 	if (RowValid())
 		return Select->GetAlias();
@@ -262,7 +262,7 @@ const SHVString8C SHVDataRowC_SQLite::GetAlias() const
 /*************************************
  * GetRowListC
  *************************************/
-const SHVDataRowListC* SHVDataRowC_SQLite::GetRowListC()
+const SHVDataRowListC* SHVDataRowCSQLite::GetRowListC()
 {
 	return Select;
 }
@@ -270,7 +270,7 @@ const SHVDataRowListC* SHVDataRowC_SQLite::GetRowListC()
 /*************************************
  * GetRowState
  *************************************/
-int SHVDataRowC_SQLite::GetRowState() const
+int SHVDataRowCSQLite::GetRowState() const
 {
 	return (RowValid() ? SHVDataRow::RowStateUnchanged : SHVDataRow::RowStateInvalid);
 }

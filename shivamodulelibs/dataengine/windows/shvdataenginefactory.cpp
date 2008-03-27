@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
-#include "../include/dataengineimpl/shvdataengine_impl.h"
+#include "../include/shvdataengineimpl.h"
 #include "shvdataenginefactory.h"
 
 
@@ -74,7 +74,7 @@ SHVBool SHVModuleFactoryDataEngine::ResolveModules(const SHVString8C symbol)
 {
 	if (symbol == __MODULESYMBOL_DEFAULTS)
 	{
-		Modules.AddModule(new SHVDataEngine_impl(Modules));
+		Modules.AddModule(new SHVDataEngineImpl(Modules));
 		return SHVBool::True;
 	}
 

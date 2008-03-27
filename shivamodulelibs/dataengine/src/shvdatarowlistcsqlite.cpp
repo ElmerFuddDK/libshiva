@@ -1,27 +1,27 @@
 #include "stdafx.h"
-#include "../../../../include/platformspc.h"
-#include "../../../../include/utils/shvstringutf8.h"
-#include "../../include/shvdatarowlistcsqlite.h"
-#include "../../include/shvdatarowcsqlite.h"
-#include "../../include/shvdatarowimpl.h"
-#include "../../include/shvdatarowkeyimpl.h"
-#include "../../include/shvdatastructimpl.h"
-#include "../../include/shvdatastructcsqlite.h"
-#include "../../../../include/modules/dataengine/shvdataengine.h"
-#include "../../../../include/sqlite/sqlitestatement.h"
+#include "../../../include/platformspc.h"
+#include "../../../include/utils/shvstringutf8.h"
+#include "../include/shvdatarowlistcsqlite.h"
+#include "../include/shvdatarowcsqlite.h"
+#include "../include/shvdatarowimpl.h"
+#include "../include/shvdatarowkeyimpl.h"
+#include "../include/shvdatastructimpl.h"
+#include "../include/shvdatastructcsqlite.h"
+#include "../../../include/modules/dataengine/shvdataengine.h"
+#include "../../../include/sqlite/sqlitestatement.h"
 
 
 /*************************************
  * Constructor
  *************************************/
-SHVDataRowListC_SQLite::SHVDataRowListC_SQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(0), Alias(alias), Ok(true)
+SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(0), Alias(alias), Ok(true)
 {
 }
 
-SHVDataRowListC_SQLite::SHVDataRowListC_SQLite(SHVDataSession* session, const SHVStringC& sql, const SHVDataRowKey* sortKey): DataSession(session), RowCount(0), Alias("")
+SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVStringC& sql, const SHVDataRowKey* sortKey): DataSession(session), RowCount(0), Alias("")
 {
 SHVString rest;
-SHVDataStruct_impl* st = new SHVDataStruct_impl();
+SHVDataStructImpl* st = new SHVDataStructImpl();
 SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
 	StructCache = st;
 	Statement = SQLite->Prepare(Ok, sql, rest);
@@ -36,7 +36,7 @@ SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
 	Eof = !Ok;
 }
 
-SHVDataRowListC_SQLite::SHVDataRowListC_SQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias, const SHVStringC& condition, size_t index): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(0), Alias(alias)
+SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias, const SHVStringC& condition, size_t index): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(0), Alias(alias)
 {
 SHVStringSQLite rest(NULL);
 SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
@@ -61,7 +61,7 @@ SHVStringUTF8 sql;
 	Eof = !Ok;
 }
 
-SHVDataRowListC_SQLite::SHVDataRowListC_SQLite(SHVDataSession* session, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, const SHVString8C& alias, size_t index): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(0), Alias(alias)
+SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, const SHVString8C& alias, size_t index): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(0), Alias(alias)
 {
 	SHVASSERT(dataStruct->GetIndex(index));
 	Ok = SHVBool::True;
@@ -78,7 +78,7 @@ SHVDataRowListC_SQLite::SHVDataRowListC_SQLite(SHVDataSession* session, SHVSQLit
 /*************************************
  * Destructor
  *************************************/
-SHVDataRowListC_SQLite::~SHVDataRowListC_SQLite()
+SHVDataRowListCSQLite::~SHVDataRowListCSQLite()
 {
 	UnregisterDataList();
 	DataSession = NULL;
@@ -87,7 +87,7 @@ SHVDataRowListC_SQLite::~SHVDataRowListC_SQLite()
 /*************************************
  * GetCurrentRow
  *************************************/
-const SHVDataRowC* SHVDataRowListC_SQLite::GetCurrentRow() const
+const SHVDataRowC* SHVDataRowListCSQLite::GetCurrentRow() const
 {
 	SHVASSERT(IsOk());
 	if (!Eof)
@@ -101,7 +101,7 @@ const SHVDataRowC* SHVDataRowListC_SQLite::GetCurrentRow() const
 /*************************************
  * NextRow
  *************************************/
-SHVBool SHVDataRowListC_SQLite::NextRow()
+SHVBool SHVDataRowListCSQLite::NextRow()
 {
 SHVBool retVal = IsOk();
 	SHVASSERT(retVal);
@@ -114,7 +114,7 @@ SHVBool retVal = IsOk();
 			Reset();
 		}
 		if (CurrentRow.IsNull())
-			CurrentRow = new SHVDataRowC_SQLite(this);
+			CurrentRow = new SHVDataRowCSQLite(this);
 		retVal = Statement->NextResult();
 		Eof = retVal.GetError() != SHVSQLiteWrapper::SQLite_ROW;
 		if (StructCache->GetColumnCount() == 0 && !Eof)
@@ -160,7 +160,7 @@ SHVBool retVal = IsOk();
 /*************************************
  * Reset
  *************************************/
-SHVBool SHVDataRowListC_SQLite::Reset()
+SHVBool SHVDataRowListCSQLite::Reset()
 {
 SHVBool retVal = IsOk();
 	SHVASSERT(retVal);
@@ -185,7 +185,7 @@ SHVBool retVal = IsOk();
 /*************************************
  * Find
  *************************************/
-SHVDataRowC* SHVDataRowListC_SQLite::Find(const SHVDataRowKey* key)
+SHVDataRowC* SHVDataRowListCSQLite::Find(const SHVDataRowKey* key)
 {
 const SHVDataRowKey& k = *key;
 SHVDataRowC* retVal = NULL;
@@ -228,7 +228,7 @@ SHVDataRowC* retVal = NULL;
 /*************************************
  * Reverse
  *************************************/
-SHVDataRowListC* SHVDataRowListC_SQLite::Reverse(const SHVStringC& condition)
+SHVDataRowListC* SHVDataRowListCSQLite::Reverse(const SHVStringC& condition)
 {
 SHVBool ok;
 SHVStringSQLite rest(NULL);
@@ -240,7 +240,7 @@ SHVDataRowListC* retVal = NULL;
 	{
 		SQLite = (SHVSQLiteWrapper*) DataSession->GetProvider();
 		statement = SQLite->PrepareUTF8(ok, BuildQuery(condition,true), rest);
-		retVal = new SHVDataRowListC_SQLite(DataSession, statement, StructCache, Alias, SortIndex);
+		retVal = new SHVDataRowListCSQLite(DataSession, statement, StructCache, Alias, SortIndex);
 	}
 	return retVal;
 }
@@ -248,7 +248,7 @@ SHVDataRowListC* retVal = NULL;
 /*************************************
  * GetStruct
  *************************************/
-const SHVDataStructC* SHVDataRowListC_SQLite::GetStruct() const
+const SHVDataStructC* SHVDataRowListCSQLite::GetStruct() const
 {
 	return StructCache.AsConst();
 }
@@ -256,7 +256,7 @@ const SHVDataStructC* SHVDataRowListC_SQLite::GetStruct() const
 /*************************************
  * GetAlias
  *************************************/
-const SHVString8C SHVDataRowListC_SQLite::GetAlias() const
+const SHVString8C SHVDataRowListCSQLite::GetAlias() const
 {
 	return Alias;
 }
@@ -264,7 +264,7 @@ const SHVString8C SHVDataRowListC_SQLite::GetAlias() const
 /*************************************
  * GetRowCount
  *************************************/
-int SHVDataRowListC_SQLite::GetRowCount() const
+int SHVDataRowListCSQLite::GetRowCount() const
 {
 	return RowCount;
 }
@@ -272,7 +272,7 @@ int SHVDataRowListC_SQLite::GetRowCount() const
 /*************************************
  * GetRowProvider
  *************************************/
-const void* SHVDataRowListC_SQLite::GetRowProvider() const
+const void* SHVDataRowListCSQLite::GetRowProvider() const
 {
 	return Statement.AsConst();
 }
@@ -280,14 +280,14 @@ const void* SHVDataRowListC_SQLite::GetRowProvider() const
 /*************************************
  * GetDataSession
  *************************************/
-SHVDataSession* SHVDataRowListC_SQLite::GetDataSession()
+SHVDataSession* SHVDataRowListCSQLite::GetDataSession()
 {
 	return DataSession;
 }
 /*************************************
  * RowListValid
  *************************************/
-SHVBool SHVDataRowListC_SQLite::RowListValid() const
+SHVBool SHVDataRowListCSQLite::RowListValid() const
 {
 ///\todo Missing thread safety
 	return !DataSession.IsNull() && DataSession->SessionValid();
@@ -296,7 +296,7 @@ SHVBool SHVDataRowListC_SQLite::RowListValid() const
 /*************************************
  * IsOk
  *************************************/
-SHVBool SHVDataRowListC_SQLite::IsOk() const
+SHVBool SHVDataRowListCSQLite::IsOk() const
 {
 	return RowListValid() && Ok;
 }
@@ -304,7 +304,7 @@ SHVBool SHVDataRowListC_SQLite::IsOk() const
 /*************************************
  * BuildQuery
  *************************************/
-SHVStringBufferUTF8 SHVDataRowListC_SQLite::BuildQuery(const SHVStringC& condition, bool reverse)
+SHVStringBufferUTF8 SHVDataRowListCSQLite::BuildQuery(const SHVStringC& condition, bool reverse)
 {
 SHVStringUTF8 queryUTF8;
 SHVString8 condition8;
@@ -332,7 +332,7 @@ SHVString8 orderby8;
 /*************************************
  * AdjustRowCount
  *************************************/
-void SHVDataRowListC_SQLite::AdjustRowCount(int delta)
+void SHVDataRowListCSQLite::AdjustRowCount(int delta)
 {
 	RowCount += delta;
 }
@@ -340,7 +340,7 @@ void SHVDataRowListC_SQLite::AdjustRowCount(int delta)
 /*************************************
  * TempReset
  *************************************/
-SHVBool SHVDataRowListC_SQLite::TempReset()
+SHVBool SHVDataRowListCSQLite::TempReset()
 {
 	return Reset();
 }
@@ -348,14 +348,14 @@ SHVBool SHVDataRowListC_SQLite::TempReset()
 /*************************************
  * Reposition
  *************************************/
-void SHVDataRowListC_SQLite::Reposition()
+void SHVDataRowListCSQLite::Reposition()
 {
 }
 
 /*************************************
  * RowChanged
  *************************************/
-SHVBool SHVDataRowListC_SQLite::InternalRowChanged(SHVDataRow* row)
+SHVBool SHVDataRowListCSQLite::InternalRowChanged(SHVDataRow* row)
 {
 	return SHVBool::True;
 }

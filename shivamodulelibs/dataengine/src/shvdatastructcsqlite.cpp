@@ -1,13 +1,13 @@
 #include "stdafx.h"
-#include "../../../../include/platformspc.h"
-#include "../../../../include/utils/shvstringutf8.h"
-#include "../../include/shvdatastructcsqlite.h"
-#include "../../include/shvdatarowkeyimpl.h"
+#include "../../../include/platformspc.h"
+#include "../../../include/utils/shvstringutf8.h"
+#include "../include/shvdatastructcsqlite.h"
+#include "../include/shvdatarowkeyimpl.h"
 
 /*************************************
  * Constructor
  *************************************/
-SHVDataStructC_SQLite::SHVDataStructC_SQLite(SHVSQLiteWrapper* psqlite, const SHVString8C& tableName)
+SHVDataStructCSQLite::SHVDataStructCSQLite(SHVSQLiteWrapper* psqlite, const SHVString8C& tableName)
 {
 SHVStringUTF8 query;
 SHVStringSQLite notparsed(NULL);
@@ -16,7 +16,7 @@ SHVSQLiteStatementRef statement;
 SHVSQLiteWrapperRef sqlite = psqlite;
 int len;
 SHVBool ok;
-	Struct = new SHVDataStruct_impl();
+	Struct = new SHVDataStructImpl();
 	Struct->SetTableName(tableName);
 
 	query.Format("PRAGMA table_info(%s)", tableName.GetSafeBuffer());
@@ -28,7 +28,7 @@ SHVBool ok;
 		// Lets get the table structure
 		while (statement->NextResult().GetError() == SHVSQLiteWrapper::SQLite_ROW)
 		{
-		SHVDataStructColumn_implRef col = new SHVDataStructColumn_impl();
+		SHVDataStructColumnImplRef col = new SHVDataStructColumnImpl();
 		SHVString val;
 		SHVStringUTF8C type("");
 
@@ -67,14 +67,14 @@ SHVBool ok;
 	}
 }
 
-SHVDataStructC_SQLite::~SHVDataStructC_SQLite()
+SHVDataStructCSQLite::~SHVDataStructCSQLite()
 {
 }
 
 /*************************************
  * GetTableName
  *************************************/
-const SHVString8C& SHVDataStructC_SQLite::GetTableName() const
+const SHVString8C& SHVDataStructCSQLite::GetTableName() const
 {
 	return Struct->GetTableName();
 }
@@ -82,12 +82,12 @@ const SHVString8C& SHVDataStructC_SQLite::GetTableName() const
 /*************************************
  * operator[]
  *************************************/
-const SHVDataStructColumnC* SHVDataStructC_SQLite::operator[](size_t idx) const
+const SHVDataStructColumnC* SHVDataStructCSQLite::operator[](size_t idx) const
 {
 	return (*Struct.AsConst())[idx];
 }
 
-const SHVBool SHVDataStructC_SQLite::FindColumnIndex(size_t& index, const SHVString8C& colName) const
+const SHVBool SHVDataStructCSQLite::FindColumnIndex(size_t& index, const SHVString8C& colName) const
 {
 	return Struct->FindColumnIndex(index, colName);
 }
@@ -95,7 +95,7 @@ const SHVBool SHVDataStructC_SQLite::FindColumnIndex(size_t& index, const SHVStr
 /*************************************
  * GetColumnCount
  *************************************/
-size_t SHVDataStructC_SQLite::GetColumnCount() const
+size_t SHVDataStructCSQLite::GetColumnCount() const
 {
 	return Struct->GetColumnCount();
 }
@@ -103,27 +103,27 @@ size_t SHVDataStructC_SQLite::GetColumnCount() const
 /*************************************
  * GetPrimaryIndex
  *************************************/
-const SHVDataRowKey* SHVDataStructC_SQLite::GetPrimaryIndex() const
+const SHVDataRowKey* SHVDataStructCSQLite::GetPrimaryIndex() const
 {
 	return Struct->GetPrimaryIndex();
 }
 
-const SHVDataRowKey* SHVDataStructC_SQLite::GetIndex(size_t IdxID) const
+const SHVDataRowKey* SHVDataStructCSQLite::GetIndex(size_t IdxID) const
 {
 	return Struct->GetIndex(IdxID);
 }
 
-const size_t SHVDataStructC_SQLite::IndexCount() const
+const size_t SHVDataStructCSQLite::IndexCount() const
 {
 	return Struct->IndexCount();
 }
 
-SHVBool SHVDataStructC_SQLite::IsEqual(const SHVDataStructC* dataStruct) const
+SHVBool SHVDataStructCSQLite::IsEqual(const SHVDataStructC* dataStruct) const
 {
 	return Struct->IsEqual(dataStruct);
 }
 
-void SHVDataStructC_SQLite::ResolveIndexes(SHVSQLiteWrapper* psqlite, const SHVStringUTF8C& tableName, const SHVStringUTF8C& condition)
+void SHVDataStructCSQLite::ResolveIndexes(SHVSQLiteWrapper* psqlite, const SHVStringUTF8C& tableName, const SHVStringUTF8C& condition)
 {
 SHVStringUTF8 query;
 SHVSQLiteStatementRef statement;
@@ -157,7 +157,7 @@ short affinity;
 				SHVASSERT(!indexInfo.IsNull() || !ok);
 				if (ok)
 				{
-				SHVDataRowKey_implRef index = new SHVDataRowKey_impl();
+				SHVDataRowKeyImplRef index = new SHVDataRowKeyImpl();
 					while (indexInfo->NextResult().GetError() == SHVSQLiteWrapper::SQLite_ROW)
 					{
 						if (indexInfo->GetStringUTF8(valUTF8, len, 2))

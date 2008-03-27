@@ -2,21 +2,21 @@
 #define __SHIVA_DATAENGINE_DATAROWKEY_IMPL_H
 
 
-#include "../../../../include/utils/shvvector.h"
-#include "../shvdatarowkey.h"
+#include "../../../include/utils/shvvector.h"
+#include "../../../include/modules/dataengine/shvdatarowkey.h"
 
 //-=========================================================================================================
-/// SHVDataRowKey_impl class - Implementation for the data key
+/// SHVDataRowKeyImpl class - Implementation for the data key
 /**
  * A key is actually a list of column name and maybe associated with value
  */
-class SHVDataRowKey_impl: public SHVDataRowKey
+class SHVDataRowKeyImpl: public SHVDataRowKey
 {
 protected:
-	~SHVDataRowKey_impl();
+	~SHVDataRowKeyImpl();
 public:
-	SHVDataRowKey_impl();
-	SHVDataRowKey_impl(const SHVDataRowKey* key);
+	SHVDataRowKeyImpl();
+	SHVDataRowKeyImpl(const SHVDataRowKey* key);
 	virtual const SHVDataRowKey::KeyValuePair& operator[](size_t idx) const;
 	virtual void SetKeyValue(size_t idx, SHVInt val);
 	virtual void SetKeyValue(size_t idx, SHVDouble val);
@@ -38,6 +38,6 @@ private:
 	SHVVector<KeyValuePair> Keys;
 	SHVBool UniqueKey;
 };
-typedef SHVRefObjectContainer<SHVDataRowKey_impl> SHVDataRowKey_implRef;
+typedef SHVRefObjectContainer<SHVDataRowKeyImpl> SHVDataRowKeyImplRef;
 
 #endif

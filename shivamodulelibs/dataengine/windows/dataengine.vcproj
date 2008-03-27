@@ -215,54 +215,54 @@
 				>
 			</Filter>
 			<Filter
-				Name="dataengineimpl"
+				Name="src"
 				>
 				<File
-					RelativePath="..\src\dataengineimpl\shvdataengine_impl.cpp"
+					RelativePath="..\src\shvdataengineimpl.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\src\dataengineimpl\shvdatafactory_impl.cpp"
+					RelativePath="..\src\shvdatafactoryimpl.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\src\dataengineimpl\shvdatarow_impl.cpp"
+					RelativePath="..\src\shvdatarowcsqlite.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\src\dataengineimpl\shvdatarowc_sqlite.cpp"
+					RelativePath="..\src\shvdatarowimpl.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\src\dataengineimpl\shvdatarowkey_impl.cpp"
+					RelativePath="..\src\shvdatarowkeyimpl.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\src\dataengineimpl\shvdatarowlist_sqlite.cpp"
+					RelativePath="..\src\shvdatarowlistcindexed.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\src\dataengineimpl\shvdatarowlistc_indexed.cpp"
+					RelativePath="..\src\shvdatarowlistcsqlite.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\src\dataengineimpl\shvdatarowlistc_sqlite.cpp"
+					RelativePath="..\src\shvdatarowlistsqlite.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\src\dataengineimpl\shvdatasession_impl.cpp"
+					RelativePath="..\src\shvdatasessionsqlite.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\src\dataengineimpl\shvdatastruct_impl.cpp"
+					RelativePath="..\src\shvdatastructcsqlite.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\src\dataengineimpl\shvdatastructc_sqlite.cpp"
+					RelativePath="..\src\shvdatastructimpl.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\src\dataengineimpl\shvdatavariant_impl.cpp"
+					RelativePath="..\src\shvdatavariantimpl.cpp"
 					>
 				</File>
 			</Filter>
@@ -273,68 +273,56 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\include\shvdataengine.h"
+				RelativePath="..\include\shvdataengineimpl.h"
 				>
 			</File>
 			<File
-				RelativePath=".\shvdataenginefactory.h"
+				RelativePath="..\include\shvdatafactoryimpl.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\shvdatafactory.h"
+				RelativePath="..\include\shvdatarowcsqlite.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\shvdatarow.h"
+				RelativePath="..\include\shvdatarowimpl.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\shvdatarowc.h"
+				RelativePath="..\include\shvdatarowkeyimpl.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\shvdatarowkey.h"
+				RelativePath="..\include\shvdatarowlistcindexed.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\shvdatarowlist.h"
+				RelativePath="..\include\shvdatarowlistcsqlite.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\shvdatarowlistc.h"
+				RelativePath="..\include\shvdatarowlistsqlite.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\shvdatasession.h"
+				RelativePath="..\include\shvdatasessionsqlite.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\shvdatastruct.h"
+				RelativePath="..\include\shvdatastructcsqlite.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\shvdatastructc.h"
+				RelativePath="..\include\shvdatastructimpl.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\shvdatavariant.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\include\shvtypes.h"
-				>
-			</File>
-			<File
-				RelativePath=".\stdafx.h"
+				RelativePath="..\include\shvdatavariantimpl.h"
 				>
 			</File>
 			<Filter
 				Name="include"
 				>
-				<File
-					RelativePath="..\..\..\include\framework\shveventsubscriber.h"
-					>
-				</File>
 				<Filter
 					Name="utils"
 					>
@@ -372,7 +360,7 @@
 					</File>
 				</Filter>
 				<Filter
-					Name="shvsqlite"
+					Name="sqlite"
 					>
 					<File
 						RelativePath="..\..\..\shivasqlite\include\sqlitestatement.h"
@@ -383,62 +371,66 @@
 						>
 					</File>
 				</Filter>
-			</Filter>
-			<Filter
-				Name="dataengineimpl"
-				>
-				<File
-					RelativePath="..\include\dataengineimpl\shvdataengine_impl.h"
+				<Filter
+					Name="framework"
 					>
-				</File>
-				<File
-					RelativePath="..\include\dataengineimpl\shvdatafactory_impl.h"
+					<File
+						RelativePath="..\..\..\include\framework\shveventsubscriber.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="modules"
 					>
-				</File>
-				<File
-					RelativePath="..\include\dataengineimpl\shvdatarow_impl.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\dataengineimpl\shvdatarowc_sqlite.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\dataengineimpl\shvdatarowkey_impl.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\dataengineimpl\shvdatarowlist_sqlite.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\dataengineimpl\shvdatarowlistc_indexed.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\dataengineimpl\shvdatarowlistc_sqlite.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\dataengineimpl\shvdatasession_sqlite.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\dataengineimpl\shvdatastruct_impl.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\dataengineimpl\shvdatastructc_sqlite.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\dataengineimpl\shvdatatable_sqlite.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\dataengineimpl\shvdatavariant_impl.h"
-					>
-				</File>
+					<Filter
+						Name="dataengine"
+						>
+						<File
+							RelativePath="..\..\..\include\modules\dataengine\shvdataengine.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\modules\dataengine\shvdatafactory.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\modules\dataengine\shvdatarow.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\modules\dataengine\shvdatarowc.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\modules\dataengine\shvdatarowkey.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\modules\dataengine\shvdatarowlist.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\modules\dataengine\shvdatarowlistc.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\modules\dataengine\shvdatasession.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\modules\dataengine\shvdatastruct.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\modules\dataengine\shvdatastructc.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\modules\dataengine\shvdatavariant.h"
+							>
+						</File>
+					</Filter>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter

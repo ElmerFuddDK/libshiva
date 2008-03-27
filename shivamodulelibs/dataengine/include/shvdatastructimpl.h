@@ -1,20 +1,20 @@
 #ifndef __SHIVA_DATAENGINE_DATASTRUCT_IMPL_H
 #define __SHIVA_DATAENGINE_DATASTRUCT_IMPL_H
 
-#include "../../../../include/utils/shvvectorref.h"
-#include "../shvdatastruct.h"
+#include "../../../include/utils/shvvectorref.h"
+#include "../../../include/modules/dataengine/shvdatastruct.h"
 
 //-=========================================================================================================
-/// SHVDataStructColumn_impl class - Implementation of a datastructure column definition.
+/// SHVDataStructColumnImpl class - Implementation of a datastructure column definition.
 /**
  * Contains the column definition information.
  */
-class SHVDataStructColumn_impl: public SHVDataStructColumn
+class SHVDataStructColumnImpl: public SHVDataStructColumn
 {
 public:
-	SHVDataStructColumn_impl();
-	SHVDataStructColumn_impl(const SHVDataStructColumnC* col);
-	virtual ~SHVDataStructColumn_impl();
+	SHVDataStructColumnImpl();
+	SHVDataStructColumnImpl(const SHVDataStructColumnC* col);
+	virtual ~SHVDataStructColumnImpl();
 
 	virtual const SHVString8C& GetColumnName() const;
 	virtual void SetColumnName(const SHVString8C& name);
@@ -39,19 +39,19 @@ private:
 	SHVBool AllowNull;
 	SHVBool AutoInc;
 };
-typedef SHVRefObjectContainer<SHVDataStructColumn_impl> SHVDataStructColumn_implRef;
+typedef SHVRefObjectContainer<SHVDataStructColumnImpl> SHVDataStructColumnImplRef;
 
 //-=========================================================================================================
-///  SHVDataStruct_impl class - The non const implementation of datastruct
+///  SHVDataStructImpl class - The non const implementation of datastruct
 /**
  * Objects of the class is the schema for the datatable.
  */
-class SHVDataStruct_impl: public SHVDataStruct
+class SHVDataStructImpl: public SHVDataStruct
 {
 public:
-	SHVDataStruct_impl();
-	SHVDataStruct_impl(const SHVDataStructC* dataStruct);
-	virtual ~SHVDataStruct_impl();
+	SHVDataStructImpl();
+	SHVDataStructImpl(const SHVDataStructC* dataStruct);
+	virtual ~SHVDataStructImpl();
 	virtual const SHVString8C& GetTableName() const;
 	virtual void SetTableName(const SHVString8C& name);
 
@@ -78,6 +78,6 @@ private:
 	SHVVectorRef<SHVDataRowKey> Indexes;
 	SHVString8 TableName;
 };
-typedef SHVRefObjectContainer<SHVDataStruct_impl> SHVDataStruct_implRef;
+typedef SHVRefObjectContainer<SHVDataStructImpl> SHVDataStructImplRef;
 
 #endif

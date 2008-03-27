@@ -1,14 +1,14 @@
 #ifndef __SHIVA_DATASESSION_SQLITE_H
 #define __SHIVA_DATASESSION_SQLITE_H
 
-#include "../../../../shivasqlite/include/sqlitewrapper.h"
-#include "../shvdatasession.h"
-#include "../shvdatarow.h"
+#include "../../../include/sqlite/sqlitewrapper.h"
+#include "../../../include/modules/dataengine/shvdatasession.h"
+#include "../../../include/modules/dataengine/shvdatarow.h"
 
-class SHVDataSession_SQLite: public SHVDataSession
+class SHVDataSessionSQLite: public SHVDataSession
 {
 public:
-	SHVDataSession_SQLite(SHVModuleList& modules, SHVSQLiteWrapper* sqlite, SHVDataFactory* factory);
+	SHVDataSessionSQLite(SHVModuleList& modules, SHVSQLiteWrapper* sqlite, SHVDataFactory* factory);
 	virtual SHVBool StartEdit();
 	virtual SHVBool Commit();
 	virtual SHVBool Rollback();
@@ -26,7 +26,7 @@ public:
 	virtual void* GetProvider();
 	virtual SHVDataFactory* GetFactory() const;
 protected:
-	virtual ~SHVDataSession_SQLite();
+	virtual ~SHVDataSessionSQLite();
 	virtual void ClearOwnership();
 	virtual SHVBool IsValid() const;
 	virtual bool SchemaChanged();
@@ -48,6 +48,6 @@ private:
 	SHVModuleList& Modules;
 	bool Valid;
 };
-typedef SHVRefObjectContainer<SHVDataSession_SQLite> SHVDataSession_SQLiteRef;
+typedef SHVRefObjectContainer<SHVDataSessionSQLite> SHVDataSessionSQLiteRef;
 
 #endif

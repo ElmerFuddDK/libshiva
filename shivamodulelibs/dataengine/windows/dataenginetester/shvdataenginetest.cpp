@@ -2,12 +2,12 @@
 #include "../../../../include/platformspc.h"
 
 #include "shvdataenginetest.h"
-#include "../../include/shvdataengine.h"
-#include "../../include/shvdatastruct.h"
-#include "../../include/shvdatarowc.h"
-#include "../../include/shvdatarow.h"
-#include "../../include/shvdatarowlistc.h"
-#include "../../include/shvdatarowlist.h"
+#include "../../../../include/modules/dataengine/shvdataengine.h"
+#include "../../../../include/modules/dataengine/shvdatastruct.h"
+#include "../../../../include/modules/dataengine/shvdatarowc.h"
+#include "../../../../include/modules/dataengine/shvdatarow.h"
+#include "../../../../include/modules/dataengine/shvdatarowlistc.h"
+#include "../../../../include/modules/dataengine/shvdatarowlist.h"
 
 void DumpRow(SHVTestResult* result, const SHVDataRowC* row)
 {

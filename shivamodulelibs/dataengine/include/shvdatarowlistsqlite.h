@@ -1,26 +1,26 @@
 #ifndef __SHIVA_DATAENGINE_DATAROWLIST_SQLITE_H
 #define __SHIVA_DATAENGINE_DATAROWLIST_SQLITE_H
 
-#include "../../../../shivasqlite/include/sqlitewrapper.h"
-#include "../../../../include/utils/shvrefobject.h"
-#include "../../../../include/utils/shvstring.h"
-#include "../../../../include/utils/shvvectorref.h"
-#include "../../../../include/utils/shvlist.h"
-#include "../../../../include/shvtypes.h"
-#include "../shvdatarowlist.h"
-#include "../shvdatasession.h"
-#include "../shvdatarow.h"
+#include "../../../include/sqlite/sqlitewrapper.h"
+#include "../../../include/utils/shvrefobject.h"
+#include "../../../include/utils/shvstring.h"
+#include "../../../include/utils/shvvectorref.h"
+#include "../../../include/utils/shvlist.h"
+#include "../../../include/shvtypes.h"
+#include "../../../include/modules/dataengine/shvdatarowlist.h"
+#include "../../../include/modules/dataengine/shvdatasession.h"
+#include "../../../include/modules/dataengine/shvdatarow.h"
 
 //-=========================================================================================================
-/// SHVDataRowList_SQLite class - SQLite implementation of a datarow list.
+/// SHVDataRowListSQLite class - SQLite implementation of a datarow list.
 /**
  * Objects of this class handles all the necessary logic for maintaining a sqlite datatable.
  */
-class SHVDataRowC_SQLite;
-class SHVDataRowList_SQLite: public SHVDataRowList
+class SHVDataRowCSQLite;
+class SHVDataRowListSQLite: public SHVDataRowList
 {
 public:
-	SHVDataRowList_SQLite(SHVDataSession* dataSession, SHVDataRowListC *rowList);
+	SHVDataRowListSQLite(SHVDataSession* dataSession, SHVDataRowListC *rowList);
 	virtual const SHVDataRowC* GetCurrentRow() const;
 	virtual SHVBool IsOk() const;
 	virtual const SHVDataStructC* GetStruct() const;
@@ -44,7 +44,7 @@ public:
 
 	virtual SHVBool RowListValid() const;
 protected:
-	virtual ~SHVDataRowList_SQLite();
+	virtual ~SHVDataRowListSQLite();
 	virtual SHVBool AcceptChanges(SHVDataRow* row);
 	virtual SHVBool RejectChanges(SHVDataRow* row);
 	virtual void AdjustRowCount(int delta);
@@ -63,7 +63,7 @@ private:
 	bool EventsEnabled;
 	bool NonAcceptedEnabled;
 };
-typedef SHVRefObjectContainer<SHVDataRowList_SQLite> SHVDataRowList_SQLiteRef;
+typedef SHVRefObjectContainer<SHVDataRowListSQLite> SHVDataRowListSQLiteRef;
 
 
 

@@ -1,15 +1,15 @@
 #include "stdafx.h"
 
-#include "../../../../include/platformspc.h"
-#include "../../../../include/modules/dataengine/shvdatastructc.h"
-#include "../../../../include/modules/dataengine/shvdatasession.h"
-#include "../../include/shvdatarowimpl.h"
-#include "../../include/shvdatarowkeyimpl.h"
+#include "../../../include/platformspc.h"
+#include "../../../include/modules/dataengine/shvdatastructc.h"
+#include "../../../include/modules/dataengine/shvdatasession.h"
+#include "../include/shvdatarowimpl.h"
+#include "../include/shvdatarowkeyimpl.h"
 
 /*************************************
  * Constructors
  *************************************/
-SHVDataRow_impl::SHVDataRow_impl(const SHVDataRowC* copyrow, SHVDataRowList* owner)
+SHVDataRowImpl::SHVDataRowImpl(const SHVDataRowC* copyrow, SHVDataRowList* owner)
 {
 SHVDataStructCRef st = (SHVDataStructC*) owner->GetStruct();
 ColumnData = new RowValues[st->GetColumnCount()];
@@ -43,7 +43,7 @@ ColumnData = new RowValues[st->GetColumnCount()];
 	RowState = SHVDataRow::RowStateUnchanged;
 }
 
-SHVDataRow_impl::SHVDataRow_impl(SHVDataRowList* owner)
+SHVDataRowImpl::SHVDataRowImpl(SHVDataRowList* owner)
 {
 SHVDataStructCRef st = (SHVDataStructC*) owner->GetStruct();
 ColumnData = new RowValues[st->GetColumnCount()];
@@ -80,7 +80,7 @@ ColumnData = new RowValues[st->GetColumnCount()];
 /*************************************
  * AsString
  *************************************/
-SHVStringBuffer SHVDataRow_impl::AsString(size_t colIdx) const
+SHVStringBuffer SHVDataRowImpl::AsString(size_t colIdx) const
 {
 	SHVASSERT(colIdx != SIZE_T_MAX);
 	return (colIdx != SIZE_T_MAX ? ColumnData[colIdx].Value.AsString() : SHVString().ReleaseBuffer());
@@ -89,7 +89,7 @@ SHVStringBuffer SHVDataRow_impl::AsString(size_t colIdx) const
 /*************************************
  * SetString
  *************************************/
-void SHVDataRow_impl::SetString(size_t colIdx, const SHVStringC& val)
+void SHVDataRowImpl::SetString(size_t colIdx, const SHVStringC& val)
 {
 	SHVASSERT(colIdx != SIZE_T_MAX);
 	if (colIdx != SIZE_T_MAX)
@@ -102,7 +102,7 @@ void SHVDataRow_impl::SetString(size_t colIdx, const SHVStringC& val)
 /*************************************
  * AsInt
  *************************************/
-SHVInt SHVDataRow_impl::AsInt(size_t colIdx) const
+SHVInt SHVDataRowImpl::AsInt(size_t colIdx) const
 {
 	SHVASSERT(colIdx != SIZE_T_MAX);
 	return (colIdx != SIZE_T_MAX ? ColumnData[colIdx].Value.AsInt() : SHVInt());
@@ -111,7 +111,7 @@ SHVInt SHVDataRow_impl::AsInt(size_t colIdx) const
 /*************************************
  * SetInt
  *************************************/
-void SHVDataRow_impl::SetInt(size_t colIdx, SHVInt val)
+void SHVDataRowImpl::SetInt(size_t colIdx, SHVInt val)
 {
 	SHVASSERT(colIdx != SIZE_T_MAX);
 	if (colIdx != SIZE_T_MAX)
@@ -124,7 +124,7 @@ void SHVDataRow_impl::SetInt(size_t colIdx, SHVInt val)
 /*************************************
  * AsDouble
  *************************************/
-SHVDouble SHVDataRow_impl::AsDouble(size_t colIdx) const
+SHVDouble SHVDataRowImpl::AsDouble(size_t colIdx) const
 {
 	SHVASSERT(colIdx != SIZE_T_MAX);
 	return (colIdx != SIZE_T_MAX ? ColumnData[colIdx].Value.AsDouble() : SHVDouble());
@@ -133,7 +133,7 @@ SHVDouble SHVDataRow_impl::AsDouble(size_t colIdx) const
 /*************************************
  * SetDouble
  *************************************/
-void SHVDataRow_impl::SetDouble(size_t colIdx, SHVDouble val)
+void SHVDataRowImpl::SetDouble(size_t colIdx, SHVDouble val)
 {
 	SHVASSERT(colIdx != SIZE_T_MAX);
 	if (colIdx != SIZE_T_MAX)
@@ -146,7 +146,7 @@ void SHVDataRow_impl::SetDouble(size_t colIdx, SHVDouble val)
 /*************************************
  * AsTime
  *************************************/
-SHVTime SHVDataRow_impl::AsTime(size_t colIdx) const
+SHVTime SHVDataRowImpl::AsTime(size_t colIdx) const
 {
 	SHVASSERT(colIdx != SIZE_T_MAX);
 	return (colIdx != SIZE_T_MAX ? ColumnData[colIdx].Value.AsTime() : SHVTime());
@@ -155,7 +155,7 @@ SHVTime SHVDataRow_impl::AsTime(size_t colIdx) const
 /*************************************
  * SetTime
  *************************************/
-void SHVDataRow_impl::SetTime(size_t colIdx, const SHVTime& time)
+void SHVDataRowImpl::SetTime(size_t colIdx, const SHVTime& time)
 {
 	SHVASSERT(colIdx != SIZE_T_MAX);
 	if (colIdx != SIZE_T_MAX)
@@ -168,7 +168,7 @@ void SHVDataRow_impl::SetTime(size_t colIdx, const SHVTime& time)
 /*************************************
  * AsBool
  *************************************/
-SHVBool SHVDataRow_impl::AsBool(size_t colIdx) const
+SHVBool SHVDataRowImpl::AsBool(size_t colIdx) const
 {
 	SHVASSERT(colIdx != SIZE_T_MAX);
 	return (colIdx != SIZE_T_MAX ? ColumnData[colIdx].Value.AsBool() : SHVBool());
@@ -177,7 +177,7 @@ SHVBool SHVDataRow_impl::AsBool(size_t colIdx) const
 /*************************************
  * AsBool
  *************************************/
-void SHVDataRow_impl::SetBool(size_t colIdx, SHVBool val)
+void SHVDataRowImpl::SetBool(size_t colIdx, SHVBool val)
 {
 	SHVASSERT(colIdx != SIZE_T_MAX);
 	if (colIdx != SIZE_T_MAX)
@@ -190,7 +190,7 @@ void SHVDataRow_impl::SetBool(size_t colIdx, SHVBool val)
 /*************************************
  * IsNull
  *************************************/
-SHVBool SHVDataRow_impl::IsNull(size_t colIdx) const
+SHVBool SHVDataRowImpl::IsNull(size_t colIdx) const
 {
 	SHVASSERT(colIdx != SIZE_T_MAX);
 	if (colIdx != SIZE_T_MAX )
@@ -202,7 +202,7 @@ SHVBool SHVDataRow_impl::IsNull(size_t colIdx) const
 /*************************************
  * SetNull
  *************************************/
-void SHVDataRow_impl::SetNull(size_t colIdx)
+void SHVDataRowImpl::SetNull(size_t colIdx)
 {
 	SHVASSERT(colIdx != SIZE_T_MAX);
 	if (colIdx != SIZE_T_MAX)
@@ -215,7 +215,7 @@ void SHVDataRow_impl::SetNull(size_t colIdx)
 /*************************************
  * ColumnIndex
  *************************************/
-size_t SHVDataRow_impl::ColumnIndex(const SHVString8C& columnName) const
+size_t SHVDataRowImpl::ColumnIndex(const SHVString8C& columnName) const
 {
 size_t retVal;
 	SHVASSERT(RowValid());
@@ -230,16 +230,16 @@ size_t retVal;
 /*************************************
  * GetValue
  *************************************/
-SHVDataVariant* SHVDataRow_impl::GetValue(size_t colIdx) const
+SHVDataVariant* SHVDataRowImpl::GetValue(size_t colIdx) const
 {
 	SHVASSERT(colIdx != SIZE_T_MAX);
-	return (colIdx != SIZE_T_MAX ? new SHVDataVariant_impl(ColumnData[colIdx].Value) : new SHVDataVariant_impl());
+	return (colIdx != SIZE_T_MAX ? new SHVDataVariantImpl(ColumnData[colIdx].Value) : new SHVDataVariantImpl());
 }
 
 /*************************************
  * OrginalValue
  *************************************/
-const SHVDataVariant* SHVDataRow_impl::OriginalValue(size_t colIdx) const
+const SHVDataVariant* SHVDataRowImpl::OriginalValue(size_t colIdx) const
 {
 	SHVASSERT(colIdx != SIZE_T_MAX);
 	return colIdx != SIZE_T_MAX ? (const SHVDataVariant*) &ColumnData[colIdx].OrgValue : NULL;
@@ -248,14 +248,14 @@ const SHVDataVariant* SHVDataRow_impl::OriginalValue(size_t colIdx) const
 /*************************************
  * GetKey
  *************************************/
-SHVDataRowKey* SHVDataRow_impl::GetKey(size_t index) const
+SHVDataRowKey* SHVDataRowImpl::GetKey(size_t index) const
 {
 SHVDataStructCRef st = (SHVDataStructC*) Owner->GetStruct();
 const SHVDataRowKey* idx = st->GetIndex(index);
-SHVDataRowKey_impl* retVal = NULL;
+SHVDataRowKeyImpl* retVal = NULL;
 	if (idx)
 	{
-		retVal = new SHVDataRowKey_impl;
+		retVal = new SHVDataRowKeyImpl();
 		for (size_t i = 0; i < idx->Count(); i++)
 		{
 			retVal->AddKey((*idx)[i].Key, GetValue(ColumnIndex((*idx)[i].Key)), (*idx)[i].Desc);
@@ -267,7 +267,7 @@ SHVDataRowKey_impl* retVal = NULL;
 /*************************************
  * MatchKey
  *************************************/
-SHVBool SHVDataRow_impl::MatchKey(const SHVDataRowKey* key) const 
+SHVBool SHVDataRowImpl::MatchKey(const SHVDataRowKey* key) const 
 {
 SHVBool retVal = true;
 	for (size_t i = 0; i < key->Count() && retVal; i++)
@@ -284,7 +284,7 @@ SHVBool retVal = true;
 /*************************************
  * RowValid
  *************************************/
-SHVBool SHVDataRow_impl::RowValid() const
+SHVBool SHVDataRowImpl::RowValid() const
 {
 	return GetRowState() != SHVDataRow::RowStateInvalid &&
 		GetRowState() != SHVDataRow::RowStateDeleted;
@@ -293,7 +293,7 @@ SHVBool SHVDataRow_impl::RowValid() const
 /*************************************
  * GetStruct
  *************************************/
-const SHVDataStructC* SHVDataRow_impl::GetStruct() const
+const SHVDataStructC* SHVDataRowImpl::GetStruct() const
 {
 	if (RowValid())
 		return Owner->GetStruct();
@@ -304,7 +304,7 @@ const SHVDataStructC* SHVDataRow_impl::GetStruct() const
 /*************************************
  * GetAlias
  *************************************/
-const SHVString8C SHVDataRow_impl::GetAlias() const
+const SHVString8C SHVDataRowImpl::GetAlias() const
 {
 	if (RowValid())
 		return Owner->GetAlias();
@@ -315,7 +315,7 @@ const SHVString8C SHVDataRow_impl::GetAlias() const
 /*************************************
  * GetRowState
  *************************************/
-int SHVDataRow_impl::GetRowState() const
+int SHVDataRowImpl::GetRowState() const
 {
 	return RowState;
 }
@@ -323,7 +323,7 @@ int SHVDataRow_impl::GetRowState() const
 /*************************************
  * Delete
  *************************************/
-SHVBool SHVDataRow_impl::Delete()
+SHVBool SHVDataRowImpl::Delete()
 {
 	SHVASSERT(RowValid());
 
@@ -338,7 +338,7 @@ SHVBool retVal(RowValid());
 /*************************************
  * HasChanges
  *************************************/
-SHVBool SHVDataRow_impl::HasChanges()
+SHVBool SHVDataRowImpl::HasChanges()
 {
 SHVDataStructCRef st = (SHVDataStructC *) Owner->GetStruct();
 bool hasChanges = false;
@@ -355,7 +355,7 @@ bool hasChanges = false;
 /*************************************
  * InternalAcceptChanges
  *************************************/
-void SHVDataRow_impl::InternalAcceptChanges()
+void SHVDataRowImpl::InternalAcceptChanges()
 {
 	if (RowState == SHVDataRow::RowStateDeleting)
 		RowState = SHVDataRow::RowStateDeleted;
@@ -368,7 +368,7 @@ void SHVDataRow_impl::InternalAcceptChanges()
 /*************************************
  * InternalRejectChanges
  *************************************/
-void SHVDataRow_impl::InternalRejectChanges()
+void SHVDataRowImpl::InternalRejectChanges()
 {
 	RowState = SHVDataRow::RowStateInvalid;
 }
@@ -376,7 +376,7 @@ void SHVDataRow_impl::InternalRejectChanges()
 /*************************************
  * GetRowListC
  *************************************/
-const SHVDataRowListC* SHVDataRow_impl::GetRowListC()
+const SHVDataRowListC* SHVDataRowImpl::GetRowListC()
 {
 	return GetRowList();
 }
@@ -384,7 +384,7 @@ const SHVDataRowListC* SHVDataRow_impl::GetRowListC()
 /*************************************
  * GetRowListC
  *************************************/
-SHVDataRowList* SHVDataRow_impl::GetRowList()
+SHVDataRowList* SHVDataRowImpl::GetRowList()
 {
 	return Owner;
 }
@@ -392,7 +392,7 @@ SHVDataRowList* SHVDataRow_impl::GetRowList()
 /*************************************
  * Destructor
  *************************************/
-SHVDataRow_impl::~SHVDataRow_impl()
+SHVDataRowImpl::~SHVDataRowImpl()
 {
 	delete [] ColumnData;
 }

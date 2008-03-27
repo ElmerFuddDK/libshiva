@@ -12,7 +12,7 @@
 #include "../../../../include/utils/shvdll.h"
 #include "../../../../include/framework/shvmodulefactory.h"
 #include "../../../../include/framework/shvmodule.h"
-#include "../../include/shvdataengine.h"
+#include "../../../../include/modules/dataengine/shvdataengine.h"
 #include "shvtestmodule.h"
 #include "shvtestserver.h"
 #include "shvdataenginetest.h"

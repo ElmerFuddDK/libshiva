@@ -1,10 +1,10 @@
 #ifndef __SHIVA_DATAENGINE_DATASTRUCTC_SQLITE_H
 #define __SHIVA_DATAENGINE_DATASTRUCTC_SQLITE_H
 
-#include "../../../../shivasqlite/include/sqlitewrapper.h"
-#include "../shvdatastruct.h"
-#include "../../../../include/utils/shvstring.h"
-#include "shvdatastruct_impl.h"
+#include "../../../include/sqlite/sqlitewrapper.h"
+#include "../../../include/modules/dataengine/shvdatastruct.h"
+#include "../../../include/utils/shvstring.h"
+#include "shvdatastructimpl.h"
 
 #define __SQLITE_TYPE_INT      "integer"   // affinity INTEGER
 #define __SQLITE_TYPE_DOUBLE   "double"    // affinity DOUBLE
@@ -13,15 +13,15 @@
 #define __SQLITE_TYPE_BOOL     "boolint"   // affinity INTEGER
 
 //-=========================================================================================================
-/// SHVDataStructC_SQLite class - Class for retrieving sqlite data structure
+/// SHVDataStructCSQLite class - Class for retrieving sqlite data structure
 /**
  * Objects of the class caches the schema information for a sqlite datatable.
  */
-class SHVDataStructC_SQLite: public SHVDataStructC
+class SHVDataStructCSQLite: public SHVDataStructC
 {
 public:
-	SHVDataStructC_SQLite(SHVSQLiteWrapper* psqlite, const SHVString8C& tableName);
-	~SHVDataStructC_SQLite();
+	SHVDataStructCSQLite(SHVSQLiteWrapper* psqlite, const SHVString8C& tableName);
+	~SHVDataStructCSQLite();
 	virtual const SHVString8C& GetTableName() const;
 	virtual const SHVDataStructColumnC* operator[](size_t idx) const;
 	virtual const SHVBool FindColumnIndex(size_t& index, const SHVString8C& colName) const;
@@ -34,7 +34,7 @@ public:
 	inline SHVBool TableExists() { return !Struct.IsNull(); }
 private:
 	void ResolveIndexes(SHVSQLiteWrapper* psqlite, const SHVStringUTF8C& tableName, const SHVStringUTF8C& condition);
-	SHVDataStruct_implRef Struct;
+	SHVDataStructImplRef Struct;
 };
 typedef SHVRefObjectContainer<SHVDataStructColumnC> SHVDataStructColumnCRef;
 

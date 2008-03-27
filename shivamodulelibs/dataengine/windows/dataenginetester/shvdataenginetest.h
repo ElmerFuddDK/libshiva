@@ -2,7 +2,7 @@
 #define __SHIVE_DATAENGINE_TEST_H
 
 #include "shvtestmodule.h"
-#include "../../include/shvdataengine.h"
+#include "../../../../include/modules/dataengine/shvdataengine.h"
 #include "../../../../include/threadutils/shvthread.h"
 
 

@@ -1,24 +1,24 @@
 #ifndef __SHIVA_DATAFACTORY_IMPL_H
 #define __SHIVA_DATAFACTORY_IMPL_H
 
-#include "../shvdatafactory.h"
-#include "../shvdataengine.h"
-#include "../shvdatarow.h"
+#include "../../../include/modules/dataengine/shvdatafactory.h"
+#include "../../../include/modules/dataengine/shvdataengine.h"
+#include "../../../include/modules/dataengine/shvdatarow.h"
 
-#include "../../../../include/utils/shvlist.h"
-#include "../../../../include/threadutils/shvmutex.h"
-#include "../../../../shivasqlite/include/sqlitewrapper.h"
+#include "../../../include/utils/shvlist.h"
+#include "../../../include/threadutils/shvmutex.h"
+#include "../../../include/sqlite/sqlitewrapper.h"
 
 //-=========================================================================================================
-/// SHVDataFactory_impl class - Implementation of the data factory
+/// SHVDataFactoryImpl class - Implementation of the data factory
 /**
  * Is the factory for the data engine objects. 
  */
-class SHVDataFactory_impl: public SHVDataFactory
+class SHVDataFactoryImpl: public SHVDataFactory
 {
 public:
-	SHVDataFactory_impl(SHVDataEngine& engine, const SHVStringC& database);
-	SHVDataFactory_impl(SHVDataEngine& engine, const SHVStringC& database, const SHVDataSchema* Scheme);
+	SHVDataFactoryImpl(SHVDataEngine& engine, const SHVStringC& database);
+	SHVDataFactoryImpl(SHVDataEngine& engine, const SHVStringC& database, const SHVDataSchema* Scheme);
 	virtual SHVBool RegisterTable(const SHVDataStructC* dataStruct, bool createTable = false);
 	virtual SHVBool RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear = false, SHVDataSession* useSession = NULL);
 	virtual SHVBool UnregisterAlias(const SHVString8C& alias);
@@ -38,7 +38,7 @@ public:
 	virtual SHVBool IsOk() const;
 
 protected:
-	virtual ~SHVDataFactory_impl();
+	virtual ~SHVDataFactoryImpl();
 	virtual void RegisterDataList(SHVDataRowListC* rowList);
 	virtual void UnregisterDataList(SHVDataRowListC* rowList);
 	virtual bool HasPendingDataLists(const SHVDataSession* session) const;
@@ -56,7 +56,7 @@ protected:
 	virtual const SHVDataStructC* InternalFindStruct(const SHVString8C& table) const;
 	virtual SHVBool InternalUnregisterAlias(SHVSQLiteWrapper* sqlite, const SHVString8C& alias);
 private:
-	friend class SHVDataEngine_impl;
+	friend class SHVDataEngineImpl;
 	SHVDataEngine& DataEngine;
 	SHVSQLiteWrapperRef SQLite;
 	SHVString Database;

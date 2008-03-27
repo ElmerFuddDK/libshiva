@@ -1,22 +1,22 @@
 #ifndef __SHIVA_DATAENGINE_IMPL_H
 #define __SHIVA_DATAENGINE_IMPL_H
 
-#include "../shvdataengine.h"
-#include "../../../../include/utils/shvdll.h"
-#include "../../../../include/utils/shvvectorref.h"
-#include "../../../../shivasqlite/include/sqlitewrapper.h"
+#include "../../../include/modules/dataengine/shvdataengine.h"
+#include "../../../include/utils/shvdll.h"
+#include "../../../include/utils/shvvectorref.h"
+#include "../../../include/sqlite/sqlitewrapper.h"
 
 //-=========================================================================================================
-/// SHVDataEngine_impl class - Implementation for the DataEngine module
+/// SHVDataEngineImpl class - Implementation for the DataEngine module
 /**
  * Is a factory for DataFactory objects, which enables multible connections to one or more
  * SQLite databases (files)
  */
-class SHVDataEngine_impl: public SHVDataEngine
+class SHVDataEngineImpl: public SHVDataEngine
 {
 public:
-	SHVDataEngine_impl(SHVModuleList& modules);
-	virtual ~SHVDataEngine_impl();
+	SHVDataEngineImpl(SHVModuleList& modules);
+	virtual ~SHVDataEngineImpl();
 
 	virtual SHVBool Register();
 	virtual void Unregister();

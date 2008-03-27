@@ -1,18 +1,18 @@
 #include "stdafx.h"
-#include "../../../../include/platformspc.h"
-#include "../../../../include/utils/shvstringutf8.h"
-#include "../../include/shvdatarowlistcindexed.h"
-#include "../../include/shvdatarowcsqlite.h"
-#include "../../include/shvdatarowimpl.h"
-#include "../../include/shvdatastructcsqlite.h"
-#include "../../include/shvdatarowkeyimpl.h"
-#include "../../../../include/modules/dataengine/shvdataengine.h"
+#include "../../../include/platformspc.h"
+#include "../../../include/utils/shvstringutf8.h"
+#include "../include/shvdatarowlistcindexed.h"
+#include "../include/shvdatarowcsqlite.h"
+#include "../include/shvdatarowimpl.h"
+#include "../include/shvdatastructcsqlite.h"
+#include "../include/shvdatarowkeyimpl.h"
+#include "../../../include/modules/dataengine/shvdataengine.h"
 
 
 /*************************************
  * Constructor
  *************************************/
-SHVDataRowListC_Indexed::SHVDataRowListC_Indexed(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias, const SHVStringC& condition, size_t index): SHVDataRowListC_SQLite(session, dataStruct, alias)
+SHVDataRowListCIndexed::SHVDataRowListCIndexed(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias, const SHVStringC& condition, size_t index): SHVDataRowListCSQLite(session, dataStruct, alias)
 {
 SHVStringSQLite rest(NULL);
 SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
@@ -33,7 +33,7 @@ SHVStringUTF8 query = BuildQuery(condition, false);
 /*************************************
  * Reset
  *************************************/
-SHVBool SHVDataRowListC_Indexed::Reset()
+SHVBool SHVDataRowListCIndexed::Reset()
 {
 SHVBool retVal = IsOk();
 	SHVASSERT(retVal);
@@ -58,7 +58,7 @@ SHVBool retVal = IsOk();
 /*************************************
  * Destructor
  *************************************/
-SHVDataRowListC_Indexed::~SHVDataRowListC_Indexed()
+SHVDataRowListCIndexed::~SHVDataRowListCIndexed()
 {
 SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) GetDataSession()->GetProvider();
 SHVStringUTF8 sql;
@@ -73,7 +73,7 @@ SHVSQLiteStatementRef statement;
 /*************************************
  * GetRowCount
  *************************************/
-int SHVDataRowListC_Indexed::GetRowCount() const
+int SHVDataRowListCIndexed::GetRowCount() const
 {
 	return RowCount;
 }
@@ -81,7 +81,7 @@ int SHVDataRowListC_Indexed::GetRowCount() const
 /*************************************
  * BuildQuery
  *************************************/
-SHVStringBufferUTF8 SHVDataRowListC_Indexed::BuildQuery(const SHVStringC& condition, bool reverse)
+SHVStringBufferUTF8 SHVDataRowListCIndexed::BuildQuery(const SHVStringC& condition, bool reverse)
 {
 SHVStringUTF8 queryUTF8;
 SHVStringUTF8 col;
@@ -190,7 +190,7 @@ long rc;
 /*************************************
  * TempReset
  *************************************/
-SHVBool SHVDataRowListC_Indexed::TempReset()
+SHVBool SHVDataRowListCIndexed::TempReset()
 {
 	if (GetCurrentRow())
 	{
@@ -207,12 +207,12 @@ SHVBool SHVDataRowListC_Indexed::TempReset()
 /*************************************
  * Reposition
  *************************************/
-void SHVDataRowListC_Indexed::Reposition()
+void SHVDataRowListCIndexed::Reposition()
 {
 	if (TempPos >= 0)
 	{
-	SHVDataRowKeyRef Key = new SHVDataRowKey_impl();
-		Key->AddKey("idx", new SHVDataVariant_impl(SHVInt(TempPos)), false);
+	SHVDataRowKeyRef Key = new SHVDataRowKeyImpl();
+		Key->AddKey("idx", new SHVDataVariantImpl(SHVInt(TempPos)), false);
 		Find(Key);
 		TempPos = -1;
 	}
@@ -221,7 +221,7 @@ void SHVDataRowListC_Indexed::Reposition()
 /*************************************
  * InternalRowChanged
  *************************************/
-SHVBool SHVDataRowListC_Indexed::InternalRowChanged(SHVDataRow* row)
+SHVBool SHVDataRowListCIndexed::InternalRowChanged(SHVDataRow* row)
 {
 SHVBool retVal = SHVBool::True;
 SHVSQLiteStatementRef statement;

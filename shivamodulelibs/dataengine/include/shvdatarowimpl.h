@@ -1,31 +1,31 @@
 #ifndef __SHIVA_DATAENGINE_DATAROW_IMPL_H
 #define __SHIVA_DATAENGINE_DATAROW_IMPL_H
 
-#include "../../../../include/utils/shvrefobject.h"
-#include "../../../../include/utils/shvstring.h"
-#include "../../../../include/shvtypes.h"
-#include "../../../../include/utils/shvtime.h"
-#include "../../../../shivasqlite/include/sqlitewrapper.h"
-#include "../shvdatarow.h"
-#include "shvdatavariant_impl.h"
-#include "shvdatarowlist_sqlite.h"
+#include "../../../include/utils/shvrefobject.h"
+#include "../../../include/utils/shvstring.h"
+#include "../../../include/shvtypes.h"
+#include "../../../include/utils/shvtime.h"
+#include "../../../include/sqlite/sqlitewrapper.h"
+#include "../../../include/modules/dataengine/shvdatarow.h"
+#include "shvdatavariantimpl.h"
+#include "shvdatarowlistsqlite.h"
 
 //-=========================================================================================================
-/// SHVDataRow_impl class - Implementation for the datarow
+/// SHVDataRowImpl class - Implementation for the datarow
 /**
  * A generic row class which is a copy a SHVDataRowC object that is editable.
  */
-class SHVDataRow_impl: public SHVDataRow
+class SHVDataRowImpl: public SHVDataRow
 {
 public:
 	struct RowValues
 	{
-		SHVDataVariant_impl Value;
-		SHVDataVariant_impl	OrgValue;
+		SHVDataVariantImpl Value;
+		SHVDataVariantImpl	OrgValue;
 	};
 
-	SHVDataRow_impl(const SHVDataRowC* copyrow, SHVDataRowList* owner);
-	SHVDataRow_impl(SHVDataRowList* owner);
+	SHVDataRowImpl(const SHVDataRowC* copyrow, SHVDataRowList* owner);
+	SHVDataRowImpl(SHVDataRowList* owner);
 
 	virtual SHVStringBuffer AsString(size_t colIdx) const;
 	virtual void SetString(size_t colIdx, const SHVStringC& val);
@@ -63,21 +63,25 @@ public:
 	virtual SHVBool HasChanges();
 
 protected:
-	virtual ~SHVDataRow_impl();
+	virtual ~SHVDataRowImpl();
 	inline void SetChanged();
 	virtual SHVDataRowList* GetRowList();
 	virtual void InternalAcceptChanges();
 	virtual void InternalRejectChanges();
 private:
-	friend class SHVDataRowList_SQLite;
+	friend class SHVDataRowListSQLite;
 	RowValues* ColumnData;
 	SHVDataRowList* Owner;
 	int RowState;
 	int OrgRowState;
 };
-typedef SHVRefObjectContainer<SHVDataRow_impl> SHVDataRow_implRef;
+typedef SHVRefObjectContainer<SHVDataRowImpl> SHVDataRowImplRef;
 
-void SHVDataRow_impl::SetChanged()
+// ==================================== implementation - SHVDataRowImpl =================================== //
+/*************************************
+ * SetChanged
+ *************************************/
+void SHVDataRowImpl::SetChanged()
 {
 	if (RowState != SHVDataRow::RowStateAdding)
 		RowState = SHVDataRow::RowStateChanging;

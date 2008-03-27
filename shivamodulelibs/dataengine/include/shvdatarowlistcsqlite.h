@@ -1,25 +1,25 @@
 #ifndef __SHIVA_DATAENGINE_DATAROWLISTC_SQLITE_H
 #define __SHIVA_DATAENGINE_DATAROWLISTC_SQLITE_H
 
-#include "../../../../shivasqlite/include/sqlitewrapper.h"
-#include "../../../../include/utils/shvrefobject.h"
-#include "../../../../include/utils/shvstring.h"
-#include "../../../../include/utils/shvvectorref.h"
-#include "../../../../include/shvtypes.h"
-#include "../shvdatarowlistc.h"
-#include "../shvdatarowc.h"
+#include "../../../include/sqlite/sqlitewrapper.h"
+#include "../../../include/utils/shvrefobject.h"
+#include "../../../include/utils/shvstring.h"
+#include "../../../include/utils/shvvectorref.h"
+#include "../../../include/shvtypes.h"
+#include "../../../include/modules/dataengine/shvdatarowlistc.h"
+#include "../../../include/modules/dataengine/shvdatarowc.h"
 
 //-=========================================================================================================
-/// SHVDataRowListC_SQLite class - SQLite implementation of a constant datarow list.
+/// SHVDataRowListCSQLite class - SQLite implementation of a constant datarow list.
 /**
  * This object does not contain any data, but is merely an interface for a sqlite statement.
  */
-class SHVDataRowListC_SQLite: public SHVDataRowListC
+class SHVDataRowListCSQLite: public SHVDataRowListC
 {
 public:
-	SHVDataRowListC_SQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias);
-	SHVDataRowListC_SQLite(SHVDataSession* session, const SHVStringC& sql, const SHVDataRowKey* sortKey);
-	SHVDataRowListC_SQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias, const SHVStringC& condition, size_t index);
+	SHVDataRowListCSQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias);
+	SHVDataRowListCSQLite(SHVDataSession* session, const SHVStringC& sql, const SHVDataRowKey* sortKey);
+	SHVDataRowListCSQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias, const SHVStringC& condition, size_t index);
 
 	virtual const SHVDataRowC* GetCurrentRow() const;
 	virtual SHVBool IsOk() const;
@@ -37,7 +37,7 @@ public:
 	virtual SHVBool RowListValid() const;
 
 protected:
-	~SHVDataRowListC_SQLite();
+	~SHVDataRowListCSQLite();
 	virtual SHVStringBufferUTF8 BuildQuery(const SHVStringC& condition, bool reverse);
 	virtual void AdjustRowCount(int delta);
 	virtual SHVBool TempReset();
@@ -45,7 +45,7 @@ protected:
 	virtual SHVBool InternalRowChanged(SHVDataRow* row);
 
 private:
-	SHVDataRowListC_SQLite(SHVDataSession* session, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, const SHVString8C& alias, size_t index);
+	SHVDataRowListCSQLite(SHVDataSession* session, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, const SHVString8C& alias, size_t index);
 	SHVDataStructCRef StructCache;
 	SHVDataRowCRef CurrentRow;
 	SHVDataSessionRef DataSession;

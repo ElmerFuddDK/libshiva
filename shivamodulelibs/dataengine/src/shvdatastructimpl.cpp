@@ -1,16 +1,16 @@
 #include "stdafx.h"
-#include "../../../../include/platformspc.h"
-#include "../../include/shvdatastructimpl.h"
-#include "../../include/shvdatarowkeyimpl.h"
+#include "../../../include/platformspc.h"
+#include "../include/shvdatastructimpl.h"
+#include "../include/shvdatarowkeyimpl.h"
 
 /*************************************
  * Constructor
  *************************************/
-SHVDataStructColumn_impl::SHVDataStructColumn_impl()
+SHVDataStructColumnImpl::SHVDataStructColumnImpl()
 {
 }
 
-SHVDataStructColumn_impl::SHVDataStructColumn_impl(const SHVDataStructColumnC* col)
+SHVDataStructColumnImpl::SHVDataStructColumnImpl(const SHVDataStructColumnC* col)
 {
 	SetColumnName(col->GetColumnName());
 	SetDataType(col->GetDataType());
@@ -19,18 +19,21 @@ SHVDataStructColumn_impl::SHVDataStructColumn_impl(const SHVDataStructColumnC* c
 	SetAutoInc(col->GetAutoInc());
 }
 
-SHVDataStructColumn_impl::~SHVDataStructColumn_impl()
+SHVDataStructColumnImpl::~SHVDataStructColumnImpl()
 {
 }
 
-void SHVDataStructColumn_impl::ClearOwnership()
+/*************************************
+ * ClearOwnerShip
+ *************************************/
+void SHVDataStructColumnImpl::ClearOwnership()
 {
 }
 
 /*************************************
  * GetColumnName
  *************************************/
-const SHVString8C& SHVDataStructColumn_impl::GetColumnName() const
+const SHVString8C& SHVDataStructColumnImpl::GetColumnName() const
 {
 	return ColumnName;
 }
@@ -38,7 +41,7 @@ const SHVString8C& SHVDataStructColumn_impl::GetColumnName() const
 /*************************************
  * SetColumnName
  *************************************/
-void SHVDataStructColumn_impl::SetColumnName(const SHVString8C& name)
+void SHVDataStructColumnImpl::SetColumnName(const SHVString8C& name)
 {
 	ColumnName = name;
 }
@@ -46,7 +49,7 @@ void SHVDataStructColumn_impl::SetColumnName(const SHVString8C& name)
 /*************************************
  * GetDataType
  *************************************/
-int SHVDataStructColumn_impl::GetDataType() const
+int SHVDataStructColumnImpl::GetDataType() const
 {
 	return DataType;
 }
@@ -54,7 +57,7 @@ int SHVDataStructColumn_impl::GetDataType() const
 /*************************************
  * SetDataType
  *************************************/
-void SHVDataStructColumn_impl::SetDataType(int dataType)
+void SHVDataStructColumnImpl::SetDataType(int dataType)
 {
 	DataType = dataType;
 }
@@ -62,7 +65,7 @@ void SHVDataStructColumn_impl::SetDataType(int dataType)
 /*************************************
  * GetDataLength
  *************************************/
-int SHVDataStructColumn_impl::GetDataLength() const
+int SHVDataStructColumnImpl::GetDataLength() const
 {
 	return DataLength;
 }
@@ -70,7 +73,7 @@ int SHVDataStructColumn_impl::GetDataLength() const
 /*************************************
  * SetDataLength
  *************************************/
-void SHVDataStructColumn_impl::SetDataLength(int len)
+void SHVDataStructColumnImpl::SetDataLength(int len)
 {
 	DataLength = len;
 }
@@ -78,7 +81,7 @@ void SHVDataStructColumn_impl::SetDataLength(int len)
 /*************************************
  * GetAllowNull
  *************************************/
-SHVBool SHVDataStructColumn_impl::GetAllowNull() const
+SHVBool SHVDataStructColumnImpl::GetAllowNull() const
 {
 	return AllowNull;
 }
@@ -86,7 +89,7 @@ SHVBool SHVDataStructColumn_impl::GetAllowNull() const
 /*************************************
  * SetAllowNull
  *************************************/
-void SHVDataStructColumn_impl::SetAllowNull(SHVBool flag)
+void SHVDataStructColumnImpl::SetAllowNull(SHVBool flag)
 {
 	AllowNull = flag;
 }
@@ -94,7 +97,7 @@ void SHVDataStructColumn_impl::SetAllowNull(SHVBool flag)
 /*************************************
  * GetAutoInc
  *************************************/
-SHVBool SHVDataStructColumn_impl::GetAutoInc() const
+SHVBool SHVDataStructColumnImpl::GetAutoInc() const
 {
 	return AutoInc;
 }
@@ -102,7 +105,7 @@ SHVBool SHVDataStructColumn_impl::GetAutoInc() const
 /*************************************
  * SetAutoInc
  *************************************/
-void SHVDataStructColumn_impl::SetAutoInc(SHVBool flag)
+void SHVDataStructColumnImpl::SetAutoInc(SHVBool flag)
 {
 	AutoInc = flag;
 }
@@ -110,22 +113,22 @@ void SHVDataStructColumn_impl::SetAutoInc(SHVBool flag)
 /*************************************
  * Constructor
  *************************************/
-SHVDataStruct_impl::SHVDataStruct_impl()
+SHVDataStructImpl::SHVDataStructImpl()
 {
 }
 	
-SHVDataStruct_impl::SHVDataStruct_impl(const SHVDataStructC* dataStruct)
+SHVDataStructImpl::SHVDataStructImpl(const SHVDataStructC* dataStruct)
 {
 	for (size_t i = 0; i < dataStruct->GetColumnCount(); i++)
 	{
-		Add(new SHVDataStructColumn_impl((const SHVDataStructColumnC*)(*dataStruct)[i]));
+		Add(new SHVDataStructColumnImpl((const SHVDataStructColumnC*)(*dataStruct)[i]));
 	}
 	SetTableName(dataStruct->GetTableName());
 	for (size_t i = 0; i < dataStruct->IndexCount(); i++)
 		AddIndex((SHVDataRowKey*) dataStruct->GetIndex(i));
 }
 
-SHVDataStruct_impl::~SHVDataStruct_impl()
+SHVDataStructImpl::~SHVDataStructImpl()
 {
 	for (size_t i = 0; i < GetColumnCount(); i++)
 	{
@@ -136,7 +139,7 @@ SHVDataStruct_impl::~SHVDataStruct_impl()
 /*************************************
  * GetTableName
  *************************************/
-const SHVString8C& SHVDataStruct_impl::GetTableName() const
+const SHVString8C& SHVDataStructImpl::GetTableName() const
 {
 	return TableName;
 }
@@ -144,7 +147,7 @@ const SHVString8C& SHVDataStruct_impl::GetTableName() const
 /*************************************
  * SetTableName
  *************************************/
-void SHVDataStruct_impl::SetTableName(const SHVString8C& name)
+void SHVDataStructImpl::SetTableName(const SHVString8C& name)
 {
 	TableName = name;
 }
@@ -152,7 +155,7 @@ void SHVDataStruct_impl::SetTableName(const SHVString8C& name)
 /*************************************
  * ::operator[]
  *************************************/
-const SHVDataStructColumnC* SHVDataStruct_impl::operator[](size_t idx) const
+const SHVDataStructColumnC* SHVDataStructImpl::operator[](size_t idx) const
 {
 	return Columns[idx];
 }
@@ -160,7 +163,7 @@ const SHVDataStructColumnC* SHVDataStruct_impl::operator[](size_t idx) const
 /*************************************
  * GetAt
  *************************************/
-SHVDataStructColumn* SHVDataStruct_impl::operator[](size_t idx)
+SHVDataStructColumn* SHVDataStructImpl::operator[](size_t idx)
 {
 	return Columns[idx];
 }
@@ -168,7 +171,7 @@ SHVDataStructColumn* SHVDataStruct_impl::operator[](size_t idx)
 /*************************************
  * FindColumnIndex
  *************************************/
-const SHVBool SHVDataStruct_impl::FindColumnIndex(size_t& index, const SHVString8C& colName) const
+const SHVBool SHVDataStructImpl::FindColumnIndex(size_t& index, const SHVString8C& colName) const
 {
 SHVBool retVal(SHVBool::False);
 	for (index = Columns.CalculateCount(); index && !retVal; )
@@ -181,15 +184,15 @@ SHVBool retVal(SHVBool::False);
 /*************************************
  * CreateNew
  *************************************/
-SHVDataStructColumn* SHVDataStruct_impl::CreateNew()
+SHVDataStructColumn* SHVDataStructImpl::CreateNew()
 {
-	return new SHVDataStructColumn_impl();
+	return new SHVDataStructColumnImpl();
 }
 
 /*************************************
  * InsertAt
  *************************************/
-void SHVDataStruct_impl::InsertAt(size_t idx, SHVDataStructColumn& col)
+void SHVDataStructImpl::InsertAt(size_t idx, SHVDataStructColumn& col)
 {
 	Columns.Add(NULL);
 	for (size_t i = Columns.CalculateCount(); i > idx; i--)
@@ -202,7 +205,7 @@ void SHVDataStruct_impl::InsertAt(size_t idx, SHVDataStructColumn& col)
 /*************************************
  * RemoveAt
  *************************************/
-SHVDataStructColumn* SHVDataStruct_impl::RemoveAt(size_t idx)
+SHVDataStructColumn* SHVDataStructImpl::RemoveAt(size_t idx)
 {
 size_t size = Columns.CalculateCount()-1;
 SHVDataStructColumn* result = Columns[idx];
@@ -217,15 +220,15 @@ SHVDataStructColumn* result = Columns[idx];
 /*************************************
  * Add
  *************************************/
-size_t SHVDataStruct_impl::Add(SHVDataStructColumn* col)
+size_t SHVDataStructImpl::Add(SHVDataStructColumn* col)
 {
 	Columns.Add(col);
 	return Columns.CalculateCount();
 }
 
-size_t SHVDataStruct_impl::Add(const SHVString8C& colName, int dataType, int dataLength, SHVBool PrimaryKey, SHVBool AllowNull, SHVBool AutoInc)
+size_t SHVDataStructImpl::Add(const SHVString8C& colName, int dataType, int dataLength, SHVBool PrimaryKey, SHVBool AllowNull, SHVBool AutoInc)
 {
-SHVDataStructColumn_impl* col = new SHVDataStructColumn_impl();
+SHVDataStructColumnImpl* col = new SHVDataStructColumnImpl();
 	col->SetColumnName(colName);
 	col->SetDataType(dataType);
 	col->SetDataLength(dataLength);
@@ -238,7 +241,7 @@ SHVDataStructColumn_impl* col = new SHVDataStructColumn_impl();
 /*************************************
  * GetColumnCount
  *************************************/
-size_t SHVDataStruct_impl::GetColumnCount() const
+size_t SHVDataStructImpl::GetColumnCount() const
 {
 	return Columns.CalculateCount();
 }
@@ -246,7 +249,7 @@ size_t SHVDataStruct_impl::GetColumnCount() const
 /*************************************
  * GetPrimaryIndex
  *************************************/
-const SHVDataRowKey* SHVDataStruct_impl::GetPrimaryIndex() const
+const SHVDataRowKey* SHVDataStructImpl::GetPrimaryIndex() const
 {
 	return GetIndex(0);
 }
@@ -254,7 +257,7 @@ const SHVDataRowKey* SHVDataStruct_impl::GetPrimaryIndex() const
 /*************************************
  * SetPrimaryIndex
  *************************************/
-void SHVDataStruct_impl::SetPrimaryIndex(const SHVDataRowKey* key)
+void SHVDataStructImpl::SetPrimaryIndex(const SHVDataRowKey* key)
 {
 	if (Indexes.CalculateCount() > 0)
 		Indexes.Replace(0, (SHVDataRowKey*) key);
@@ -265,7 +268,7 @@ void SHVDataStruct_impl::SetPrimaryIndex(const SHVDataRowKey* key)
 /*************************************
  * IsEqual
  *************************************/
-SHVBool SHVDataStruct_impl::IsEqual(const SHVDataStructC* dataStruct) const
+SHVBool SHVDataStructImpl::IsEqual(const SHVDataStructC* dataStruct) const
 {
 SHVBool retVal = SHVBool::False;
 const SHVDataStructC& This = *this;
@@ -302,7 +305,7 @@ const SHVDataStructC& Struct = *dataStruct;
 /*************************************
  * GetIndex
  *************************************/
-const SHVDataRowKey* SHVDataStruct_impl::GetIndex(size_t IdxID) const
+const SHVDataRowKey* SHVDataStructImpl::GetIndex(size_t IdxID) const
 {
 	SHVASSERT(IdxID < Indexes.CalculateCount());
 	if (IdxID >= Indexes.CalculateCount())
@@ -313,7 +316,7 @@ const SHVDataRowKey* SHVDataStruct_impl::GetIndex(size_t IdxID) const
 /*************************************
  * IndexCount
  *************************************/
-const size_t SHVDataStruct_impl::IndexCount() const
+const size_t SHVDataStructImpl::IndexCount() const
 {
 	return Indexes.CalculateCount();
 }
@@ -321,7 +324,7 @@ const size_t SHVDataStruct_impl::IndexCount() const
 /*************************************
  * AddIndex
  *************************************/
-void SHVDataStruct_impl::AddIndex(SHVDataRowKey* index)
+void SHVDataStructImpl::AddIndex(SHVDataRowKey* index)
 {
 	Indexes.Add(index);
 }
@@ -329,7 +332,7 @@ void SHVDataStruct_impl::AddIndex(SHVDataRowKey* index)
 /*************************************
  * CreateIndexKey
  *************************************/
-SHVDataRowKey* SHVDataStruct_impl::CreateIndexKey() const
+SHVDataRowKey* SHVDataStructImpl::CreateIndexKey() const
 {
-	return new SHVDataRowKey_impl();
+	return new SHVDataRowKeyImpl();
 }
