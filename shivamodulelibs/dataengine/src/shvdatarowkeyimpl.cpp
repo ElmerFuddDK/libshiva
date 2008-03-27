@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "../../../../include/platformspc.h"
-#include "../../include/dataengineimpl/shvdatarowkey_impl.h"
-#include "../../include/dataengineimpl/shvdatavariant_impl.h"
+#include "../../include/shvdatarowkeyimpl.h"
+#include "../../include/shvdatavariantimpl.h"
 
 static int alloccount = 0;
 /*************************************

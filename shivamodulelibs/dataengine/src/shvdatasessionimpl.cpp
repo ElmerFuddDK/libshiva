@@ -2,11 +2,11 @@
 
 #include "../../../../include/platformspc.h"
 #include "../../../../include/utils/shvstringutf8.h"
-#include "../../include/dataengineimpl/shvdatasession_sqlite.h"
-#include "../../include/dataengineimpl/shvdatarowlist_sqlite.h"
-#include "../../include/dataengineimpl/shvdatarowlistc_sqlite.h"
-#include "../../include/dataengineimpl/shvdatarowlistc_indexed.h"
-#include "../../include/shvdataengine.h"
+#include "../../include/shvdatasessionsqlite.h"
+#include "../../include/shvdatarowlistsqlite.h"
+#include "../../include/shvdatarowlistcsqlite.h"
+#include "../../include/shvdatarowlistcindexed.h"
+#include "../../../../include/modules/dataengine/shvdataengine.h"
 
 /*************************************
  * Constructor

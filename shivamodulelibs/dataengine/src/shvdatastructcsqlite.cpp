@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "../../../../include/platformspc.h"
 #include "../../../../include/utils/shvstringutf8.h"
-#include "../../include/dataengineimpl/shvdatastructc_sqlite.h"
-#include "../../include/dataengineimpl/shvdatarowkey_impl.h"
+#include "../../include/shvdatastructcsqlite.h"
+#include "../../include/shvdatarowkeyimpl.h"
 
 /*************************************
  * Constructor

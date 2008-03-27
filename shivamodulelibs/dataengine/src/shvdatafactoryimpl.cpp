@@ -3,13 +3,13 @@
 #include "../../../../include/platformspc.h"
 #include "../../../../include/utils/shvstringutf8.h"
 #include "../../../../include/threadutils/shvmutexlocker.h"
-#include "../../include/dataengineimpl/shvdatafactory_impl.h"
-#include "../../include/dataengineimpl/shvdatasession_sqlite.h"
-#include "../../include/dataengineimpl/shvdatarowlistc_sqlite.h"
-#include "../../include/dataengineimpl/shvdatastruct_impl.h"
-#include "../../include/dataengineimpl/shvdatastructc_sqlite.h"
-#include "../../include/dataengineimpl/shvdatavariant_impl.h"
-#include "../../include/dataengineimpl/shvdatarowkey_impl.h"
+#include "../../include/shvdatafactoryimpl.h"
+#include "../../include/shvdatasessionsqlite.h"
+#include "../../include/shvdatarowlistcsqlite.h"
+#include "../../include/shvdatastructimpl.h"
+#include "../../include/shvdatastructcsqlite.h"
+#include "../../include/shvdatavariantimpl.h"
+#include "../../include/shvdatarowkeyimpl.h"
 
 /*************************************
  * Constructor

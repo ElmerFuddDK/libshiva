@@ -1,10 +1,10 @@
 #include "stdafx.h"
 
 #include "../../../../include/platformspc.h"
-#include "../../include/dataengineimpl/shvdatarow_impl.h"
-#include "../../include/dataengineimpl/shvdatarowkey_impl.h"
-#include "../../include/shvdatastructc.h"
-#include "../../include/shvdatasession.h"
+#include "../../../../include/modules/dataengine/shvdatastructc.h"
+#include "../../../../include/modules/dataengine/shvdatasession.h"
+#include "../../include/shvdatarowimpl.h"
+#include "../../include/shvdatarowkeyimpl.h"
 
 /*************************************
  * Constructors

@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
 #include "../../../../include/platformspc.h"
-#include "../../include/dataengineimpl/shvdatasession_sqlite.h"
-#include "../../include/dataengineimpl/shvdataengine_impl.h"
-#include "../../include/dataengineimpl/shvdatafactory_impl.h"
+#include "../../include/shvdatasessionsqlite.h"
+#include "../../include/shvdataengineimpl.h"
+#include "../../include/shvdatafactoryimpl.h"
 
 
 /*************************************

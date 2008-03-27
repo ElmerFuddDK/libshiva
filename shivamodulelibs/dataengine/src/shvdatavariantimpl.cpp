@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <stdlib.h>
 #include "../../../../include/platformspc.h"
-#include "../../include/dataengineimpl/shvdatavariant_impl.h"
+#include "../../include/shvdatavariantimpl.h"
 
 
 SHVDataVariant_impl::~SHVDataVariant_impl()

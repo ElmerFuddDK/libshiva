@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "../../../../include/platformspc.h"
-#include "../../include/dataengineimpl/shvdatastruct_impl.h"
-#include "../../include/dataengineimpl/shvdatarowkey_impl.h"
+#include "../../include/shvdatastructimpl.h"
+#include "../../include/shvdatarowkeyimpl.h"
 
 /*************************************
  * Constructor

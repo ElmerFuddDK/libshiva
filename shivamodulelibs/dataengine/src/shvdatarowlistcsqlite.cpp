@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "../../../../include/platformspc.h"
 #include "../../../../include/utils/shvstringutf8.h"
-#include "../../include/dataengineimpl/shvdatarowlistc_sqlite.h"
-#include "../../include/dataengineimpl/shvdatarowc_sqlite.h"
-#include "../../include/dataengineimpl/shvdatarow_impl.h"
-#include "../../include/dataengineimpl/shvdatarowkey_impl.h"
-#include "../../include/dataengineimpl/shvdatastruct_impl.h"
-#include "../../include/dataengineimpl/shvdatastructc_sqlite.h"
-#include "../../include/shvdataengine.h"
-#include "../../../../shivasqlite/include/sqlitestatement.h"
+#include "../../include/shvdatarowlistcsqlite.h"
+#include "../../include/shvdatarowcsqlite.h"
+#include "../../include/shvdatarowimpl.h"
+#include "../../include/shvdatarowkeyimpl.h"
+#include "../../include/shvdatastructimpl.h"
+#include "../../include/shvdatastructcsqlite.h"
+#include "../../../../include/modules/dataengine/shvdataengine.h"
+#include "../../../../include/sqlite/sqlitestatement.h"
 
 
 /*************************************
