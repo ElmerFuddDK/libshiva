@@ -373,37 +373,37 @@ SHVTime retVal(tTime);
 /*************************************
  * Comparison operators
  *************************************/
-int operator>(const SHVTime& tTime1, const SHVTime& tTime2)
+bool operator>(const SHVTime& tTime1, const SHVTime& tTime2)
 {
 time_t t1 = SHVTime::TimeGm((tm*)&tTime1.Time, false);
 time_t t2 = SHVTime::TimeGm((tm*)&tTime2.Time, false);
 	return (t1 > t2);
 }
-int operator<(const SHVTime& tTime1, const SHVTime& tTime2)
+bool operator<(const SHVTime& tTime1, const SHVTime& tTime2)
 {
 time_t t1 = SHVTime::TimeGm((tm*)&tTime1.Time, false);
 time_t t2 = SHVTime::TimeGm((tm*)&tTime2.Time, false);
 	return (t1 < t2);
 }
-int operator>=(const SHVTime& tTime1, const SHVTime& tTime2)
+bool operator>=(const SHVTime& tTime1, const SHVTime& tTime2)
 {
 time_t t1 = SHVTime::TimeGm((tm*)&tTime1.Time, false);
 time_t t2 = SHVTime::TimeGm((tm*)&tTime2.Time, false);
 	return (t1 >= t2);
 }
-int operator<=(const SHVTime& tTime1, const SHVTime& tTime2)
+bool operator<=(const SHVTime& tTime1, const SHVTime& tTime2)
 {
 time_t t1 = SHVTime::TimeGm((tm*)&tTime1.Time, false);
 time_t t2 = SHVTime::TimeGm((tm*)&tTime2.Time, false);
 	return (t1 <= t2);
 }
-int operator!=(const SHVTime& tTime1, const SHVTime& tTime2)
+bool operator!=(const SHVTime& tTime1, const SHVTime& tTime2)
 {
 time_t t1 = SHVTime::TimeGm((tm*)&tTime1.Time, false);
 time_t t2 = SHVTime::TimeGm((tm*)&tTime2.Time, false);
 	return (t1 != t2);
 }
-int operator==(const SHVTime& tTime1, const SHVTime& tTime2)
+bool operator==(const SHVTime& tTime1, const SHVTime& tTime2)
 {
 time_t t1 = SHVTime::TimeGm((tm*)&tTime1.Time, false);
 time_t t2 = SHVTime::TimeGm((tm*)&tTime2.Time, false);

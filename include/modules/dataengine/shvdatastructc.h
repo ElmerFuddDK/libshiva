@@ -1,10 +1,10 @@
 #ifndef __SHIVA_DATAENGINE_DATASTRUCTC_H
 #define __SHIVA_DATAENGINE_DATASTRUCTC_H
 
-#include "../../../include/utils/shvrefobject.h"
-#include "../../../include/utils/shvstring.h"
-#include "../../../include/utils/shvvectorref.h"
-#include "../../../include/utils/shvlist.h"
+#include "../../utils/shvrefobject.h"
+#include "../../utils/shvstring.h"
+#include "../../utils/shvvectorref.h"
+#include "../../utils/shvlist.h"
 #include "shvdatarowkey.h"
 
 //-=========================================================================================================
@@ -13,8 +13,6 @@
  */
 class SHVDataStructColumnC: public SHVRefObject
 {
-protected:
-	virtual ~SHVDataStructColumnC() { }
 public:
 	virtual const SHVString8C& GetColumnName() const = 0;
 	virtual int GetDataType() const = 0;
@@ -22,6 +20,10 @@ public:
 	virtual SHVBool GetAllowNull() const = 0;
 	virtual SHVBool GetAutoInc() const = 0;
 	virtual void ClearOwnership() = 0;
+
+
+protected:
+	virtual ~SHVDataStructColumnC() { }
 };
 typedef SHVRefObjectContainer<SHVDataStructColumnC> SHVDataStructColumnCRef;
 
@@ -31,8 +33,6 @@ typedef SHVRefObjectContainer<SHVDataStructColumnC> SHVDataStructColumnCRef;
  */
 class SHVDataStructC: public SHVRefObject
 {
-protected:
-	virtual ~SHVDataStructC() { }
 public:
 	virtual const SHVString8C& GetTableName() const = 0;
 	virtual const SHVDataStructColumnC* operator[](size_t idx) const = 0;
@@ -42,6 +42,10 @@ public:
 	virtual const SHVDataRowKey* GetIndex(size_t IdxID) const = 0;
 	virtual const size_t IndexCount() const = 0;
 	virtual SHVBool IsEqual(const SHVDataStructC* dataStruct) const = 0;
+
+
+protected:
+	virtual ~SHVDataStructC() { }
 };
 typedef SHVRefObjectContainer<SHVDataStructC> SHVDataStructCRef;
 typedef	SHVVectorRef<SHVDataStructC> SHVDataSchema;

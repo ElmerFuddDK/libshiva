@@ -9,6 +9,8 @@ class SHVDataSessionSQLite: public SHVDataSession
 {
 public:
 	SHVDataSessionSQLite(SHVModuleList& modules, SHVSQLiteWrapper* sqlite, SHVDataFactory* factory);
+
+    // from SHVDataSession
 	virtual SHVBool StartEdit();
 	virtual SHVBool Commit();
 	virtual SHVBool Rollback();
@@ -23,31 +25,57 @@ public:
 	virtual SHVBool IsEditting() const;
 
 	virtual void SubscribeDataChange(SHVEventSubscriberBase* sub);
+	virtual bool AliasActive(const SHVString8C& alias);
 	virtual void* GetProvider();
 	virtual SHVDataFactory* GetFactory() const;
+
+
 protected:
 	virtual ~SHVDataSessionSQLite();
-	virtual void ClearOwnership();
-	virtual SHVBool IsValid() const;
-	virtual bool SchemaChanged();
-	virtual void CheckSchema();
+	
 	virtual SHVBool DoUpdateRow(SHVDataRow* row);
 	virtual SHVBool DoInsertRow(SHVDataRow* row);
 	virtual SHVBool DoDeleteRow(SHVDataRow* row);
 	virtual SHVStringUTF8 WhereSQL(SHVDataRow* row);
-	virtual SHVBool UpdateRow(SHVDataRow* row);
+	virtual void CheckSchema();
 
 	bool EmptySlot(const SHVDataRowVector& vector, size_t& idx);
 	SHVDataRow* Find(const SHVDataRowVector& vector, const SHVDataRowKey* key, size_t& idx) const;
+
+	// from SHVDataSession
+	virtual void ClearOwnership();
+	virtual SHVBool UpdateRow(SHVDataRow* row);
+	virtual SHVBool IsValid() const;
+	virtual bool SchemaChanged();
+	virtual void RegisterDataList(SHVDataRowListC* rowList);
+	virtual void UnregisterDataList(SHVDataRowListC* rowList);
+
+
 private:
+	SHVBool SessionReset();
+	void SessionReposition();
+
+	// inlines
+	inline bool HasPendingDataLists() const;
+
+	// data
 	SHVSQLiteWrapperRef SQLite;
 	SHVDataFactory* Factory;
 	SHVDataRowVector ChangedRows;
 	SHVEventSubscriberBaseRef ChangeSubscriber; 
 	SHVBool Editting;
 	SHVModuleList& Modules;
+	SHVList<SHVDataRowListC*> ActiveDataLists;
 	bool Valid;
 };
 typedef SHVRefObjectContainer<SHVDataSessionSQLite> SHVDataSessionSQLiteRef;
 
+// =========================================== implementation ============================================ //
+bool SHVDataSessionSQLite::HasPendingDataLists() const
+{
+	return ActiveDataLists.GetCount() != 0;
+}
+
 #endif
+
+

@@ -16,10 +16,8 @@
  */
 class SHVDataRowCSQLite: public SHVDataRowC
 {
-protected:
-	SHVDataRowCSQLite(SHVDataRowListC* select);
-	virtual ~SHVDataRowCSQLite();
 public:
+	// from SHVDataRowC
 	virtual SHVStringBuffer AsString(size_t colIdx) const;
 	virtual SHVInt AsInt(size_t colIdx) const;
 	virtual SHVDouble AsDouble(size_t colIdx) const;
@@ -30,17 +28,27 @@ public:
 	virtual size_t ColumnIndex(const SHVString8C& colName) const;
 
 	virtual SHVDataRowKey* GetKey(size_t index = 0) const;
+	
 	virtual SHVDataVariant* GetValue(size_t colIdx) const;
+
 	virtual SHVBool MatchKey(const SHVDataRowKey* key) const;
 	virtual SHVBool RowValid() const;
 	virtual const SHVDataStructC* GetStruct() const;
 	virtual const SHVString8C GetAlias() const;
+
 	virtual int GetRowState() const;
 	virtual const SHVDataRowListC* GetRowListC();
 
+
+protected:
+	SHVDataRowCSQLite(SHVDataRowListC* select);
+	virtual ~SHVDataRowCSQLite();
+
 private:
+// friends
 friend class SHVDataRowListSQLite;
 friend class SHVDataRowListCSQLite;
+
 	SHVDataRowListC* Select;
 };
 typedef SHVRefObjectContainer<SHVDataRowCSQLite> SHVDataRowCSQLiteRef;

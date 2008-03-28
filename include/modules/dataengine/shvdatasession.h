@@ -1,9 +1,9 @@
 #ifndef __SHIVA_DATASESSION_H
 #define __SHIVA_DATASESSION_H
 
-#include "../../../include/framework/shveventsubscriber.h"
-#include "../../../include/utils/shvrefobject.h"
-#include "../../../include/framework/shveventdata.h"
+#include "../../utils/shvrefobject.h"
+#include "../../framework/shveventsubscriber.h"
+#include "../../framework/shveventdata.h"
 
 // forward declare
 class SHVDataRowList;
@@ -15,10 +15,13 @@ class SHVDataFactory;
 class SHVDataSession: public SHVRefObject
 {
 public:
+	// constants
 	enum EventTypes
 	{
 		EventChangeSet
 	};
+
+
 	virtual SHVBool StartEdit() = 0;
 	virtual SHVBool Commit() = 0;
 	virtual SHVBool Rollback() = 0;
@@ -31,25 +34,38 @@ public:
 	virtual SHVBool ExecuteNonQuery(const SHVStringC& sql) = 0;
 
 	virtual SHVBool IsEditting() const = 0;
-	inline SHVBool SessionValid() const;
 
 	virtual void SubscribeDataChange(SHVEventSubscriberBase* sub) = 0;
+	virtual bool AliasActive(const SHVString8C& alias) = 0;
 	virtual void* GetProvider() = 0;
 	virtual SHVDataFactory* GetFactory() const = 0;
+
+	// inlines
+	inline SHVBool SessionValid() const;
+
+
 protected:
-	friend class SHVDataRowListC;
-	friend class SHVDataRowList;
-	friend class SHVDataFactory;
+// friends
+friend class SHVDataRowListC;
+friend class SHVDataRowList;
+friend class SHVDataFactory;
+
+	virtual ~SHVDataSession() {}
 	virtual void ClearOwnership() = 0;
 	virtual SHVBool UpdateRow(SHVDataRow* row) = 0;
 	virtual SHVBool IsValid() const = 0;
+	virtual bool SchemaChanged() = 0;
+	virtual void RegisterDataList(SHVDataRowListC* rowList) = 0;
+	virtual void UnregisterDataList(SHVDataRowListC* rowList) = 0;
+
+	// inlines
 	inline SHVBool SessionReset();
 	inline void SessionReposition();
-	inline void RegisterDataList(SHVDataRowListC* rowList);
-	inline void UnregisterDataList(SHVDataRowListC* rowList);
 	inline void UnregisterDataSession();
 	inline void RowChanged(SHVDataRow* row);
-	virtual ~SHVDataSession() {}
+	inline SHVBool DataListTempReset(SHVDataRowListC* dataList);
+	inline void DataListReposition(SHVDataRowListC* dataList);
+	inline bool CheckAlias(const SHVString8C& alias);
 };
 typedef SHVRefObjectContainer<SHVDataSession> SHVDataSessionRef;
 
@@ -60,23 +76,7 @@ typedef SHVRefObjectContainer<SHVDataSession> SHVDataSessionRef;
 #define __SHIVA_DATASESSION_INL
 
 #include "shvdatafactory.h"
-
-/*************************************
- * SessionReset
- *************************************/
-SHVBool SHVDataSession::SessionReset()
-{
-	return GetFactory() != NULL && GetFactory()->SessionReset(this);
-}
-
-/*************************************
- * SessionReposition
- *************************************/
-void SHVDataSession::SessionReposition()
-{
-	if (GetFactory() != NULL) 
-		GetFactory()->SessionReposition(this);
-}
+#include "shvdatarowlistc.h"
 
 /*************************************
  * SessionValid
@@ -84,22 +84,6 @@ void SHVDataSession::SessionReposition()
 SHVBool SHVDataSession::SessionValid() const
 {
 	return GetFactory() != NULL && IsValid();
-}
-
-/*************************************
- * RegisterDataList
- *************************************/
-void SHVDataSession::RegisterDataList(SHVDataRowListC* rowList)
-{ 
-	GetFactory()->RegisterDataList(rowList);   
-}
-
-/*************************************
- * UnregisterDataList
- *************************************/
-void SHVDataSession::UnregisterDataList(SHVDataRowListC* rowList) 
-{ 
-	GetFactory()->UnregisterDataList(rowList); 
 }
 
 /*************************************
@@ -119,5 +103,30 @@ void SHVDataSession::RowChanged(SHVDataRow* row)
 	GetFactory()->RowChanged(row); 
 }
 
+/*************************************
+ * DataListTempReset
+ *************************************/
+SHVBool SHVDataSession::DataListTempReset(SHVDataRowListC* dataList)
+{
+	return dataList->TempReset();
+}
 
+/*************************************
+ * DataListReposition
+ *************************************/
+void SHVDataSession::DataListReposition(SHVDataRowListC* dataList)
+{
+	dataList->Reposition();
+}
+
+/*************************************
+ * CheckAlias
+ *************************************/
+bool SHVDataSession::CheckAlias(const SHVString8C& alias)
+{
+	if (GetFactory())
+		return GetFactory()->CheckAlias(this, alias);
+	else
+		return false;
+}
 #endif

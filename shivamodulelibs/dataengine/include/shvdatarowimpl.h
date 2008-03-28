@@ -24,33 +24,38 @@ public:
 		SHVDataVariantImpl	OrgValue;
 	};
 
+
 	SHVDataRowImpl(const SHVDataRowC* copyrow, SHVDataRowList* owner);
 	SHVDataRowImpl(SHVDataRowList* owner);
 
-	virtual SHVStringBuffer AsString(size_t colIdx) const;
+	// from SHVDataRow
 	virtual void SetString(size_t colIdx, const SHVStringC& val);
-
-	virtual SHVInt AsInt(size_t colIdx) const;
 	virtual void SetInt(size_t colIdx, SHVInt val);
-
-	virtual SHVDouble AsDouble(size_t colIdx) const;
 	virtual void SetDouble(size_t colIdx, SHVDouble val);
-
-	virtual SHVTime AsTime(size_t colIdx) const;
 	virtual void SetTime(size_t colIdx, const SHVTime& time);
-
-	virtual SHVBool AsBool(size_t colIdx) const;
 	virtual void SetBool(size_t colIdx, SHVBool val);
-
-	virtual SHVBool IsNull(size_t colIdx) const;
 	virtual void SetNull(size_t colIdx);
+	virtual const SHVDataVariant* OriginalValue(size_t colIdx) const;
+
+	virtual SHVDataRowList* GetRowList();
+
+	virtual SHVBool Delete();
+	virtual SHVBool HasChanges();
+
+	// from SHVDataRowC
+	virtual SHVStringBuffer AsString(size_t colIdx) const;
+	virtual SHVInt AsInt(size_t colIdx) const;
+	virtual SHVDouble AsDouble(size_t colIdx) const;
+	virtual SHVTime AsTime(size_t colIdx) const;
+	virtual SHVBool AsBool(size_t colIdx) const;
+	virtual SHVBool IsNull(size_t colIdx) const;
 
 	virtual size_t ColumnIndex(const SHVString8C& colName) const;
 
-	virtual SHVDataVariant* GetValue(size_t colIdx) const;
-	virtual const SHVDataVariant* OriginalValue(size_t colIdx) const;
-
 	virtual SHVDataRowKey* GetKey(size_t index = 0) const;
+	
+	virtual SHVDataVariant* GetValue(size_t colIdx) const;
+
 	virtual SHVBool MatchKey(const SHVDataRowKey* key) const;
 	virtual SHVBool RowValid() const;
 	virtual const SHVDataStructC* GetStruct() const;
@@ -59,17 +64,20 @@ public:
 	virtual int GetRowState() const;
 	virtual const SHVDataRowListC* GetRowListC();
 
-	virtual SHVBool Delete();
-	virtual SHVBool HasChanges();
 
 protected:
 	virtual ~SHVDataRowImpl();
-	inline void SetChanged();
-	virtual SHVDataRowList* GetRowList();
+
+	// from SHVDataRow
 	virtual void InternalAcceptChanges();
 	virtual void InternalRejectChanges();
+
+	// inlines
+	inline void SetChanged();
+
+
 private:
-	friend class SHVDataRowListSQLite;
+friend class SHVDataRowListSQLite;
 	RowValues* ColumnData;
 	SHVDataRowList* Owner;
 	int RowState;

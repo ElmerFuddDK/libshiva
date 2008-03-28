@@ -85,12 +85,12 @@ public:
 
 	// operators
 	friend SHVTime SHVAPI operator+(const SHVTime& tTime, int diffInSeconds);
-	friend int SHVAPI operator>(const SHVTime& tTime1, const SHVTime& tTime2);
-	friend int SHVAPI operator<(const SHVTime& tTime1, const SHVTime& tTime2);
-	friend int SHVAPI operator>=(const SHVTime& tTime1, const SHVTime& tTime2);
-	friend int SHVAPI operator<=(const SHVTime& tTime1, const SHVTime& tTime2);
-	friend int SHVAPI operator!=(const SHVTime& tTime1, const SHVTime& tTime2);
-	friend int SHVAPI operator==(const SHVTime& tTime1, const SHVTime& tTime2);
+	friend bool SHVAPI operator>(const SHVTime& tTime1, const SHVTime& tTime2);
+	friend bool SHVAPI operator<(const SHVTime& tTime1, const SHVTime& tTime2);
+	friend bool SHVAPI operator>=(const SHVTime& tTime1, const SHVTime& tTime2);
+	friend bool SHVAPI operator<=(const SHVTime& tTime1, const SHVTime& tTime2);
+	friend bool SHVAPI operator!=(const SHVTime& tTime1, const SHVTime& tTime2);
+	friend bool SHVAPI operator==(const SHVTime& tTime1, const SHVTime& tTime2);
 
 
 	// statics

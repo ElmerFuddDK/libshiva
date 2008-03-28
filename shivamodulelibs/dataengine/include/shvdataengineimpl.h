@@ -18,9 +18,11 @@ public:
 	SHVDataEngineImpl(SHVModuleList& modules);
 	virtual ~SHVDataEngineImpl();
 
+	// from SHVModule
 	virtual SHVBool Register();
 	virtual void Unregister();
 
+	// from SHVDataEngine
 	virtual SHVBool RegisterTable(const SHVDataStructC* dataStruct, bool createTable = false);
 	virtual SHVBool RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear = false, SHVDataSession* useSession = NULL);
 	virtual SHVBool UnregisterAlias(const SHVString8C& alias);
@@ -39,11 +41,16 @@ public:
 
 	virtual SHVDataFactory* CreateFactory(const SHVStringC& database, const SHVDataSchema* schema = NULL);
 	virtual SHVDataFactory* GetDefaultFactory();
+
+
 protected:
+	// from SHVDataEngine
 	virtual void SubscribeRowChange(SHVEventSubscriberBase* sub);
 	virtual void RegisterDataList(SHVDataRowListC* rowList);
 	virtual void UnregisterDataList(SHVDataRowListC* rowList);
 	virtual void RowChanged(SHVDataRow* row);
+
+
 private:
 	SHVDll SQLiteDll;
 	SHVDataFactoryRef Factory;

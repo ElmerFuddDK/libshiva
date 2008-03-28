@@ -1,10 +1,10 @@
 #ifndef __SHIVA_DATAENGINE_DATAROWKEY_H
 #define __SHIVA_DATAENGINE_DATAROWKEY_H
 
-#include "../../../include/utils/shvrefobject.h"
-#include "../../../include/utils/shvstring.h"
-#include "../../../include/utils/shvvector.h"
-#include "../../../include/shvtypes.h"
+#include "../../utils/shvrefobject.h"
+#include "../../utils/shvstring.h"
+#include "../../utils/shvvector.h"
+#include "../../shvtypes.h"
 #include "shvdatavariant.h"
 
 //-=========================================================================================================
@@ -22,9 +22,7 @@ public:
 		bool            Desc;
 	};
 
-protected:
-	virtual ~SHVDataRowKey() {}
-public:
+
 	virtual const SHVDataRowKey::KeyValuePair& operator[](size_t idx) const = 0;
 	virtual void SetKeyValue(size_t idx, SHVInt val) = 0;
 	virtual void SetKeyValue(size_t idx, SHVDouble val) = 0;
@@ -38,8 +36,14 @@ public:
 
 	virtual size_t Count() const = 0;
 	virtual SHVBool Unique() const = 0;
+	virtual void SetUnique(SHVBool flag) = 0;
+
 	virtual SHVBool KeyEquals(const SHVDataRowKey* key) const = 0;
 	virtual SHVBool KeyDefEquals(const SHVDataRowKey* key) const = 0;
+
+
+protected:
+	virtual ~SHVDataRowKey() {}
 };
 typedef SHVRefObjectContainer<SHVDataRowKey> SHVDataRowKeyRef;
 

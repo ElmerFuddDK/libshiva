@@ -15,6 +15,15 @@ class SHVDataRow;
 class SHVDataRowList: public SHVDataRowListC
 {
 public:
+	virtual SHVDataRow* EditCurrentRow() = 0;
+	virtual SHVDataRow* AddRow() = 0;	
+
+	virtual void EnableEvents(bool enable) = 0;
+	virtual bool GetEventsEnabled() const = 0;
+	virtual void EnableNonAccepted(bool enable) = 0;
+	virtual bool GetNonAcceptedEnabled() const = 0;
+
+// from SHVDataRowListC
 	virtual const SHVDataRowC* GetCurrentRow() const = 0;
 	virtual SHVBool IsOk() const = 0;
 	virtual const SHVDataStructC* GetStruct() const = 0;
@@ -28,24 +37,25 @@ public:
 
 	virtual const void* GetRowProvider() const = 0;
 	virtual SHVDataSession* GetDataSession() = 0;
-
-	virtual SHVDataRow* EditCurrentRow() = 0;
-	virtual SHVDataRow* AddRow() = 0;	
-	virtual void EnableEvents(bool enable) = 0;
-	virtual bool GetEventsEnabled() const = 0;
-	virtual void EnableNonAccepted(bool enable) = 0;
-	virtual bool GetNonAcceptedEnabled() const = 0;
-
 	virtual SHVBool RowListValid() const = 0;
+
+
 protected:
-	friend class SHVDataRow;
+// friends
+friend class SHVDataRow;
+
 	virtual ~SHVDataRowList() {}
+
 	virtual SHVBool AcceptChanges(SHVDataRow* row) = 0;
 	virtual SHVBool RejectChanges(SHVDataRow* row) = 0;
+
+// from SHVDataRowListC
 	virtual void AdjustRowCount(int delta) = 0;
 	virtual SHVBool TempReset() = 0;
 	virtual void Reposition() = 0;
+	virtual SHVBool InternalRowChanged(SHVDataRow* row) = 0;
 
+// inlines
 	inline SHVBool UpdateRow(SHVDataRow* row);
 	inline void RowChanged(SHVDataRow* row);
 	inline void InternalAcceptChanges(SHVDataRow* row);

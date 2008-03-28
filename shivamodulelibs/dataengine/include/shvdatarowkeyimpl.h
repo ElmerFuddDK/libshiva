@@ -17,6 +17,8 @@ protected:
 public:
 	SHVDataRowKeyImpl();
 	SHVDataRowKeyImpl(const SHVDataRowKey* key);
+
+	// from SHVDataRowKey
 	virtual const SHVDataRowKey::KeyValuePair& operator[](size_t idx) const;
 	virtual void SetKeyValue(size_t idx, SHVInt val);
 	virtual void SetKeyValue(size_t idx, SHVDouble val);
@@ -34,6 +36,8 @@ public:
 
 	virtual SHVBool KeyEquals(const SHVDataRowKey* key) const;
 	virtual SHVBool KeyDefEquals(const SHVDataRowKey* key) const;
+
+
 private:
 	SHVVector<KeyValuePair> Keys;
 	SHVBool UniqueKey;

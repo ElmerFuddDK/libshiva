@@ -16,6 +16,7 @@ public:
 	SHVDataStructColumnImpl(const SHVDataStructColumnC* col);
 	virtual ~SHVDataStructColumnImpl();
 
+	// from SHVDataStructColumn
 	virtual const SHVString8C& GetColumnName() const;
 	virtual void SetColumnName(const SHVString8C& name);
 
@@ -31,7 +32,7 @@ public:
 	virtual SHVBool GetAutoInc() const;
 	virtual void SetAutoInc(SHVBool flag);
 
-	virtual void ClearOwnership();
+
 private:
 	SHVString8 ColumnName;
 	int DataType;

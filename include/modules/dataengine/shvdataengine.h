@@ -1,9 +1,9 @@
 #ifndef __SHIVA_DATAENGINE_H
 #define __SHIVA_DATAENGINE_H
 
-#include "../../../shivasqlite/include/sqlitewrapper.h"
-#include "../../../include/framework/shvmodule.h"
-#include "../../../include/utils/shvdll.h"
+#include "../../sqlite/sqlitewrapper.h"
+#include "../../framework/shvmodule.h"
+#include "../../utils/shvdll.h"
 #include "shvdatafactory.h"
 
 #define __DATAENGINE_VERSION_MAJOR     0
@@ -23,7 +23,7 @@ class SHVDataEngine: public SHVModule
 public:
 	virtual ~SHVDataEngine() {}
 	virtual SHVBool RegisterTable(const SHVDataStructC* dataStruct, bool createTable = false) = 0;
-	virtual SHVBool RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear = false) = 0;
+	virtual SHVBool RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear = false, SHVDataSession* useSession = NULL) = 0;
 	virtual SHVBool UnregisterAlias(const SHVString8C& alias) = 0;
 	virtual const SHVDataStructC* FindStruct(const SHVString8C& table) const = 0;
 	virtual const SHVDataSchema& GetDataSchema() const = 0;
@@ -38,14 +38,20 @@ public:
 
 	virtual SHVSQLiteWrapper* CreateConnection(SHVBool& Ok, const SHVStringC& dataBase) = 0;
 
-	virtual SHVDataFactory* CreateFactory(const SHVString& database, const SHVDataSchema* schema = NULL) = 0;
+	virtual SHVDataFactory* CreateFactory(const SHVStringC& database, const SHVDataSchema* schema = NULL) = 0;
 	virtual SHVDataFactory* GetDefaultFactory() = 0;
+
+	// inlines 
 	inline void FactoryRowChanged(SHVDataRow* row);
+
+
 protected:
 	virtual void SubscribeRowChange(SHVEventSubscriberBase* sub) = 0;
 	virtual void RegisterDataList(SHVDataRowListC* rowList) = 0;
 	virtual void UnregisterDataList(SHVDataRowListC* rowList) = 0;
 	virtual void RowChanged(SHVDataRow* row) = 0;
+
+	// inlines
 	inline SHVDataEngine(SHVModuleList& modules): SHVModule(modules, "DataEngine") { }
 };
 // ============================================ implementation ============================================ //

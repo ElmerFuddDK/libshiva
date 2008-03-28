@@ -1,14 +1,15 @@
 #ifndef __SHIVA_DATAVARIANT_H
 #define __SHIVA_DATAVARIANT_H
 
-#include "../../../include/utils/shvrefobject.h"
-#include "../../../include/utils/shvstring.h"
-#include "../../../include/utils/shvtime.h"
-#include "../../../include/shvtypes.h"
+#include "../../utils/shvrefobject.h"
+#include "../../utils/shvstring.h"
+#include "../../utils/shvtime.h"
+#include "../../shvtypes.h"
 
 class SHVDataVariant
 {
 public:
+	// constants
 	enum SHVDataType
 	{
 		TypeUndefined,
@@ -18,6 +19,7 @@ public:
 		TypeString,
 		TypeTime
 	};
+
 
 	virtual ~SHVDataVariant() { }
 	virtual int GetDataType() const = 0;
@@ -42,6 +44,8 @@ public:
 
 	virtual SHVDataVariant& operator=(const SHVDataVariant& val) = 0;
 	virtual bool operator==(const SHVDataVariant& val) const = 0;
+
+	// inlines
 	inline SHVDataVariant& operator=(const SHVStringC& val);
 	inline SHVDataVariant& operator=(SHVInt val);
 	inline SHVDataVariant& operator=(SHVDouble val);

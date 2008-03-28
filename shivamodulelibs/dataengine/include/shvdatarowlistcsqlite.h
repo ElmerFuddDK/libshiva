@@ -21,6 +21,7 @@ public:
 	SHVDataRowListCSQLite(SHVDataSession* session, const SHVStringC& sql, const SHVDataRowKey* sortKey);
 	SHVDataRowListCSQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias, const SHVStringC& condition, size_t index);
 
+	// from SHVDataListC
 	virtual const SHVDataRowC* GetCurrentRow() const;
 	virtual SHVBool IsOk() const;
 	virtual const SHVDataStructC* GetStruct() const;
@@ -38,7 +39,10 @@ public:
 
 protected:
 	~SHVDataRowListCSQLite();
+
 	virtual SHVStringBufferUTF8 BuildQuery(const SHVStringC& condition, bool reverse);
+	
+	// from SHVDataRowListC
 	virtual void AdjustRowCount(int delta);
 	virtual SHVBool TempReset();
 	virtual void Reposition();
@@ -49,6 +53,7 @@ private:
 	SHVDataStructCRef StructCache;
 	SHVDataRowCRef CurrentRow;
 	SHVDataSessionRef DataSession;
+
 
 protected:
 	size_t SortIndex;

@@ -24,13 +24,6 @@ SHVDataStructColumnImpl::~SHVDataStructColumnImpl()
 }
 
 /*************************************
- * ClearOwnerShip
- *************************************/
-void SHVDataStructColumnImpl::ClearOwnership()
-{
-}
-
-/*************************************
  * GetColumnName
  *************************************/
 const SHVString8C& SHVDataStructColumnImpl::GetColumnName() const

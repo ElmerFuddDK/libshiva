@@ -12,16 +12,11 @@
 class SHVDataVariantImpl: public SHVDataVariant
 {
 public:
-	inline SHVDataVariantImpl();
-	inline SHVDataVariantImpl(SHVInt val);
-	inline SHVDataVariantImpl(SHVDouble val);
-	inline SHVDataVariantImpl(SHVBool val);
-	inline SHVDataVariantImpl(const SHVString& val);
-	inline SHVDataVariantImpl(const SHVTime& val);
-	inline SHVDataVariantImpl(const SHVDataVariant* copy);
 	virtual ~SHVDataVariantImpl();
 
+	// from SHVDataVariant
 	virtual int GetDataType() const;
+
 	virtual SHVStringBuffer AsString() const;
 	virtual void SetString(const SHVStringC& val);
 
@@ -41,8 +36,18 @@ public:
 	virtual void SetNull();
 
 	virtual SHVDataVariant& operator=(const SHVDataVariant& val);
-	inline SHVDataVariant& operator=(const SHVDataVariantImpl& val);
 	virtual bool operator==(const SHVDataVariant& val) const;
+
+	// inlines
+	inline SHVDataVariantImpl();
+	inline SHVDataVariantImpl(SHVInt val);
+	inline SHVDataVariantImpl(SHVDouble val);
+	inline SHVDataVariantImpl(SHVBool val);
+	inline SHVDataVariantImpl(const SHVString& val);
+	inline SHVDataVariantImpl(const SHVTime& val);
+	inline SHVDataVariantImpl(const SHVDataVariant* copy);
+	inline SHVDataVariant& operator=(const SHVDataVariantImpl& val);
+
 
 private:
 	int DataType;

@@ -108,6 +108,7 @@ SHVDataVariant* SHVDataEngineImpl::CreateVariant() const
 {
 	return Factory->CreateVariant();
 }
+
 /*************************************
  * CreateKey
  *************************************/

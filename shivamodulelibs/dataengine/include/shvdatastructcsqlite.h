@@ -21,7 +21,8 @@ class SHVDataStructCSQLite: public SHVDataStructC
 {
 public:
 	SHVDataStructCSQLite(SHVSQLiteWrapper* psqlite, const SHVString8C& tableName);
-	~SHVDataStructCSQLite();
+
+	// from SHVDataStructC
 	virtual const SHVString8C& GetTableName() const;
 	virtual const SHVDataStructColumnC* operator[](size_t idx) const;
 	virtual const SHVBool FindColumnIndex(size_t& index, const SHVString8C& colName) const;
@@ -29,11 +30,19 @@ public:
 	virtual const SHVDataRowKey* GetPrimaryIndex() const;
 	virtual const SHVDataRowKey* GetIndex(size_t IdxID) const;
 	virtual const size_t IndexCount() const;
-
 	virtual SHVBool IsEqual(const SHVDataStructC* dataStruct) const;
+
 	inline SHVBool TableExists() { return !Struct.IsNull(); }
+
+
+protected:
+	virtual ~SHVDataStructCSQLite();
+
+
 private:
 	void ResolveIndexes(SHVSQLiteWrapper* psqlite, const SHVStringUTF8C& tableName, const SHVStringUTF8C& condition);
+
+	// data
 	SHVDataStructImplRef Struct;
 };
 typedef SHVRefObjectContainer<SHVDataStructColumnC> SHVDataStructColumnCRef;

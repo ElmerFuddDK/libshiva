@@ -237,6 +237,18 @@ void SHVDataSessionSQLite::SubscribeDataChange(SHVEventSubscriberBase* sub)
 }
 
 /*************************************
+ * AliasActive
+ *************************************/
+bool SHVDataSessionSQLite::AliasActive(const SHVString8C& alias)
+{
+SHVListIterator<SHVDataRowListC*> Iter(ActiveDataLists);
+bool retVal = false;
+	while (Iter.MoveNext() && !retVal)
+		retVal = Iter.Get()->GetAlias() == alias;
+	return retVal;
+}
+
+/*************************************
  * GetProvider
  *************************************/
 void* SHVDataSessionSQLite::GetProvider()
@@ -455,4 +467,51 @@ SHVSQLiteStatementRef statement;
 		}
 	}
 	return keycond;
+}
+
+/*************************************
+ * RegisterDataList
+ *************************************/
+void SHVDataSessionSQLite::RegisterDataList(SHVDataRowListC* rowList)
+{
+	ActiveDataLists.AddTail(rowList);
+}
+
+/*************************************
+ * UnregisterDataList
+ *************************************/
+void SHVDataSessionSQLite::UnregisterDataList(SHVDataRowListC* rowList)
+{
+SHVListPos pos = ActiveDataLists.Find(rowList);
+	if (pos)
+	{
+		CheckAlias(rowList->GetAlias());
+		ActiveDataLists.RemoveAt(pos);
+	}
+}
+
+/*************************************
+ * SessionReset
+ *************************************/
+SHVBool SHVDataSessionSQLite::SessionReset()
+{
+SHVBool retVal = SHVBool::True;
+SHVListIterator<SHVDataRowListC*> iter(ActiveDataLists);
+	while (retVal && iter.MoveNext())
+	{
+		retVal =  DataListTempReset(iter.Get());
+	}
+	return retVal;
+}
+
+/*************************************
+ * SessionReposition
+ *************************************/
+void SHVDataSessionSQLite::SessionReposition()
+{
+SHVListIterator<SHVDataRowListC*> iter(ActiveDataLists);
+	while (iter.MoveNext())
+	{
+		DataListReposition(iter.Get());
+	}
 }

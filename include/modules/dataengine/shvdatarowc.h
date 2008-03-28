@@ -1,15 +1,16 @@
 #ifndef __SHIVA_DATAENGINE_DATAROWC_H
 #define __SHIVA_DATAENGINE_DATAROWC_H
 
-#include "../../../include/utils/shvrefobject.h"
-#include "../../../include/utils/shvstring.h"
-#include "../../../include/shvtypes.h"
-#include "../../../include/utils/shvtime.h"
+#include "../../shvtypes.h"
+#include "../../utils/shvrefobject.h"
+#include "../../utils/shvstring.h"
+#include "../../utils/shvtime.h"
 #include "shvdatavariant.h"
 
 // forward declares
 class SHVDataRowKey;
 class SHVDataStructC;
+class SHVDataRowListC;
 
 //-=========================================================================================================
 /// SHVDataRow class - Interface for SHVDataRow
@@ -19,22 +20,11 @@ class SHVDataStructC;
 class SHVDataRowC: public SHVRefObject
 {
 public:
-	inline SHVStringBuffer AsString(const SHVString8C& colName) const;
 	virtual SHVStringBuffer AsString(size_t colIdx) const = 0;
-
-	inline SHVInt AsInt(const SHVString8C& colName) const;
 	virtual SHVInt AsInt(size_t colIdx) const = 0;
-
-	inline SHVDouble AsDouble(const SHVString8C& colName) const;
 	virtual SHVDouble AsDouble(size_t colIdx) const = 0;
-
-	inline SHVTime AsTime(const SHVString8C& colName) const;
 	virtual SHVTime AsTime(size_t colIdx) const = 0;
-
-	inline SHVBool AsBool(const SHVString8C& colName) const;
 	virtual SHVBool AsBool(size_t colIdx) const = 0;
-
-	inline SHVBool IsNull(const SHVString8C& colName) const;
 	virtual SHVBool IsNull(size_t colIdx) const = 0;
 
 	virtual size_t ColumnIndex(const SHVString8C& colName) const = 0;
@@ -42,7 +32,6 @@ public:
 	virtual SHVDataRowKey* GetKey(size_t index = 0) const = 0;
 	
 	virtual SHVDataVariant* GetValue(size_t colIdx) const = 0;
-	inline SHVDataVariant* GetValue(const SHVString8C& colName) const;
 
 	virtual SHVBool MatchKey(const SHVDataRowKey* key) const = 0;
 	virtual SHVBool RowValid() const = 0;
@@ -50,6 +39,15 @@ public:
 	virtual const SHVString8C GetAlias() const = 0;
 
 	virtual int GetRowState() const = 0;
+	virtual const SHVDataRowListC* GetRowListC() = 0;
+
+	inline SHVStringBuffer AsString(const SHVString8C& colName) const;
+	inline SHVInt AsInt(const SHVString8C& colName) const;
+	inline SHVDouble AsDouble(const SHVString8C& colName) const;
+	inline SHVTime AsTime(const SHVString8C& colName) const;
+	inline SHVBool AsBool(const SHVString8C& colName) const;
+	inline SHVBool IsNull(const SHVString8C& colName) const;
+	inline SHVDataVariant* GetValue(const SHVString8C& colName) const;
 
 	inline SHVBool GetValue(const SHVString8C& colName, SHVString& value) const;
 	inline SHVBool GetValue(const SHVString8C& colName, SHVInt& value) const;

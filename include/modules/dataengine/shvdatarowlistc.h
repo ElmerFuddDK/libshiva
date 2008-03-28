@@ -1,9 +1,9 @@
 #ifndef __SHIVA_DATAENGINE_DATAROWLISTC_H
 #define __SHIVA_DATAENGINE_DATAROWLISTC_H
 
-#include "../../../include/utils/shvrefobject.h"
-#include "../../../include/utils/shvstring.h"
-#include "../../../include/shvtypes.h"
+#include "../../shvtypes.h"
+#include "../../utils/shvrefobject.h"
+#include "../../utils/shvstring.h"
 
 // forward declares
 class SHVDataRow;
@@ -36,18 +36,27 @@ public:
 	virtual const void* GetRowProvider() const = 0;
 	virtual SHVDataSession* GetDataSession() = 0;
 	virtual SHVBool RowListValid() const = 0;
+
+
 protected:
-	friend class SHVDataFactory;
-	friend class SHVDataRowList;
+// friends
+friend class SHVDataSession;
+friend class SHVDataRowList;
+
+	virtual ~SHVDataRowListC() {}
 	virtual void AdjustRowCount(int delta) = 0;
 	virtual SHVBool TempReset() = 0;
 	virtual void Reposition() = 0;
 	virtual SHVBool InternalRowChanged(SHVDataRow* row) = 0;
-	virtual ~SHVDataRowListC() {}
+
+// inlines
 	inline void UnregisterDataList();
 	inline SHVBool TempReset(SHVDataRowListC* list);
 	inline void Reposition(SHVDataRowListC* list);
 	inline SHVBool InternalRowChanged(SHVDataRowListC* list, SHVDataRow* row);
+	inline bool SchemaChanged();
+
+
 private:
 	int RowCount;
 };
@@ -95,6 +104,17 @@ void SHVDataRowListC::Reposition(SHVDataRowListC* list)
 SHVBool SHVDataRowListC::InternalRowChanged(SHVDataRowListC* list, SHVDataRow* row)
 {
 	return list->InternalRowChanged(row);
+}
+
+/*************************************
+ * SchemaChanged
+ *************************************/
+bool SHVDataRowListC::SchemaChanged()
+{
+	if (GetDataSession())
+		return GetDataSession()->SchemaChanged();
+	else
+		return false;
 }
 
 #endif

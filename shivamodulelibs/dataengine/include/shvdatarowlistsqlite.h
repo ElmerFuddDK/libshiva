@@ -21,6 +21,17 @@ class SHVDataRowListSQLite: public SHVDataRowList
 {
 public:
 	SHVDataRowListSQLite(SHVDataSession* dataSession, SHVDataRowListC *rowList);
+	
+	// from SHVDataRowList
+	virtual SHVDataRow* EditCurrentRow();
+	virtual SHVDataRow* AddRow();
+
+	virtual void EnableEvents(bool enable);
+	virtual bool GetEventsEnabled() const;
+	virtual void EnableNonAccepted(bool enable);
+	virtual bool GetNonAcceptedEnabled() const;
+
+	// from SHVDataRowListC
 	virtual const SHVDataRowC* GetCurrentRow() const;
 	virtual SHVBool IsOk() const;
 	virtual const SHVDataStructC* GetStruct() const;
@@ -34,26 +45,25 @@ public:
 
 	virtual const void* GetRowProvider() const;
 	virtual SHVDataSession* GetDataSession();
-
-	virtual SHVDataRow* EditCurrentRow();
-	virtual SHVDataRow* AddRow();
-	virtual void EnableEvents(bool enable);
-	virtual bool GetEventsEnabled() const;
-	virtual void EnableNonAccepted(bool enable);
-	virtual bool GetNonAcceptedEnabled() const;
-
 	virtual SHVBool RowListValid() const;
+
+
 protected:
 	virtual ~SHVDataRowListSQLite();
+	SHVDataRow* FindPending(const SHVDataRowKey* key);
+	bool NextPendingAdded();
+	
+	// from SHVDataRowList
 	virtual SHVBool AcceptChanges(SHVDataRow* row);
 	virtual SHVBool RejectChanges(SHVDataRow* row);
+
+	// from SHVDataRowListC
 	virtual void AdjustRowCount(int delta);
 	virtual SHVBool TempReset();
 	virtual void Reposition();
 	virtual SHVBool InternalRowChanged(SHVDataRow* row);
 	
-	SHVDataRow* FindPending(const SHVDataRowKey* key);
-	bool NextPendingAdded();
+
 private:
 	SHVDataRowListCRef RowList;
 	SHVDataSessionRef DataSession;
