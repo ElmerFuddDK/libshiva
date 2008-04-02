@@ -46,6 +46,9 @@ public:
 	virtual SHVDrawWin32* CreateDraw(HDC dc);
 	virtual SHVDrawPaintWin32* CreateDrawPaint(HWND window);
 
+	// Create win32 color
+	virtual SHVColor* CreateColor(COLORREF clr);
+
 	// PreTranslateMessage
 	virtual bool PreTranslateMessage(MSG* message);
 

@@ -182,6 +182,11 @@ SHVDrawPaintWin32* SHVGUIManagerWin32::CreateDrawPaint(HWND window)
 	return new SHVDrawPaintWin32(this,window);
 }
 
+SHVColor* SHVGUIManagerWin32::CreateColor(COLORREF clr)
+{
+	return new SHVColorWin32(clr);
+}
+
 /*************************************
  * PreTranslateMessage
  *************************************/
