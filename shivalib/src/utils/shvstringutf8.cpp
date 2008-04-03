@@ -733,7 +733,7 @@ SHVString8 self;
 SHVString8C srch(search.GetBufferConst());
 SHVString8C rpl(repl.GetBufferConst());
 
-	self.Buffer = Buffer;
+	self = SHVStringBuffer8::Encapsulate(Buffer);
 	Buffer = NULL;
 
 	self.Replace(srch,rpl);
