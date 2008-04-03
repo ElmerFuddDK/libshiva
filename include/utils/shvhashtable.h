@@ -8,7 +8,7 @@
 // forward declares
 template<class K, class D, class CopyK = const K, class CopyD = const D>
 class SHVHashTableIterator;
-template<class D, class CopyD = const D&>
+template<class D, class CopyD = const D>
 class SHVHashTableStringIterator;
 
 
