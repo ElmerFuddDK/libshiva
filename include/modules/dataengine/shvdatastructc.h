@@ -19,7 +19,6 @@ public:
 	virtual int GetDataLength() const = 0;
 	virtual SHVBool GetAllowNull() const = 0;
 	virtual SHVBool GetAutoInc() const = 0;
-	virtual void ClearOwnership() = 0;
 
 
 protected:

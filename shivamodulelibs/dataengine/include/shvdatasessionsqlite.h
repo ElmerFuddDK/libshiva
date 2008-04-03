@@ -28,6 +28,7 @@ public:
 	virtual bool AliasActive(const SHVString8C& alias);
 	virtual void* GetProvider();
 	virtual SHVDataFactory* GetFactory() const;
+	virtual SHVStringBuffer GetErrorMessage() const;
 
 
 protected:

@@ -3,24 +3,11 @@
 #include "../include/shvdatarowkeyimpl.h"
 #include "../include/shvdatavariantimpl.h"
 
-static int alloccount = 0;
 /*************************************
  * Constructor
  *************************************/
 SHVDataRowKeyImpl::SHVDataRowKeyImpl()
 {
-}
-SHVDataRowKeyImpl::~SHVDataRowKeyImpl()
-{
-	for (size_t i = 0; i < Keys.CalculateCount(); i++)
-	{
-		if (Keys[i]->Value)
-		{
-			delete Keys[i]->Value;
-			Keys[i]->Value = NULL;
-		}
-	}
-	Keys.Clear();
 }
 
 SHVDataRowKeyImpl::SHVDataRowKeyImpl(const SHVDataRowKey* key)
@@ -184,3 +171,20 @@ const SHVDataRowKey& Key = *key;
 	}
 	return retVal;
 }
+
+/*************************************
+ * Destructor
+ *************************************/
+SHVDataRowKeyImpl::~SHVDataRowKeyImpl()
+{
+	for (size_t i = 0; i < Keys.CalculateCount(); i++)
+	{
+		if (Keys[i]->Value)
+		{
+			delete Keys[i]->Value;
+			Keys[i]->Value = NULL;
+		}
+	}
+	Keys.Clear();
+}
+

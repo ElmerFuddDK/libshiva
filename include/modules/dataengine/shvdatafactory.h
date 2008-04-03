@@ -63,6 +63,8 @@ friend class SHVDataEngine;
 	virtual void UnregisterDataSession(SHVDataSession* session) = 0;
 	virtual bool CheckAlias(SHVDataSession* session, const SHVString8C& alias) = 0;
 	virtual void RowChanged(SHVDataRow* row) = 0;
+	virtual bool LockTransaction() = 0;
+	virtual void UnlockTransaction() = 0;
 
 	// inlines
 	inline void ReleaseDataSession(SHVDataSession* session);

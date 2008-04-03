@@ -34,7 +34,7 @@ public:
 	virtual SHVBool NextRow() = 0;
 	virtual SHVDataRowListC* Reverse(const SHVStringC& condition) = 0;
 	virtual SHVBool Reset() = 0;
-
+	
 	virtual const void* GetRowProvider() const = 0;
 	virtual SHVDataSession* GetDataSession() = 0;
 	virtual SHVBool RowListValid() const = 0;

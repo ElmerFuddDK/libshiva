@@ -28,7 +28,6 @@ protected:
 	virtual void Reposition();
 	virtual SHVBool InternalRowChanged(SHVDataRow* row);
 
-
 private:
 	SHVString8 IndexTableName;
 	long TempPos;

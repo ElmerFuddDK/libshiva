@@ -86,6 +86,22 @@ const SHVDataStructC* SHVDataEngineImpl::FindStruct(const SHVString8C& table) co
 }
 
 /*************************************
+ * GetDataSchema
+ *************************************/
+const SHVDataSchema& SHVDataEngineImpl::GetDataSchema() const
+{
+	return Factory->GetDataSchema();
+}
+
+/*************************************
+ * GetDatabase
+ *************************************/
+const SHVStringC& SHVDataEngineImpl::GetDatabase() const
+{
+	return Factory->GetDatabase();
+}
+
+/*************************************
  * CreateSession
  *************************************/
 SHVDataSession* SHVDataEngineImpl::CreateSession()
@@ -130,22 +146,6 @@ SHVDataRowKey* SHVDataEngineImpl::CopyKey(const SHVDataRowKey* key) const
 void SHVDataEngineImpl::BuildKeySQL(const SHVDataRowKey* key, SHVString8& condition, SHVString8& orderby, const SHVString8C& table, bool reverse) const
 {
 	return Factory->BuildKeySQL(key, condition, orderby, table, reverse);
-}
-
-/*************************************
- * GetDataSchema
- *************************************/
-const SHVDataSchema& SHVDataEngineImpl::GetDataSchema() const
-{
-	return Factory->GetDataSchema();
-}
-
-/*************************************
- * GetDatabase
- *************************************/
-const SHVStringC& SHVDataEngineImpl::GetDatabase() const
-{
-	return Factory->GetDatabase();
 }
 
 /*************************************

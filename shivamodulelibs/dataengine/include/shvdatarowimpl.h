@@ -35,6 +35,7 @@ public:
 	virtual void SetTime(size_t colIdx, const SHVTime& time);
 	virtual void SetBool(size_t colIdx, SHVBool val);
 	virtual void SetNull(size_t colIdx);
+	virtual void SetCorr(const SHVDataRowC* row);
 	virtual const SHVDataVariant* OriginalValue(size_t colIdx) const;
 
 	virtual SHVDataRowList* GetRowList();

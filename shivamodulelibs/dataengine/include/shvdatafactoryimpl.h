@@ -9,6 +9,8 @@
 #include "../../../include/threadutils/shvmutex.h"
 #include "../../../include/sqlite/sqlitewrapper.h"
 
+// forward declares
+class SHVTranscationLocker;
 //-=========================================================================================================
 /// SHVDataFactoryImpl class - Implementation of the data factory
 /**
@@ -50,7 +52,6 @@ protected:
 	virtual SHVBool CreateTable(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct, const SHVString8C& tableName);
 	virtual SHVBool CreateIndex(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct, const SHVString8C& tableName, size_t index);
 	virtual bool TableMatch(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct, const SHVString8C& tableName, bool& exists);
-	virtual void SetSQLite(SHVSQLiteWrapper* sqlite);
 	virtual const SHVDataStructC* InternalFindAlias(const SHVString8C& table) const;
 	virtual const SHVDataStructC* InternalFindStruct(const SHVString8C& table) const;
 	virtual SHVBool InternalUnregisterAlias(SHVSQLiteWrapper* sqlite, const SHVString8C& alias);
@@ -60,12 +61,14 @@ protected:
 	virtual void UnregisterDataSession(SHVDataSession* session);
 	virtual bool CheckAlias(SHVDataSession* session, const SHVString8C& alias);
 	virtual void RowChanged(SHVDataRow* row);
+	virtual bool LockTransaction();
+	virtual void UnlockTransaction();
 
 
 private:
 // friends
 friend class SHVDataEngineImpl;
-	
+friend class SHVTransactionLocker;	
 	SHVDataEngine& DataEngine;
 	SHVSQLiteWrapperRef SQLite;
 	SHVString Database;
@@ -75,6 +78,7 @@ friend class SHVDataEngineImpl;
 	SHVList<SHVString8C> PendingUnregisterAlias;
 	SHVEventSubscriberBaseRef DataChangedSubscription;
 	SHVMutex FactoryLock;
+	SHVMutex TransactionLock;
 	SHVBool Ok;
 };
 

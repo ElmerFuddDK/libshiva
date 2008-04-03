@@ -24,9 +24,21 @@ SHVBool SHVDataSessionSQLite::StartEdit()
 {
 SHVStringSQLite rest(NULL);
 SHVBool ok;
-SHVSQLiteStatementRef statement = SQLite->ExecuteUTF8(ok, "BEGIN TRANSACTION", rest);
-Editting = SHVBool::True;
-	return ok.GetError() == SHVSQLiteWrapper::SQLite_DONE;
+SHVSQLiteStatementRef statement;
+	if (LockTransaction())
+	{
+		statement = SQLite->ExecuteUTF8(ok, "BEGIN TRANSACTION", rest);
+		if (ok == SHVSQLiteWrapper::SQLite_DONE)
+		{
+			Editting = SHVBool::True;
+			ok = SHVBool::True;
+		}
+		else
+			UnlockTransaction();
+	}
+	else
+		ok.SetError(SHVSQLiteWrapper::SQLite_LOCKED);
+	return ok;
 }
 
 /*************************************
@@ -37,6 +49,8 @@ SHVBool SHVDataSessionSQLite::Commit()
 SHVStringSQLite rest(NULL);
 SHVBool ok;
 SHVSQLiteStatementRef statement;
+	if (!Editting)
+		return SHVBool(SHVSQLiteWrapper::SQLite_MISUSE);
 	ok = SessionReset();
 	if (ok)		
 		statement = SQLite->ExecuteUTF8(ok, "END TRANSACTION", rest);
@@ -46,6 +60,7 @@ SHVSQLiteStatementRef statement;
 		ok = SHVBool::True;
 		Editting = SHVBool::False;
 	}
+	UnlockTransaction();
 	if (ok && !ChangeSubscriber.IsNull())
 	{
 	SHVDataRowVector* RowVector = new SHVDataRowVector();
@@ -64,9 +79,22 @@ SHVBool SHVDataSessionSQLite::Rollback()
 {
 SHVStringSQLite rest(NULL);
 SHVBool ok;
-SHVSQLiteStatementRef statement = SQLite->ExecuteUTF8(ok, "ROLLBACK TRANSACTION", rest);
-	Editting = SHVBool::False;
-	return ok.GetError() == SHVSQLiteWrapper::SQLite_DONE;
+SHVSQLiteStatementRef statement;
+	if (!Editting)
+	{
+		ok = SHVBool(SHVSQLiteWrapper::SQLite_MISUSE);
+	}
+	else
+	{
+		SessionReset();
+		statement = SQLite->ExecuteUTF8(ok, "ROLLBACK TRANSACTION", rest);
+		SessionReposition();
+		Editting = SHVBool::False;
+		UnlockTransaction();
+		if (ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+			ok = SHVBool::True;
+	}
+	return ok;
 }
 
 /*************************************
@@ -202,33 +230,6 @@ SHVBool SHVDataSessionSQLite::IsEditting() const
 }
 
 /*************************************
- * UpdateRow
- *************************************/
-SHVBool SHVDataSessionSQLite::UpdateRow(SHVDataRow* row)
-{
-SHVBool retVal;
-	switch (row->GetRowState())
-	{
-	case SHVDataRow::RowStateChanging:
-		retVal = DoUpdateRow(row);
-		break;
-	case SHVDataRow::RowStateAdding:
-		retVal = DoInsertRow(row);
-		break;
-	case SHVDataRow::RowStateDeleting:
-		retVal = DoDeleteRow(row);
-		break;
-	default:
-		retVal = SHVBool::False;
-	}
-	if (retVal && !ChangeSubscriber.IsNull())
-	{
-		ChangedRows.Add(row);
-	}
-	return retVal;
-}
-
-/*************************************
  * SubscribeDataChange
  *************************************/
 void SHVDataSessionSQLite::SubscribeDataChange(SHVEventSubscriberBase* sub)
@@ -265,6 +266,15 @@ SHVDataFactory* SHVDataSessionSQLite::GetFactory() const
 }
 
 /*************************************
+ * GetErrorMessage
+ *************************************/
+SHVStringBuffer SHVDataSessionSQLite::GetErrorMessage() const
+{
+	return SQLite->GetErrorMsg();
+}
+
+
+/*************************************
  * Destructor
  *************************************/
 SHVDataSessionSQLite::~SHVDataSessionSQLite()
@@ -272,74 +282,6 @@ SHVDataSessionSQLite::~SHVDataSessionSQLite()
 	if (Editting)
 		Rollback();
 	UnregisterDataSession();
-}
-
-/*************************************
- * ClearOwnership
- *************************************/
-void SHVDataSessionSQLite::ClearOwnership()
-{
-	Factory = NULL;
-}
-
-/*************************************
- * IsValid
- *************************************/
-SHVBool SHVDataSessionSQLite::IsValid() const
-{
-	return Valid;
-}
-
-/*************************************
- * SchemaChanged
- *************************************/
-bool SHVDataSessionSQLite::SchemaChanged()
-{
-	if (!HasPendingDataLists() && Factory)
-	{
-	SHVBool valid;
-		SQLite = Factory->GetDataEngine().CreateConnection(valid, Factory->GetDatabase());
-		Valid = valid;
-	}
-	else
-		Valid = false;
-	return Valid;
-}
-
-/*************************************
- * CheckSchema
- *************************************/
-void SHVDataSessionSQLite::CheckSchema()
-{
-	if (!Valid)
-		SchemaChanged();
-}
-
-/*************************************
- * EmptySlot
- *************************************/
-bool SHVDataSessionSQLite::EmptySlot(const SHVDataRowVector& vector, size_t& idx)
-{
-bool found = false;
-	for (idx = vector.CalculateCount(); idx && !found; idx--)
-	{
-		found = vector[idx] == NULL;	
-	}
-	return found;
-}
-
-/*************************************
- * Find
- *************************************/
-SHVDataRow* SHVDataSessionSQLite::Find(const SHVDataRowVector& vector, const SHVDataRowKey* key, size_t& idx) const
-{
-SHVDataRow* found = NULL;
-	for (idx = vector.CalculateCount(); idx && !found; idx--)
-	{		
-		if (vector[idx] && vector[idx]->MatchKey(key))
-			found = (SHVDataRow*) vector[idx];
-	}
-	return found;
 }
 
 /*************************************
@@ -360,7 +302,12 @@ const SHVDataStructC& st = *row->GetStruct();
 			cols += ", ";
 		if (st[c]->GetDataType() == SHVDataVariant::TypeString ||
 			st[c]->GetDataType() == SHVDataVariant::TypeTime)
-			col.Format("%s = '%s'", st[c]->GetColumnName().GetSafeBuffer(), row->AsString(c).ToStrUTF8().GetSafeBuffer());
+		{
+		SHVStringUTF8 value = row->AsString(c).ToStrUTF8();
+			if (!value.IsNull())
+				value.Replace("'", "''");
+			col.Format("%s = '%s'", st[c]->GetColumnName().GetSafeBuffer(), value.GetSafeBuffer());
+		}
 		else
 			col.Format("%s = %s", st[c]->GetColumnName().GetSafeBuffer(), row->AsString(c).ToStrUTF8().GetSafeBuffer());
 		cols += col;
@@ -401,7 +348,10 @@ const SHVDataStructC& st = *row->GetStruct();
 		if (st[c]->GetDataType() == SHVDataVariant::TypeString ||
 			st[c]->GetDataType() == SHVDataVariant::TypeTime)
 		{
-			val.Format("'%s'", row->AsString(c).ToStrUTF8().GetSafeBuffer());
+		SHVStringUTF8 value = row->AsString(c).ToStrUTF8();
+			if (!value.IsNull())
+				value.Replace("'", "''");
+			val.Format("'%s'", value.GetSafeBuffer());
 			vals += val;
 		}
 		else
@@ -416,7 +366,10 @@ const SHVDataStructC& st = *row->GetStruct();
 	if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 	{
 		retVal = SHVBool::True;
-
+	}
+	else
+	{
+		SHVTRACE(_T("Error in %s: %s\n"), sql.ToStrT().GetSafeBuffer(), GetErrorMessage().GetSafeBuffer());
 	}
 	return retVal;
 }
@@ -460,13 +413,113 @@ SHVSQLiteStatementRef statement;
 				retVal += " and ";
 			if (col.GetDataType() == SHVDataVariant::TypeString ||
 				col.GetDataType() == SHVDataVariant::TypeTime)
-				keycond.Format("%s = '%s'", Key[k].Key.GetSafeBuffer(), row->OriginalValue(Key[k].Key)->AsString().ToStrUTF8().GetSafeBuffer());
+			{
+			SHVStringUTF8 value = row->OriginalValue(Key[k].Key)->AsString().ToStrUTF8();
+				if (!value.IsNull())
+					value.Replace("'", "''");
+				keycond.Format("%s = '%s'", Key[k].Key.GetSafeBuffer(), value.GetSafeBuffer());
+			}
 			else
 				keycond.Format("%s = %s", Key[k].Key.GetSafeBuffer(), row->OriginalValue(Key[k].Key)->AsString().ToStrUTF8().GetSafeBuffer());
 			retVal += keycond;
 		}
 	}
 	return keycond;
+}
+
+/*************************************
+ * CheckSchema
+ *************************************/
+void SHVDataSessionSQLite::CheckSchema()
+{
+	if (!Valid)
+		SchemaChanged();
+}
+
+/*************************************
+ * EmptySlot
+ *************************************/
+bool SHVDataSessionSQLite::EmptySlot(const SHVDataRowVector& vector, size_t& idx)
+{
+bool found = false;
+	for (idx = vector.CalculateCount(); idx && !found; idx--)
+	{
+		found = vector[idx] == NULL;	
+	}
+	return found;
+}
+
+/*************************************
+ * Find
+ *************************************/
+SHVDataRow* SHVDataSessionSQLite::Find(const SHVDataRowVector& vector, const SHVDataRowKey* key, size_t& idx) const
+{
+SHVDataRow* found = NULL;
+	for (idx = vector.CalculateCount(); idx && !found; idx--)
+	{		
+		if (vector[idx] && vector[idx]->MatchKey(key))
+			found = (SHVDataRow*) vector[idx];
+	}
+	return found;
+}
+
+/*************************************
+ * ClearOwnership
+ *************************************/
+void SHVDataSessionSQLite::ClearOwnership()
+{
+	Factory = NULL;
+}
+
+/*************************************
+ * UpdateRow
+ *************************************/
+SHVBool SHVDataSessionSQLite::UpdateRow(SHVDataRow* row)
+{
+SHVBool retVal;
+	switch (row->GetRowState())
+	{
+	case SHVDataRow::RowStateChanging:
+		retVal = DoUpdateRow(row);
+		break;
+	case SHVDataRow::RowStateAdding:
+		retVal = DoInsertRow(row);
+		break;
+	case SHVDataRow::RowStateDeleting:
+		retVal = DoDeleteRow(row);
+		break;
+	default:
+		retVal = SHVBool::False;
+	}
+	if (retVal && !ChangeSubscriber.IsNull())
+	{
+		ChangedRows.Add(row);
+	}
+	return retVal;
+}
+
+/*************************************
+ * IsValid
+ *************************************/
+SHVBool SHVDataSessionSQLite::IsValid() const
+{
+	return Valid;
+}
+
+/*************************************
+ * SchemaChanged
+ *************************************/
+bool SHVDataSessionSQLite::SchemaChanged()
+{
+	if (!HasPendingDataLists() && Factory)
+	{
+	SHVBool valid;
+		SQLite = Factory->GetDataEngine().CreateConnection(valid, Factory->GetDatabase());
+		Valid = valid;
+	}
+	else
+		Valid = false;
+	return Valid;
 }
 
 /*************************************

@@ -39,6 +39,7 @@ public:
 	virtual void SetBool(size_t colIdx, SHVBool val) = 0;
 	virtual void SetNull(size_t colIdx) = 0;
 	virtual const SHVDataVariant* OriginalValue(size_t colIdx) const = 0;
+	virtual void SetCorr(const SHVDataRowC* row) = 0;
 
 	virtual SHVDataRowList* GetRowList() = 0;
 

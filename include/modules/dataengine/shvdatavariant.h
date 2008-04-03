@@ -4,6 +4,7 @@
 #include "../../utils/shvrefobject.h"
 #include "../../utils/shvstring.h"
 #include "../../utils/shvtime.h"
+#include "../../utils/shvptrcontainer.h"
 #include "../../shvtypes.h"
 
 class SHVDataVariant
@@ -52,6 +53,7 @@ public:
 	inline SHVDataVariant& operator=(const SHVTime& val);
 	inline SHVDataVariant& operator=(SHVBool val);
 };
+typedef SHVPtrContainer<SHVDataVariant> SHVDataVariantPtr;
 
 // =================================== implementation - SHVDataVariant =================================== //
 

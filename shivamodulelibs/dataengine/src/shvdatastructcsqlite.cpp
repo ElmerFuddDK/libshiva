@@ -67,10 +67,6 @@ SHVBool ok;
 	}
 }
 
-SHVDataStructCSQLite::~SHVDataStructCSQLite()
-{
-}
-
 /*************************************
  * GetTableName
  *************************************/
@@ -87,6 +83,9 @@ const SHVDataStructColumnC* SHVDataStructCSQLite::operator[](size_t idx) const
 	return (*Struct.AsConst())[idx];
 }
 
+/*************************************
+ * FindColumnIndex
+ *************************************/
 const SHVBool SHVDataStructCSQLite::FindColumnIndex(size_t& index, const SHVString8C& colName) const
 {
 	return Struct->FindColumnIndex(index, colName);
@@ -108,21 +107,40 @@ const SHVDataRowKey* SHVDataStructCSQLite::GetPrimaryIndex() const
 	return Struct->GetPrimaryIndex();
 }
 
+/*************************************
+ * GetIndex
+ *************************************/
 const SHVDataRowKey* SHVDataStructCSQLite::GetIndex(size_t IdxID) const
 {
 	return Struct->GetIndex(IdxID);
 }
 
+/*************************************
+ * IndexCount
+ *************************************/
 const size_t SHVDataStructCSQLite::IndexCount() const
 {
 	return Struct->IndexCount();
 }
 
+/*************************************
+ * IsEqual
+ *************************************/
 SHVBool SHVDataStructCSQLite::IsEqual(const SHVDataStructC* dataStruct) const
 {
 	return Struct->IsEqual(dataStruct);
 }
 
+/*************************************
+ * Destructor
+ *************************************/
+SHVDataStructCSQLite::~SHVDataStructCSQLite()
+{
+}
+
+/*************************************
+ * ResolveIndexes
+ *************************************/
 void SHVDataStructCSQLite::ResolveIndexes(SHVSQLiteWrapper* psqlite, const SHVStringUTF8C& tableName, const SHVStringUTF8C& condition)
 {
 SHVStringUTF8 query;

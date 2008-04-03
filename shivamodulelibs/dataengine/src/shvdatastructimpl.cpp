@@ -3,6 +3,7 @@
 #include "../include/shvdatastructimpl.h"
 #include "../include/shvdatarowkeyimpl.h"
 
+// =============================== implementation SHVDataStructColumnImpl ====================================
 /*************************************
  * Constructor
  *************************************/
@@ -103,6 +104,7 @@ void SHVDataStructColumnImpl::SetAutoInc(SHVBool flag)
 	AutoInc = flag;
 }
 
+// ================================== implementation SHVDataStructImpl =======================================
 /*************************************
  * Constructor
  *************************************/
@@ -123,10 +125,6 @@ SHVDataStructImpl::SHVDataStructImpl(const SHVDataStructC* dataStruct)
 
 SHVDataStructImpl::~SHVDataStructImpl()
 {
-	for (size_t i = 0; i < GetColumnCount(); i++)
-	{
-		(*this)[i]->ClearOwnership();
-	}
 }
 
 /*************************************

@@ -39,6 +39,7 @@ public:
 	virtual bool AliasActive(const SHVString8C& alias) = 0;
 	virtual void* GetProvider() = 0;
 	virtual SHVDataFactory* GetFactory() const = 0;
+	virtual SHVStringBuffer GetErrorMessage() const = 0;
 
 	// inlines
 	inline SHVBool SessionValid() const;
@@ -66,6 +67,8 @@ friend class SHVDataFactory;
 	inline SHVBool DataListTempReset(SHVDataRowListC* dataList);
 	inline void DataListReposition(SHVDataRowListC* dataList);
 	inline bool CheckAlias(const SHVString8C& alias);
+	inline bool LockTransaction();
+	inline void UnlockTransaction();
 };
 typedef SHVRefObjectContainer<SHVDataSession> SHVDataSessionRef;
 
@@ -129,4 +132,24 @@ bool SHVDataSession::CheckAlias(const SHVString8C& alias)
 	else
 		return false;
 }
+
+/*************************************
+ * LockTransaction
+ *************************************/
+bool SHVDataSession::LockTransaction()
+{
+	if (GetFactory())
+		return GetFactory()->LockTransaction();
+	else
+		return false;
+}
+/*************************************
+ * UnlockTransaction
+ *************************************/
+void SHVDataSession::UnlockTransaction()
+{
+	if (GetFactory())
+		GetFactory()->UnlockTransaction();
+}
+
 #endif

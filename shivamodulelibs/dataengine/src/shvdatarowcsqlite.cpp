@@ -8,18 +8,6 @@
 
 
 /*************************************
- * Constructor
- *************************************/
-SHVDataRowCSQLite::SHVDataRowCSQLite(SHVDataRowListC* select)
-{
-	Select = select;
-}
-
-SHVDataRowCSQLite::~SHVDataRowCSQLite()
-{
-}
-
-/*************************************
  * AsString
  *************************************/
 SHVStringBuffer SHVDataRowCSQLite::AsString(size_t colIdx) const
@@ -258,6 +246,14 @@ const SHVString8C SHVDataRowCSQLite::GetAlias() const
 		return "";	
 }
 
+/*************************************
+ * GetRowState
+ *************************************/
+int SHVDataRowCSQLite::GetRowState() const
+{
+	return (RowValid() ? SHVDataRow::RowStateUnchanged : SHVDataRow::RowStateInvalid);
+}
+
 
 /*************************************
  * GetRowListC
@@ -268,10 +264,13 @@ const SHVDataRowListC* SHVDataRowCSQLite::GetRowListC()
 }
 
 /*************************************
- * GetRowState
+ * Constructor
  *************************************/
-int SHVDataRowCSQLite::GetRowState() const
+SHVDataRowCSQLite::SHVDataRowCSQLite(SHVDataRowListC* select)
 {
-	return (RowValid() ? SHVDataRow::RowStateUnchanged : SHVDataRow::RowStateInvalid);
+	Select = select;
 }
 
+SHVDataRowCSQLite::~SHVDataRowCSQLite()
+{
+}

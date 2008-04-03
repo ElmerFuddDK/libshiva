@@ -11,138 +11,10 @@
  *************************************/
 SHVDataRowListSQLite::SHVDataRowListSQLite(SHVDataSession* dataSession, SHVDataRowListC *rowList): NonAcceptedEnabled(false), EventsEnabled(false)
 {
-///\todo Missing thread safety
 	RowList = rowList;
 	DataSession = dataSession;
 	PendingPosAdded = NULL;
 	InsertedRows = 0;
-}
-
-SHVDataRowListSQLite::~SHVDataRowListSQLite()
-{
-	UnregisterDataList();
-	DataSession = NULL;
-}
-
-/*************************************
- * GetCurrentRow
- *************************************/
-const SHVDataRowC* SHVDataRowListSQLite::GetCurrentRow() const
-{
-///\todo Missing thread safety
-	if (PendingPosAdded)
-		return PendingRows.GetAt(*((SHVListPos *)(&PendingPosAdded)));
-	else
-		return RowList->GetCurrentRow();
-}
-
-/*************************************
- * IsOk
- *************************************/
-SHVBool SHVDataRowListSQLite::IsOk() const
-{
-///\todo Missing thread safety
-	return RowListValid() && RowList->IsOk();
-}
-
-/*************************************
- * GetStruct
- *************************************/
-const SHVDataStructC* SHVDataRowListSQLite::GetStruct() const
-{
-///\todo Missing thread safety
-	return RowList->GetStruct();
-}
-/*************************************
- * GetAlias
- *************************************/
-const SHVString8C SHVDataRowListSQLite::GetAlias() const
-{
-	return RowList->GetAlias();
-}
-
-/*************************************
- * GetRowCount
- *************************************/
-int SHVDataRowListSQLite::GetRowCount() const
-{
-///\todo Missing thread safety
-	return RowList->GetRowCount() + InsertedRows;
-}
-
-/*************************************
- * Find
- *************************************/
-SHVDataRowC* SHVDataRowListSQLite::Find(const SHVDataRowKey* key)
-{
-///\todo Missing thread safety
-	return RowList->Find(key);
-}
-
-/*************************************
- * NextRow
- *************************************/
-SHVBool SHVDataRowListSQLite::NextRow()
-{
-SHVBool retVal = SHVBool::True;
-///\todo Missing thread safety
-	if (PendingPosAdded)
-	{
-		retVal = NextPendingAdded();
-	}
-	else
-	{
-		retVal = RowList->NextRow();
-		if (!retVal)
-		{
-			retVal = NextPendingAdded();
-		}
-	}
-	return retVal;
-}
-
-/*************************************
- * Reverse
- *************************************/
-SHVDataRowListC* SHVDataRowListSQLite::Reverse(const SHVStringC& condition)
-{
-	return RowList->Reverse(condition);
-}
-
-/*************************************
- * Reset
- *************************************/
-SHVBool SHVDataRowListSQLite::Reset()
-{
-///\todo Missing thread safety
-	PendingPosAdded = NULL;
-	return RowList->Reset();
-}
-
-/*************************************
- * GetRowProvider
- *************************************/
-const void* SHVDataRowListSQLite::GetRowProvider() const
-{
-	return RowList->GetRowProvider();
-}
-
-/*************************************
- * GetDataSession
- *************************************/
-SHVDataSession* SHVDataRowListSQLite::GetDataSession()
-{
-///\todo Missing thread safety
-	return DataSession;
-}
-
-/*************************************
- * RowListValid
- *************************************/
-SHVBool SHVDataRowListSQLite::RowListValid() const
-{
-///\todo Missing thread safety
-	return !DataSession.IsNull() && DataSession->SessionValid() && RowList->RowListValid();
 }
 
 /*************************************
@@ -150,7 +22,6 @@ SHVBool SHVDataRowListSQLite::RowListValid() const
  *************************************/
 SHVDataRow* SHVDataRowListSQLite::EditCurrentRow()
 {	
-///\todo Missing thread safety
 SHVDataRow* retVal = NULL;
 	SHVASSERT(IsOk());
 	SHVASSERT(GetCurrentRow());
@@ -180,15 +51,16 @@ SHVDataRow* retVal = NULL;
  *************************************/
 SHVDataRow* SHVDataRowListSQLite::AddRow()
 {
-///\todo Missing thread safety
 SHVDataRow* retVal = NULL;
 	SHVASSERT(IsOk());
 	if (IsOk())
 	{
 		retVal = new SHVDataRowImpl(this);
-		InsertedRows++;
 		if (NonAcceptedEnabled)
+		{
+			InsertedRows++;
 			PendingRows.AddTail(retVal);
+		}
 	}
 	return retVal;
 }
@@ -226,11 +98,160 @@ bool SHVDataRowListSQLite::GetNonAcceptedEnabled() const
 }
 
 /*************************************
+ * GetCurrentRow
+ *************************************/
+const SHVDataRowC* SHVDataRowListSQLite::GetCurrentRow() const
+{
+	if (PendingPosAdded)
+		return PendingRows.GetAt(*((SHVListPos *)(&PendingPosAdded)));
+	else
+		return RowList->GetCurrentRow();
+}
+
+/*************************************
+ * IsOk
+ *************************************/
+SHVBool SHVDataRowListSQLite::IsOk() const
+{
+	return RowListValid() && RowList->IsOk();
+}
+
+/*************************************
+ * GetStruct
+ *************************************/
+const SHVDataStructC* SHVDataRowListSQLite::GetStruct() const
+{
+	return RowList->GetStruct();
+}
+
+/*************************************
+ * GetAlias
+ *************************************/
+const SHVString8C SHVDataRowListSQLite::GetAlias() const
+{
+	return RowList->GetAlias();
+}
+
+/*************************************
+ * GetRowCount
+ *************************************/
+int SHVDataRowListSQLite::GetRowCount() const
+{
+	return RowList->GetRowCount() + InsertedRows;
+}
+
+/*************************************
+ * Find
+ *************************************/
+SHVDataRowC* SHVDataRowListSQLite::Find(const SHVDataRowKey* key)
+{
+	return RowList->Find(key);
+}
+
+/*************************************
+ * NextRow
+ *************************************/
+SHVBool SHVDataRowListSQLite::NextRow()
+{
+SHVBool retVal = SHVBool::True;
+	if (PendingPosAdded)
+	{
+		retVal = NextPendingAdded();
+	}
+	else
+	{
+		retVal = RowList->NextRow();
+		if (!retVal)
+		{
+			retVal = NextPendingAdded();
+		}
+	}
+	return retVal;
+}
+
+/*************************************
+ * Reverse
+ *************************************/
+SHVDataRowListC* SHVDataRowListSQLite::Reverse(const SHVStringC& condition)
+{
+	return RowList->Reverse(condition);
+}
+
+/*************************************
+ * Reset
+ *************************************/
+SHVBool SHVDataRowListSQLite::Reset()
+{
+	PendingPosAdded = NULL;
+	return RowList->Reset();
+}
+
+/*************************************
+ * GetRowProvider
+ *************************************/
+const void* SHVDataRowListSQLite::GetRowProvider() const
+{
+	return RowList->GetRowProvider();
+}
+
+/*************************************
+ * GetDataSession
+ *************************************/
+SHVDataSession* SHVDataRowListSQLite::GetDataSession()
+{
+	return DataSession;
+}
+
+/*************************************
+ * RowListValid
+ *************************************/
+SHVBool SHVDataRowListSQLite::RowListValid() const
+{
+	return !DataSession.IsNull() && DataSession->SessionValid() && RowList->RowListValid();
+}
+
+/*************************************
+ * Destructor
+ *************************************/
+SHVDataRowListSQLite::~SHVDataRowListSQLite()
+{
+	UnregisterDataList();
+	DataSession = NULL;
+}
+
+/*************************************
+ * FindPending
+ *************************************/
+SHVDataRow* SHVDataRowListSQLite::FindPending(const SHVDataRowKey* key)
+{
+SHVListIterator<SHVDataRowRef, SHVDataRow*> iter(PendingRows);
+SHVDataRow* found = NULL;
+	while (iter.MoveNext() && !found)
+	{
+		if (iter.Get()->MatchKey(key))
+			found = iter.Get();
+	}
+	return found;
+}
+
+/*************************************
+ * NextPendingAdded
+ *************************************/
+bool SHVDataRowListSQLite::NextPendingAdded()
+{
+bool retVal = PendingRows.MoveNext(PendingPosAdded);
+	while(retVal && PendingRows.GetAt(PendingPosAdded)->GetRowState() != SHVDataRow::RowStateAdding)
+	{
+		retVal = PendingRows.MoveNext(PendingPosAdded);
+	}
+	return retVal;
+}
+
+/*************************************
  * AcceptChanges
  *************************************/
 SHVBool SHVDataRowListSQLite::AcceptChanges(SHVDataRow* row)
 {
-///\todo Missing thread safety
 SHVBool retVal; 
 SHVDataRowRef rrow = row;
 SHVListPos pos =  PendingRows.Find(rrow);
@@ -330,32 +351,4 @@ void SHVDataRowListSQLite::Reposition()
 SHVBool SHVDataRowListSQLite::InternalRowChanged(SHVDataRow* row)
 {
 	return SHVBool::True;
-}
-
-/*************************************
- * FindPending
- *************************************/
-SHVDataRow* SHVDataRowListSQLite::FindPending(const SHVDataRowKey* key)
-{
-SHVListIterator<SHVDataRowRef, SHVDataRow*> iter(PendingRows);
-SHVDataRow* found = NULL;
-	while (iter.MoveNext() && !found)
-	{
-		if (iter.Get()->MatchKey(key))
-			found = iter.Get();
-	}
-	return found;
-}
-
-/*************************************
- * NextPendingAdded
- *************************************/
-bool SHVDataRowListSQLite::NextPendingAdded()
-{
-bool retVal = PendingRows.MoveNext(PendingPosAdded);
-	while(retVal && PendingRows.GetAt(PendingPosAdded)->GetRowState() != SHVDataRow::RowStateAdding)
-	{
-		retVal = PendingRows.MoveNext(PendingPosAdded);
-	}
-	return retVal;
 }

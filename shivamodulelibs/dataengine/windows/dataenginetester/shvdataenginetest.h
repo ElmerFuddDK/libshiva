@@ -10,6 +10,7 @@ class SHVDataEngineTest: public SHVTestModule
 {
 public:
 	inline SHVDataEngineTest(SHVModuleList& modules): SHVTestModule(modules, "DataEngineTest"), trace(false) {}
+	void ThreadDone();
 protected:
 	virtual void PerformTest(SHVTestResult* result);
 	virtual SHVBool Register();
@@ -24,11 +25,11 @@ private:
 	SHVBool TestSpeed2(SHVTestResult* result);
 	SHVBool TestConcurrency(SHVTestResult* result);
 	SHVBool AddPerson(SHVDataRowList* list, int pk_person, const SHVStringC& firstName, const SHVStringC& middleName, const SHVStringC& lastName);
-	void RunThread();
 	SHVDataEngine* DataEngine;
 	SHVTestResult* Result;
 	bool trace;
-	SHVThread<SHVDataEngineTest> Worker;
+	SHVMutexBase WaitLock;
+	int WaitRefCount;
 };
 
 #endif

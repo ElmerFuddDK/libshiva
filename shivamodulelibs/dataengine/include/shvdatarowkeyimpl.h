@@ -12,8 +12,6 @@
  */
 class SHVDataRowKeyImpl: public SHVDataRowKey
 {
-protected:
-	~SHVDataRowKeyImpl();
 public:
 	SHVDataRowKeyImpl();
 	SHVDataRowKeyImpl(const SHVDataRowKey* key);
@@ -36,6 +34,10 @@ public:
 
 	virtual SHVBool KeyEquals(const SHVDataRowKey* key) const;
 	virtual SHVBool KeyDefEquals(const SHVDataRowKey* key) const;
+
+
+protected:
+	~SHVDataRowKeyImpl();
 
 
 private:

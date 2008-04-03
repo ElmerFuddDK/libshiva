@@ -56,6 +56,14 @@ SHVBool retVal = IsOk();
 }
 
 /*************************************
+ * GetRowCount
+ *************************************/
+int SHVDataRowListCIndexed::GetRowCount() const
+{
+	return RowCount;
+}
+
+/*************************************
  * Destructor
  *************************************/
 SHVDataRowListCIndexed::~SHVDataRowListCIndexed()
@@ -71,16 +79,9 @@ SHVSQLiteStatementRef statement;
 }
 
 /*************************************
- * GetRowCount
- *************************************/
-int SHVDataRowListCIndexed::GetRowCount() const
-{
-	return RowCount;
-}
-
-/*************************************
  * BuildQuery
  *************************************/
+
 SHVStringBufferUTF8 SHVDataRowListCIndexed::BuildQuery(const SHVStringC& condition, bool reverse)
 {
 SHVStringUTF8 queryUTF8;
@@ -100,7 +101,7 @@ SHVSQLiteStatementRef statement;
 long rc;
 
 // Let the magic begin
-	IndexTableName.Format("%s%d", Alias.GetSafeBuffer(), GetDataSession()->GetFactory()->GetDataEngine().GetModuleList().CreateTag());
+	IndexTableName.Format("%s_%d", Alias.GetSafeBuffer(), GetDataSession()->GetFactory()->GetDataEngine().GetModuleList().CreateTag());
 	for (size_t i = 0; i < Key.Count(); i++)
 	{
 	size_t colIdx;
@@ -192,6 +193,8 @@ long rc;
  *************************************/
 SHVBool SHVDataRowListCIndexed::TempReset()
 {
+	if (!IsOk())
+		return SHVBool::False;
 	if (GetCurrentRow())
 	{
 	long p;
