@@ -63,6 +63,11 @@ public:
 	virtual void Remove(const SHVStringC& name) = 0;
 
 
+	// Store and load string config values
+	virtual SHVBool Load(const SHVStringC fileName) = 0;
+	virtual SHVBool Save(const SHVStringC newFileName = NULL) = 0;
+
+
 	// enumerator config values
 	// ------------------------
 

@@ -43,6 +43,11 @@ public:
 	virtual void Remove(const SHVStringC& name);
 
 
+	// Store and load string config values
+	virtual SHVBool Load(const SHVStringC fileName);
+	virtual SHVBool Save(const SHVStringC newFileName = NULL);
+
+
 	// enumerator config values
 	// ------------------------
 
@@ -65,6 +70,8 @@ public:
 
 private:
 	///\cond INTERNAL
+	SHVString FileName;
+
 	SHVHashTableString<SHVConfigNodeImplPtr> StringEntries;
 	SHVHashTable<SHVInt,SHVConfigNodeImplPtr> EnumEntries;
 	///\endcond
