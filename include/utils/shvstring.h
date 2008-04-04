@@ -46,6 +46,8 @@ public:
 	// case functions
 	void MakeUpper();
 	void MakeLower();
+	inline SHVStringBuffer8 ToUpper();
+	inline SHVStringBuffer8 ToLower();
 
 
 	// Buffer modification
@@ -90,6 +92,9 @@ friend class SHVStringUTF8;
 SHVChar* SHVString8::GetBuffer() { return Buffer; }
 SHVChar* SHVString8::SetBufferSize(size_t len) { AllocBuffer(len); return Buffer; }
 size_t   SHVString8::GetBufferLen() { return BufferLen; }  ///< returns length of buffer in characters, including null termination
+
+SHVStringBuffer8 SHVString8::ToUpper() {SHVString8 str(*this); str.MakeUpper(); return str.ReleaseBuffer(); }
+SHVStringBuffer8 SHVString8::ToLower() {SHVString8 str(*this); str.MakeLower(); return str.ReleaseBuffer(); }
 
 SHVString8& SHVString8::operator=(const SHVString8& str)   { return *this = (*(const SHVString8C*)&str);  }
 SHVString8& SHVString8::operator+=(const SHVString8& str)  { return *this += (*(const SHVString8C*)&str); }
