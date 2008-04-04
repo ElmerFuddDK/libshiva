@@ -106,8 +106,6 @@ bool retVal = (IsOpen() && (GetFlags()&FlagRead));
 
 		buffer = (SHVChar*)tmpBuffer;
 
-		buffer = tmpBuffer;
-
 		if (buffer)
 		{
 		size_t len = chars/sizeof(SHVChar);
@@ -125,7 +123,10 @@ bool retVal = (IsOpen() && (GetFlags()&FlagRead));
 			str = SHVStringBuffer8::Encapsulate(buffer);
 		}
 		else
+		{
 			str.SetToNull();
+			retVal = false;
+		}
 	}
 
 	return retVal;
@@ -222,7 +223,10 @@ bool retVal = (IsOpen() && (GetFlags()&FlagRead));
 			str = SHVStringBuffer16::Encapsulate(buffer);
 		}
 		else
+		{
 			str.SetToNull();
+			retVal = false;
+		}
 	}
 
 	return retVal;
