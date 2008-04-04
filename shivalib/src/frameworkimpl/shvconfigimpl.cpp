@@ -33,6 +33,8 @@
 
 #include "../../../include/frameworkimpl/shvconfigimpl.h"
 #include "../../../include/utils/shvstring.h"
+#include "../../../include/utils/shvstringutf8.h"
+#include "../../../include/utils/shvfile.h"
 
 
 
@@ -99,6 +101,8 @@ SHVConfigNode& SHVConfigImpl::Set(const SHVStringC& name, const SHVStringC& val)
 {
 SHVConfigNodeImplString* retVal = new SHVConfigNodeImplString(val);
 
+	SHVASSERT( SHVString(name).ToLower() == name );
+
 	StringEntries[name] = retVal;
 	return *retVal;
 }
@@ -109,6 +113,8 @@ SHVConfigNodeImplString* retVal = new SHVConfigNodeImplString(val);
 SHVConfigNode& SHVConfigImpl::Set(const SHVStringC& name, SHVInt val)
 {
 SHVConfigNodeImplInt* retVal = new SHVConfigNodeImplInt(val);
+
+	SHVASSERT( SHVString(name).ToLower() == name );
 
 	StringEntries[name] = retVal;
 	return *retVal;
@@ -121,6 +127,8 @@ SHVConfigNode& SHVConfigImpl::SetPtr(const SHVStringC& name, void* val)
 {
 SHVConfigNodeImplPointer* retVal = new SHVConfigNodeImplPointer(val);
 
+	SHVASSERT( SHVString(name).ToLower() == name );
+
 	StringEntries[name] = retVal;
 	return *retVal;
 }
@@ -132,6 +140,8 @@ SHVConfigNode& SHVConfigImpl::SetRef(const SHVStringC& name, SHVRefObject* val)
 {
 SHVConfigNodeImplRef* retVal = new SHVConfigNodeImplRef(val);
 
+	SHVASSERT( SHVString(name).ToLower() == name );
+
 	StringEntries[name] = retVal;
 	return *retVal;
 }
@@ -142,6 +152,122 @@ SHVConfigNodeImplRef* retVal = new SHVConfigNodeImplRef(val);
 void SHVConfigImpl::Remove(const SHVStringC& name)
 {
 	StringEntries.Remove(name);
+}
+
+/*************************************
+ * Load
+ *************************************/
+SHVBool SHVConfigImpl::Load(const SHVStringC fileName)
+{
+SHVBool retVal(SHVBool::True);
+SHVFile file;
+
+	Clear();
+
+	if (fileName.IsNull())
+		retVal = !FileName.IsNull();
+	else
+		FileName = fileName;
+
+	if (retVal && SHVFileBase::Exist(FileName) && file.Open(FileName,SHVFileBase::FlagOpen|SHVFileBase::FlagRead))
+	{
+	SHVString8 line;
+	SHVString8 name;
+	SHVString8 strValue;
+	SHVInt intValue;
+	int eqPos;
+	SHVChar* endch;
+	const SHVChar utf8Header[] = { (const char)0xEF, (const char)0xBB, (const char)0xBF, (const char)0 };
+	SHVChar header[4];
+
+		file.Read(header,3);
+		header[3] = 0;
+
+		if (SHVString8C(utf8Header) != SHVString8C(header))
+			file.SetPosition(0);
+
+		while (file.ReadLine8(line))
+		{
+			eqPos = line.Find("=");
+
+			if (eqPos > 0)
+			{
+				// obtain name
+				name = line.Left((size_t)eqPos);
+				name.Trim();
+				name.MakeLower();
+
+				if (name == "")
+				{
+					; // do nothing
+				}
+				else if (name.Left(1) != "#" && name.Left(2) != "//") // not a comment
+				{
+					// move past '='
+					eqPos++;
+					strValue = line.Mid((size_t)eqPos);
+					strValue.Trim();
+
+					intValue = strValue.ToLong(&endch);
+
+					if (strValue == "null")
+					{
+						SHVTRACE(_T("Setting %s to null\n"), name.ToStrT().GetSafeBuffer());
+						Set(name.ToStrT(),SHVInt());
+					}
+					else if (*endch == 0)
+					{
+						SHVTRACE(_T("Setting %s to %d\n"), name.ToStrT().GetSafeBuffer(), (int)intValue);
+						Set(name.ToStrT(),intValue);
+					}
+					else if (strValue.Left(1) == "\"" && strValue.Right(1) == "\"")
+					{
+						SHVTRACE(_T("Setting %s to '%s'\n"), name.ToStrT().GetSafeBuffer(), SHVStringUTF8C(strValue.Mid(1,strValue.GetLength()-2).GetSafeBuffer()).ToStrT().GetSafeBuffer());
+						Set(name.ToStrT(),SHVStringUTF8C(strValue.Mid(1,strValue.GetLength()-2).GetSafeBuffer()).ToStrT());
+					}
+					else
+					{
+						SHVTRACE(_T("Setting %s to '%s'\n"), name.ToStrT().GetSafeBuffer(), SHVStringUTF8C(strValue.GetSafeBuffer()).ToStrT().GetSafeBuffer());
+						Set(name.ToStrT(),SHVStringUTF8C(strValue.GetSafeBuffer()).ToStrT());
+					}
+				}
+			}
+		}
+	}
+
+	return retVal;
+}
+
+/*************************************
+ * Save
+ *************************************/
+SHVBool SHVConfigImpl::Save(const SHVStringC newFileName)
+{
+SHVBool retVal(SHVBool::True);
+SHVFile file;
+
+	if (newFileName.IsNull())
+		retVal = !FileName.IsNull();
+	else
+		FileName = newFileName;
+
+	if (retVal && file.Open(FileName,SHVFileBase::FlagCreate|SHVFileBase::FlagWrite|SHVFileBase::FlagOverride|SHVFileBase::FlagOpen))
+	{
+	SHVHashTableStringIterator<SHVConfigNodeImplPtr> itr(StringEntries);
+	SHVString line;
+	const SHVChar utf8Header[] = { (const char)0xEF, (const char)0xBB, (const char)0xBF, (const char)0 };
+
+		file.Write(utf8Header,3);
+
+		while (itr.MoveNext() && retVal)
+		{
+			line = itr.GetData()->GetStorageString(itr.GetKey());
+			if (!line.IsNull())
+				retVal = file.WriteLine8(line.ToStrUTF8().GetSafeBuffer());
+		}
+	}
+
+	return retVal;
 }
 
 /*************************************
