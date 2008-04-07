@@ -157,7 +157,7 @@ SHVFilePos retVal;
  */
 SHVStringBuffer SHVFileBase::GetPath()
 {
-	return SHVFileBase::ExtractPath(FileName);
+	return SHVDir::ExtractPath(FileName);
 }
 
 /*************************************
@@ -171,7 +171,7 @@ SHVStringBuffer SHVFileBase::GetPath()
  */
 SHVStringBuffer SHVFileBase::GetName()
 {
-	return SHVFileBase::ExtractName(FileName);
+	return SHVDir::ExtractName(FileName);
 }
 
 /*************************************
@@ -284,7 +284,7 @@ SHVBool retVal( (flags&FlagRead) || (flags&FlagWrite) ? (int)SHVBool::True : (in
 	// check for file state
 	if (retVal)
 	{
-	bool exists = SHVFileBase::Exist(fileName);
+	bool exists = SHVDir::Exist(fileName);
 
 		if (exists && !(flags&FlagOpen))
 			retVal.SetError(ErrExists);
@@ -407,77 +407,4 @@ bool retVal;
 		retVal = false;
 
 	return retVal;
-}
-
-/*************************************
- * Delete
- *************************************/
-/// Deletes a file
-/**
- \param fileName Name of file to delete, with path
- \return Success, of an Err* enum
- */
-SHVBool SHVFileBase::Delete(const SHVStringC& fileName)
-{
-#ifdef __SHIVA_WINCE
-	return (::DeleteFile(fileName.GetSafeBuffer()) ? true : false);
-#elif defined(UNICODE)
-	return (wremove((const wchar_t*)fileName.GetSafeBuffer()) ? false : true);
-#else
-	return (remove(fileName.GetSafeBuffer()) ? false : true);
-#endif
-}
-
-/*************************************
- * Exist
- *************************************/
-/// Tests if a file exists
-/**
- \param fileName Name of file to check for, with path
- \return true if it exists and is not a directory
- */
-bool SHVFileBase::Exist(const SHVStringC& fileName)
-{
-#ifdef __SHIVA_WIN32
-DWORD attrib = ::GetFileAttributes( (const TCHAR*)fileName.GetSafeBuffer()); // returns 0xFFFFFFFF on failure
-	return ( !(attrib&FILE_ATTRIBUTE_DIRECTORY) );
-#elif defined(UNICODE)
-struct stat fileStat;
-	return ( !wstat( (const wchar_t*)fileName.GetSafeBuffer(), &fileStat ) && fileStat.st_mode&S_IFREG );
-#else
-struct stat fileStat;
-	return ( !stat( fileName.GetSafeBuffer(), &fileStat ) && fileStat.st_mode&S_IFREG );
-#endif
-}
-
-/*************************************
- * ExtractPath
- *************************************/
-/// Extracts the path from a filename
-/**
- \param fileName name of file, with path
- \return Path to file
- *
- * Will return a Null string if fileName does not contain a path.
- */
-SHVStringBuffer SHVFileBase::ExtractPath(const SHVStringC& fileName)
-{
-long pos = fileName.ReverseFind(SHVDir::Delimiter());
-	return (pos >= 0 ? fileName.Mid(0,pos) : SHVString().ReleaseBuffer());
-}
-
-/*************************************
- * ExtractName
- *************************************/
-/// Extracts the path from a filename
-/**
- \param fileName name of file, with path
- \return Name of file
- *
- * Will return a the whole string if fileName does not contain a path.
- */
-SHVStringBuffer SHVFileBase::ExtractName(const SHVStringC& fileName)
-{
-long pos = fileName.ReverseFind(SHVDir::Delimiter());
-	return (pos >= 0 ? fileName.Mid(pos) : SHVString(fileName).ReleaseBuffer());
 }

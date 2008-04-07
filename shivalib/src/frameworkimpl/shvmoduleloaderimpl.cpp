@@ -83,7 +83,7 @@ void SHVModuleLoaderImpl::AddModuleLibs(const SHVStringC modulePath)
  *************************************/
 SHVBool SHVModuleLoaderImpl::AddModuleLib(const SHVStringC fileName)
 {
-SHVBool retVal(SHVFileBase::Exist(fileName));
+SHVBool retVal(SHVDir::Exist(fileName));
 
 	if (retVal)
 	{
@@ -95,8 +95,8 @@ SHVBool retVal(SHVFileBase::Exist(fileName));
 		{
 			moduleLib->ModuleFactory = (SHVModuleFactory*)moduleLib->Library.CreateObjectInt(&Modules,SHVDll::ClassTypeModuleFactory);
 
-			moduleLib->LibraryPath = SHVFileBase::ExtractPath(fileName);
-			moduleLib->LibraryName = SHVFileBase::ExtractName(fileName);
+			moduleLib->LibraryPath = SHVDir::ExtractPath(fileName);
+			moduleLib->LibraryName = SHVDir::ExtractName(fileName);
 
 			if (moduleLib->ModuleFactory.IsNull())
 			{
