@@ -39,7 +39,7 @@
 
 
 #define SHVWIN32CLASS_CONTAINERWND _T("SHV_CntWnd")
-#define SHVWIN32ATOM_CONTAINERWND _T("SHV_ContainerWndAtom")
+#define SHVWIN32ATOM_CONTAINERWND _T("shv_containerwndatom")
 
 //=========================================================================================================
 // SHVControlImplementerContainerWindowWin32

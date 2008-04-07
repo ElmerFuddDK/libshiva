@@ -40,7 +40,7 @@
 
 
 #define SHVWIN32CLASS_DIALOG _T("SHV_Dialog")
-#define SHVWIN32ATOM_DIALOG _T("SHV_DialogAtom")
+#define SHVWIN32ATOM_DIALOG _T("shv_dialogatom")
 
 //=========================================================================================================
 // SHVControlImplementerDialogWin32
