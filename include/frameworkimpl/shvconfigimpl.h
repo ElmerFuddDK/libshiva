@@ -35,6 +35,14 @@ public:
 	virtual SHVConfigNode& FindRef(const SHVStringC& name, SHVRefObject* defVal = NULL);
 
 
+	// query data
+	virtual SHVBool Contains(const SHVStringC& name);
+	virtual SHVBool Get(const SHVStringC& name, SHVString& value);
+	virtual SHVBool GetInt(const SHVStringC& name, SHVInt& value);
+	virtual SHVBool GetPtr(const SHVStringC& name, void*& value);
+	virtual SHVBool GetRef(const SHVStringC& name, SHVRefObject*& value);
+
+
 	// setting data
 	virtual SHVConfigNode& Set(const SHVStringC& name, const SHVStringC& val);
 	virtual SHVConfigNode& Set(const SHVStringC& name, SHVInt val);
@@ -56,6 +64,14 @@ public:
 	virtual SHVConfigNode& FindInt(const SHVInt& enumerator, SHVInt defVal = SHVInt());
 	virtual SHVConfigNode& FindPtr(const SHVInt& enumerator, void* defVal = NULL);
 	virtual SHVConfigNode& FindRef(const SHVInt& enumerator, SHVRefObject* defVal = NULL);
+
+
+	// query data
+	virtual SHVBool Contains(const SHVInt& enumerator);
+	virtual SHVBool Get(const SHVInt& enumerator, SHVString& value);
+	virtual SHVBool GetInt(const SHVInt& enumerator, SHVInt& value);
+	virtual SHVBool GetPtr(const SHVInt& enumerator, void*& value);
+	virtual SHVBool GetRef(const SHVInt& enumerator, SHVRefObject*& value);
 
 
 	// setting data
