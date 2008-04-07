@@ -35,6 +35,7 @@
 #include "../../../include/utils/shvstring.h"
 #include "../../../include/utils/shvstringutf8.h"
 #include "../../../include/utils/shvfile.h"
+#include "../../../include/utils/shvdir.h"
 
 
 
@@ -47,6 +48,7 @@
  *************************************/
 SHVConfigImpl::SHVConfigImpl()
 {
+	///\todo It may very well be nessecary to add thread safety to config
 }
 
 /*************************************
@@ -93,6 +95,59 @@ SHVConfigNode& SHVConfigImpl::FindRef(const SHVStringC& name, SHVRefObject* defV
 		return SetRef(name,defVal);
 }
 
+/*************************************
+ * Contains
+ *************************************/
+SHVBool SHVConfigImpl::Contains(const SHVStringC& name)
+{
+	if (StringEntries.Find(name))
+		return SHVBool::True;
+	return SHVBool::False;
+}
+
+/*************************************
+ * Get
+ *************************************/
+SHVBool SHVConfigImpl::Get(const SHVStringC& name, SHVString& value)
+{
+SHVBool retVal(Contains(name));
+	if (retVal)
+		value = Find(name).ToString();
+	return retVal;
+}
+
+/*************************************
+ * GetInt
+ *************************************/
+SHVBool SHVConfigImpl::GetInt(const SHVStringC& name, SHVInt& value)
+{
+SHVBool retVal(Contains(name));
+	if (retVal)
+		value = FindInt(name).ToInt();
+	return retVal;
+}
+
+/*************************************
+ * GetPtr
+ *************************************/
+SHVBool SHVConfigImpl::GetPtr(const SHVStringC& name, void*& value)
+{
+SHVBool retVal(Contains(name));
+	if (retVal)
+		value = FindPtr(name).ToPtr();
+	return retVal;
+}
+
+/*************************************
+ * GetRef
+ *************************************/
+SHVBool SHVConfigImpl::GetRef(const SHVStringC& name, SHVRefObject*& value)
+{
+SHVBool retVal(Contains(name));
+	if (retVal)
+		value = FindRef(name).ToRef();
+	return retVal;
+}
 
 /*************************************
  * Set(string)
@@ -169,7 +224,7 @@ SHVFile file;
 	else
 		FileName = fileName;
 
-	if (retVal && SHVFileBase::Exist(FileName) && file.Open(FileName,SHVFileBase::FlagOpen|SHVFileBase::FlagRead))
+	if (retVal && SHVDir::Exist(FileName) && file.Open(FileName,SHVFileBase::FlagOpen|SHVFileBase::FlagRead))
 	{
 	SHVString8 line;
 	SHVString8 name;
@@ -324,6 +379,60 @@ SHVConfigNodeImplString* retVal = new SHVConfigNodeImplString(val);
 
 	EnumEntries[enumerator] = retVal;
 	return *retVal;
+}
+
+/*************************************
+ * Contains
+ *************************************/
+SHVBool SHVConfigImpl::Contains(const SHVInt& enumerator)
+{
+	if (EnumEntries.Find(enumerator))
+		return SHVBool::True;
+	return SHVBool::False;
+}
+
+/*************************************
+ * Get
+ *************************************/
+SHVBool SHVConfigImpl::Get(const SHVInt& enumerator, SHVString& value)
+{
+SHVBool retVal(Contains(enumerator));
+	if (retVal)
+		value = Find(enumerator).ToString();
+	return retVal;
+}
+
+/*************************************
+ * GetInt
+ *************************************/
+SHVBool SHVConfigImpl::GetInt(const SHVInt& enumerator, SHVInt& value)
+{
+SHVBool retVal(Contains(enumerator));
+	if (retVal)
+		value = FindInt(enumerator).ToInt();
+	return retVal;
+}
+
+/*************************************
+ * GetPtr
+ *************************************/
+SHVBool SHVConfigImpl::GetPtr(const SHVInt& enumerator, void*& value)
+{
+SHVBool retVal(Contains(enumerator));
+	if (retVal)
+		value = FindPtr(enumerator).ToPtr();
+	return retVal;
+}
+
+/*************************************
+ * GetRef
+ *************************************/
+SHVBool SHVConfigImpl::GetRef(const SHVInt& enumerator, SHVRefObject*& value)
+{
+SHVBool retVal(Contains(enumerator));
+	if (retVal)
+		value = FindRef(enumerator).ToRef();
+	return retVal;
 }
 
 /*************************************
