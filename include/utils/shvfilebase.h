@@ -75,12 +75,6 @@ public:
 	bool Write(const void* buffer, SHVFilePos bufferLen);
 
 
-	// static helper functions
-	static SHVBool Delete(const SHVStringC& fileName);
-	static bool Exist(const SHVStringC& fileName);
-	static SHVStringBuffer ExtractPath(const SHVStringC& fileName);
-	static SHVStringBuffer ExtractName(const SHVStringC& fileName);
-
 private:
 	///\cond INTERNAL
 	SHVString FileName;
