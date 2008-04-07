@@ -217,8 +217,6 @@ SHVBool SHVConfigImpl::Load(const SHVStringC fileName)
 SHVBool retVal(SHVBool::True);
 SHVFile file;
 
-	Clear();
-
 	if (fileName.IsNull())
 		retVal = !FileName.IsNull();
 	else
@@ -267,22 +265,18 @@ SHVFile file;
 
 					if (strValue == "null")
 					{
-						SHVTRACE(_T("Setting %s to null\n"), name.ToStrT().GetSafeBuffer());
 						Set(name.ToStrT(),SHVInt());
 					}
 					else if (*endch == 0)
 					{
-						SHVTRACE(_T("Setting %s to %d\n"), name.ToStrT().GetSafeBuffer(), (int)intValue);
 						Set(name.ToStrT(),intValue);
 					}
 					else if (strValue.Left(1) == "\"" && strValue.Right(1) == "\"")
 					{
-						SHVTRACE(_T("Setting %s to '%s'\n"), name.ToStrT().GetSafeBuffer(), SHVStringUTF8C(strValue.Mid(1,strValue.GetLength()-2).GetSafeBuffer()).ToStrT().GetSafeBuffer());
 						Set(name.ToStrT(),SHVStringUTF8C(strValue.Mid(1,strValue.GetLength()-2).GetSafeBuffer()).ToStrT());
 					}
 					else
 					{
-						SHVTRACE(_T("Setting %s to '%s'\n"), name.ToStrT().GetSafeBuffer(), SHVStringUTF8C(strValue.GetSafeBuffer()).ToStrT().GetSafeBuffer());
 						Set(name.ToStrT(),SHVStringUTF8C(strValue.GetSafeBuffer()).ToStrT());
 					}
 				}
