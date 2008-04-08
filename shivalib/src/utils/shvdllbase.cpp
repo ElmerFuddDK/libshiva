@@ -66,6 +66,18 @@ SHVDllBase::~SHVDllBase()
 }
 
 /*************************************
+ * FileExtension
+ *************************************/
+const SHVStringC SHVDllBase::FileExtension()
+{
+#ifdef __SHIVA_LINUX
+	return _T("so");
+#else
+	return _T("dll");
+#endif
+}
+
+/*************************************
  * CreateLibFileName
  *************************************/
 /// Generates a platform specific library file name

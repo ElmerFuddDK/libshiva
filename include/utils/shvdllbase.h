@@ -32,6 +32,10 @@ class SHVAPI SHVDllBase
 public:
 
 
+	// defines/constants
+	static const SHVStringC FileExtension();
+
+
 	// constructor
 	SHVDllBase();
 	~SHVDllBase();
