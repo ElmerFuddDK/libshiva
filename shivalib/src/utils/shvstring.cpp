@@ -65,6 +65,18 @@ long SHVString8C::StrToL(const SHVChar* str, SHVChar** ptr, int base)
 {
 	return (str ? ::strtol(str,ptr,base) : 0);
 }
+SHVInt64Val SHVString8C::StrToInt64(const SHVChar* str, SHVChar** ptr, int base)
+{
+#ifdef __SHIVA_WIN32
+	return (str ? ::_strtoi64(str,ptr,base) : 0);
+#else
+	return (str ? ::strtoll(str,ptr,base) : 0);
+#endif
+}
+double SHVString8C::StrToDouble(const SHVChar* str, SHVChar** ptr)
+{
+	return (str ? ::strtod(str,ptr) : 0);
+}
 size_t SHVString8C::StrLen(const SHVChar* str)
 {
 	return (str ? ::strlen(str) : 0);
@@ -136,11 +148,59 @@ SHVChar* charBuf = Buffer;
 }
 
 /*************************************
+ * ToIn64
+ *************************************/
+SHVInt64Val SHVString8C::ToInt64(SHVChar** endChar) const
+{
+SHVChar* charBuf = Buffer;
+	if (IsNull())
+		return 0;
+	if (endChar == NULL)
+		endChar = &charBuf;
+	return StrToInt64(Buffer,endChar,10);
+}
+
+/*************************************
+ * ToDouble
+ *************************************/
+double SHVString8C::ToDouble(SHVChar** endChar) const
+{
+SHVChar* charBuf = Buffer;
+	if (IsNull())
+		return 0;
+	if (endChar == NULL)
+		endChar = &charBuf;
+	return StrToDouble(Buffer,endChar);
+}
+
+/*************************************
  * LongToString
  *************************************/
 SHVStringBuffer8 SHVString8C::LongToString(long val)
 {
 static const SHVChar nChar[] = { '%', 'd', '\0' };
+SHVString8 str;
+	str.Format(nChar, val);
+	return str.ReleaseBuffer();
+}
+
+/*************************************
+ * Int64ToString
+ *************************************/
+SHVStringBuffer8 SHVString8C::Int64ToString(SHVInt64Val val)
+{
+static const SHVChar nChar[] = { '%', 'l', 'l', 'd', '\0' };
+SHVString8 str;
+	str.Format(nChar, val);
+	return str.ReleaseBuffer();
+}
+
+/*************************************
+ * DoubleToString
+ *************************************/
+SHVStringBuffer8 SHVString8C::DoubleToString(double val)
+{
+static const SHVChar nChar[] = { '%', 'g', '\0' };
 SHVString8 str;
 	str.Format(nChar, val);
 	return str.ReleaseBuffer();

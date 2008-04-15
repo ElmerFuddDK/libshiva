@@ -65,6 +65,10 @@ long SHVString16C::StrToL(const SHVWChar* str, SHVWChar** ptr, int base)
 {
 #if defined(__SHIVA_LINUX) || defined(__SHIVA_EPOC)
 long retVal = 0;
+SHVWChar firstVal = *str;
+
+	if (firstVal == '-' || firstVal == '+')
+		str++;
 
 	for(*ptr = (SHVWChar*)str; str && *ptr != '\0'; (*ptr)++)
 	{
@@ -78,9 +82,104 @@ long retVal = 0;
 		retVal += (*(cPtr-1) - '0')*i;
 	}
 
+	if (firstVal == '-')
+		retVal *= -1;
+
 	return retVal;
 #else
 	return (str ? wcstol((const wchar_t*)str,(wchar_t**)ptr,base) : NULL);
+#endif
+
+}
+SHVInt64Val SHVString16C::StrToInt64(const SHVWChar* str, SHVWChar** ptr, int base)
+{
+#if defined(__SHIVA_LINUX) || defined(__SHIVA_EPOC)
+SHVInt64Val retVal = 0;
+SHVWChar firstVal = *str;
+
+	if (firstVal == '-' || firstVal == '+')
+		str++;
+
+	for(*ptr = (SHVWChar*)str; str && *ptr != '\0'; (*ptr)++)
+	{
+		if (**ptr < '0' || **ptr > '9') // only base10 for now
+			break;
+	}
+	
+	long i=1;
+	for(SHVWChar* cPtr = (*ptr); cPtr != str; cPtr--, i*=base)
+	{
+		retVal += (*(cPtr-1) - '0')*i;
+	}
+
+	if (firstVal == '-')
+		retVal *= -1;
+
+	return retVal;
+#else
+	return (str ? _wcstoi64((const wchar_t*)str,(wchar_t**)ptr,base) : NULL);
+#endif
+
+}
+double SHVString16C::StrToDouble(const SHVWChar* str, SHVWChar** ptr)
+{
+#if defined(__SHIVA_LINUX) || defined(__SHIVA_EPOC)
+double retVal = 0;
+SHVWChar firstVal = *str;
+SHVWChar* cPtr;
+long i;
+
+	if (firstVal == '-' || firstVal == '+')
+		str++;
+
+	for(*ptr = (SHVWChar*)str; str && *ptr != '\0'; (*ptr)++)
+	{
+		if (**ptr < '0' || **ptr > '9')
+			break;
+	}
+	
+	i=1;
+	for(cPtr = (*ptr); cPtr != str; cPtr--, i*=10)
+	{
+		retVal += (*(cPtr-1) - '0')*i;
+	}
+
+	if (firstVal == '-')
+		retVal *= -1;
+
+	if (**ptr == '.')
+	{
+		double dec = 0.1;
+		for((*ptr)++;**ptr;(*ptr)++,dec/=10)
+		{
+			if (**ptr < '0' || **ptr > '9')
+				break;
+			retVal += ((**ptr) - '0')*dec;
+		}
+	}
+
+	if (**ptr == 'e' || **ptr == 'E')
+	{
+		(*ptr)++;
+		retVal *= exp10( (double)StrToL(*ptr,ptr,10) );
+// 		for (i=StrToL(*ptr,ptr,10);i;)
+// 		{
+// 			if (i<0)
+// 			{
+// 				retVal /= 10.0;
+// 				i++;
+// 			}
+// 			else
+// 			{
+// 				retVal *= 10.0;
+// 				i--;
+// 			}
+// 		}
+	}
+
+	return retVal;
+#else
+	return (str ? wcstod((const wchar_t*)str,(wchar_t**)ptr) : NULL);
 #endif
 
 }
@@ -192,11 +291,59 @@ SHVWChar* charBuf = Buffer;
 }
 
 /*************************************
+ * ToIn64
+ *************************************/
+SHVInt64Val SHVString16C::ToInt64(SHVWChar** endChar) const
+{
+SHVWChar* charBuf = Buffer;
+	if (IsNull())
+		return 0;
+	if (endChar == NULL)
+		endChar = &charBuf;
+	return StrToInt64(Buffer,endChar,10);
+}
+
+/*************************************
+ * ToIn64
+ *************************************/
+double SHVString16C::ToDouble(SHVWChar** endChar) const
+{
+SHVWChar* charBuf = Buffer;
+	if (IsNull())
+		return 0;
+	if (endChar == NULL)
+		endChar = &charBuf;
+	return StrToDouble(Buffer,endChar);
+}
+
+/*************************************
  * LongToString
  *************************************/
 SHVStringBuffer16 SHVString16C::LongToString(long val)
 {
 static const SHVWChar nChar[] = { '%', 'd', '\0' };
+SHVString16 str;
+	str.Format(nChar, val);
+	return str.ReleaseBuffer();
+}
+
+/*************************************
+ * Int64ToString
+ *************************************/
+SHVStringBuffer16 SHVString16C::Int64ToString(SHVInt64Val val)
+{
+static const SHVWChar nChar[] = { '%', 'l', 'l', 'd', '\0' };
+SHVString16 str;
+	str.Format(nChar, val);
+	return str.ReleaseBuffer();
+}
+
+/*************************************
+ * DoubleToString
+ *************************************/
+SHVStringBuffer16 SHVString16C::DoubleToString(double val)
+{
+static const SHVWChar nChar[] = { '%', 'g', '\0' };
 SHVString16 str;
 	str.Format(nChar, val);
 	return str.ReleaseBuffer();

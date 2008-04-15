@@ -95,7 +95,11 @@ public:
 	inline const SHVWChar* GetBufferConst() const;
 	const SHVWChar* GetSafeBuffer() const; ///< will return the real buffer, or "" if the string is null
 	long ToLong(SHVWChar** endChar = NULL) const;
+	SHVInt64Val ToInt64(SHVWChar** endChar = NULL) const;
+	double ToDouble(SHVWChar** endChar = NULL) const;
 	static SHVStringBuffer16 LongToString(long val);
+	static SHVStringBuffer16 Int64ToString(SHVInt64Val val);
+	static SHVStringBuffer16 DoubleToString(double val);
 	SHVStringBuffer8 ToStr8() const;
 	SHVStringBufferUTF8 ToStrUTF8() const;
 	SHVStringBuffer16 ToStr16() const;
@@ -124,7 +128,9 @@ public:
 
 
 	// convenience functions for easy portability
-	static long   StrToL(const SHVWChar* str, SHVWChar** ptr, int base); ///< only works for base10 on some platforms for now
+	static long   StrToL(const SHVWChar* str, SHVWChar** ptr, int base = 10); ///< only works for base10 on some platforms for now
+	static SHVInt64Val StrToInt64(const SHVWChar* str, SHVWChar** ptr, int base = 10); ///< only works for base10 on some platforms for now
+	static double StrToDouble(const SHVWChar* str, SHVWChar** ptr);
 	static size_t StrLen(const SHVWChar* str);
 	static int    StrCmp(const SHVWChar* str1,const SHVWChar* str2);
 	static int    StrCaseCmp(const SHVWChar* str1,const SHVWChar* str2);

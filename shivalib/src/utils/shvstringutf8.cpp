@@ -66,6 +66,14 @@ long SHVStringUTF8C::StrToL(const SHVChar* str, SHVChar** ptr, int base)
 {
 	return SHVString8C::StrToL(str,ptr,base);
 }
+SHVInt64Val SHVStringUTF8C::StrToInt64(const SHVChar* str, SHVChar** ptr, int base)
+{
+	return SHVString8C::StrToInt64(str,ptr,base);
+}
+double SHVStringUTF8C::StrToDouble(const SHVChar* str, SHVChar** ptr)
+{
+	return SHVString8C::StrToDouble(str,ptr);
+}
 size_t SHVStringUTF8C::StrLen(const SHVChar* str)
 {
 size_t retVal = 0;
@@ -176,11 +184,59 @@ SHVChar* charBuf = Buffer;
 }
 
 /*************************************
+ * ToIn64
+ *************************************/
+SHVInt64Val SHVStringUTF8C::ToInt64(SHVChar** endChar) const
+{
+SHVChar* charBuf = Buffer;
+	if (IsNull())
+		return 0;
+	if (endChar == NULL)
+		endChar = &charBuf;
+	return StrToInt64(Buffer,endChar,10);
+}
+
+/*************************************
+ * ToDouble
+ *************************************/
+double SHVStringUTF8C::ToDouble(SHVChar** endChar) const
+{
+SHVChar* charBuf = Buffer;
+	if (IsNull())
+		return 0;
+	if (endChar == NULL)
+		endChar = &charBuf;
+	return StrToDouble(Buffer,endChar);
+}
+
+/*************************************
  * LongToString
  *************************************/
 SHVStringBufferUTF8 SHVStringUTF8C::LongToString(long val)
 {
 static const SHVChar nChar[] = { '%', 'd', '\0' };
+SHVStringUTF8 str;
+	str.Format(nChar, val);
+	return str.ReleaseBuffer();
+}
+
+/*************************************
+ * Int64ToString
+ *************************************/
+SHVStringBufferUTF8 SHVStringUTF8C::Int64ToString(SHVInt64Val val)
+{
+static const SHVChar nChar[] = { '%', 'l', 'l', 'd', '\0' };
+SHVStringUTF8 str;
+	str.Format(nChar, val);
+	return str.ReleaseBuffer();
+}
+
+/*************************************
+ * DoubleToString
+ *************************************/
+SHVStringBufferUTF8 SHVStringUTF8C::DoubleToString(double val)
+{
+static const SHVChar nChar[] = { '%', 'g', '\0' };
 SHVStringUTF8 str;
 	str.Format(nChar, val);
 	return str.ReleaseBuffer();
