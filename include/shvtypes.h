@@ -4,6 +4,7 @@
 #include "utils/shvhashvalue.h"
 
 typedef char SHVByte;
+typedef long long SHVInt64Val;
 #define SHVChar  char
 #ifdef __SHIVA_WIN32
 # define SHVWChar wchar_t
@@ -144,6 +145,45 @@ private:
 
 
 //-=========================================================================================================
+/// SHVInt64 int64 replacement
+//-=========================================================================================================
+/**
+ * Nullable integer with a hashing function. This is useful where integers are used in hash tables, or
+ * places where nullable objects are used.
+ */
+
+class SHVAPI SHVInt64
+{
+public:
+
+
+	// constructors
+	inline SHVInt64();
+	inline SHVInt64(SHVInt64Val val);
+
+
+	// Properties
+	inline bool IsNull() const;
+	inline void SetToNull();
+
+
+	// operators
+	inline operator SHVInt64Val();
+	inline operator SHVHashValue() const;
+	inline SHVInt64& operator =(const SHVInt64& val);
+	inline SHVInt64& operator =(const SHVInt64Val* val);
+	inline bool operator==(const SHVInt64& val) const;
+
+private:
+	///\cond INTERNAL
+	SHVInt64Val Val;
+	bool Null;
+	///\endcond
+};
+
+
+
+//-=========================================================================================================
 /// SHVDouble double replacement
 //-=========================================================================================================
 /**
@@ -195,6 +235,9 @@ SHVBool::SHVBool() { Val = False; }
 SHVInt::SHVInt() { SetToNull(); }
 SHVInt::SHVInt(int val) : Val(val), Null(false) {}
 
+SHVInt64::SHVInt64() { SetToNull(); }
+SHVInt64::SHVInt64(SHVInt64Val val) : Val(val), Null(false) {}
+
 /*************************************
  * Properties
  *************************************/
@@ -203,6 +246,9 @@ void SHVBool::SetError(int err) { Val = err; }
 
 bool SHVInt::IsNull() const { return Null; }
 void SHVInt::SetToNull() { Null = true; Val = -1; }
+
+bool SHVInt64::IsNull() const { return Null; }
+void SHVInt64::SetToNull() { Null = true; Val = -1; }
 
 SHVDouble::SHVDouble() { SetToNull(); }
 SHVDouble::SHVDouble(double val) : Val(val), Null(false) {}
@@ -227,6 +273,19 @@ SHVInt::operator SHVHashValue() const { return ( Null ? 0 : Val ); } // makes su
 SHVInt& SHVInt::operator =(const SHVInt& val) { Null = val.Null; Val = val.Val; return *this; }
 SHVInt& SHVInt::operator =(const int* val) { if (val) { Null = false; Val = *val; } else SetToNull(); return *this; }
 bool SHVInt::operator==(const SHVInt& val) const { return ( (val.Null && Null) || ( val.Null == Null && val.Val == Val ) ); }
+
+SHVInt64::operator SHVInt64Val() { return Val; }
+SHVInt64::operator SHVHashValue() const
+{
+size_t retVal = 0;
+SHVByte* buf = (SHVByte*)&Val;
+	for(size_t i = 0; !Null && i < sizeof(SHVInt64Val); i++)
+		retVal = buf[i] + retVal * 5;
+	return retVal;
+}
+SHVInt64& SHVInt64::operator =(const SHVInt64& val) { Null = val.Null; Val = val.Val; return *this; }
+SHVInt64& SHVInt64::operator =(const SHVInt64Val* val) { if (val) { Null = false; Val = *val; } else SetToNull(); return *this; }
+bool SHVInt64::operator==(const SHVInt64& val) const { return ( (val.Null && Null) || ( val.Null == Null && val.Val == Val ) ); }
 
 SHVDouble::operator double() { return Val; }
 SHVDouble::operator SHVHashValue() const { unsigned char* ptr = (unsigned char*)this; size_t retVal = 0; for (size_t i=0; i<sizeof(SHVDouble); i++,ptr++) retVal += *ptr; return retVal; }
