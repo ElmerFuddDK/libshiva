@@ -9,8 +9,8 @@
 #define __DATAENGINE_VERSION_MAJOR     0
 #define __DATAENGINE_VERSION_MINOR     1
 #define __DATAENGINE_VERSION_RELEASE   0
-#define __DATAENGINE_DEFAULT_DATABASE _T("DefaultDatabase")
-#define __DATAENGINE_DATAPATH         _T("DataPath")
+#define __DATAENGINE_DEFAULT_DATABASE _T("defaultdatabase")
+#define __DATAENGINE_DATAPATH         _T("datapath")
 
 //-=========================================================================================================
 /// SHVDataEngine class - Interface for the shiva data engine module
