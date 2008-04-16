@@ -49,7 +49,9 @@ public:
 	}; 
 	enum DefaultConfigOptions {
 		DefaultCfgArgc,				///< On supported platforms this is argument count
-		DefaultCfgArgv				///< On supported platforms this is argument list (char**)
+		DefaultCfgArgv,				///< On supported platforms this is argument list (char**)
+		DefaultCfgAppPath,			///< Is set to the path (no ending dir delimiter) of the application by the main thread event queue
+		DefaultCfgAppName			///< Is set to the name of the application by the main thread event queue
 	};
 
 
