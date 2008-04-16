@@ -22,6 +22,8 @@ public:
 
 
 	// from SHVMainThreadEventDispatcher
+	virtual void SetupDefaults(SHVModuleList& modules);
+
 	virtual void SignalDispatcher();
 
 	virtual SHVBool InitializeEventLoop();

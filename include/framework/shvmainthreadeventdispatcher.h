@@ -16,6 +16,7 @@ public:
 	virtual ~SHVMainThreadEventDispatcher() {}
 
 	inline void SetEventQueue(SHVMainThreadEventQueue* eventqueue);
+	virtual void SetupDefaults(SHVModuleList& modules) = 0;
 
 	virtual void SignalDispatcher() = 0;
 
@@ -37,6 +38,16 @@ protected:
 
 
 // ============================================= implementation ============================================= //
+
+/** \fn void SHVMainThreadEventDispatcher::SetupDefaults(SHVModuleList& modules)
+ \brief Called when the event queue wants to set up default values
+ *
+ * You will need to set up the default variables in the default config
+ * here. Currently there is 2 mandatory values that needs to be resolved:\n
+ * SHVModuleList::DefaultCfgAppPath and SHVModuleList::DefaultCfgAppName.\n
+ * Application path is normally the location of the application and
+ * application name is normally the name of the executable.
+ */
 
 /** \fn void SHVMainThreadEventDispatcher::SignalDispatcher()
  \brief Signals the main thread event queue for dispatching
