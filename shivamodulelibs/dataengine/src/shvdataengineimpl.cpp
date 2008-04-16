@@ -16,7 +16,7 @@ SHVString datapath = modules.GetConfig().Find(__DATAENGINE_DATAPATH, _T("./")).T
 SHVBool ok;
 	datapath += database;
 	
-	ok = SQLiteDll.Load(SQLiteDll.CreateLibFileName(_T("shivasqlite")));
+	ok = SQLiteDll.Load(SQLiteDll.CreateLibFileName(_T("shivasqlite"),modules.GetConfig().Find(SHVModuleList::DefaultCfgAppPath).ToString()));
 	if (!ok)
 	{
 		Modules.AddStartupError(_T("Could not load shvsqlite.dll"));
