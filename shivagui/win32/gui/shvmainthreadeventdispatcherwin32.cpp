@@ -33,6 +33,9 @@
 #include "shvmainthreadeventdispatcherwin32.h"
 #include "shvwin32.h"
 #include "shvcontrolimplementermainwindowwin32.h"
+#include "../../../include/utils/shvdir.h"
+
+# include <locale.h>
 
 
 //-=========================================================================================================
@@ -57,6 +60,35 @@ SHVMainThreadEventDispatcherWin32::~SHVMainThreadEventDispatcherWin32()
 }
 
 /*************************************
+ * SetupDefaults
+ *************************************/
+void SHVMainThreadEventDispatcherWin32::SetupDefaults(SHVModuleList& modules)
+{
+SHVString moduleFileName, appPath, appName;
+long i;
+
+
+	// Set up application path and name
+	moduleFileName.SetBufferSize(_MAX_PATH);
+
+	SHVVERIFY(::GetModuleFileName(NULL,moduleFileName.GetBuffer(),_MAX_PATH));
+	appPath = SHVDir::ExtractPath(moduleFileName);
+	appName = SHVDir::ExtractName(moduleFileName);
+
+	i = appName.ReverseFind(_T("."));
+
+	if (i > 0)
+		appName[i] = 0;
+
+	Queue->GetModuleList().GetConfig().Set(SHVModuleList::DefaultCfgAppPath,appPath);
+	Queue->GetModuleList().GetConfig().Set(SHVModuleList::DefaultCfgAppName,appName);
+
+
+	// set up POSIX locale according to win32 locale
+	setlocale(LC_ALL, "");
+}
+
+/*************************************
  * SignalDispatcher
  *************************************/
 void SHVMainThreadEventDispatcherWin32::SignalDispatcher()
@@ -72,6 +104,7 @@ SHVBool SHVMainThreadEventDispatcherWin32::InitializeEventLoop()
 SHVBool retVal;
 HINSTANCE hInstance = (HINSTANCE)Queue->GetModuleList().GetConfig(SHVModuleList::CfgGUI).FindPtr(SHVGUIManager::CfgInstanceHandle).ToPtr();
 
+	// register main window class
 	SHVControlImplementerMainWindowWin32::RegisterClass(hInstance);
 
 	GUIManager = new SHVGUIManagerWin32(Queue->GetModuleList());

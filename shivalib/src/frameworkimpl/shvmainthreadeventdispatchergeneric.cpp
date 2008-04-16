@@ -33,6 +33,7 @@
 
 #include "../../../include/frameworkimpl/shvmainthreadeventdispatchergeneric.h"
 #include "../../../include/framework/shveventsubscriber.h"
+#include "../../../include/utils/shvdir.h"
 
 
 
@@ -53,6 +54,15 @@ SHVMainThreadEventDispatcherGeneric::SHVMainThreadEventDispatcherGeneric() : SHV
  *************************************/
 SHVMainThreadEventDispatcherGeneric::~SHVMainThreadEventDispatcherGeneric()
 {
+}
+
+/*************************************
+ * SetupDefaults
+ *************************************/
+void SHVMainThreadEventDispatcherGeneric::SetupDefaults(SHVModuleList& modules)
+{
+	modules.GetConfig().Set(SHVModuleList::DefaultCfgAppPath,SHVStringC(_T(".")) + SHVDir::Delimiter());
+	modules.GetConfig().Set(SHVModuleList::DefaultCfgAppName,SHVStringC(_T("")));
 }
 
 /*************************************

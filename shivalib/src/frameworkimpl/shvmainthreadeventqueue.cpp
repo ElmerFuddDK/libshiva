@@ -47,6 +47,7 @@ SHVMainThreadEventQueue::SHVMainThreadEventQueue(SHVMainThreadEventDispatcher* d
 	Dispatcher = dispatcher;
 	Dispatcher->SetEventQueue(this);
 	RunReturnVal = Modules.Initialize();
+	Dispatcher->SetupDefaults(Modules);
 	Running = SHVBool::False;
 }
 
@@ -79,6 +80,9 @@ SHVBool SHVMainThreadEventQueue::Run()
 	
 	// initialize data for the event loop
 	RunReturnVal = Dispatcher->InitializeEventLoop();
+
+	SHVASSERT(GetModuleList().GetConfig().Contains(SHVModuleList::DefaultCfgAppPath));
+	SHVASSERT(GetModuleList().GetConfig().Contains(SHVModuleList::DefaultCfgAppName));
 	
 	if (RunReturnVal)
 		RunReturnVal = GetModuleList().Start();

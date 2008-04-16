@@ -32,6 +32,8 @@ public:
 	virtual ~SHVMainThreadEventDispatcherWin32();
 
 
+	virtual void SetupDefaults(SHVModuleList& modules);
+
 	virtual void SignalDispatcher();
 
 	virtual SHVBool InitializeEventLoop();
