@@ -52,9 +52,9 @@
 # include <stdlib.h>
 #endif
 
-#define SHVStringCurC SHVString16C
-#define SHVStringCur  SHVString16
-#define SHVCurChar SHVWChar
+#ifndef __SHIVA_WIN32
+# include <math.h>
+#endif
 
 
 // ========================================================================================================

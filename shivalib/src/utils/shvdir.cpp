@@ -41,6 +41,9 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <unistd.h>
+# include <dirent.h>
+# include <fnmatch.h>
+# include <stdlib.h>
 #endif
 
 
@@ -134,7 +137,7 @@ SHVStringC wc(wildcard.GetBufferConst());
 
 	fileName.Format(_T("%s%s%s"),
 		path.GetSafeBuffer(),
-		path.Right(1) == Delimiter() ? _T("") : Delimiter(),
+		path.Right(1) == Delimiter() ? _T("") : Delimiter().GetSafeBuffer(),
 		wc.GetSafeBuffer());
 
 #if defined(__SHIVA_WIN32)
@@ -196,11 +199,10 @@ DIR *dp;
 struct dirent *ep;
 SHVString dirName;
 struct stat fStat;
-char* tmpStr;
 
-	dirName.Format((_T("%s%s"),
+	dirName.Format(_T("%s%s"),
 		path.GetSafeBuffer(),
-		path.Right(1) == Delimiter() ? _T("") : Delimiter());
+		path.Right(1) == Delimiter() ? _T("") : Delimiter().GetSafeBuffer());
 
 	dp = opendir(dirName.GetSafeBuffer());
 	if(dp != NULL)
@@ -209,7 +211,7 @@ char* tmpStr;
 		{
 			if(!fnmatch(wc.GetSafeBuffer(), ep->d_name, 0))
 			{
-				if(!stat(dirName.GetSafeBuffer()+ep->d_name, &fStat))
+				if(!stat(SHVStringC(dirName+SHVStringC(ep->d_name)).GetSafeBuffer(), &fStat))
 				{
 					if (S_ISREG(fStat.st_mode))
 					{
@@ -439,7 +441,7 @@ SHVString path = SHVDir::ExtractPath(fileName);
 #elif defined(__SHIVA_LINUX)
 SHVString execstr;
 	execstr.Format(_T("fileHandler.sh \"%s\" &"), fileName.GetSafeBuffer());
-	::system(execstr);
+	::system(execstr.GetSafeBuffer());
 #elif defined(__SHIVA_EPOC)
 	///\todo Implement SHVDir::ExecuteFile for symbian
 #endif
@@ -511,8 +513,8 @@ SHELLEXECUTEINFO info;
 	///\todo Implement SHVDir::Execute for symbian
 #else
 SHVString execstr;
-	execstr.Format(_T("%s %s &"), program..GetSafeBuffer(), args.GetSafeBuffer());
-	::system(execstr);
+	execstr.Format(_T("%s %s &"), program.GetSafeBuffer(), args.GetSafeBuffer());
+	::system(execstr.GetSafeBuffer());
 #endif
 }
 
@@ -555,7 +557,7 @@ SHVFileListIterator itr(args);
 			arg += _T(" ") + itr.Get();
 	}
 
-	execstr.Format(_T("%s %s &"), program..GetSafeBuffer(), arg.GetSafeBuffer());
-	::system(execstr);
+	execstr.Format(_T("%s %s &"), program.GetSafeBuffer(), arg.GetSafeBuffer());
+	::system(execstr.GetSafeBuffer());
 #endif
 }
