@@ -187,9 +187,12 @@ size_t pos = 0;
  \endcode
  */
 
-class SHVBufferCPtr : public SHVBufferC
+class SHVAPI SHVBufferCPtr : public SHVBufferC
 {
 public:
+
+	// Constructor
+	inline SHVBufferCPtr(SHVByte* buffer, size_t size);
 
 	// Convenience conversion functions
 	inline static SHVBufferCPtr VoidToBuffer(const void* str, size_t len);
@@ -200,7 +203,6 @@ protected:
 	///\cond INTERNAL
 	SHVByte* BufferPtr;
 	size_t BufferSize;
-	inline SHVBufferCPtr(SHVByte* buffer, size_t size) { BufferPtr = buffer; BufferSize = size; }
 	virtual SHVByte* Buffer() const;
 	virtual size_t Size() const;
 	///\endcond
@@ -262,6 +264,12 @@ size_t SHVBufferC::GetSize() const
 {
 	return Size();
 }
+
+/*************************************
+ * SHVBufferCPtr constructor
+ *************************************/
+SHVBufferCPtr::SHVBufferCPtr(SHVByte* buffer, size_t size) : SHVBufferC()
+{ BufferPtr = buffer; BufferSize = size; }
 
 /*************************************
  * Convenience conversion functions
