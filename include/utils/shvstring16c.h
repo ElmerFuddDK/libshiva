@@ -113,6 +113,7 @@ public:
 
 	// buffer checks
 	inline bool IsNull() const;
+	inline bool IsEmpty() const;
 	size_t GetLength() const;
 	operator SHVHashValue() const; ///< hashing function
 
@@ -240,6 +241,7 @@ private:
 SHVString16C::SHVString16C(const SHVWChar* buffer) { Buffer = (SHVWChar*)buffer; }
 const SHVWChar* SHVString16C::GetBufferConst() const { return Buffer; }
 bool SHVString16C::IsNull() const { return Buffer == NULL; }
+bool SHVString16C::IsEmpty() const { return Buffer == NULL || *Buffer == 0; }
 #ifdef __SHIVA_EPOC
 TPtrC16 SHVString16C::ToPtr() const { return TPtrC16((TUint16*)Buffer,GetLength()); }
 #endif
