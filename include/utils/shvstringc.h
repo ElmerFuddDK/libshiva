@@ -241,7 +241,7 @@ private:
 SHVString8C::SHVString8C(const SHVChar* buffer) { Buffer = (SHVChar*)buffer; }
 const SHVChar* SHVString8C::GetBufferConst() const { return Buffer; }
 bool SHVString8C::IsNull() const { return Buffer == NULL; }
-bool SHVString8C::IsEmpty() const { return Buffer == NULL || Buffer == ""; }
+bool SHVString8C::IsEmpty() const { return Buffer == NULL || *Buffer == 0; }
 #ifdef __SHIVA_EPOC
 TPtrC8 SHVString8C::ToPtr() const { return TPtrC8((TUint8*)Buffer,GetLength()); }
 #endif

@@ -220,7 +220,7 @@ private:
 SHVStringUTF8C::SHVStringUTF8C(const SHVChar* buffer) { Buffer = (SHVChar*)buffer; }
 const SHVChar* SHVStringUTF8C::GetBufferConst() const { return Buffer; }
 bool SHVStringUTF8C::IsNull() const { return Buffer == NULL; }
-bool SHVStringUTF8C::IsEmpty() const { return Buffer == NULL || Buffer == ""; }
+bool SHVStringUTF8C::IsEmpty() const { return Buffer == NULL || *Buffer == 0; }
 #ifdef __SHIVA_EPOC
 TPtrC8 SHVStringUTF8C::ToPtr() const { return TPtrC8((TUint8*)Buffer,GetLength()); }
 #endif
