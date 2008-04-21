@@ -89,6 +89,8 @@ bool retVal;
  */
 void SHVMutex::Unlock()
 {
+	SHVASSERT(HasLock());
+
 	if (HasLock())
 	{
 		if (--RefCount == 0)
