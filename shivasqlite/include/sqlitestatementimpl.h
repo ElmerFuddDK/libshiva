@@ -18,6 +18,7 @@ public:
 	virtual ~SHVSQLiteStatementImpl();
 
 	virtual SHVBool GetLong(long& val, int columnIdx) const;
+	virtual SHVBool GetInt64(SHVInt64Val& val, int columnIdx) const;
 	virtual SHVBool GetDouble(double& val, int columnIdx) const;
 	virtual SHVBool GetBlob(const void*& blob, int& len, int columnIdx) const;
 	virtual SHVBool GetStringUTF8(SHVStringSQLite& text, int& len, int columnIdx) const;
@@ -33,6 +34,7 @@ public:
 	virtual int GetColumnCount() const;
 
 	virtual SHVBool SetParameterLongUTF8(const SHVStringUTF8C& name, long val);
+	virtual SHVBool SetParameterInt64UTF8(const SHVStringUTF8C& name, SHVInt64Val val);
 	virtual SHVBool SetParameterDoubleUTF8(const SHVStringUTF8C& name, double val);
 	virtual SHVBool SetParameterStringUTF8(const SHVStringUTF8C& name, const SHVStringUTF8C& val);
 	virtual SHVBool SetParameterNullUTF8(const SHVStringUTF8C& name);

@@ -22,6 +22,7 @@ class SHVDataRowC: public SHVRefObject
 public:
 	virtual SHVStringBuffer AsString(size_t colIdx) const = 0;
 	virtual SHVInt AsInt(size_t colIdx) const = 0;
+	virtual SHVInt64 AsInt64(size_t colIdx) const = 0;
 	virtual SHVDouble AsDouble(size_t colIdx) const = 0;
 	virtual SHVTime AsTime(size_t colIdx) const = 0;
 	virtual SHVBool AsBool(size_t colIdx) const = 0;
@@ -43,6 +44,7 @@ public:
 
 	inline SHVStringBuffer AsString(const SHVString8C& colName) const;
 	inline SHVInt AsInt(const SHVString8C& colName) const;
+	inline SHVInt64 AsInt64(const SHVString8C& colName) const;
 	inline SHVDouble AsDouble(const SHVString8C& colName) const;
 	inline SHVTime AsTime(const SHVString8C& colName) const;
 	inline SHVBool AsBool(const SHVString8C& colName) const;
@@ -51,6 +53,7 @@ public:
 
 	inline SHVBool GetValue(const SHVString8C& colName, SHVString& value) const;
 	inline SHVBool GetValue(const SHVString8C& colName, SHVInt& value) const;
+	inline SHVBool GetValue(const SHVString8C& colName, SHVInt64& value) const;
 	inline SHVBool GetValue(const SHVString8C& colName, SHVDouble& value) const;
 	inline SHVBool GetValue(const SHVString8C& colName, SHVTime& value) const;
 	inline SHVBool GetValue(const SHVString8C& colName, SHVBool& value) const;	
@@ -74,12 +77,21 @@ SHVStringBuffer SHVDataRowC::AsString(const SHVString8C& colName) const
 {
 	return AsString(ColumnIndex(colName));
 }
+
 /*************************************
  * AsInt
  *************************************/
 SHVInt SHVDataRowC::AsInt(const SHVString8C& colName) const
 {
 	return AsInt(ColumnIndex(colName));
+}
+
+/*************************************
+ * AsInt64
+ *************************************/
+SHVInt64 SHVDataRowC::AsInt64(const SHVString8C& colName) const
+{
+	return AsInt64(ColumnIndex(colName));
 }
 
 /*************************************
@@ -126,6 +138,12 @@ SHVBool SHVDataRowC::GetValue(const SHVString8C& colName, SHVString& value) cons
 SHVBool SHVDataRowC::GetValue(const SHVString8C& colName, SHVInt& value)  const
 {
 	value = AsInt(colName);
+	return !value.IsNull();
+}
+
+SHVBool SHVDataRowC::GetValue(const SHVString8C& colName, SHVInt64& value)  const
+{
+	value = AsInt64(colName);
 	return !value.IsNull();
 }
 

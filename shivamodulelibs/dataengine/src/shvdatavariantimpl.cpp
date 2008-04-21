@@ -36,11 +36,14 @@ SHVString retVal;
 		case SHVDataVariant::TypeInt:
 			retVal = SHVStringC::LongToString(Data.intVal);
 			break;
+		case SHVDataVariant::TypeInt64:
+			retVal = SHVStringC::Int64ToString(Data.int64Val);
+			break;
 		case SHVDataVariant::TypeBool:
 			retVal = Data.boolVal ? SHVString(_T("1")) : SHVString(_T("0"));
 			break;
 		case SHVDataVariant::TypeDouble:
-			retVal.Format(_T("%g"), Data.doubleVal);
+			retVal = SHVString::DoubleToString(Data.doubleVal);
 			break;
 		case SHVDataVariant::TypeString:
 			retVal = Data.stringVal->GetBuffer();
@@ -81,15 +84,14 @@ void SHVDataVariantImpl::SetString(const SHVStringC& val)
 		case SHVDataVariant::TypeInt:
 			Data.intVal = SHVStringC::StrToL(val.GetSafeBuffer(), NULL, 10);
 			break;
+		case SHVDataVariant::TypeInt64:
+			Data.int64Val = SHVStringC::StrToInt64(val.GetSafeBuffer(), NULL, 10);
+			break;
 		case SHVDataVariant::TypeBool:
 			Data.boolVal = val == _T("1");
 			break;
 		case SHVDataVariant::TypeDouble:
-#ifdef UNICODE
-			Data.doubleVal = wcstod(val.GetSafeBuffer(), NULL);
-#else
-			Data.doubleVal = strtod(val.GetSafeBuffer(), NULL);
-#endif
+			Data.doubleVal = SHVStringC::StrToDouble(val.GetSafeBuffer(), NULL);
 			break;
 		case SHVDataVariant::TypeString:
 			Data.stringVal = new SHVString(val);
@@ -116,6 +118,9 @@ SHVInt retVal;
 		{
 			case SHVDataVariant::TypeInt:
 				retVal = Data.intVal;
+				break;
+			case SHVDataVariant::TypeInt64:
+				retVal = (int) Data.int64Val;
 				break;
 			case SHVDataVariant::TypeBool:
 				retVal = SHVBool(Data.boolVal).GetError();
@@ -160,6 +165,9 @@ void SHVDataVariantImpl::SetInt(SHVInt val)
 		case SHVDataVariant::TypeInt:
 			Data.intVal = val;
 			break;
+		case SHVDataVariant::TypeInt64:
+			Data.int64Val = val;
+			break;
 		case SHVDataVariant::TypeBool:
 			Data.boolVal = val != 0;
 			break;
@@ -168,6 +176,84 @@ void SHVDataVariantImpl::SetInt(SHVInt val)
 			break;
 		case SHVDataVariant::TypeString:
 			Data.stringVal = new SHVString(SHVStringC::LongToString(val));
+			break;
+		}
+	}
+}
+
+/*************************************
+ * AsInt64
+ *************************************/
+SHVInt64 SHVDataVariantImpl::AsInt64() const
+{
+SHVInt64 retVal;
+	SHVASSERT(DataType != SHVDataVariant::TypeTime);
+	if (DataType != SHVDataVariant::TypeTime)
+	{
+		if (!isNull)
+		{
+		switch (DataType)
+		{
+			case SHVDataVariant::TypeInt:
+				retVal = Data.intVal;
+				break;
+			case SHVDataVariant::TypeInt64:
+				retVal = Data.int64Val;
+				break;
+			case SHVDataVariant::TypeBool:
+				retVal = SHVBool(Data.boolVal).GetError();
+				break;
+			case SHVDataVariant::TypeDouble:
+				retVal = (int) Data.doubleVal;
+				break;
+			case SHVDataVariant::TypeString:
+				retVal = SHVStringC::StrToL(Data.stringVal->GetSafeBuffer(), NULL, 10);
+				break;
+			case SHVDataVariant::TypeTime:
+				break;
+			}
+		}
+	}
+	return retVal;
+}
+
+/*************************************
+ * SetInt
+ *************************************/
+void SHVDataVariantImpl::SetInt64(SHVInt64 val)
+{
+	SHVASSERT(DataType != SHVDataVariant::TypeTime);
+	if (DataType == SHVDataVariant::TypeUndefined)
+		DataType = SHVDataVariant::TypeInt;
+	if (val.IsNull())
+	{
+		if (DataType == SHVDataVariant::TypeString && Data.stringVal)
+			delete Data.stringVal;
+		Data.stringVal = NULL;
+		isNull = true;
+	}
+	else
+	if (DataType != SHVDataVariant::TypeTime)
+	{
+		isNull = false;
+		if (DataType == SHVDataVariant::TypeString && Data.stringVal)
+			delete Data.stringVal;
+		switch (DataType)
+		{
+		case SHVDataVariant::TypeInt:
+			Data.intVal = (int) val;
+			break;
+		case SHVDataVariant::TypeInt64:
+			Data.int64Val = val;
+			break;
+		case SHVDataVariant::TypeBool:
+			Data.boolVal = val != 0;
+			break;
+		case SHVDataVariant::TypeDouble:
+			Data.doubleVal = (double) val;
+			break;
+		case SHVDataVariant::TypeString:
+			Data.stringVal = new SHVString(SHVStringC::Int64ToString(val));
 			break;
 		}
 	}
@@ -189,6 +275,9 @@ SHVDouble retVal;
 			case SHVDataVariant::TypeInt:
 				retVal = (double) Data.intVal;
 				break;
+			case SHVDataVariant::TypeInt64:
+				retVal = (double) Data.int64Val;
+				break;
 			case SHVDataVariant::TypeBool:
 				retVal = (double) SHVBool(Data.boolVal).GetError();
 				break;
@@ -196,11 +285,7 @@ SHVDouble retVal;
 				retVal = Data.doubleVal;
 				break;
 			case SHVDataVariant::TypeString:
-#ifdef UNICODE
-				retVal = wcstod(Data.stringVal->GetSafeBuffer(), NULL);
-#else
-				retVal = strtod(Data.stringVal->GetSafeBuffer(), NULL);
-#endif
+				retVal = SHVStringC::StrToDouble(Data.stringVal->GetSafeBuffer(), NULL);
 				break;
 			case SHVDataVariant::TypeTime:
 				break;
@@ -237,6 +322,9 @@ void SHVDataVariantImpl::SetDouble(SHVDouble val)
 		{
 		case SHVDataVariant::TypeInt:
 			Data.intVal = (int) val;
+			break;
+		case SHVDataVariant::TypeInt64:
+			Data.int64Val = (SHVInt64Val) val;
 			break;
 		case SHVDataVariant::TypeBool:
 			Data.boolVal = val != 0;
@@ -319,6 +407,9 @@ SHVBool retVal;
 			case SHVDataVariant::TypeInt:
 				retVal = SHVBool(Data.intVal != 0);
 				break;
+			case SHVDataVariant::TypeInt64:
+				retVal = SHVBool(Data.int64Val != 0);
+				break;
 			case SHVDataVariant::TypeBool:
 				retVal = SHVBool(Data.boolVal);
 				break;
@@ -353,6 +444,9 @@ void SHVDataVariantImpl::SetBool(SHVBool val)
 		{
 		case SHVDataVariant::TypeInt:
 			Data.intVal = val.GetError();
+			break;
+		case SHVDataVariant::TypeInt64:
+			Data.int64Val = val.GetError();
 			break;
 		case SHVDataVariant::TypeBool:
 			Data.boolVal = val;
@@ -397,6 +491,9 @@ SHVDataVariant& SHVDataVariantImpl::operator=(const SHVDataVariant& val)
 		case SHVDataVariant::TypeInt:
 			SetInt(val.AsInt());
 			break;
+		case SHVDataVariant::TypeInt64:
+			SetInt64(val.AsInt64());
+			break;
 		case SHVDataVariant::TypeBool:
 			SetBool(val.AsBool());
 			break;
@@ -424,6 +521,8 @@ bool SHVDataVariantImpl::operator==(const SHVDataVariant& val) const
 		{
 		case SHVDataVariant::TypeInt:
 			return AsInt() == val.AsInt();
+		case SHVDataVariant::TypeInt64:
+			return AsInt64() == val.AsInt64();
 		case SHVDataVariant::TypeBool:
 			return AsBool() == val.AsBool();
 		case SHVDataVariant::TypeDouble:

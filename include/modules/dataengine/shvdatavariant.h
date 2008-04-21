@@ -15,6 +15,7 @@ public:
 	{
 		TypeUndefined,
 		TypeInt,
+		TypeInt64,
 		TypeDouble,
 		TypeBool,
 		TypeString,
@@ -30,6 +31,9 @@ public:
 
 	virtual SHVInt AsInt() const = 0;
 	virtual void SetInt(SHVInt val) = 0;
+
+	virtual SHVInt64 AsInt64() const = 0;
+	virtual void SetInt64(SHVInt64 val) = 0;
 
 	virtual SHVDouble AsDouble() const = 0;
 	virtual void SetDouble(SHVDouble val) = 0;
@@ -49,6 +53,7 @@ public:
 	// inlines
 	inline SHVDataVariant& operator=(const SHVStringC& val);
 	inline SHVDataVariant& operator=(SHVInt val);
+	inline SHVDataVariant& operator=(SHVInt64 val);
 	inline SHVDataVariant& operator=(SHVDouble val);
 	inline SHVDataVariant& operator=(const SHVTime& val);
 	inline SHVDataVariant& operator=(SHVBool val);
@@ -66,9 +71,16 @@ SHVDataVariant& SHVDataVariant::operator=(const SHVStringC& val)
 	SetString(val);
 	return *this;
 }
+
 SHVDataVariant& SHVDataVariant::operator=(SHVInt val)
 {
 	SetInt(val);
+	return *this;
+}
+
+SHVDataVariant& SHVDataVariant::operator=(SHVInt64 val)
+{
+	SetInt64(val);
 	return *this;
 }
 

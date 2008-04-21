@@ -39,6 +39,8 @@ SHVBool ok;
 				col->SetDataLength(-1);
 				if (!SHVStringUTF8::StrCaseCmp(valUTF8.GetSafeBuffer(), __SQLITE_TYPE_INT))
 					col->SetDataType(SHVDataVariant::TypeInt);
+				if (!SHVStringUTF8::StrCaseCmp(valUTF8.GetSafeBuffer(), __SQLITE_TYPE_INT64))
+					col->SetDataType(SHVDataVariant::TypeInt64);
 				if (!SHVStringUTF8::StrCaseCmp(valUTF8.GetSafeBuffer(), __SQLITE_TYPE_DOUBLE))
 					col->SetDataType(SHVDataVariant::TypeDouble);
 				if (!SHVStringUTF8::StrCaseCmp(valUTF8.GetSafeBuffer(), __SQLITE_TYPE_DATETIME))

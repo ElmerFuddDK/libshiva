@@ -22,6 +22,10 @@ ColumnData = new RowValues[st->GetColumnCount()];
 			ColumnData[i].OrgValue.SetInt(copyrow->AsInt(i));
 			ColumnData[i].Value.SetInt(copyrow->AsInt(i));
 			break;
+		case SHVDataVariant::TypeInt64:
+			ColumnData[i].OrgValue.SetInt64(copyrow->AsInt64(i));
+			ColumnData[i].Value.SetInt64(copyrow->AsInt64(i));
+			break;
 		case SHVDataVariant::TypeBool:
 			ColumnData[i].OrgValue.SetBool(copyrow->AsBool(i));
 			ColumnData[i].Value.SetBool(copyrow->AsBool(i));
@@ -55,6 +59,10 @@ ColumnData = new RowValues[st->GetColumnCount()];
 		case SHVDataVariant::TypeInt:
 			ColumnData[i].OrgValue.SetInt(SHVInt());
 			ColumnData[i].Value.SetInt(SHVInt());
+			break;
+		case SHVDataVariant::TypeInt64:
+			ColumnData[i].OrgValue.SetInt64(SHVInt64());
+			ColumnData[i].Value.SetInt64(SHVInt64());
 			break;
 		case SHVDataVariant::TypeDouble:
 			ColumnData[i].OrgValue.SetDouble(SHVDouble());
@@ -101,10 +109,22 @@ void SHVDataRowImpl::SetInt(size_t colIdx, SHVInt val)
 	if (colIdx != SIZE_T_MAX)
 	{
 		SetChanged();
-		ColumnData[colIdx].Value.SetInt(SHVInt(val));
+		ColumnData[colIdx].Value.SetInt(val);
 	}
 }
 
+/*************************************
+ * SetInt64
+ *************************************/
+void SHVDataRowImpl::SetInt64(size_t colIdx, SHVInt64 val)
+{
+	SHVASSERT(colIdx != SIZE_T_MAX);
+	if (colIdx != SIZE_T_MAX)
+	{
+		SetChanged();
+		ColumnData[colIdx].Value.SetInt64(val);
+	}
+}
 
 /*************************************
  * SetDouble
@@ -241,6 +261,15 @@ SHVInt SHVDataRowImpl::AsInt(size_t colIdx) const
 {
 	SHVASSERT(colIdx != SIZE_T_MAX);
 	return (colIdx != SIZE_T_MAX ? ColumnData[colIdx].Value.AsInt() : SHVInt());
+}
+
+/*************************************
+ * AsInt64
+ *************************************/
+SHVInt64 SHVDataRowImpl::AsInt64(size_t colIdx) const
+{
+	SHVASSERT(colIdx != SIZE_T_MAX);
+	return (colIdx != SIZE_T_MAX ? ColumnData[colIdx].Value.AsInt64() : SHVInt64());
 }
 
 /*************************************

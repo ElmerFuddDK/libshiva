@@ -7,6 +7,7 @@
 #include "shvdatastructimpl.h"
 
 #define __SQLITE_TYPE_INT      "integer"   // affinity INTEGER
+#define __SQLITE_TYPE_INT64    "int64"     // affinity INTEGER
 #define __SQLITE_TYPE_DOUBLE   "double"    // affinity DOUBLE
 #define __SQLITE_TYPE_STRING   "varchar"   // affinity TEXT
 #define __SQLITE_TYPE_DATETIME "datetext"  // affinity TEXT

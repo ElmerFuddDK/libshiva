@@ -34,6 +34,7 @@ public:
 
 	virtual void SetString(size_t colIdx, const SHVStringC& val) = 0;
 	virtual void SetInt(size_t colIdx, SHVInt val) = 0;
+	virtual void SetInt64(size_t colIdx, SHVInt64 val) = 0;
 	virtual void SetDouble(size_t colIdx, SHVDouble val) = 0;
 	virtual void SetTime(size_t colIdx, const SHVTime& time) = 0;
 	virtual void SetBool(size_t colIdx, SHVBool val) = 0;
@@ -49,6 +50,7 @@ public:
 	// from SHVDataRowC
 	virtual SHVStringBuffer AsString(size_t colIdx) const = 0;
 	virtual SHVInt AsInt(size_t colIdx) const = 0;
+	virtual SHVInt64 AsInt64(size_t colIdx) const = 0;
 	virtual SHVDouble AsDouble(size_t colIdx) const = 0;
 	virtual SHVTime AsTime(size_t colIdx) const = 0;
 	virtual SHVBool AsBool(size_t colIdx) const = 0;
@@ -71,6 +73,7 @@ public:
 	// inlines
 	inline void SetString(const SHVString8C& colName, const SHVStringC& val);
 	inline void SetInt(const SHVString8C& colName, SHVInt val);
+	inline void SetInt64(const SHVString8C& colName, SHVInt64 val);
 	inline void SetDouble(const SHVString8C& colName, SHVDouble val);
 	inline void SetTime(const SHVString8C& colName, const SHVTime& time);
 	inline void SetBool(const SHVString8C& colName, const SHVBool val);
@@ -113,6 +116,10 @@ void SHVDataRow::SetString(const SHVString8C& colName, const SHVStringC& val)
 void SHVDataRow::SetInt(const SHVString8C& colName, SHVInt val)
 {
 	SetInt(ColumnIndex(colName), val);
+}
+void SHVDataRow::SetInt64(const SHVString8C& colName, SHVInt64 val)
+{
+	SetInt64(ColumnIndex(colName), val);
 }
 void SHVDataRow::SetDouble(const SHVString8C& colName, SHVDouble val)
 {

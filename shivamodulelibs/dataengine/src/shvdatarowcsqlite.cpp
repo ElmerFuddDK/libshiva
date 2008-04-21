@@ -37,6 +37,22 @@ long val;
 }
 
 /*************************************
+ * AsInt64
+ *************************************/
+SHVInt64 SHVDataRowCSQLite::AsInt64(size_t colIdx) const
+{
+const SHVSQLiteStatement* Statement = (const SHVSQLiteStatement*) Select->GetRowProvider();
+SHVInt64 retVal;
+SHVInt64Val val;
+	if (!IsNull(colIdx))
+	{
+		Statement->GetInt64(val, (int) colIdx);
+		retVal = SHVInt64(val);
+	}		
+	return retVal;
+}
+
+/*************************************
  * AsDouble
  *************************************/
 SHVDouble SHVDataRowCSQLite::AsDouble(size_t colIdx) const
@@ -146,6 +162,9 @@ SHVDataVariant* retVal = NULL;
 		case SHVDataVariant::TypeInt:
 			retVal = new SHVDataVariantImpl(AsInt(colIdx));
 			break;
+		case SHVDataVariant::TypeInt64:
+			retVal = new SHVDataVariantImpl(AsInt64(colIdx));
+			break;
 		case SHVDataVariant::TypeBool:
 			retVal = new SHVDataVariantImpl(AsBool(colIdx));
 			break;
@@ -184,6 +203,12 @@ SHVBool match(SHVBool::True);
 						match = Keys[i].Value->AsInt() == AsInt(colIdx);
 					else
 						match = AsInt(colIdx).IsNull();
+					break;
+				case SHVDataVariant::TypeInt64:
+					if (Keys[i].Value)
+						match = Keys[i].Value->AsInt64() == AsInt64(colIdx);
+					else
+						match = AsInt64(colIdx).IsNull();
 					break;
 				case SHVDataVariant::TypeDouble:
 					if (Keys[i].Value)

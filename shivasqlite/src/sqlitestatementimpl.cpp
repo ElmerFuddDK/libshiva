@@ -38,6 +38,21 @@ SHVMutexLocker lock(Lock);
 }
 
 /*************************************
+ * GetLong
+ *************************************/
+SHVBool SHVSQLiteStatementImpl::GetInt64(SHVInt64Val& val, int columnIdx) const
+{
+SHVMutexLocker lock(Lock);
+	if (columnIdx < sqlite3_column_count(Statement) && columnIdx >= 0)
+	{
+		val = sqlite3_column_int64(Statement, columnIdx);
+		return SHVBool(SHVSQLiteWrapper::SQLite_OK);
+	}
+	else
+		return SHVBool(SHVSQLiteWrapper::SQLite_ERROR);	
+}
+
+/*************************************
  * GetDouble
  *************************************/
 SHVBool SHVSQLiteStatementImpl::GetDouble(double& val, int columnIdx) const
@@ -191,6 +206,21 @@ SHVMutexLocker lock(Lock);
  * SetParameterLongUTF8
  *************************************/
 SHVBool SHVSQLiteStatementImpl::SetParameterLongUTF8(const SHVStringUTF8C& name, long val)
+{
+SHVMutexLocker lock(Lock);
+	int pIdx = sqlite3_bind_parameter_index(Statement, name.GetSafeBuffer());
+	if (pIdx)
+	{
+		return SHVBool(sqlite3_bind_int(Statement, pIdx, val));
+	}
+	else
+		return SHVBool(SHVSQLiteWrapper::SQLite_ERROR);
+}
+
+/*************************************
+ * SetParameterInt64UTF8
+ *************************************/
+SHVBool SHVSQLiteStatementImpl::SetParameterInt64UTF8(const SHVStringUTF8C& name, SHVInt64Val val)
 {
 SHVMutexLocker lock(Lock);
 	int pIdx = sqlite3_bind_parameter_index(Statement, name.GetSafeBuffer());

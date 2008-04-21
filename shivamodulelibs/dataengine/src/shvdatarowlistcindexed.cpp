@@ -119,6 +119,9 @@ long rc;
 				case SHVDataVariant::TypeInt:
 					type = __SQLITE_TYPE_INT;
 					break;
+				case SHVDataVariant::TypeInt64:
+					type = __SQLITE_TYPE_INT64;
+					break;
 				case SHVDataVariant::TypeBool:
 					type = __SQLITE_TYPE_BOOL;
 					break;

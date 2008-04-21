@@ -31,6 +31,7 @@ public:
 	// from SHVDataRow
 	virtual void SetString(size_t colIdx, const SHVStringC& val);
 	virtual void SetInt(size_t colIdx, SHVInt val);
+	virtual void SetInt64(size_t colIdx, SHVInt64 val);
 	virtual void SetDouble(size_t colIdx, SHVDouble val);
 	virtual void SetTime(size_t colIdx, const SHVTime& time);
 	virtual void SetBool(size_t colIdx, SHVBool val);
@@ -46,6 +47,7 @@ public:
 	// from SHVDataRowC
 	virtual SHVStringBuffer AsString(size_t colIdx) const;
 	virtual SHVInt AsInt(size_t colIdx) const;
+	virtual SHVInt64 AsInt64(size_t colIdx) const;
 	virtual SHVDouble AsDouble(size_t colIdx) const;
 	virtual SHVTime AsTime(size_t colIdx) const;
 	virtual SHVBool AsBool(size_t colIdx) const;

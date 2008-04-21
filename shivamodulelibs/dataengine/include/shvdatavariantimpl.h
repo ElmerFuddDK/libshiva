@@ -23,6 +23,9 @@ public:
 	virtual SHVInt AsInt() const;
 	virtual void SetInt(SHVInt val);
 
+	virtual SHVInt64 AsInt64() const;
+	virtual void SetInt64(SHVInt64 val);
+
 	virtual SHVDouble AsDouble() const;
 	virtual void SetDouble(SHVDouble val);
 
@@ -41,6 +44,7 @@ public:
 	// inlines
 	inline SHVDataVariantImpl();
 	inline SHVDataVariantImpl(SHVInt val);
+	inline SHVDataVariantImpl(SHVInt64 val);
 	inline SHVDataVariantImpl(SHVDouble val);
 	inline SHVDataVariantImpl(SHVBool val);
 	inline SHVDataVariantImpl(const SHVString& val);
@@ -53,6 +57,7 @@ private:
 	int DataType;
 	union {
 		int intVal;
+		SHVInt64Val int64Val;
 		double doubleVal;
 		bool boolVal;
 		SHVTime* timeVal;
@@ -69,7 +74,7 @@ private:
 SHVDataVariantImpl::SHVDataVariantImpl()
 {
 	DataType = SHVDataVariant::TypeUndefined;
-	Data.stringVal = NULL;
+	Data.doubleVal = 0;
 }
 
 SHVDataVariantImpl::SHVDataVariantImpl(SHVInt val)
@@ -77,6 +82,13 @@ SHVDataVariantImpl::SHVDataVariantImpl(SHVInt val)
 	DataType = SHVDataVariant::TypeInt;
 	SetInt(val);
 }
+
+SHVDataVariantImpl::SHVDataVariantImpl(SHVInt64 val)
+{
+	DataType = SHVDataVariant::TypeInt64;
+	SetInt64(val);
+}
+
 SHVDataVariantImpl::SHVDataVariantImpl(SHVDouble val)
 {
 	DataType = SHVDataVariant::TypeDouble;

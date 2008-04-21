@@ -19,6 +19,7 @@ public:
 	// from SHVDataRowKey
 	virtual const SHVDataRowKey::KeyValuePair& operator[](size_t idx) const;
 	virtual void SetKeyValue(size_t idx, SHVInt val);
+	virtual void SetKeyValue(size_t idx, SHVInt64 val);
 	virtual void SetKeyValue(size_t idx, SHVDouble val);
 	virtual void SetKeyValue(size_t idx, SHVBool val);
 	virtual void SetKeyValue(size_t idx, const SHVTime& val);

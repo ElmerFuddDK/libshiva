@@ -44,6 +44,14 @@ void SHVDataRowKeyImpl::SetKeyValue(size_t idx, SHVInt val)
 		*Keys[idx]->Value = val;
 }
 
+void SHVDataRowKeyImpl::SetKeyValue(size_t idx, SHVInt64 val)
+{
+	if (!Keys[idx]->Value)
+		Keys[idx]->Value = new SHVDataVariantImpl(SHVInt64(val));
+	else
+		*Keys[idx]->Value = val;
+}
+
 void SHVDataRowKeyImpl::SetKeyValue(size_t idx, SHVDouble val)
 {
 	if (!Keys[idx]->Value)

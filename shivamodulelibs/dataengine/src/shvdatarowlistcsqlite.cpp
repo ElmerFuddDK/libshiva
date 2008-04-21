@@ -141,6 +141,9 @@ SHVDataRowC* retVal = NULL;
 				if (k[i].Value->GetDataType() == SHVDataVariant::TypeInt)
 					Statement->SetParameterLongUTF8(keyParm, k[i].Value->AsInt());
 				else
+				if (k[i].Value->GetDataType() == SHVDataVariant::TypeInt64)
+					Statement->SetParameterInt64UTF8(keyParm, k[i].Value->AsInt64());
+				else
 				if (k[i].Value->GetDataType() == SHVDataVariant::TypeBool)
 					Statement->SetParameterLongUTF8(keyParm, k[i].Value->AsInt());
 				else
@@ -198,6 +201,9 @@ SHVBool retVal = IsOk();
 					shvtype = SHVDataVariant::TypeUndefined;
 					if (type == __SQLITE_TYPE_INT)
 						shvtype = SHVDataVariant::TypeInt;
+					else
+					if (type == __SQLITE_TYPE_INT64)
+						shvtype = SHVDataVariant::TypeInt64;
 					else
 					if (type == __SQLITE_TYPE_DOUBLE)
 						shvtype = SHVDataVariant::TypeDouble;

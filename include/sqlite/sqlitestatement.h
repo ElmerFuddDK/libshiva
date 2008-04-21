@@ -21,6 +21,7 @@ public:
 
 	// GetValue
 	virtual SHVBool GetLong(long& val, int columnIdx) const = 0;
+	virtual SHVBool GetInt64(SHVInt64Val& val, int columnIdx) const = 0;
 	virtual SHVBool GetDouble(double& val, int columnIdx) const = 0;
 	virtual SHVBool GetBlob(const void*& blob, int& len, int columnIdx) const = 0;
 	virtual SHVBool GetStringUTF8(SHVStringSQLite& text, int& len, int columnIdx) const = 0;
@@ -45,6 +46,9 @@ public:
 	// SetParameter
 	virtual SHVBool SetParameterLongUTF8(const SHVStringUTF8C& name, long val) = 0;
 	inline SHVBool SetParameterLong(const SHVStringC& name, long val);
+
+	virtual SHVBool SetParameterInt64UTF8(const SHVStringUTF8C& name, SHVInt64Val val) = 0;
+	inline SHVBool SetParameterInt64(const SHVStringC& name, SHVInt64Val val);
 
 	virtual SHVBool SetParameterDoubleUTF8(const SHVStringUTF8C& name, double val) = 0;
 	inline SHVBool SetParameterDouble(const SHVStringC& name, double val);
@@ -104,6 +108,11 @@ SHVBool SHVSQLiteStatement::GetColumnType(SHVString& colType, int columnIdx) con
 SHVBool SHVSQLiteStatement::SetParameterLong(const SHVStringC& name, long val)
 {
 	return SetParameterLongUTF8(name.ToStrUTF8(), val);
+}
+
+SHVBool SHVSQLiteStatement::SetParameterInt64(const SHVStringC& name, SHVInt64Val val)
+{
+	return SetParameterInt64UTF8(name.ToStrUTF8(), val);
 }
 
 SHVBool SHVSQLiteStatement::SetParameterDouble(const SHVStringC& name, double val)
