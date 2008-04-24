@@ -285,7 +285,7 @@ const SHVDataStructC& Struct = *dataStruct;
 			else
 				retVal = SHVBool::False;
 		}
-		for (size_t i = 0; i < IndexCount() && retVal; i++)
+		for (size_t i = 0; i < Struct.IndexCount() && retVal; i++)
 		{
 			retVal = Struct.GetIndex(i)->KeyDefEquals(GetIndex(i));			
 		}
