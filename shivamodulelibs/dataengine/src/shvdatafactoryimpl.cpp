@@ -89,48 +89,51 @@ SHVBool retVal = SHVBool::True;
 
 	if (lockTrans.IsOk())
 	{
-		found = InternalFindStruct(dataStruct->GetTableName());
-		if (found)
-		{
-			drop = create = !dataStruct->IsEqual(found) && createTable;
-		}
-		else
-		{
-			if (createTable)
-			{
-				create = !TableMatch(SQLite, dataStruct, dataStruct->GetTableName(), drop);
-				if (!create)
-					drop = false;
-			}
-		}
-		if (drop)
-		{
-			sql.Format("drop table %s", dataStruct->GetTableName());
-			statement = SQLite->ExecuteUTF8(retVal, sql, rest);
-			retVal = SHVBool(retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE);
-		}
-		if (retVal && create) 
-		{
-			retVal = CreateTable(SQLite, dataStruct, dataStruct->GetTableName());
-			if (retVal)
-			{
-				for (size_t key = 1; key < dataStruct->IndexCount() && retVal; key++)
-				{
-					retVal = CreateIndex(SQLite, dataStruct, dataStruct->GetTableName(), key);
-				}
-				if (!retVal)
-				{
-				SHVBool dropOk;
-					sql.Format("drop table %s", dataStruct->GetTableName());
-					statement = SQLite->ExecuteUTF8(dropOk, sql, rest);
-				}
-			}
-		}
-		if (retVal && !found)
-			Schema.Add((SHVDataStructC*) dataStruct);
+		if (createTable)
+			BeginTransaction(NULL);
+	}
+
+	found = InternalFindStruct(dataStruct->GetTableName());
+	if (found)
+	{
+		drop = create = !dataStruct->IsEqual(found) && createTable;
 	}
 	else
-		retVal.SetError(SHVSQLiteWrapper::SQLite_MISUSE);
+	{
+		if (createTable)
+		{
+			create = !TableMatch(SQLite, dataStruct, dataStruct->GetTableName(), drop);
+			if (!create)
+				drop = false;
+		}
+	}
+	if (drop)
+	{
+		sql.Format("drop table %s", dataStruct->GetTableName());
+		statement = SQLite->ExecuteUTF8(retVal, sql, rest);
+		retVal = SHVBool(retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE);
+	}
+	if (retVal && create) 
+	{
+		retVal = CreateTable(SQLite, dataStruct, dataStruct->GetTableName());
+		if (retVal)
+		{
+			for (size_t key = 1; key < dataStruct->IndexCount() && retVal; key++)
+			{
+				retVal = CreateIndex(SQLite, dataStruct, dataStruct->GetTableName(), key);
+			}
+		}
+	}
+	if (retVal && !found)
+		Schema.Add((SHVDataStructC*) dataStruct);
+
+	if (lockTrans.IsOk())
+	{
+		if (retVal)
+			EndTransaction(NULL);
+		else
+			RollbackTransaction(NULL);
+	}
 	return retVal;
 }
 
