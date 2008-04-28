@@ -69,6 +69,9 @@ friend class SHVDataFactory;
 	inline bool CheckAlias(const SHVString8C& alias);
 	inline bool LockTransaction();
 	inline void UnlockTransaction();
+	inline SHVBool InternalBeginTransaction();
+	inline SHVBool InternalEndTransaction();
+	inline SHVBool InternalRollbackTransaction();
 };
 typedef SHVRefObjectContainer<SHVDataSession> SHVDataSessionRef;
 
@@ -143,6 +146,7 @@ bool SHVDataSession::LockTransaction()
 	else
 		return false;
 }
+
 /*************************************
  * UnlockTransaction
  *************************************/
@@ -150,6 +154,39 @@ void SHVDataSession::UnlockTransaction()
 {
 	if (GetFactory())
 		GetFactory()->UnlockTransaction();
+}
+
+/*************************************
+ * InternalStartTransaction
+ *************************************/
+inline SHVBool SHVDataSession::InternalBeginTransaction()
+{
+SHVBool retVal = SHVBool::False;
+	if (GetFactory())
+		retVal = GetFactory()->BeginTransaction(this);
+	return retVal;
+}
+
+/*************************************
+ * InternalEndTransaction
+ *************************************/
+inline SHVBool SHVDataSession::InternalEndTransaction()
+{
+SHVBool retVal = SHVBool::False;
+	if (GetFactory())
+		retVal = GetFactory()->EndTransaction(this);
+	return retVal;
+}
+
+/*************************************
+ * InternalRollbackTransaction
+ *************************************/
+inline SHVBool SHVDataSession::InternalRollbackTransaction()
+{
+SHVBool retVal = SHVBool::False;
+	if (GetFactory())
+		retVal = GetFactory()->RollbackTransaction(this);
+	return retVal;
 }
 
 #endif

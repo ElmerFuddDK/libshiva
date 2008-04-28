@@ -150,58 +150,53 @@ bool create;
 bool exists;
 SHVSQLiteWrapperRef sqlite;
 
-	if (lockTrans.IsOk())
-	{
-		if (useSession)
-			sqlite = (SHVSQLiteWrapper*) useSession->GetProvider();
-		else
-			sqlite = SQLite;
+	if (useSession)
+		sqlite = (SHVSQLiteWrapper*) useSession->GetProvider();
+	else
+		sqlite = SQLite;
 
-		aliasfound = (SHVDataStructC*) InternalFindAlias(alias);
-		found = InternalFindStruct(table);	
-		if (found)
+	aliasfound = (SHVDataStructC*) InternalFindAlias(alias);
+	found = InternalFindStruct(table);	
+	if (found)
+	{
+		if (lockTrans.IsOk())
 		{
-			create = !TableMatch(sqlite, found, alias, exists) || clear;
-			if (create && exists)
+			BeginTransaction(useSession);
+		}
+		create = !TableMatch(sqlite, found, alias, exists) || clear;
+		if (create && exists)
+		{
+			if (aliasfound)
 			{
-				if (aliasfound)
-				{
-					InternalUnregisterAlias(sqlite, alias);
-					aliasfound = NULL;
-				}
-				else
-				{
-					sql.Format("drop table %s", alias);
-					sqlite->ExecuteUTF8(retVal, sql, rest)->ValidateRefCount();
-					if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
-						retVal = SHVBool::True;
-					else
-						SHVTRACE(_T("NOT NICE... DROP %s"), alias.ToStrT().GetSafeBuffer());
-				}
+				InternalUnregisterAlias(sqlite, alias);
+				aliasfound = NULL;
 			}
-			if (create && retVal)
+			else
 			{
-				retVal = CreateTable(sqlite, found, alias);
-				if (retVal)
-				{
-					for (size_t key = 1; key < found->IndexCount() && retVal; key++)
-					{
-						retVal = CreateIndex(sqlite, found, alias, key);
-					}
-					if (!retVal)
-					{
-					SHVBool dropOk;
-						sql.Format("drop table %s", alias);
-						sqlite->ExecuteUTF8(dropOk, sql, rest)->ValidateRefCount();
-					}
-				}
-				else
-					SHVTRACE(_T("NOT NICE... CREATE %s"), alias.ToStrT().GetSafeBuffer());
+				sql.Format("drop table %s", alias);
+				sqlite->ExecuteUTF8(retVal, sql, rest)->ValidateRefCount();
+				if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+					retVal = SHVBool::True;
 			}
 		}
-		else
-			retVal = SHVBool::False;
-
+		if (create && retVal)
+		{
+			retVal = CreateTable(sqlite, found, alias);
+			if (retVal)
+			{
+				for (size_t key = 1; key < found->IndexCount() && retVal; key++)
+				{
+					retVal = CreateIndex(sqlite, found, alias, key);
+				}
+			}
+		}
+		if (lockTrans.IsOk())
+		{
+			if (retVal)
+				EndTransaction(useSession);
+			else
+				RollbackTransaction(useSession);
+		}
 		if (retVal && aliasfound.IsNull())
 			Alias.AddTail(SHVDataStructReg(alias, found));
 	}
@@ -216,7 +211,17 @@ SHVSQLiteWrapperRef sqlite;
 SHVBool SHVDataFactoryImpl::UnregisterAlias(const SHVString8C& alias)
 {
 SHVTransactionLocker lockTrans(*this, FactoryLock);
-	return InternalUnregisterAlias(SQLite, alias);
+SHVBool retVal = SHVBool::True;
+	if (lockTrans.IsOk())
+	{
+		BeginTransaction(NULL);
+	}
+	retVal = InternalUnregisterAlias(SQLite, alias);
+	if (lockTrans.IsOk())
+	{
+		EndTransaction(NULL);
+	}
+	return retVal;
 }
 
 
@@ -494,7 +499,7 @@ const SHVDataStructC* SHVDataFactoryImpl::InternalFindAlias(const SHVString8C& t
 const SHVDataStructC* found = NULL;
 SHVListIterator<SHVDataStructReg> Iter(Alias);
 	while (Iter.MoveNext() && Iter.Get().GetAlias() != table);
-	if (Iter)
+	if (Iter && !Iter.Get().GetDeleted())
 	{
 		found = &Iter.Get().GetStruct();
 	}
@@ -550,7 +555,7 @@ aliasfound = FindStruct(alias);
 				while (Iter.MoveNext() && Iter.Get().GetAlias() != alias);
 				if (Iter)
 				{
-					Alias.RemoveAt(Iter.Pos());
+					Iter.Get().SetDeleted(true);
 				}
 				retVal = SHVBool::True;
 			}
@@ -594,10 +599,22 @@ SHVListPos pos = ActiveSessions.Find(session);
 bool SHVDataFactoryImpl::CheckAlias(SHVDataSession* session, const SHVString8C& alias)
 {
 SHVTransactionLocker lockTrans(*this, FactoryLock);
-	if (PendingUnregisterAlias.Find(alias))
-		return InternalUnregisterAlias((SHVSQLiteWrapper*) session->GetProvider(), alias);
+bool retVal = PendingUnregisterAlias.Find(alias) != NULL;
+	if (retVal)
+	{
+		if (lockTrans.IsOk())
+		{
+			BeginTransaction(session);
+		}
+		retVal = InternalUnregisterAlias(SQLite, alias);
+		if (lockTrans.IsOk())
+		{
+			EndTransaction(session);
+		}
+	}
 	else
-		return true;
+		retVal = true;
+	return retVal;
 }
 
 /*************************************
@@ -634,4 +651,87 @@ bool SHVDataFactoryImpl::LockTransaction()
 void SHVDataFactoryImpl::UnlockTransaction()
 {
 	TransactionLock.Unlock();
+}
+
+/*************************************
+ * BeginTransaction
+ *************************************/
+SHVBool SHVDataFactoryImpl::BeginTransaction(SHVDataSession* session)
+{
+SHVStringSQLite rest(NULL);
+SHVBool ok;
+SHVSQLiteWrapperRef sqlite;
+
+	sqlite = (session ? (SHVSQLiteWrapper*) session->GetProvider() : SQLite);	
+	sqlite->ExecuteUTF8(ok, "BEGIN TRANSACTION", rest)->ValidateRefCount();
+	return ok;
+}
+
+/*************************************
+ * EndTransaction
+ *************************************/
+SHVBool SHVDataFactoryImpl::EndTransaction(SHVDataSession* session)
+{
+SHVStringSQLite rest(NULL);
+SHVBool ok;
+SHVSQLiteWrapperRef sqlite = (session ? (SHVSQLiteWrapper*) session->GetProvider() : SQLite);
+SHVListPos p;
+bool more;
+
+	sqlite->ExecuteUTF8(ok, "END TRANSACTION", rest)->ValidateRefCount();
+	if (ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+	{
+		p = Alias.GetHeadPosition();
+		more = p != NULL;
+		while (more)
+		{
+			if (Alias.GetAt(p).GetDeleted())
+			{
+			SHVListPos rem = p;
+				more = Alias.MoveNext(p);
+				Alias.RemoveAt(rem);
+			}
+			else
+			{
+				Alias.GetAt(p).SetTemp(false);
+				more = Alias.MoveNext(p);
+			}			
+		}
+	}
+	return ok;
+}
+
+/*************************************
+ * RollbackTransaction
+ *************************************/
+SHVBool SHVDataFactoryImpl::RollbackTransaction(SHVDataSession* session)
+{
+SHVStringSQLite rest(NULL);
+SHVBool ok;
+SHVSQLiteWrapperRef sqlite;
+SHVListPos p;
+bool more;
+
+	sqlite = (session ? (SHVSQLiteWrapper*) session->GetProvider() : SQLite);
+    sqlite->ExecuteUTF8(ok, "ROLLBACK TRANSACTION", rest)->ValidateRefCount();
+	if (ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+	{
+		p = Alias.GetHeadPosition();
+		more = p != NULL;
+		while (more)
+		{
+			if (Alias.GetAt(p).GetTemp())
+			{
+			SHVListPos rem = p;
+				more = Alias.MoveNext(p);
+				Alias.RemoveAt(rem);
+			}
+			else
+			{
+				Alias.GetAt(p).SetDeleted(false);
+				more = Alias.MoveNext(p);
+			}			
+		}
+	}
+	return ok;
 }

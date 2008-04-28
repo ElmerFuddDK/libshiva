@@ -9,6 +9,28 @@
 #include "../../../include/threadutils/shvmutex.h"
 #include "../../../include/sqlite/sqlitewrapper.h"
 
+//-=========================================================================================================
+///  SHVDataStructReg class - Registration class for data structures
+/**
+ */
+class SHVDataStructReg
+{
+public:
+	inline SHVDataStructReg(const SHVString8C& name, const SHVDataStructC* datastruct);
+	inline const SHVDataStructC& GetStruct() const;
+	inline const SHVString8C& GetAlias() const;
+	inline void SetDeleted(bool deleted);
+	inline void SetTemp(bool temp);
+	inline bool GetDeleted() const;
+	inline bool GetTemp() const;
+private:
+	SHVDataStructCRef Struct;
+	SHVString8 Alias;
+	bool Deleted;
+	bool Temp;
+};
+typedef SHVList<SHVDataStructReg> SHVDataSchemaAlias;
+
 // forward declares
 class SHVTranscationLocker;
 //-=========================================================================================================
@@ -63,7 +85,9 @@ protected:
 	virtual void RowChanged(SHVDataRow* row);
 	virtual bool LockTransaction();
 	virtual void UnlockTransaction();
-
+	virtual SHVBool BeginTransaction(SHVDataSession* session);
+	virtual SHVBool EndTransaction(SHVDataSession* session);
+	virtual SHVBool RollbackTransaction(SHVDataSession* session);
 
 private:
 // friends
@@ -81,5 +105,61 @@ friend class SHVTransactionLocker;
 	SHVMutex TransactionLock;
 	SHVBool Ok;
 };
+
+// ============================================ implementation ============================================ //
+
+/*************************************
+ * Constructors
+ *************************************/
+SHVDataStructReg::SHVDataStructReg(const SHVString8C& name, const SHVDataStructC* datastruct): Alias(name), Struct((SHVDataStructC*) datastruct), Temp(true), Deleted(false)
+{
+}
+
+/*************************************
+ * GetStruct
+ *************************************/
+const SHVDataStructC& SHVDataStructReg::GetStruct() const
+{
+	return *Struct.AsConst();
+}
+
+/*************************************
+ * GetAlias
+ *************************************/
+const SHVString8C& SHVDataStructReg::GetAlias() const
+{
+	return Alias;
+}
+
+/*************************************
+ * SetDeleted
+ *************************************/
+void SHVDataStructReg::SetDeleted(bool deleted)
+{
+	Deleted = deleted;
+}
+
+/*************************************
+ * SetTemp
+ *************************************/
+void SHVDataStructReg::SetTemp(bool temp)
+{
+	Temp = temp;
+}
+/*************************************
+ * GetDeleted
+ *************************************/
+bool SHVDataStructReg::GetDeleted() const
+{
+	return Deleted;
+}
+
+/*************************************
+ * GetTemp
+ *************************************/
+bool SHVDataStructReg::GetTemp() const
+{
+	return Temp;
+}
 
 #endif

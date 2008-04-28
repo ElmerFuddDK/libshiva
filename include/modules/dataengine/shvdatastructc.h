@@ -49,46 +49,4 @@ protected:
 typedef SHVRefObjectContainer<SHVDataStructC> SHVDataStructCRef;
 typedef	SHVVectorRef<SHVDataStructC> SHVDataSchema;
 
-
-//-=========================================================================================================
-///  SHVDataStructRegC class - Registration class for data structures
-/**
- */
-class SHVDataStructReg
-{
-public:
-	inline SHVDataStructReg(const SHVString8C& name, const SHVDataStructC* datastruct);
-	inline const SHVDataStructC& GetStruct() const;
-	inline const SHVString8C& GetAlias() const;
-private:
-	SHVDataStructCRef Struct;
-	SHVString8 Alias;
-};
-typedef SHVList<SHVDataStructReg> SHVDataSchemaAlias;
-
-// ============================================ implementation ============================================ //
-
-/*************************************
- * Constructors
- *************************************/
-SHVDataStructReg::SHVDataStructReg(const SHVString8C& name, const SHVDataStructC* datastruct): Alias(name), Struct((SHVDataStructC*) datastruct)
-{
-}
-
-/*************************************
- * GetStruct
- *************************************/
-const SHVDataStructC& SHVDataStructReg::GetStruct() const
-{
-	return *Struct.AsConst();
-}
-
-/*************************************
- * GetAlias
- *************************************/
-const SHVString8C& SHVDataStructReg::GetAlias() const
-{
-	return Alias;
-}
-
 #endif

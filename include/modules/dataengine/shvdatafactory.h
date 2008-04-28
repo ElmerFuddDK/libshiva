@@ -65,6 +65,9 @@ friend class SHVDataEngine;
 	virtual void RowChanged(SHVDataRow* row) = 0;
 	virtual bool LockTransaction() = 0;
 	virtual void UnlockTransaction() = 0;
+	virtual SHVBool BeginTransaction(SHVDataSession* session) = 0;
+	virtual SHVBool EndTransaction(SHVDataSession* session) = 0;
+	virtual SHVBool RollbackTransaction(SHVDataSession* session) = 0;
 
 	// inlines
 	inline void ReleaseDataSession(SHVDataSession* session);

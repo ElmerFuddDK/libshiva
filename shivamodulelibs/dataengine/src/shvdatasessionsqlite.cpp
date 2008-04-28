@@ -22,12 +22,10 @@ SHVDataSessionSQLite::SHVDataSessionSQLite(SHVModuleList& modules, SHVSQLiteWrap
  *************************************/
 SHVBool SHVDataSessionSQLite::StartEdit()
 {
-SHVStringSQLite rest(NULL);
 SHVBool ok;
-SHVSQLiteStatementRef statement;
 	if (LockTransaction())
 	{
-		statement = SQLite->ExecuteUTF8(ok, "BEGIN TRANSACTION", rest);
+		ok = InternalBeginTransaction();
 		if (ok == SHVSQLiteWrapper::SQLite_DONE)
 		{
 			Editting = SHVBool::True;
@@ -46,14 +44,12 @@ SHVSQLiteStatementRef statement;
  *************************************/
 SHVBool SHVDataSessionSQLite::Commit()
 {
-SHVStringSQLite rest(NULL);
 SHVBool ok;
-SHVSQLiteStatementRef statement;
 	if (!Editting)
 		return SHVBool(SHVSQLiteWrapper::SQLite_MISUSE);
 	ok = SessionReset();
-	if (ok)		
-		statement = SQLite->ExecuteUTF8(ok, "END TRANSACTION", rest);
+	if (ok)
+		ok = InternalEndTransaction();
 	SessionReposition();
 	if (ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 	{
@@ -77,9 +73,7 @@ SHVSQLiteStatementRef statement;
  *************************************/
 SHVBool SHVDataSessionSQLite::Rollback()
 {
-SHVStringSQLite rest(NULL);
 SHVBool ok;
-SHVSQLiteStatementRef statement;
 	if (!Editting)
 	{
 		ok = SHVBool(SHVSQLiteWrapper::SQLite_MISUSE);
@@ -87,7 +81,7 @@ SHVSQLiteStatementRef statement;
 	else
 	{
 		SessionReset();
-		statement = SQLite->ExecuteUTF8(ok, "ROLLBACK TRANSACTION", rest);
+		ok = InternalRollbackTransaction();
 		SessionReposition();
 		Editting = SHVBool::False;
 		UnlockTransaction();
