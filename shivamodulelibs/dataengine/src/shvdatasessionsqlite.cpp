@@ -294,16 +294,7 @@ const SHVDataStructC& st = *row->GetStruct();
 	{
 		if (c)
 			cols += ", ";
-		if (st[c]->GetDataType() == SHVDataVariant::TypeString ||
-			st[c]->GetDataType() == SHVDataVariant::TypeTime)
-		{
-		SHVStringUTF8 value = row->AsString(c).ToStrUTF8();
-			if (!value.IsNull())
-				value.Replace("'", "''");
-			col.Format("%s = '%s'", st[c]->GetColumnName().GetSafeBuffer(), value.GetSafeBuffer());
-		}
-		else
-			col.Format("%s = %s", st[c]->GetColumnName().GetSafeBuffer(), row->AsString(c).ToStrUTF8().GetSafeBuffer());
+		col.Format("%s = %s", st[c]->GetColumnName().GetSafeBuffer(), row->AsDBString(c).ToStrUTF8().GetSafeBuffer());
 		cols += col;
 	}
 	sql.Format("update or fail %s set %s where %s",
@@ -339,18 +330,8 @@ const SHVDataStructC& st = *row->GetStruct();
 			cols += ", ";
 			vals += ", ";
 		}
-		if (st[c]->GetDataType() == SHVDataVariant::TypeString ||
-			st[c]->GetDataType() == SHVDataVariant::TypeTime)
-		{
-		SHVStringUTF8 value = row->AsString(c).ToStrUTF8();
-			if (!value.IsNull())
-				value.Replace("'", "''");
-			val.Format("'%s'", value.GetSafeBuffer());
-			vals += val;
-		}
-		else
-			vals += row->AsString(c).ToStrUTF8().GetSafeBuffer();
 		cols += st[c]->GetColumnName().GetSafeBuffer();
+		vals += row->AsDBString(c).ToStrUTF8();
 	}
 	sql.Format("insert or fail into %s (%s) values(%s)",
 		row->GetAlias().GetSafeBuffer(),
@@ -405,16 +386,7 @@ SHVSQLiteStatementRef statement;
 		const SHVDataStructColumnC& col = *(*row->GetStruct())[colIdx];
 			if (k)
 				retVal += " and ";
-			if (col.GetDataType() == SHVDataVariant::TypeString ||
-				col.GetDataType() == SHVDataVariant::TypeTime)
-			{
-			SHVStringUTF8 value = row->OriginalValue(Key[k].Key)->AsString().ToStrUTF8();
-				if (!value.IsNull())
-					value.Replace("'", "''");
-				keycond.Format("%s = '%s'", Key[k].Key.GetSafeBuffer(), value.GetSafeBuffer());
-			}
-			else
-				keycond.Format("%s = %s", Key[k].Key.GetSafeBuffer(), row->OriginalValue(Key[k].Key)->AsString().ToStrUTF8().GetSafeBuffer());
+			keycond.Format("%s = %s", Key[k].Key.GetSafeBuffer(), row->OriginalValue(Key[k].Key)->AsDBString().ToStrUTF8().GetSafeBuffer());
 			retVal += keycond;
 		}
 	}

@@ -21,6 +21,15 @@ int len;
 }
 
 /*************************************
+ * AsString
+ *************************************/
+SHVStringBuffer SHVDataRowCSQLite::AsDBString(size_t colIdx) const
+{
+SHVDataVariantPtr var = GetValue(colIdx);
+	return (var.IsNull() ? SHVString(_T("null")).ReleaseBuffer() : var->AsDBString());
+}
+
+/*************************************
  * AsInt
  *************************************/
 SHVInt SHVDataRowCSQLite::AsInt(size_t colIdx) const

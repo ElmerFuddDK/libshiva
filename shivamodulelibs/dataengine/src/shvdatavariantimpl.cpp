@@ -31,8 +31,8 @@ SHVStringBuffer SHVDataVariantImpl::AsString() const
 SHVString retVal;
 	if (!isNull)
 	{
-	switch (DataType)
-	{
+		switch (DataType)
+		{
 		case SHVDataVariant::TypeInt:
 			retVal = SHVStringC::LongToString(Data.intVal);
 			break;
@@ -53,6 +53,46 @@ SHVString retVal;
 			break;
 		}
 	}
+	return retVal.ReleaseBuffer();
+}
+
+/*************************************
+ * AsDBString
+ *************************************/
+SHVStringBuffer SHVDataVariantImpl::AsDBString() const
+{
+SHVString retVal;
+
+	if (!isNull)
+	{
+		switch (DataType)
+		{
+		case SHVDataVariant::TypeString:
+		case SHVDataVariant::TypeTime:
+			{
+			SHVString value(AsString());
+				value.Replace(_T("'"), _T("''"));
+				retVal.Format(_T("'%s'"), value.GetSafeBuffer());
+			}
+			break;
+		default:
+			retVal = AsString();
+			break;
+		}
+	}
+	else
+	{
+		switch (DataType)
+		{
+		case SHVDataVariant::TypeBool:
+			retVal = _T("0");
+			break;
+		default:
+			retVal = _T("null");
+			break;
+		}
+	}
+
 	return retVal.ReleaseBuffer();
 }
 
@@ -97,6 +137,7 @@ void SHVDataVariantImpl::SetString(const SHVStringC& val)
 			Data.stringVal = new SHVString(val);
 			break;
 		case SHVDataVariant::TypeTime:
+			Data.timeVal = new SHVTime();
 			Data.timeVal->SetFromDateString(val);
 			break;
 		}

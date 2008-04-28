@@ -255,6 +255,15 @@ SHVStringBuffer SHVDataRowImpl::AsString(size_t colIdx) const
 }
 
 /*************************************
+ * AsDBString
+ *************************************/
+SHVStringBuffer SHVDataRowImpl::AsDBString(size_t colIdx) const
+{
+	SHVASSERT(colIdx != SIZE_T_MAX);
+	return (colIdx != SIZE_T_MAX ? ColumnData[colIdx].Value.AsDBString() : SHVString().ReleaseBuffer());
+}
+
+/*************************************
  * AsInt
  *************************************/
 SHVInt SHVDataRowImpl::AsInt(size_t colIdx) const

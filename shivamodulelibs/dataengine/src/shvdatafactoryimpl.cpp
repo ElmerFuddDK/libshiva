@@ -501,7 +501,7 @@ const SHVDataStructC* SHVDataFactoryImpl::InternalFindAlias(const SHVString8C& t
 {
 const SHVDataStructC* found = NULL;
 SHVListIterator<SHVDataStructReg> Iter(Alias);
-	while (Iter.MoveNext() && Iter.Get().GetAlias() != table);
+	while (Iter.MoveNext() && (Iter.Get().GetDeleted() || Iter.Get().GetAlias() != table));
 	if (Iter && !Iter.Get().GetDeleted())
 	{
 		found = &Iter.Get().GetStruct();
