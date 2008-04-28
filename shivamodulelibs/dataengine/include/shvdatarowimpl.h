@@ -46,6 +46,7 @@ public:
 
 	// from SHVDataRowC
 	virtual SHVStringBuffer AsString(size_t colIdx) const;
+	virtual SHVStringBuffer AsDBString(size_t colIdx) const;
 	virtual SHVInt AsInt(size_t colIdx) const;
 	virtual SHVInt64 AsInt64(size_t colIdx) const;
 	virtual SHVDouble AsDouble(size_t colIdx) const;

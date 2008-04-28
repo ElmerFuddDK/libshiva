@@ -27,6 +27,7 @@ public:
 	virtual int GetDataType() const = 0;
 
 	virtual SHVStringBuffer AsString() const = 0;
+	virtual SHVStringBuffer AsDBString() const = 0;
 	virtual void SetString(const SHVStringC& val) = 0;
 
 	virtual SHVInt AsInt() const = 0;
