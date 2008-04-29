@@ -183,10 +183,7 @@ int SHVTime::CalculateDayOfWeek() // 0 = sunday and so forth
 	// test if the weekday needs to be calculated
 	if (Time.tm_wday == -1)
 	{
-	time_t tmpTime = MkTime(&Time);
-
-		GmTime_r(&tmpTime, &Time);
-
+		MkTime(&Time);
 	}
 
 	return Time.tm_wday;
@@ -470,6 +467,7 @@ time_t ttime2;
 ///\cond INTERNAL
 time_t SHVTime::TimeGm(struct tm *t, bool setDst)
 {
+///\todo Implement support for setting tm_dst and tm_gmtoff on non-linux
 #ifndef __SHIVA_LINUX
 time_t retVal;
 short month;
