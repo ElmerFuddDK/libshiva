@@ -71,6 +71,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				UseFAT32Workaround="true"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -147,6 +148,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				UseFAT32Workaround="true"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -296,7 +298,7 @@
 				>
 				<Tool
 					Name="VCCustomBuildTool"
-					CommandLine="copy /Y $(InputPath) $(OutDir)"
+					CommandLine="copy /Y $(InputPath) $(OutDir)&#x0D;&#x0A;"
 					Outputs="testwords.txt"
 				/>
 			</FileConfiguration>
