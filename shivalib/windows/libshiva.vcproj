@@ -340,6 +340,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\utils\shvmd5sum.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\utils\shvstreambufferin.cpp"
 					>
 				</File>
@@ -476,6 +480,38 @@
 					</File>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="md5"
+				>
+				<File
+					RelativePath="..\src\md5\md5.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug8|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -578,6 +614,10 @@
 					</File>
 					<File
 						RelativePath="..\..\include\utils\shvlistbase.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\utils\shvmd5sum.h"
 						>
 					</File>
 					<File
@@ -788,6 +828,14 @@
 							>
 						</File>
 					</Filter>
+				</Filter>
+				<Filter
+					Name="md5"
+					>
+					<File
+						RelativePath="..\src\md5\md5.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 		</Filter>
