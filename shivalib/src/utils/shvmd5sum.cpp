@@ -96,21 +96,23 @@ SHVString retVal;
 
 	if (IsInitialized())
 	{
+	SHVTChar hexCiphers[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'  };
 	SHVByte md5[16];
 	SHVByte* md5Ptr;
-	int i;
+	int i, j;
 
 		::MD5Final( (unsigned char*)md5, (MD5_CTX*)Md5Context );
 		::free(Md5Context);
 		Md5Context = NULL;
 
-		retVal.SetBufferSize(17);
+		retVal.SetBufferSize(33);
 		md5Ptr = md5;
-		for (i=0; i<16; i++, md5Ptr++)
+		for (i=j=0; i<16; i++, md5Ptr++)
 		{
-			retVal[i] = *md5Ptr;
+			retVal[j++] = hexCiphers[(md5[i]&0xF0) >> 4];
+			retVal[j++] = hexCiphers[md5[i]&0x0F];
 		}
-		retVal[i] = 0;
+		retVal[j] = 0;
 	}
 
 	return retVal.ReleaseBuffer();
