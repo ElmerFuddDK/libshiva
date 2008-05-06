@@ -50,29 +50,17 @@ POINT point;
 /*************************************
  * DrawXORLine
  *************************************/
-void SHVDrawWin32::DrawXORLine(SHVPoint from, SHVPoint to, SHVColor* color)
-{
-SHVPenRef pen = GUIManager->CreatePen(color);
-	DrawXORLine(from,to,pen);
-	if (color)
-		color->ValidateRefCount();
-}
-void SHVDrawWin32::DrawXORLine(SHVPoint from, SHVPoint to, SHVPen* pen)
+void SHVDrawWin32::DrawXORLine(SHVPoint from, SHVPoint to)
 {
 int dcBackup = ::SaveDC(hDC);
 POINT point;
 int drawMode = ::SetROP2(hDC,R2_NOT);
-
-	::SelectObject(hDC, SHVDrawWin32::GetPen(pen));
 
 	::MoveToEx(hDC, from.x, from.y, &point);
 	::LineTo(hDC, to.x, to.y);
 
 	::SetROP2(hDC,drawMode);
 	::RestoreDC(hDC,dcBackup);
-
-	if (pen)
-		pen->ValidateRefCount();
 }
 
 /*************************************
