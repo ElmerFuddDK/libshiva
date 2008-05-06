@@ -56,6 +56,9 @@ public:
 	virtual void DrawLine(SHVPoint from, SHVPoint to,  SHVColor* color) = 0;
 	virtual void DrawLine(SHVPoint from, SHVPoint to, SHVPen* pen) = 0;
 
+	virtual void DrawXORLine(SHVPoint from, SHVPoint to, SHVColor* color) = 0;
+	virtual void DrawXORLine(SHVPoint from, SHVPoint to, SHVPen* pen) = 0;
+
 	// DrawPixel
 	virtual void DrawPixel(SHVPoint where, SHVColor* color) = 0;
 
