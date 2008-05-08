@@ -47,7 +47,7 @@ public:
 	// from SHVDataFactory
 	virtual SHVBool RegisterTable(const SHVDataStructC* dataStruct, bool createTable = false);
 	virtual SHVBool RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear = false, SHVDataSession* useSession = NULL);
-	virtual SHVBool UnregisterAlias(const SHVString8C& alias, SHVDataSession* useSession = NULL);
+	virtual SHVBool UnregisterAlias(const SHVString8C& alias);
 
 	virtual const SHVDataStructC* FindStruct(const SHVString8C& table) const;
 	virtual const SHVDataSchema& GetDataSchema() const;
@@ -76,7 +76,7 @@ protected:
 	virtual bool TableMatch(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct, const SHVString8C& tableName, bool& exists);
 	virtual const SHVDataStructC* InternalFindAlias(const SHVString8C& table) const;
 	virtual const SHVDataStructC* InternalFindStruct(const SHVString8C& table) const;
-	virtual SHVBool InternalUnregisterAlias(SHVSQLiteWrapper* sqlite, const SHVString8C& alias);
+	virtual SHVBool InternalUnregisterAlias(const SHVString8C& alias, bool hasLock);
 
 	// from SHVDataFactory
 	virtual void RegisterDataSession(SHVDataSession* session);
@@ -93,6 +93,11 @@ private:
 // friends
 friend class SHVDataEngineImpl;
 friend class SHVTransactionLocker;	
+	
+
+	virtual void CheckConnection();
+
+
 	SHVDataEngine& DataEngine;
 	SHVSQLiteWrapperRef SQLite;
 	SHVString Database;
@@ -100,10 +105,12 @@ friend class SHVTransactionLocker;
 	SHVDataSchemaAlias Alias;
 	SHVList<SHVDataSession*> ActiveSessions;
 	SHVList<SHVString8C> PendingUnregisterAlias;
+	SHVList<SHVString8C> PendingUnregisterAliasTransaction;
 	SHVEventSubscriberBaseRef DataChangedSubscription;
 	SHVMutex FactoryLock;
 	SHVMutex TransactionLock;
 	SHVBool Ok;
+	bool ConnectionDirty;
 };
 
 // ============================================ implementation ============================================ //
