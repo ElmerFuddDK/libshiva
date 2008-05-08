@@ -56,12 +56,12 @@ bool SHVTransactionLocker::IsOk()
 /*************************************
  * Constructor
  *************************************/
-SHVDataFactoryImpl::SHVDataFactoryImpl(SHVDataEngine& engine, const SHVStringC& database): DataEngine(engine), Database(database)
+SHVDataFactoryImpl::SHVDataFactoryImpl(SHVDataEngine& engine, const SHVStringC& database): DataEngine(engine), Database(database), ConnectionDirty(false)
 {
 	SQLite = DataEngine.CreateConnection(Ok, database);
 }
 
-SHVDataFactoryImpl::SHVDataFactoryImpl(SHVDataEngine& engine, const SHVStringC& database, const SHVDataSchema* schema): DataEngine(engine), Database(database)
+SHVDataFactoryImpl::SHVDataFactoryImpl(SHVDataEngine& engine, const SHVStringC& database, const SHVDataSchema* schema): DataEngine(engine), Database(database), ConnectionDirty(false)
 {
 	SQLite = DataEngine.CreateConnection(Ok, database);
 	if (Ok && schema)
@@ -107,6 +107,7 @@ SHVBool retVal = SHVBool::True;
 				drop = false;
 		}
 	}
+	CheckConnection();
 	if (drop)
 	{
 		sql.Format("drop table %s", dataStruct->GetTableName());
@@ -152,9 +153,13 @@ SHVBool dropOk;
 bool create;
 bool exists;
 SHVSQLiteWrapperRef sqlite;
+SHVSQLiteStatementRef statement;
 
 	if (useSession)
+	{
 		sqlite = (SHVSQLiteWrapper*) useSession->GetProvider();
+		ConnectionDirty = true;
+	}
 	else
 		sqlite = SQLite;
 
@@ -166,18 +171,18 @@ SHVSQLiteWrapperRef sqlite;
 		{
 			BeginTransaction(useSession);
 		}
-		create = !TableMatch(sqlite, found, alias, exists) || clear;
+		create = !TableMatch(sqlite, found, alias, exists);
 		if (create && exists)
 		{
 			if (aliasfound)
 			{
-				InternalUnregisterAlias(sqlite, alias);
+				InternalUnregisterAlias(alias, lockTrans.IsOk());
 				aliasfound = NULL;
 			}
 			else
 			{
 				sql.Format("drop table %s", alias);
-				sqlite->ExecuteUTF8(retVal, sql, rest)->ValidateRefCount();
+				statement = sqlite->ExecuteUTF8(retVal, sql, rest);
 				if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 					retVal = SHVBool::True;
 			}
@@ -192,6 +197,11 @@ SHVSQLiteWrapperRef sqlite;
 					retVal = CreateIndex(sqlite, found, alias, key);
 				}
 			}
+		}
+		if (clear && exists)
+		{
+			sql.Format("delete from %s", alias);
+			statement = sqlite->ExecuteUTF8(retVal, sql, rest);
 		}
 		if (lockTrans.IsOk())
 		{
@@ -211,28 +221,11 @@ SHVSQLiteWrapperRef sqlite;
 /*************************************
  * UnregisterAlias
  *************************************/
-SHVBool SHVDataFactoryImpl::UnregisterAlias(const SHVString8C& alias, SHVDataSession* useSession)
+SHVBool SHVDataFactoryImpl::UnregisterAlias(const SHVString8C& alias)
 {
 SHVTransactionLocker lockTrans(*this, FactoryLock);
-SHVBool retVal = SHVBool::True;
-SHVSQLiteWrapperRef sqlite;
-
-	if (useSession)
-		sqlite = (SHVSQLiteWrapper*) useSession->GetProvider();
-	else
-		sqlite = SQLite;
-	if (lockTrans.IsOk())
-	{
-		BeginTransaction(useSession);
-	}
-	retVal = InternalUnregisterAlias(sqlite, alias);
-	if (lockTrans.IsOk())
-	{
-		EndTransaction(useSession);
-	}
-	return retVal;
+	return InternalUnregisterAlias(alias, lockTrans.IsOk());
 }
-
 
 /*************************************
  * FindStruct
@@ -532,12 +525,11 @@ const SHVDataStructC* found = NULL;
 /*************************************
  * InternalUnregisterAlias
  *************************************/
-SHVBool SHVDataFactoryImpl::InternalUnregisterAlias(SHVSQLiteWrapper* sqlite, const SHVString8C& alias)
+SHVBool SHVDataFactoryImpl::InternalUnregisterAlias(const SHVString8C& alias, bool hasLock)
 {
 const SHVDataStructC* aliasfound;
 SHVBool retVal = SHVBool::False;
 aliasfound = FindStruct(alias);	
-
 	if (aliasfound)
 	{
 	SHVStringUTF8 sql;
@@ -546,7 +538,7 @@ aliasfound = FindStruct(alias);
 	SHVListIterator<SHVDataStructReg> Iter(Alias);
 	// Lets see if there's any active list with that alias
 	SHVListIterator<SHVDataSession*> DLIter(ActiveSessions);
-	retVal = SHVBool::True;
+	retVal = hasLock;
 
 		while (DLIter.MoveNext() && retVal) 
 		{
@@ -557,8 +549,9 @@ aliasfound = FindStruct(alias);
 		SHVListPos al = PendingUnregisterAlias.Find(alias);
 			if (al)
 				PendingUnregisterAlias.RemoveAt(al);
+			CheckConnection();
 			sql.Format("drop table %s", alias);
-			sqlite->ExecuteUTF8(retVal, sql, rest)->ValidateRefCount();
+			SQLite->ExecuteUTF8(retVal, sql, rest)->ValidateRefCount();
 			if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 			{
 				while (Iter.MoveNext() && Iter.Get().GetAlias() != alias);
@@ -571,8 +564,16 @@ aliasfound = FindStruct(alias);
 		}
 		else
 		{
-			if (!PendingUnregisterAlias.Find(alias))
-				PendingUnregisterAlias.AddTail(alias);
+			if (hasLock)
+			{
+				if (!PendingUnregisterAlias.Find(alias))
+					PendingUnregisterAlias.AddTail(alias);
+			}
+			else
+			{
+				if (!PendingUnregisterAliasTransaction.Find(alias))
+					PendingUnregisterAliasTransaction.AddTail(alias);
+			}
 			retVal = SHVBool(SHVSQLiteWrapper::SQLite_LOCKED);
 		}
 	}
@@ -616,14 +617,15 @@ SHVSQLiteWrapperRef sqlite;
 			sqlite = (SHVSQLiteWrapper*) session->GetProvider();
 		else
 			sqlite = SQLite;
+		CheckConnection();
 		if (lockTrans.IsOk())
 		{
-			BeginTransaction(session);
+			BeginTransaction(NULL);
 		}
-		retVal = InternalUnregisterAlias(sqlite, alias);
+		retVal = InternalUnregisterAlias(alias, lockTrans.IsOk());
 		if (lockTrans.IsOk())
 		{
-			EndTransaction(session);
+			EndTransaction(NULL);
 		}
 	}
 	else
@@ -695,6 +697,8 @@ bool more;
 	sqlite->ExecuteUTF8(ok, "END TRANSACTION", rest)->ValidateRefCount();
 	if (ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 	{
+		while (PendingUnregisterAliasTransaction.GetCount())
+			InternalUnregisterAlias(PendingUnregisterAliasTransaction.PopHead(), true);
 		p = Alias.GetHeadPosition();
 		more = p != NULL;
 		while (more)
@@ -730,6 +734,8 @@ bool more;
     sqlite->ExecuteUTF8(ok, "ROLLBACK TRANSACTION", rest)->ValidateRefCount();
 	if (ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 	{
+		while (PendingUnregisterAliasTransaction.GetCount())
+			InternalUnregisterAlias(PendingUnregisterAliasTransaction.PopHead(), true);
 		p = Alias.GetHeadPosition();
 		more = p != NULL;
 		while (more)
@@ -748,4 +754,16 @@ bool more;
 		}
 	}
 	return ok;
+}
+
+/*************************************
+ * Reopen
+ *************************************/
+void SHVDataFactoryImpl::CheckConnection()
+{
+	if (ConnectionDirty)
+	{
+		SQLite = DataEngine.CreateConnection(Ok, Database);
+		ConnectionDirty = false;
+	}
 }
