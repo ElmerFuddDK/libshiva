@@ -31,7 +31,7 @@ public:
 
 	virtual SHVBool RegisterTable(const SHVDataStructC* dataStruct, bool createTable = false) = 0;
 	virtual SHVBool RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear = false, SHVDataSession* useSession = NULL) = 0;
-	virtual SHVBool UnregisterAlias(const SHVString8C& alias) = 0;
+	virtual SHVBool UnregisterAlias(const SHVString8C& alias, SHVDataSession* useSession = NULL) = 0;
 
 	virtual const SHVDataStructC* FindStruct(const SHVString8C& table) const = 0;
 	virtual const SHVDataSchema& GetDataSchema() const = 0;

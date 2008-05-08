@@ -211,18 +211,24 @@ SHVSQLiteWrapperRef sqlite;
 /*************************************
  * UnregisterAlias
  *************************************/
-SHVBool SHVDataFactoryImpl::UnregisterAlias(const SHVString8C& alias)
+SHVBool SHVDataFactoryImpl::UnregisterAlias(const SHVString8C& alias, SHVDataSession* useSession)
 {
 SHVTransactionLocker lockTrans(*this, FactoryLock);
 SHVBool retVal = SHVBool::True;
+SHVSQLiteWrapperRef sqlite;
+
+	if (useSession)
+		sqlite = (SHVSQLiteWrapper*) useSession->GetProvider();
+	else
+		sqlite = SQLite;
 	if (lockTrans.IsOk())
 	{
-		BeginTransaction(NULL);
+		BeginTransaction(useSession);
 	}
-	retVal = InternalUnregisterAlias(SQLite, alias);
+	retVal = InternalUnregisterAlias(sqlite, alias);
 	if (lockTrans.IsOk())
 	{
-		EndTransaction(NULL);
+		EndTransaction(useSession);
 	}
 	return retVal;
 }
@@ -603,13 +609,18 @@ bool SHVDataFactoryImpl::CheckAlias(SHVDataSession* session, const SHVString8C& 
 {
 SHVTransactionLocker lockTrans(*this, FactoryLock);
 bool retVal = PendingUnregisterAlias.Find(alias) != NULL;
+SHVSQLiteWrapperRef sqlite;
 	if (retVal)
 	{
+		if (session)
+			sqlite = (SHVSQLiteWrapper*) session->GetProvider();
+		else
+			sqlite = SQLite;
 		if (lockTrans.IsOk())
 		{
 			BeginTransaction(session);
 		}
-		retVal = InternalUnregisterAlias(SQLite, alias);
+		retVal = InternalUnregisterAlias(sqlite, alias);
 		if (lockTrans.IsOk())
 		{
 			EndTransaction(session);
