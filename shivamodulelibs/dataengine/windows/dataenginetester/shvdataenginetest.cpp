@@ -360,7 +360,32 @@ int cnt = 0;
 
 SHVBool SHVDataEngineTest::TestSpeed2(SHVTestResult* result)
 {
-SHVBool retVal = SHVBool::True;
+SHVDataSessionRef session = DataEngine->CreateSession();
+SHVDataRowListRef rows;
+SHVBool retVal;
+SHVDataRowKeyRef key;
+
+	DataEngine->RegisterAlias("person", "person111", false, session);
+	DataEngine->RegisterAlias("person", "person112", false, session);
+
+	rows = session->GetRows("person111", _T(""), 0);
+	session->StartEdit();
+	AddPerson(rows, 1, _T("Mogens"), _T("Bak"), _T("Nielsen"));
+	AddPerson(rows, 2, _T("Hanne"), _T("Birkemose"), _T("Nielsen"));
+	AddPerson(rows, 3, _T("Laura"), _T("Birkemose"), _T("Nielsen"));
+	AddPerson(rows, 4, _T("Emma"), _T("Birkemose"), _T("Nielsen"));
+	session->Commit();
+
+
+	session->StartEdit();
+	rows = session->GetRows("person111", _T(""), 0);
+	key = DataEngine->CopyKey(rows->GetStruct()->GetIndex(0));
+	key->SetKeyValue(0, SHVInt(3));
+	rows->Find(key);
+	DataEngine->UnregisterAlias("person112");
+	session->Commit();
+	DataEngine->UnregisterAlias("person111");
+	
 	return retVal;
 }
 
@@ -404,6 +429,8 @@ SHVBool ok;
 size_t time = GetTickCount();
 size_t step = time;
 size_t next;
+	TestSpeed2(result);
+    /*
 	Result = result;
 	result->AddLog(_T("Insert test"));
 	
