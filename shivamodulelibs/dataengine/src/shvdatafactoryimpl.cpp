@@ -202,6 +202,8 @@ SHVSQLiteStatementRef statement;
 		{
 			sql.Format("delete from %s", alias);
 			statement = sqlite->ExecuteUTF8(retVal, sql, rest);
+			if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+				retVal = SHVBool::True;
 		}
 		if (lockTrans.IsOk())
 		{
