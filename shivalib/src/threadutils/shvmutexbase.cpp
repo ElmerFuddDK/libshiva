@@ -112,7 +112,7 @@ bool SHVMutexBase::Lock(int timeout)
 {
 #ifdef __SHIVA_WIN32
 bool retVal;
-	WaitForSingleObject(Locker, INFINITE);
+	SHVVERIFY(WaitForSingleObject(Locker, INFINITE) == WAIT_OBJECT_0);
 	if (Mutex == 1) // is the mutex locked ?
 	{
 	HANDLE queue;
@@ -130,7 +130,7 @@ bool retVal;
 		// wait for a signal
 		WaitForSingleObject(queue, ( timeout == Infinite ? INFINITE : timeout ) );
 
-		WaitForSingleObject(Locker, INFINITE);
+		SHVVERIFY(WaitForSingleObject(Locker, INFINITE) == WAIT_OBJECT_0);
 
 		// did we get the lock ?
 		retVal = (NewOwner == queue);
@@ -287,7 +287,7 @@ bool retVal = false;
 void SHVMutexBase::Unlock()
 {
 #ifdef __SHIVA_WIN32
-	WaitForSingleObject(Locker, INFINITE);
+	SHVVERIFY(WaitForSingleObject(Locker, INFINITE) == WAIT_OBJECT_0);
 	if (Queue.GetCount()) // somebody is waiting
 	{
 	SHVListPos pos;
