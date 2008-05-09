@@ -265,7 +265,7 @@ SHVBool retVal = SHVBool::False;
 const SHVDataStructC& This = *this;
 const SHVDataStructC& Struct = *dataStruct;
 
-	if (Struct.GetColumnCount() == GetColumnCount() && IndexCount() == Struct.IndexCount())
+	if (Struct.GetColumnCount() == GetColumnCount())
 	{
 		retVal = SHVBool::True;
 		for (size_t i = 0; i < GetColumnCount() && retVal; i++)
