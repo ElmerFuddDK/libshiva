@@ -109,6 +109,25 @@ RECT rectNative(SHVDrawWin32::MapRect(rect));
 }
 
 /*************************************
+ * DrawXORRect
+ *************************************/
+void SHVDrawWin32::DrawXORRect(SHVRect rect)
+{
+int dcBackup = ::SaveDC(hDC);
+POINT point;
+int drawMode = ::SetROP2(hDC,R2_NOT);
+	
+	::MoveToEx(hDC, rect.GetLeft(), rect.GetTop(), &point);
+	::LineTo(hDC, rect.GetRight(), rect.GetTop());
+	::LineTo(hDC, rect.GetRight(), rect.GetBottom());
+	::LineTo(hDC, rect.GetLeft(), rect.GetBottom());
+	::LineTo(hDC, rect.GetLeft(), rect.GetTop());
+
+	::SetROP2(hDC,drawMode);
+	::RestoreDC(hDC,dcBackup);
+}
+
+/*************************************
  * DrawPolyline
  *************************************/
 void SHVDrawWin32::DrawPolyline(SHVColor* color, int points, ...)

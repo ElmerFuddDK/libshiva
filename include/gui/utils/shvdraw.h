@@ -65,6 +65,8 @@ public:
 	virtual void DrawRect(SHVRect rect, SHVColor* color) = 0;
 	virtual void DrawRectFilled(SHVRect rect, SHVColor* color) = 0;
 
+	virtual void DrawXORRect(SHVRect rect) = 0;
+
 	// DrawPoly
 	virtual void DrawPolyline(SHVColor* color, int points, ...) = 0;
 	virtual void DrawPolygon(SHVColor* color, int points, ...) = 0;
