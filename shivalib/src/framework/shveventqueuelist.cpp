@@ -42,7 +42,9 @@
  * Constructor
  *************************************/
 SHVEventQueueList::SHVEventQueueList()
-{}
+{
+	NeedDispatching = IsDispatching = false;
+}
 
 /*************************************
  * EnqueueEvent
@@ -68,22 +70,39 @@ void SHVEventQueueList::EnqueueEvent(SHVModuleList& modules, SHVEvent* event, SH
  *************************************/
 void SHVEventQueueList::DispatchEvents(SHVModuleList& modules)
 {
-SHVList<EventEntryPtr,EventEntry*> localList;
-EventEntryPtr entry;
-
-	EventLock.Lock();
-	while (EventList.GetCount())
-		localList.AddTail(EventList.PopHead().ReleaseReference());
-	EventLock.Unlock();
-
-	// dispatch events
-	while (localList.GetCount())
+	if (!IsDispatching)
 	{
-		entry = localList.PopHead().ReleaseReference();
-		entry->Subscriber->Perform(entry->Event);
-		modules.EventDeactivatedInQueue();
+	SHVList<EventEntryPtr,EventEntry*> localList;
+	EventEntryPtr entry;
+
+		IsDispatching = true;
+
+		do
+		{
+			NeedDispatching = false;
+
+			EventLock.Lock();
+			while (EventList.GetCount())
+				localList.AddTail(EventList.PopHead().ReleaseReference());
+			EventLock.Unlock();
+
+			// dispatch events
+			while (localList.GetCount())
+			{
+				entry = localList.PopHead().ReleaseReference();
+				entry->Subscriber->Perform(entry->Event);
+				modules.EventDeactivatedInQueue();
+			}
+			entry = NULL;
+		}
+		while (NeedDispatching);
+
+		IsDispatching = false;
 	}
-	entry = NULL;
+	else
+	{
+		NeedDispatching = true;
+	}
 }
 
 /*************************************

@@ -47,6 +47,8 @@ protected:
 	SHVList<EventEntryPtr,EventEntry*> EventList;
 
 	SHVMutex EventLock;
+	bool NeedDispatching;
+	bool IsDispatching;
 
 	///\endcond
 };
