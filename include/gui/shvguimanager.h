@@ -53,6 +53,7 @@ public:
 
 	enum MsgBoxTypes {
 		MsgBoxOK,
+		MsgBoxOKCancel,
 		MsgBoxDefault = MsgBoxOK
 	};
 

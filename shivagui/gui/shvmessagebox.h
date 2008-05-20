@@ -48,6 +48,8 @@ protected:
 
 	SHVEventSubscriberRef ButtonSubscriber;
 	SHVString Text, Title;
+
+	int Type;
 };
 typedef SHVRefObjectContainer<SHVMessageBox> SHVMessageBoxRef;
 

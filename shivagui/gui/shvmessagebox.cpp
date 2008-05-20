@@ -59,6 +59,7 @@ SHVMessageBox* msgBox = (dialog ? new SHVMessageBox(manager,dialog) : NULL);
 	{
 		msgBox->Title = title;
 		msgBox->Text = text;
+		msgBox->Type = type;
 	}
 
 	return msgBox;
@@ -92,19 +93,21 @@ void SHVMessageBox::InitializeForm()
 		((SHVGUIManagerImpl*)GetManager())->MessageBoxes.AddTail(this);
 
 		TextBox = GetManager()->NewEdit(SHVControlEdit::SubTypeMultiLine);
-		OK = GetManager()->NewButton();
-		Cancel = GetManager()->NewButton();
-
-		OK->SetParent(GetContainer());
-		Cancel->SetParent(GetContainer());
 		TextBox->SetParent(GetContainer(),SHVControl::FlagVisible|
 											SHVControlEdit::FlagFlat|
 											SHVControlEdit::FlagReadonly);
-
-
-		OK->SetText(_T("OK"))->SubscribeClicked(ButtonSubscriber);
-		Cancel->SetText(_T("Cancel"))->SubscribeClicked(ButtonSubscriber);
 		TextBox->SetText(Text);
+
+		OK = GetManager()->NewButton();
+		OK->SetParent(GetContainer());
+		OK->SetText(_T("OK"))->SubscribeClicked(ButtonSubscriber);
+
+		if (Type == SHVGUIManager::MsgBoxOKCancel)
+		{
+			Cancel = GetManager()->NewButton();
+			Cancel->SetParent(GetContainer());
+			Cancel->SetText(_T("Cancel"))->SubscribeClicked(ButtonSubscriber);
+		}
 
 		rgn->SetMargin(4,3);
 
