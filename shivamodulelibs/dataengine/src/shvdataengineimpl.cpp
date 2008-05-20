@@ -4,6 +4,7 @@
 #include "../include/shvdatasessionsqlite.h"
 #include "../include/shvdataengineimpl.h"
 #include "../include/shvdatafactoryimpl.h"
+#include "../../../include/utils/shvdir.h"
 
 
 /*************************************
@@ -12,9 +13,10 @@
 SHVDataEngineImpl::SHVDataEngineImpl(SHVModuleList& modules): SHVDataEngine(modules)
 {
 SHVString database = modules.GetConfig().Find(__DATAENGINE_DEFAULT_DATABASE, _T("database.db")).ToString();
-SHVString datapath = modules.GetConfig().Find(__DATAENGINE_DATAPATH, _T("./")).ToString();
+SHVString datapath = modules.GetConfig().Find(__DATAENGINE_DATAPATH, Modules.GetConfig().Find(SHVModuleList::DefaultCfgAppPath).ToString()).ToString();
 SHVBool ok;
-	datapath += database;
+
+	datapath += SHVDir::Delimiter() + database;
 	
 	ok = SQLiteDll.Load(SQLiteDll.CreateLibFileName(_T("shivasqlite"),modules.GetConfig().Find(SHVModuleList::DefaultCfgAppPath).ToString()));
 	if (!ok)
@@ -140,6 +142,15 @@ SHVDataRowKey* SHVDataEngineImpl::CopyKey(const SHVDataRowKey* key) const
 {
 	return Factory->CopyKey(key);
 }
+
+/*************************************
+ * RetrieveStruct
+ *************************************/
+SHVDataStructC* SHVDataEngineImpl::RetrieveStruct(const SHVString8C table, const SHVString8C alias) const
+{
+	return Factory->RetrieveStruct(table, alias);
+}
+
 /*************************************
  * BuildKeySQL
  *************************************/
