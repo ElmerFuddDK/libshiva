@@ -67,6 +67,7 @@ class SHVXmlReaderCallbackBase
 {
 public:
 	virtual void PerformCallback(SHVXmlReader& reader) = 0;
+	virtual ~SHVXmlReaderCallbackBase() {}
 };
 
 //-=========================================================================================================
