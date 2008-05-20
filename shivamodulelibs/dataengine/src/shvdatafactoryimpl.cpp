@@ -300,6 +300,20 @@ SHVDataRowKey* SHVDataFactoryImpl::CopyKey(const SHVDataRowKey* key) const
 }
 
 /*************************************
+ * RetrieveStruct
+ *************************************/
+SHVDataStructC* SHVDataFactoryImpl::RetrieveStruct(const SHVString8C table, const SHVString8C alias) const
+{
+SHVDataStructCSQLite* struc = new SHVDataStructCSQLite((SHVSQLiteWrapper*) SQLite.AsConst(),(alias.IsNull() ? table : alias),table);
+	if (!struc->GetColumnCount())
+	{
+		struc->ValidateRefCount();
+		struc = NULL;
+	}
+	return struc;
+}
+
+/*************************************
  * GetDatabase
  *************************************/
 const SHVStringC& SHVDataFactoryImpl::GetDatabase() const

@@ -21,7 +21,7 @@
 class SHVDataStructCSQLite: public SHVDataStructC
 {
 public:
-	SHVDataStructCSQLite(SHVSQLiteWrapper* psqlite, const SHVString8C& tableName);
+	SHVDataStructCSQLite(SHVSQLiteWrapper* psqlite, const SHVString8C dbTableName, const SHVString8C structTableName = SHVString8C(NULL));
 
 	// from SHVDataStructC
 	virtual const SHVString8C& GetTableName() const;

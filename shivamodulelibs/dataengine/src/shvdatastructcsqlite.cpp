@@ -7,7 +7,7 @@
 /*************************************
  * Constructor
  *************************************/
-SHVDataStructCSQLite::SHVDataStructCSQLite(SHVSQLiteWrapper* psqlite, const SHVString8C& tableName)
+SHVDataStructCSQLite::SHVDataStructCSQLite(SHVSQLiteWrapper* psqlite, const SHVString8C dbTableName, const SHVString8C structTableName)
 {
 SHVStringUTF8 query;
 SHVStringSQLite notparsed(NULL);
@@ -17,9 +17,12 @@ SHVSQLiteWrapperRef sqlite = psqlite;
 int len;
 SHVBool ok;
 	Struct = new SHVDataStructImpl();
-	Struct->SetTableName(tableName);
+	if (structTableName.IsNull())
+		Struct->SetTableName(dbTableName);
+	else
+		Struct->SetTableName(structTableName);
 
-	query.Format("PRAGMA table_info(%s)", tableName.GetSafeBuffer());
+	query.Format("PRAGMA table_info(%s)", dbTableName.GetSafeBuffer());
 
 	statement = sqlite->PrepareUTF8(ok, query, notparsed);
 
@@ -61,11 +64,11 @@ SHVBool ok;
 			Struct->Add(col);
 		}
 		// now lest find the primary index
-		query.Format("sql is null", tableName.GetSafeBuffer());
-		ResolveIndexes(psqlite, tableName.GetSafeBuffer(), query);
+		query.Format("sql is null", dbTableName.GetSafeBuffer());
+		ResolveIndexes(psqlite, dbTableName.GetSafeBuffer(), query);
 		// now lets find the secondary indexes
-		query.Format("name like '%s%%'", tableName.GetSafeBuffer());
-		ResolveIndexes(psqlite, tableName.GetSafeBuffer(), query);
+		query.Format("name like '%s%%'", dbTableName.GetSafeBuffer());
+		ResolveIndexes(psqlite, dbTableName.GetSafeBuffer(), query);
 	}
 }
 

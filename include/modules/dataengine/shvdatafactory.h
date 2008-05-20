@@ -41,6 +41,7 @@ public:
 	virtual SHVDataVariant* CreateVariant() const = 0;
 	virtual SHVDataRowKey* CreateKey() const = 0;
 	virtual SHVDataRowKey* CopyKey(const SHVDataRowKey* key) const = 0;
+	virtual SHVDataStructC* RetrieveStruct(const SHVString8C table, const SHVString8C alias = SHVString8C(NULL)) const = 0;
 
 	virtual const SHVStringC& GetDatabase() const = 0;
 	virtual void BuildKeySQL(const SHVDataRowKey* key, SHVString8& condition, SHVString8& orderby, const SHVString8C& table, bool reverse = false) const = 0;
