@@ -36,6 +36,7 @@ typedef SHVStringBuffer8 SHVStringBuffer;
 # if !defined(_T)
 #  define _T(x) x
 # endif
+# define _TD(x) x
 ///\endcond
 #endif
 

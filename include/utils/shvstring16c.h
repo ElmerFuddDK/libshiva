@@ -37,8 +37,9 @@ typedef SHVStringBuffer16 SHVStringBuffer;
 # ifdef __SHIVA_LINUX
 #  error "Linux is currently UCS4 only - doesn't work with shiva in unicode"
 # elif !defined(_T)
-#  define _T(x) (const SHVWChar*) L##x
+#  define _T(x) L##x
 # endif
+# define _TD(x) _T(x)
 ///\endcond
 #endif
 #ifndef _SHVWSTR
