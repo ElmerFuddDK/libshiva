@@ -394,17 +394,13 @@ SHVRegionAction* SHVRegionActionImpl::UnifyWidth(int unify, int limit)
 /*************************************
  * Top
  *************************************/
-SHVRegionAction* SHVRegionActionImpl::Top(int leftMargin, int topMargin)
+SHVRegionAction* SHVRegionActionImpl::Top(int topMargin)
 {
 	if (Initialize())
 	{
-		CalculateHMargin(leftMargin);
 		CalculateVMargin(topMargin);
 
-		WindowRect.SetByXY( Region.Rect.GetLeft()+leftMargin,
-							Region.Rect.GetTop()+topMargin,
-							WindowRect.GetWidth(),
-							WindowRect.GetHeight() );
+		WindowRect.SetY( Region.Rect.GetY()+topMargin );
 	}
 
 	return this;
@@ -413,17 +409,13 @@ SHVRegionAction* SHVRegionActionImpl::Top(int leftMargin, int topMargin)
 /*************************************
  * Bottom
  *************************************/
-SHVRegionAction* SHVRegionActionImpl::Bottom(int leftMargin, int topMargin)
+SHVRegionAction* SHVRegionActionImpl::Bottom(int topMargin)
 {
 	if (Initialize())
 	{
-		CalculateHMargin(leftMargin);
 		CalculateVMargin(topMargin);
 
-		WindowRect.SetByXY( Region.Rect.GetLeft()+leftMargin,
-							Region.Rect.GetBottom()-topMargin-WindowRect.GetHeight(),
-							WindowRect.GetWidth(),
-							WindowRect.GetHeight() );
+		WindowRect.SetY( Region.Rect.GetBottom()-topMargin-WindowRect.GetHeight() );
 	}
 
 	return this;
@@ -432,17 +424,13 @@ SHVRegionAction* SHVRegionActionImpl::Bottom(int leftMargin, int topMargin)
 /*************************************
  * Left
  *************************************/
-SHVRegionAction* SHVRegionActionImpl::Left(int leftMargin, int topMargin)
+SHVRegionAction* SHVRegionActionImpl::Left(int leftMargin)
 {
 	if (Initialize())
 	{
 		CalculateHMargin(leftMargin);
-		CalculateVMargin(topMargin);
 
-		WindowRect.SetByXY( Region.Rect.GetLeft()+leftMargin,
-							Region.Rect.GetTop()+topMargin,
-							WindowRect.GetWidth(),
-							WindowRect.GetHeight() );
+		WindowRect.SetX( Region.Rect.GetX()+leftMargin );
 	}
 
 	return this;
@@ -451,17 +439,13 @@ SHVRegionAction* SHVRegionActionImpl::Left(int leftMargin, int topMargin)
 /*************************************
  * Right
  *************************************/
-SHVRegionAction* SHVRegionActionImpl::Right(int leftMargin, int topMargin)
+SHVRegionAction* SHVRegionActionImpl::Right(int leftMargin)
 {
 	if (Initialize())
 	{
 		CalculateHMargin(leftMargin);
-		CalculateVMargin(topMargin);
 
-		WindowRect.SetByXY( Region.Rect.GetRight()-leftMargin-WindowRect.GetWidth(),
-							Region.Rect.GetTop()+topMargin,
-							WindowRect.GetWidth(),
-							WindowRect.GetHeight() );
+		WindowRect.SetX( Region.Rect.GetRight()-leftMargin-WindowRect.GetWidth() );
 	}
 
 	return this;

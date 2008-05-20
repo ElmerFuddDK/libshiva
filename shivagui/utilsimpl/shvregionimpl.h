@@ -103,10 +103,10 @@ public:
 
 
 	// placement methods
-	virtual SHVRegionAction* Top(int leftMargin = -1, int topMargin = -1);
-	virtual SHVRegionAction* Bottom(int leftMargin = -1, int topMargin = -1);
-	virtual SHVRegionAction* Left(int leftMargin = -1, int topMargin = -1);
-	virtual SHVRegionAction* Right(int leftMargin = -1, int topMargin = -1);
+	virtual SHVRegionAction* Top(int topMargin = -1);
+	virtual SHVRegionAction* Bottom(int topMargin = -1);
+	virtual SHVRegionAction* Left(int leftMargin = -1);
+	virtual SHVRegionAction* Right(int leftMargin = -1);
 
 	virtual SHVRegionAction* ClipTop(int extraMargin = 0);
 	virtual SHVRegionAction* ClipBottom(int extraMargin = 0);
