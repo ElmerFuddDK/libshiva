@@ -60,6 +60,22 @@ void SHVRect::SetByLeftTop(int left, int top, int right, int bottom)
 }
 
 /*************************************
+ * MoveTo
+ *************************************/
+void SHVRect::MoveTo(int x, int y)
+{
+	SetByXY(x,y,GetWidth(),GetHeight());
+}
+
+/*************************************
+ * MoveBy
+ *************************************/
+void SHVRect::MoveBy(int x, int y)
+{
+	SetByXY(GetX()+x,GetY()+y,GetWidth(),GetHeight());
+}
+
+/*************************************
  * Shrink
  *************************************/
 void SHVRect::Shrink(int left, int top, int right, int bottom)

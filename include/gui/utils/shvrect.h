@@ -53,6 +53,9 @@ public:
 	void SetByXY(int x, int y, int width, int height);
 	void SetByLeftTop(int left, int top, int right, int bottom);
 
+	void MoveTo(int x, int y);
+	void MoveBy(int x, int y);
+
 	void Shrink(int left, int top, int right, int bottom);
 	inline void Expand(int left, int top, int right, int bottom);
 
