@@ -10,7 +10,7 @@
 # define SHVTRACE SHVAssert::Trace
 #else
 # define SHVASSERT(x)
-# define SHVVERIFY(x) x
+# define SHVVERIFY(x) if (x) {;}
 # define SHVTRACE (void)
 #endif
 
