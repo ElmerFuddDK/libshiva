@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include <locale.h>
 
 
 #ifdef _MANAGED
@@ -13,6 +14,12 @@ BOOL APIENTRY DllMain( HMODULE hModule,
                        LPVOID lpReserved
 					 )
 {
+#ifndef DEBUG
+	if (ul_reason_for_call == DLL_PROCESS_ATTACH)
+	{
+		setlocale(LC_ALL, "");
+	}
+#endif
     return TRUE;
 }
 
