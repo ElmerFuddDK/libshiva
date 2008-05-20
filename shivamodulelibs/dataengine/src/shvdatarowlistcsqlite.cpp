@@ -131,6 +131,10 @@ SHVDataRowC* retVal = NULL;
 	SHVASSERT(IsOk());
 	if (IsOk())
 	{
+		if (RowCount < 0)
+		{
+			NextRow();
+		}
 		Reset();
 		for (size_t i = key->Count(); i;)
 		{
@@ -258,14 +262,17 @@ SHVBool retVal = IsOk();
 	SHVASSERT(retVal);
 	if (retVal)
 	{
-	const SHVDataRowKey& key = *GetStruct()->GetIndex(SortIndex);
 		Eof = SHVBool::False;
 		retVal = Statement->Reset();
-		for (size_t i = 0; i < key.Count(); i++)
+		if (GetStruct()->IndexCount())
 		{
-		SHVStringUTF8 parm;
-			parm.Format("@%s", key[i].Key.GetSafeBuffer());
-			Statement->SetParameterNullUTF8(parm);
+		const SHVDataRowKey& key = *GetStruct()->GetIndex(SortIndex);
+			for (size_t i = 0; i < key.Count(); i++)
+			{
+			SHVStringUTF8 parm;
+				parm.Format("@%s", key[i].Key.GetSafeBuffer());
+				Statement->SetParameterNullUTF8(parm);
+			}
 		}
 		if (!retVal)
 			Eof = SHVBool::True;
