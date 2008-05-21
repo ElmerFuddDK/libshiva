@@ -43,8 +43,10 @@ public:
 	virtual SHVBool Reset();
 private:
 	sqlite3_stmt* Statement;
-	SHVMutex Lock;
 	SHVSQLiteWrapperRef Owner;
+#ifdef DEBUG
+	SHVThreadBase::ThreadID OwnerThread;
+#endif
 };
 
 

@@ -4,14 +4,21 @@
 #include "../include/sqlitewrapperimpl.h"
 #include "../include/sqlitestatementimpl.h"
 
+/*************************************
+ * Constructor
+ *************************************/
 SHVSQLiteWrapperImpl::SHVSQLiteWrapperImpl(void)
 {
+	OwnerThread = SHVThreadBase::GetCurrentThreadID();
 	Sqlite = NULL;
 }
 
+/*************************************
+ * Destructor
+ *************************************/
 SHVSQLiteWrapperImpl::~SHVSQLiteWrapperImpl(void)
 {
-SHVMutexLocker lock(Lock);
+	SHVTHREADCHECK(OwnerThread);
 	if (Sqlite)
 	{
 		sqlite3_close(Sqlite);
@@ -19,9 +26,12 @@ SHVMutexLocker lock(Lock);
 	}
 }
 
+/*************************************
+ * OpenUTF8
+ *************************************/
 SHVBool SHVSQLiteWrapperImpl::OpenUTF8(const SHVStringUTF8C& fileName, int option)
 {
-SHVMutexLocker lock(Lock);
+	SHVTHREADCHECK(OwnerThread);
 	if (Sqlite)
 	{
 		sqlite3_close(Sqlite);
@@ -29,9 +39,12 @@ SHVMutexLocker lock(Lock);
 	return SHVBool(sqlite3_open_v2(fileName.GetSafeBuffer(), &Sqlite, option, NULL));
 }
 
+/*************************************
+ * OpenInMemory
+ *************************************/
 SHVBool SHVSQLiteWrapperImpl::OpenInMemory()
 {
-SHVMutexLocker lock(Lock);
+	SHVTHREADCHECK(OwnerThread);
 	if (Sqlite)
 	{
 		sqlite3_close(Sqlite);
@@ -39,9 +52,12 @@ SHVMutexLocker lock(Lock);
 	return SHVBool(sqlite3_open(":memory", &Sqlite));
 }
 
+/*************************************
+ * Close
+ *************************************/
 SHVBool SHVSQLiteWrapperImpl::Close()
 {
-SHVMutexLocker lock(Lock);
+	SHVTHREADCHECK(OwnerThread);
 	if (Sqlite)
 	{
 		short res = (short) sqlite3_close(Sqlite);
@@ -52,13 +68,17 @@ SHVMutexLocker lock(Lock);
 		return SHVBool(SHVSQLiteWrapper::SQLite_ERROR);
 }
 
+/*************************************
+ * PrepareUTF8
+ *************************************/
 SHVSQLiteStatement* SHVSQLiteWrapperImpl::PrepareUTF8(SHVBool& ok, const SHVStringUTF8C& sql, SHVStringSQLite& notparsed)
 {
-SHVMutexLocker lock(Lock);
 sqlite3_stmt* sqlite_statement;
 int res = SHVSQLiteWrapper::SQLite_ERROR;;
 const char* rest = NULL;
 SHVSQLiteStatement* retVal = NULL;
+	
+	SHVTHREADCHECK(OwnerThread);
 	if (Sqlite)
 	{
 		ok = SHVBool(sqlite3_prepare_v2(Sqlite, sql.GetSafeBuffer(), -1, &sqlite_statement, &rest));
@@ -68,13 +88,18 @@ SHVSQLiteStatement* retVal = NULL;
 	return retVal;
 } 
 
-SHVSQLiteStatement* SHVSQLiteWrapperImpl::ExecuteUTF8(SHVBool& ok, const SHVStringUTF8C& sql, SHVStringSQLite& notparsed)
+/*************************************
+ * ExecuteUTF8
+ *************************************/
+SHVSQLiteStatementRef SHVSQLiteWrapperImpl::ExecuteUTF8(SHVBool& ok, const SHVStringUTF8C& sql, SHVStringSQLite& notparsed)
 {
-SHVMutexLocker lock(Lock);
+SHVTHREADCHECK(OwnerThread);
 sqlite3_stmt* sqlite_statement;
 int res = SHVSQLiteWrapper::SQLite_ERROR;;
 SHVSQLiteStatement* retVal = NULL;
 const char* rest = NULL;
+	
+	SHVTHREADCHECK(OwnerThread);
 	if (Sqlite)
 	{
 		ok = SHVBool(sqlite3_prepare_v2(Sqlite, sql.GetSafeBuffer(), -1, &sqlite_statement, &rest));
@@ -88,16 +113,15 @@ const char* rest = NULL;
 	return retVal;
 } 
 
+/*************************************
+ * GetErrorMsgUTF8
+ *************************************/
 SHVStringUTF8C SHVSQLiteWrapperImpl::GetErrorMsgUTF8()
 {
-SHVMutexLocker lock(Lock);
+	SHVTHREADCHECK(OwnerThread);
 	if (Sqlite)
 		return sqlite3_errmsg(Sqlite);
 	else
 		return "Database is not open";
 }
 
-SHVMutex& SHVSQLiteWrapperImpl::GetMutex()
-{
-	return Lock;
-}
