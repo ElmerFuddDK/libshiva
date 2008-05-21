@@ -67,11 +67,10 @@ public:
 	virtual SHVBool Close() = 0;
 	virtual SHVSQLiteStatement* PrepareUTF8(SHVBool& ok, const SHVStringUTF8C& sql, SHVStringSQLite& notparsed) = 0;
 	inline SHVSQLiteStatement* Prepare(SHVBool& ok, const SHVStringC& sql, SHVString& notparsed);
-	virtual SHVSQLiteStatement* ExecuteUTF8(SHVBool& ok, const SHVStringUTF8C& sql, SHVStringSQLite& notparsed) = 0;
-	inline SHVSQLiteStatement* Execute(SHVBool& ok, const SHVStringC& sql, SHVString& notparsed);
+	virtual SHVSQLiteStatementRef ExecuteUTF8(SHVBool& ok, const SHVStringUTF8C& sql, SHVStringSQLite& notparsed) = 0;
+	inline SHVSQLiteStatementRef Execute(SHVBool& ok, const SHVStringC& sql, SHVString& notparsed);
 	virtual SHVStringUTF8C GetErrorMsgUTF8() = 0; 
 	inline SHVStringBuffer GetErrorMsg();
-	virtual SHVMutex& GetMutex() = 0;
 };
 typedef SHVRefObjectContainer<SHVSQLiteWrapper> SHVSQLiteWrapperRef;
 
@@ -91,8 +90,9 @@ SHVBool SHVSQLiteWrapper::Open(const SHVStringC& fileName, int option)
 SHVSQLiteStatement*  SHVSQLiteWrapper::Prepare(SHVBool& ok, const SHVStringC& sql, SHVString& notparsed)
 {
 SHVStringUTF8 sqlUTF8 = sql.ToStrUTF8();
+SHVSQLiteStatementRef res;
 	SHVStringSQLite rest(NULL);
-	SHVSQLiteStatement* res = PrepareUTF8(ok, sqlUTF8, rest);
+	res = PrepareUTF8(ok, sqlUTF8, rest);
 	notparsed = rest.ToStrT();
 	return res;
 }
@@ -100,11 +100,12 @@ SHVStringUTF8 sqlUTF8 = sql.ToStrUTF8();
 /*************************************
  * Execute
  *************************************/
-SHVSQLiteStatement*  SHVSQLiteWrapper::Execute(SHVBool& ok, const SHVStringC& sql, SHVString& notparsed)
+SHVSQLiteStatementRef  SHVSQLiteWrapper::Execute(SHVBool& ok, const SHVStringC& sql, SHVString& notparsed)
 {
 SHVStringUTF8 sqlUTF8 = sql.ToStrUTF8();
+SHVSQLiteStatementRef res;
 	SHVStringSQLite rest(NULL);
-	SHVSQLiteStatement* res = ExecuteUTF8(ok, sqlUTF8, rest);
+	res = ExecuteUTF8(ok, sqlUTF8, rest);
 	notparsed = rest.ToStrT();
 	return res;
 }
