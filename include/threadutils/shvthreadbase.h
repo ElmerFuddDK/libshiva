@@ -3,6 +3,8 @@
 
 #include "../utils/shvstring.h"
 
+#define SHVTHREADCHECK(x) SHVASSERT(x == SHVThreadBase::GetCurrentThreadID())
+
 
 //-=========================================================================================================
 ///  SHVThreadBase class
