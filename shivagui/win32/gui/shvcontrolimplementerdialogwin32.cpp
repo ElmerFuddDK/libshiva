@@ -256,7 +256,7 @@ WNDCLASSEX wc;
 	wc.cbClsExtra		= 0;
 	wc.cbWndExtra		= sizeof(void*);
 	wc.hInstance		= hInstance;
-	wc.hIcon			= 0;
+	wc.hIcon			= ::LoadIcon(hInstance,MAKEINTRESOURCE(128)); // IDR_MAINFRAME
 	wc.hCursor			= LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground	= (HBRUSH)(COLOR_BACKGROUND);
 	wc.lpszMenuName		= NULL;
