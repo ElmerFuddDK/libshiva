@@ -15,6 +15,13 @@
 SHVControlContainer::~SHVControlContainer()
 {
 	Clear();
+	// if we are a top level window we need to close it
+	if (GetImplementor()->GetSubType(this) == SHVControlContainer::SubTypeMainWindow || 
+		GetImplementor()->GetSubType(this) == SHVControlContainer::SubTypeDialog || 
+		GetImplementor()->GetSubType(this) == SHVControlContainer::SubTypeModalDialog )
+	{
+		Close();
+	}
 	GetImplementor()->Destroy(this);
 }
 
@@ -353,4 +360,14 @@ bool SHVControlImplementerContainer::GetDisabledFlag(SHVControl* owner, int flag
 	}
 
 	return true;
+}
+
+/*************************************
+ * CreateMenu
+ *************************************/
+SHVMenu* SHVControlImplementerContainer::CreateMenu(SHVControlContainer* owner, SHVEventSubscriberBase* subscriber)
+{
+	if (subscriber)
+		subscriber->ValidateRefCount();
+	return NULL;
 }
