@@ -42,6 +42,7 @@ public:
 	// From SHVControlImplementerContainer
 	virtual SHVRect GetRegionRect();
 	virtual void SetSize(SHVControlContainer* owner, int widthInPixels, int heightInPixels, SHVControlContainer::PosModes mode);
+	virtual SHVMenu* CreateMenu(SHVControlContainer* owner, SHVEventSubscriberBase* subscriber);
 
 	virtual SHVStringBuffer GetTitle();
 	virtual void SetTitle(const SHVStringC& title);

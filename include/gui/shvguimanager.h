@@ -83,6 +83,7 @@ public:
 	virtual SHVPen* CreatePen(SHVColor* color, int style = SHVPen::StyleDefault, int width = 1) = 0;
 	virtual SHVBrush* CreateBrush(SHVColor* color, int style = SHVBrush::StyleDefault) = 0;
 	virtual SHVRegion* CreateRegion(SHVControlContainer* container) = 0;
+	virtual SHVMenu* CreatePopupMenu(SHVEventSubscriberBase* subscriber, SHVControl* parent) = 0;
 
 	// Factories for template inherited classes
 	virtual SHVFormImplementer* ContructFormImplementer(SHVFormBase* owner, SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVString8C entityName) = 0;

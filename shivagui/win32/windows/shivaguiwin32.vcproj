@@ -294,6 +294,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\gui\shvmenuwin32.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\gui\shvwin32.cpp"
 					>
 				</File>
@@ -401,6 +405,10 @@
 				</File>
 				<File
 					RelativePath="..\gui\shvmainwindowwin32.h"
+					>
+				</File>
+				<File
+					RelativePath="..\gui\shvmenuwin32.h"
 					>
 				</File>
 				<File
@@ -540,6 +548,10 @@
 					</File>
 					<File
 						RelativePath="..\..\..\include\gui\shvmainwnd.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\gui\shvmenu.h"
 						>
 					</File>
 					<Filter

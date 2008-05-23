@@ -6,6 +6,10 @@
 #include "../../../../../include/gui/utils/shvregion.h"
 #include "../../../../../include/gui/utils/shvdraw.h"
 
+#define __MENU_MSGBOXES  1
+#define __MENU_STUFF     2
+#define __MENU_DIALOGTST 3
+
 
 //=========================================================================================================
 // SHVControlTester - Module for testing controls
@@ -72,6 +76,14 @@ SHVFontRef ownerDrawFont = GUIManager->GetFont(SHVGUIManager::CfgFontNormal)->Cr
 	GUIManager->GetMainWindow()->SetFlag(SHVControl::FlagVisible);
 	GUIManager->GetMainWindow()->ResizeControls();
 
+	SHVMenuRef menu = GUIManager->GetMainWindow()->CreateMenu(new SHVEventSubscriber(this,&Modules));
+	SHVMenuRef menu2 = menu->AddSubMenu(_T("Test"));
+	menu2->AddStringItem(__MENU_MSGBOXES,_T("Look at all those msgs"));
+	menu2->AddSeparator();
+	menu2->AddStringItem(__MENU_STUFF,_T("More stuff"));
+	menu2->AddStringItem(__MENU_DIALOGTST,_T("Dialog test"));
+	menu->Show();
+
 	SHVModule::PostRegister();
 }
 
@@ -84,18 +96,74 @@ void SHVControlTester::Unregister()
 	LabelCustomDraw = NULL;
 	EditBox = NULL;
 	Button = NULL;
+	TestDialog = NULL;
+	Container = NULL;
 
 	SHVModule::Unregister();
 }
 
 void SHVControlTester::OnEvent(SHVEvent* event)
 {
-	//::MessageBox(NULL,_T("Noget"),_T("Knap"),MB_OK);
-	GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"),_T("Knap"),SHVGUIManager::MsgBoxOKCancel);
-	GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"));
-	GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"),_T("Knap"));
-	GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"));
-	GUIManager->GetMainWindow()->SetColor(GUIManager->CreateColor(0x99,0x66,0x66));
+	if (event->GetCaller() == NULL) // GUI Events
+	{
+		if (event->GetObject() == Button && SHVEvent::Equals(event,SHVControlButton::EventClicked))
+		{
+		SHVMenuRef menu = Button->CreatePopupMenu(new SHVEventSubscriber(this,&Modules));
+			menu->AddStringItem(__MENU_STUFF,_T("Stuff"));
+			menu->Show(SHVMenu::PopupBelowWindow);
+			menu = NULL;
+		}
+		else if (event->GetObject() == GUIManager->GetMainWindow())
+		{
+			if (SHVEvent::Equals(event,SHVControl::EventMenu))
+			{
+				switch (event->GetSubID())
+				{
+				case __MENU_MSGBOXES:
+					GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"),_T("Knap"),SHVGUIManager::MsgBoxOKCancel);
+					GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"));
+					GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"),_T("Knap"));
+					GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"));
+					break;
+				case __MENU_STUFF:
+					GUIManager->GetMainWindow()->SetColor(GUIManager->CreateColor(::rand()&0xFF,::rand()&0xFF,::rand()&0xFF));
+					break;
+				case __MENU_DIALOGTST:
+					{
+						TestDialog = GUIManager->NewDialog();
+						if (TestDialog->Create())
+						{
+						SHVMenuRef menu = TestDialog->CreateMenu(NULL);
+						SHVMenuRef submenu1 = menu->AddSubMenu(_T("Menu1"));
+						SHVMenuRef submenu2 = menu->AddSubMenu(_T("Menu2"));
+						SHVMenuRef submenu3 = menu->AddSubMenu(_T("Menu3"));
+						SHVMenuRef submenu4 = menu->AddSubMenu(_T("Menu4"));
+							submenu1->AddStringItem(SHVInt(),_T("1"));
+							submenu2->AddStringItem(SHVInt(),_T("2"));
+							submenu3->AddStringItem(SHVInt(),_T("3"));
+							submenu4->AddStringItem(SHVInt(),_T("4"));
+
+							menu->Show();
+							TestDialog->SetFlag(SHVControl::FlagVisible);
+						}
+					}
+					break;
+				}
+			}
+		}
+		else if (event->GetObject() == Button)
+		{
+			if (SHVEvent::Equals(event,SHVControl::EventMenu))
+			{
+				switch (event->GetSubID())
+				{
+				case __MENU_STUFF:
+					GUIManager->GetMainWindow()->SetColor(GUIManager->CreateColor(::rand()&0xFF,::rand()&0xFF,::rand()&0xFF));
+					break;
+				}
+			}
+		}
+	}
 }
 
 void SHVControlTester::OnResizeContainer(SHVControlContainer* container, SHVControlLayout* layout)

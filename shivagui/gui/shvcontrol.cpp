@@ -28,6 +28,14 @@ void SHVControl::SetRect(const SHVRect& rect)
 }
 
 /*************************************
+ * CreatePopupMenu
+ *************************************/
+SHVMenu* SHVControl::CreatePopupMenu(SHVEventSubscriberBase* subscriber)
+{
+	return GUIManager->CreatePopupMenu(subscriber,this);
+}
+
+/*************************************
  * SetFont
  *************************************/
 SHVBool SHVControl::SetFont(SHVFont* font, bool resetHeight)

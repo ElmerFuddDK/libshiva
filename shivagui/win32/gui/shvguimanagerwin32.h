@@ -8,6 +8,7 @@ class SHVDrawWin32;
 class SHVDrawPaintWin32;
 class SHVDrawGetDCWin32;
 class SHVDrawWindowWin32;
+class SHVMenuWin32;
 
 
 //-=========================================================================================================
@@ -38,6 +39,7 @@ public:
 	virtual SHVPen* CreatePen(SHVColor* color, int style = SHVPen::StyleDefault, int width = 1);
 	virtual SHVBrush* CreateBrush(SHVColor* color, int style = SHVBrush::StyleDefault);
 	virtual SHVRegion* CreateRegion(SHVControlContainer* container);
+	virtual SHVMenu* CreatePopupMenu(SHVEventSubscriberBase* subscriber, SHVControl* parent);
 
 	// Factories for template inherited classes
 	virtual SHVFormImplementer* ContructFormImplementer(SHVFormBase* owner, SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVString8C entityName);
@@ -54,7 +56,22 @@ public:
 
 
 protected:
+friend class SHVMenuWin32;
 	///\cond INTERNAL
+	int CreateCommandID(HANDLE handle, SHVInt value);
+	HANDLE CommandIDToHandle(int cmdID);
+	SHVInt CommandIDToValue(int cmdID);
+	void RemoveCommandIDs(HANDLE handle);
+
+	struct CommandID
+	{
+		HANDLE Handle;
+		SHVInt Value;
+
+		inline CommandID(HANDLE handle, SHVInt value) : Handle(handle), Value(value) {}
+	};
+	SHVVector<CommandID> CommandIDMap;
+	SHVHashTable<HMENU,SHVMenuRef,HMENU,SHVMenu*> MenuMap;
 	///\endcond
 };
 

@@ -38,6 +38,8 @@ private:
 	SHVControlLabelRef LabelCustomDraw;
 	SHVControlEditRef EditBox;
 	SHVControlButtonRef Button;
+
+	SHVControlContainerRef TestDialog;
 };
 
 #endif

@@ -35,6 +35,7 @@
 #include "shvmainthreadeventdispatcherwin32.h"
 #include "shvwin32.h"
 #include "utils/shvdrawwin32.h"
+#include "shvmenuwin32.h"
 
 #include <commctrl.h>
 
@@ -165,6 +166,14 @@ SHVRect rect(GetRect(owner));
 	}
 
 	SetRect(owner,rect);
+}
+
+/*************************************
+ * CreateMenu
+ *************************************/
+SHVMenu* SHVControlImplementerDialogWin32::CreateMenu(SHVControlContainer* owner, SHVEventSubscriberBase* subscriber)
+{
+	return new SHVMenuWin32((SHVGUIManagerWin32*)owner->GetManager(),SHVMenu::TypeControlContainer,subscriber,owner);
 }
 
 /*************************************

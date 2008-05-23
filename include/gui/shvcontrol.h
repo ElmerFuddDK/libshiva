@@ -6,6 +6,7 @@
 #include "../../include/utils/shvstring.h"
 #include "shvcontroldata.h"
 #include "shvcontrolimplementer.h"
+#include "shvmenu.h"
 #include "utils/shvrect.h"
 #include "utils/shvfont.h"
 
@@ -48,6 +49,7 @@ public:
 
 	enum Events {
 		EventDraw,
+		EventMenu,
 		EventSubClass = 1000, // Subclass event types start from here
 		EventSubType = 2000 // SubType event types start from here
 	};
@@ -65,6 +67,8 @@ public:
 
 	virtual SHVBool GetData(SHVControlData* data) = 0;
 	virtual SHVBool SetData(SHVControlData* data) = 0;
+
+	virtual SHVMenu* CreatePopupMenu(SHVEventSubscriberBase* subscriber);
 
 
 	// Properties

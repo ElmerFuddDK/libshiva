@@ -36,6 +36,7 @@
 #include "shvguimanagerwin32.h"
 #include "shvwin32.h"
 #include "utils/shvdrawwin32.h"
+#include "shvmenuwin32.h"
 
 #include "shvcontrolimplementercontainerwindowwin32.h"
 #include "shvcontrolimplementerdialogwin32.h"
@@ -47,6 +48,8 @@
 #include "../../utilsimpl/shvregionimpl.h"
 
 #include "../../gui/shvformimpl.h"
+
+#define __CMDOFFSET 100
 
 
 //=========================================================================================================
@@ -116,6 +119,7 @@ SHVBool SHVGUIManagerWin32::Register()
 void SHVGUIManagerWin32::Unregister()
 {
 	SHVGUIManagerImpl::Unregister();
+	MenuMap.Clear();
 }
 
 /*************************************
@@ -156,6 +160,14 @@ SHVBrush* SHVGUIManagerWin32::CreateBrush(SHVColor* color, int style)
 SHVRegion* SHVGUIManagerWin32::CreateRegion(SHVControlContainer* container)
 {
 	return new SHVRegionImpl(container);
+}
+
+/*************************************
+ * CreatePopupMenu
+ *************************************/
+SHVMenu* SHVGUIManagerWin32::CreatePopupMenu(SHVEventSubscriberBase* subscriber, SHVControl* parent)
+{
+	return new SHVMenuWin32(this,SHVMenu::TypePopup,subscriber,parent);
 }
 
 /*************************************
@@ -206,7 +218,89 @@ HWND hWnd = message->hwnd;
 	}
 
 	if (!retVal)
+	{
+		switch (message->message)
+		{
+		case WM_COMMAND:
+			// test if this command is from a menu
+			if (!HIWORD(message->wParam))
+			{
+			int id = LOWORD(message->wParam);
+			HMENU hmenu = (HMENU)CommandIDToHandle(id);
+				if (hmenu && MenuMap.Find(hmenu))
+				{
+				SHVMenu* menu = MenuMap[hmenu];
+					((SHVMenuWin32*)menu)->EmitEvent(CommandIDToValue(id));
+				}
+			}
+			break;
+		}
+	}
+
+	if (!retVal)
 		EmitEvent(new SHVEventData<MSG*>(message,this,EventPreTranslateMessage));
 
 	return retVal;
+}
+
+/*************************************
+ * CreateCommandID
+ *************************************/
+int SHVGUIManagerWin32::CreateCommandID(HANDLE handle, SHVInt value)
+{
+size_t index;
+size_t handleCount = CommandIDMap.CalculateCount();
+
+	for (index = 0; index < handleCount; index++)
+	{
+		if (!CommandIDMap[index])
+		{
+			CommandIDMap.Replace(index,new CommandID(handle,value));
+			break;
+		}
+	}
+
+	if (index == handleCount)
+	{
+		CommandIDMap.Add(new CommandID(handle,value));
+	}
+
+	return int(index + __CMDOFFSET);
+}
+
+/*************************************
+ * CommandIDToHandle
+ *************************************/
+HANDLE SHVGUIManagerWin32::CommandIDToHandle(int cmdID)
+{
+size_t index = size_t(cmdID >= __CMDOFFSET ? cmdID-__CMDOFFSET : SIZE_T_MAX);
+	return (index < CommandIDMap.CalculateCount() && CommandIDMap[index] ? CommandIDMap[index]->Handle : NULL);
+}
+
+/*************************************
+ * CommandIDToValue
+ *************************************/
+SHVInt SHVGUIManagerWin32::CommandIDToValue(int cmdID)
+{
+size_t index = (cmdID >= __CMDOFFSET ? size_t(cmdID-__CMDOFFSET) : SIZE_T_MAX);
+	return (index < CommandIDMap.CalculateCount() && CommandIDMap[index] ? CommandIDMap[index]->Value : SHVInt());
+}
+
+/*************************************
+ * RemoveCommandIDs
+ *************************************/
+void SHVGUIManagerWin32::RemoveCommandIDs(HANDLE handle)
+{
+size_t index;
+size_t handleCount = CommandIDMap.CalculateCount();
+
+	for (index = 0; index < handleCount; index++)
+	{
+		if (CommandIDMap[index] && CommandIDMap[index]->Handle == handle)
+		{
+			CommandIDMap.Replace(index,NULL);
+		}
+	}
+
+	CommandIDMap.Truncate();
 }

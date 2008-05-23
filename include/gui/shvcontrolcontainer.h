@@ -58,6 +58,7 @@ public:
 	virtual SHVBool Create(int flags = 0);
 	virtual SHVBool Close();
 	virtual SHVControlContainer* SetSize(int widthInFontUnits, int heightInFontUnits, PosModes mode = PosDefault);
+	inline SHVMenu* CreateMenu(SHVEventSubscriberBase* subscriber);
 
 
 	// Data handling
@@ -135,6 +136,8 @@ public:
 	virtual SHVRect GetRegionRect() = 0;
 	virtual void SetSize(SHVControlContainer* owner, int widthInPixels, int heightInPixels, SHVControlContainer::PosModes mode) = 0;
 
+	virtual SHVMenu* CreateMenu(SHVControlContainer* owner, SHVEventSubscriberBase* subscriber);
+
 	virtual SHVStringBuffer GetTitle() = 0;
 	virtual void SetTitle(const SHVStringC& title) = 0;
 
@@ -195,6 +198,14 @@ SHVControlContainer* SHVControlContainer::SetParent(SHVControlContainer* parent,
 {
 	SHVControl::SetParent(parent,flags);
 	return this;
+}
+
+/*************************************
+ * CreateMenu
+ *************************************/
+SHVMenu* SHVControlContainer::CreateMenu(SHVEventSubscriberBase* subscriber)
+{
+	return GetImplementor()->CreateMenu(this,subscriber);
 }
 
 /*************************************
