@@ -2,6 +2,7 @@
 #include "../../../../include/platformspc.h"
 
 #include "shvdrawwin32.h"
+#include "shvbitmapwin32.h"
 #include "../shvwin32.h"
 
 //=========================================================================================================
@@ -192,15 +193,39 @@ int dcBackup = ::SaveDC(hDC);
  *************************************/
 void SHVDrawWin32::DrawBitmap(SHVBitmap* bitmap, SHVPoint position, int width, int height, SHVColor* transparentColor)
 {
+HDC bmDC;
+HGDIOBJ oldBM;
+
+	if(bitmap && bitmap->IsCreated())
+	{
+	HBITMAP hBitmap = ((SHVBitmapWin32*)bitmap)->hBitmap;
+
+
+		if(width == 0 && height == 0)
+		{
+			width = bitmap->GetWidth();
+			height = bitmap->GetHeight();
+		}
+
+		bmDC = ::CreateCompatibleDC(hDC);
+		oldBM = ::SelectObject(bmDC,hBitmap);
+
+		if(width != bitmap->GetWidth() || height != bitmap->GetHeight())
+			::StretchBlt(hDC,position.x, position.y, width, height, bmDC, 0,0, bitmap->GetWidth(), bitmap->GetHeight(), SRCCOPY);
+		else
+			::BitBlt(hDC,position.x, position.y, width, height, bmDC, 0, 0, SRCCOPY);
+
+		::SelectObject(bmDC,oldBM);
+		::DeleteDC(bmDC);
+	}
+
 	bitmap->ValidateRefCount();
 	if (transparentColor)
 		transparentColor->ValidateRefCount();
 }
 void SHVDrawWin32::DrawBitmap(SHVBitmap* bitmap, SHVPoint position, SHVColor* transparentColor)
 {
-	bitmap->ValidateRefCount();
-	if (transparentColor)
-		transparentColor->ValidateRefCount();
+	DrawBitmap(bitmap,position,0,0,transparentColor);
 }
 
 /*************************************

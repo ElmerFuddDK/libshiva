@@ -9,8 +9,10 @@
 #include "../../../../include/utils/shvdll.h"
 
 #include "../../../../include/gui/shvguimanager.h"
+#include "../../../../include/gui/shvregisterbitmap.h"
 
 #include "modules/shvcontroltester.h"
+#include "resource.h"
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
@@ -33,10 +35,12 @@ int retVal = -1;
 	}
 	else
 	{
-//	SHVMainThreadEventQueue mainqueue(new SHVMainThreadEventDispatcherGeneric());
 	SHVMainThreadEventQueue mainqueue((SHVMainThreadEventDispatcher*)guilib.CreateObjectInt(NULL,SHVDll::ClassTypeMainThreadDispatcher));
-
 		mainqueue.GetModuleList().GetConfig(SHVModuleList::CfgGUI).SetPtr(SHVGUIManager::CfgInstanceHandle,hInstance);
+
+		// register bitmap resources
+		SHVRegisterBitmap::Registration regs[] = { {IDB_HEYYOU,1}, {0,SHVInt()} };
+		SHVRegisterBitmap(mainqueue.GetModuleList(), regs);
 
 		mainqueue.GetModuleList().AddModule(new SHVControlTester(mainqueue.GetModuleList()));
 

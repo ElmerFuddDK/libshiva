@@ -54,6 +54,7 @@ SHVFontRef ownerDrawFont = GUIManager->GetFont(SHVGUIManager::CfgFontNormal)->Cr
 	GUIManager->GetMainWindow()->SetMinimumSize(200,115);
 	GUIManager->GetMainWindow()->SetLayoutEngine(new SHVControlLayoutCallback<SHVControlTester>(this,&SHVControlTester::OnResizeContainer));
 
+	Bitmap = GUIManager->CreateBitmap(1);
 
 	Container = GUIManager->NewContainerCustomDraw(subsOnDrawContainer)
 		->SetColor(GUIManager->CreateColor(0xFF,0xFF,0xFF))
@@ -98,6 +99,7 @@ void SHVControlTester::Unregister()
 	Button = NULL;
 	TestDialog = NULL;
 	Container = NULL;
+	Bitmap = NULL;
 
 	SHVModule::Unregister();
 }
@@ -202,5 +204,8 @@ void SHVControlTester::OnDrawContainer(SHVEvent* event)
 SHVDrawRef draw = SHVDraw::FromDrawEvent(event);
 SHVRect rct = draw->GetClientRect((SHVControl*)event->GetObject());
 
+	if (!Bitmap.IsNull())
+		SHVTRACE(_T("%d,%d\n"), (int)Bitmap->GetWidth(), (int)Bitmap->GetHeight());
+	draw->DrawBitmap(Bitmap,SHVPoint(0,0));
 	//draw->DrawRectFilled(rct,GUIManager->CreateColor(0xFF,0xFF,0xFF));
 }

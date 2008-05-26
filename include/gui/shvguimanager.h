@@ -10,6 +10,7 @@
 #include "shvformimplementer.h"
 #include "shvformbase.h"
 #include "utils/shvfont.h"
+#include "utils/shvbitmap.h"
 #include "utils/shvcolor.h"
 #include "utils/shvpen.h"
 #include "utils/shvbrush.h"
@@ -83,6 +84,7 @@ public:
 	virtual SHVPen* CreatePen(SHVColor* color, int style = SHVPen::StyleDefault, int width = 1) = 0;
 	virtual SHVBrush* CreateBrush(SHVColor* color, int style = SHVBrush::StyleDefault) = 0;
 	virtual SHVRegion* CreateRegion(SHVControlContainer* container) = 0;
+	virtual SHVBitmap* CreateBitmap(SHVInt bitmapID) = 0;
 	virtual SHVMenu* CreatePopupMenu(SHVEventSubscriberBase* subscriber, SHVControl* parent) = 0;
 
 	// Factories for template inherited classes

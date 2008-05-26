@@ -554,6 +554,10 @@
 						RelativePath="..\..\..\include\gui\shvmenu.h"
 						>
 					</File>
+					<File
+						RelativePath="..\..\..\include\gui\shvregisterbitmap.h"
+						>
+					</File>
 					<Filter
 						Name="utils"
 						>

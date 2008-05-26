@@ -36,7 +36,9 @@
 #include "shvguimanagerwin32.h"
 #include "shvwin32.h"
 #include "utils/shvdrawwin32.h"
+#include "utils/shvbitmapwin32.h"
 #include "shvmenuwin32.h"
+#include "../../../include/gui/shvregisterbitmap.h"
 
 #include "shvcontrolimplementercontainerwindowwin32.h"
 #include "shvcontrolimplementerdialogwin32.h"
@@ -160,6 +162,21 @@ SHVBrush* SHVGUIManagerWin32::CreateBrush(SHVColor* color, int style)
 SHVRegion* SHVGUIManagerWin32::CreateRegion(SHVControlContainer* container)
 {
 	return new SHVRegionImpl(container);
+}
+
+/*************************************
+ * CreateBitmap
+ *************************************/
+SHVBitmap* SHVGUIManagerWin32::CreateBitmap(SHVInt bitmapID)
+{
+SHVBitmap* retVal = NULL;
+	if (Modules.GetConfig(SHVModuleList::CfgBitmapResourceMap).Contains(bitmapID))
+	{
+	SHVBitmapResourceMapWin32* map = (SHVBitmapResourceMapWin32*)Modules.GetConfig(SHVModuleList::CfgBitmapResourceMap).FindRef(bitmapID).ToRef();
+		retVal = new SHVBitmapWin32(map->hInstance,map->ResourceID);
+	}
+
+	return retVal;
 }
 
 /*************************************

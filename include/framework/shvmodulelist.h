@@ -45,6 +45,7 @@ public:
 	enum Configs {
 		CfgDefault = 0,
 		CfgGUI = 1,
+		CfgBitmapResourceMap = 2,
 		CfgUser = 10
 	}; 
 	enum DefaultConfigOptions {

@@ -16,6 +16,9 @@ public:
 
 	virtual SHVBool IsCreated() = 0;
 
+	virtual SHVInt GetWidth() = 0;
+	virtual SHVInt GetHeight() = 0;
+
 
 protected:
 	inline SHVBitmap() {}

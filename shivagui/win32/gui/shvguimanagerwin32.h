@@ -39,6 +39,7 @@ public:
 	virtual SHVPen* CreatePen(SHVColor* color, int style = SHVPen::StyleDefault, int width = 1);
 	virtual SHVBrush* CreateBrush(SHVColor* color, int style = SHVBrush::StyleDefault);
 	virtual SHVRegion* CreateRegion(SHVControlContainer* container);
+	virtual SHVBitmap* CreateBitmap(SHVInt bitmapID);
 	virtual SHVMenu* CreatePopupMenu(SHVEventSubscriberBase* subscriber, SHVControl* parent);
 
 	// Factories for template inherited classes
@@ -57,6 +58,7 @@ public:
 
 protected:
 friend class SHVMenuWin32;
+
 	///\cond INTERNAL
 	int CreateCommandID(HANDLE handle, SHVInt value);
 	HANDLE CommandIDToHandle(int cmdID);
