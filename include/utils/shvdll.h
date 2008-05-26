@@ -58,6 +58,10 @@ public:
 	void* CreateObjectString(SHVModuleList* list, const SHVStringC classType);
 
 
+	// Rather hackish method to obtain access to the private inherited stuff
+	inline SHVDllBase& Base();
+
+
 private:
 	///\cond INTERNAL
 	typedef void* (*SHVCreateObjectIntFunc)(SHVModuleList* list, int classType);
@@ -67,5 +71,17 @@ private:
 	SHVCreateObjectStringFunc CreateObjectStringPtr;
 	///\endcond
 };
+
+
+
+// ============================================= implementation ============================================= //
+
+/*************************************
+ * Base
+ *************************************/
+SHVDllBase& SHVDll::Base()
+{
+	return *(SHVDllBase*)this;
+}
 
 #endif

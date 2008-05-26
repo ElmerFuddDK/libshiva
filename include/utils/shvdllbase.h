@@ -58,6 +58,15 @@ public:
 	SHVBool Resolve(void** symbol, long id);
 #endif
 
+#ifdef __SHIVA_WIN32
+	inline HINSTANCE GetNativeHandle();
+#elif defined __SHIVA_LINUX
+	inline void* GetNativeHandle();
+#elif defined __SHIVA_EPOC
+	inline RLibrary* GetNativeHandle();
+#endif
+
+
 private:
 	///\cond INTERNAL
 #ifdef __SHIVA_WIN32
@@ -69,5 +78,29 @@ private:
 #endif
 	///\endcond
 };
+
+
+
+// ============================================= implementation ============================================= //
+
+/*************************************
+ * GetNativeHandle
+ *************************************/
+#ifdef __SHIVA_WIN32
+HINSTANCE SHVDllBase::GetNativeHandle()
+{
+	return hDll;
+}
+#elif defined __SHIVA_LINUX
+void* SHVDllBase::GetNativeHandle()
+{
+	return hDll;
+}
+#elif defined __SHIVA_EPOC
+RLibrary* SHVDllBase::GetNativeHandle()
+{
+	return hDll;
+}
+#endif
 
 #endif
