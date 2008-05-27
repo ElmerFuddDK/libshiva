@@ -114,6 +114,8 @@ public:
 private:
 	///\cond INTERNAL
 
+	inline SHVModuleList& GetModuleList();
+
 	SHVList<SHVTimerInstanceImplRef,SHVTimerInstanceImpl*> TimerList;
 
 	SHVTimerThread TimerThread;
@@ -121,5 +123,19 @@ private:
 	void RecalculateTimer(SHVTimerInstanceImpl* timer);
 	///\endcond
 };
+
+
+
+// ============================================ implementation ============================================ //
+
+/*************************************
+ * GetModuleList
+ *************************************/
+///\cond INTERNAL
+SHVModuleList& SHVTimerImpl::GetModuleList()
+{
+	return Modules;
+}
+///\endcond
 
 #endif

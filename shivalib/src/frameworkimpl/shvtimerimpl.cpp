@@ -247,7 +247,7 @@ bool retVal = false;
  *************************************/
 void SHVTimerInstanceImpl::Perform()
 {
-	Subscriber->Perform(new SHVEvent(Timer,SHVTimer::EventTimeout,SHVInt(),this));
+	Subscriber->EmitNow(Timer->GetModuleList(),new SHVEvent(Timer,SHVTimer::EventTimeout,SHVInt(),this));
 }
 
 /*************************************
