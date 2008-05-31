@@ -38,6 +38,7 @@
 # include <locale.h>
 
 
+
 //-=========================================================================================================
 // SHVMainWndWin32 - Main window implementation
 //-=========================================================================================================
@@ -144,7 +145,7 @@ bool processed;
 			{
 			case WM_KEYDOWN:
 				
-				if (msg.wParam == VK_TAB)
+				if (msg.wParam == VK_TAB && !(GetKeyState(VK_CONTROL) & 0x8000))
 				{
 
 					// find top level wnd
