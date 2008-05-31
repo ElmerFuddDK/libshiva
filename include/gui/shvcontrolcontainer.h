@@ -32,6 +32,7 @@ public:
 		SubTypeMainWindow,
 		SubTypeModalDialog,
 		SubTypeDialog,
+		SubTypeTabPage
 	};
 	enum EventTypes	{
 		EventPreDestroy

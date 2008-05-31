@@ -33,7 +33,8 @@ public:
 		TypeEdit,
 		TypeList,
 		TypeGrid,
-		TypeCustom,
+		TypeTab,
+		TypeCustom = 0xFE,
 		TypeContainer = 0xFF
 	};
 

@@ -40,7 +40,7 @@ private:
 	SHVControlButtonRef Button;
 	SHVBitmapRef Bitmap;
 
-	SHVControlContainerRef TestDialog;
+	SHVFormBaseRef TestDialog;
 };
 
 #endif

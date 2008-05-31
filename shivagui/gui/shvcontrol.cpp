@@ -73,6 +73,9 @@ SHVBool ok(SHVBool::True);
 
 	SHVASSERT(parent != Parent);
 
+	// you may not create or reparent a tab page - this is a "hidden" container class used by a tab control
+	SHVASSERT(GetType() != SHVControl::TypeContainer || GetImplementor()->GetSubType(this) != SHVControlContainer::SubTypeTabPage);
+
 	if (parent == Parent)
 	{
 		SetFlag(flags);

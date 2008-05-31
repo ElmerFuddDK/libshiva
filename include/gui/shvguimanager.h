@@ -7,6 +7,7 @@
 #include "shvcontroledit.h"
 #include "shvcontrollabel.h"
 #include "shvcontrolbutton.h"
+#include "shvcontroltab.h"
 #include "shvformimplementer.h"
 #include "shvformbase.h"
 #include "utils/shvfont.h"
@@ -74,6 +75,7 @@ public:
 	inline SHVControlLabel* NewLabel(int subType = SHVControlLabel::SubTypeDefault);
 	inline SHVControlLabel* NewLabelCustomDraw(SHVEventSubscriberBase* subscriber);
 	inline SHVControlButton* NewButton(int subType = SHVControlButton::SubTypeDefault);
+	inline SHVControlTab* NewTab(int subType = SHVControlTab::SubTypeDefault);
 
 	// Font functions
 	inline SHVFont* GetFont(int cfgID);
@@ -192,6 +194,14 @@ SHVControlLabel* retVal = (SHVControlLabel*)NewControl(SHVControl::TypeLabel,SHV
 SHVControlButton* SHVGUIManager::NewButton(int subType)
 {
 	return (SHVControlButton*)NewControl(SHVControl::TypeButton,subType);
+}
+
+/*************************************
+ * NewTab
+ *************************************/
+SHVControlTab* SHVGUIManager::NewTab(int subType)
+{
+	return (SHVControlTab*)NewControl(SHVControl::TypeTab,subType);
 }
 
 /*************************************

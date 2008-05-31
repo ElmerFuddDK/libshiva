@@ -104,26 +104,29 @@ RECT nativeRect;
  *************************************/
 void SHVControlImplementerContainerWindowWin32::SetSize(SHVControlContainer* owner, int widthInPixels, int heightInPixels, SHVControlContainer::PosModes mode)
 {
-SHVRect parentRect(owner->GetParent()->GetRect());
-SHVRect rect(GetRect(owner));
-
-	SHVASSERT(IsCreated());
-
-	rect.SetWidth(widthInPixels);
-	rect.SetHeight(heightInPixels);
-
-	switch (mode)
+	if (SubType != SHVControlContainer::SubTypeTabPage)
 	{
-	case SHVControlContainer::PosCenterScreen: // equals centerwindow on child containers
-	case SHVControlContainer::PosCenterWindow:
-		rect.SetX( (parentRect.GetWidth()-rect.GetWidth())/2 );
-		rect.SetY( (parentRect.GetHeight()-rect.GetHeight())/2 );
-		break;
-	default:
-		break;
-	}
+	SHVRect parentRect(owner->GetParent()->GetRect());
+	SHVRect rect(GetRect(owner));
 
-	SetRect(owner,rect);
+		SHVASSERT(IsCreated());
+
+		rect.SetWidth(widthInPixels);
+		rect.SetHeight(heightInPixels);
+
+		switch (mode)
+		{
+		case SHVControlContainer::PosCenterScreen: // equals centerwindow on child containers
+		case SHVControlContainer::PosCenterWindow:
+			rect.SetX( (parentRect.GetWidth()-rect.GetWidth())/2 );
+			rect.SetY( (parentRect.GetHeight()-rect.GetHeight())/2 );
+			break;
+		default:
+			break;
+		}
+
+		SetRect(owner,rect);
+	}
 }
 
 /*************************************
@@ -215,6 +218,7 @@ void SHVControlImplementerContainerWindowWin32::SetResizable(bool resizable)
  *************************************/
 void SHVControlImplementerContainerWindowWin32::SetMinimumSize(SHVControlContainer* owner, int widthInPixels, int heightInPixels)
 {
+	SHVASSERT(SubType != SHVControlContainer::SubTypeTabPage);
 	MinSize.x = widthInPixels;
 	MinSize.y = heightInPixels;
 }
@@ -232,6 +236,7 @@ SHVPoint SHVControlImplementerContainerWindowWin32::GetMinimumSizeInPixels(SHVCo
  *************************************/
 void SHVControlImplementerContainerWindowWin32::SubscribeDraw(SHVEventSubscriberBase* subscriber)
 {
+	SHVASSERT(SubType != SHVControlContainer::SubTypeTabPage);
 	Subscriber = subscriber;
 }
 

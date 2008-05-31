@@ -45,6 +45,7 @@
 #include "shvcontrolimplementerlabelwin32.h"
 #include "shvcontrolimplementereditwin32.h"
 #include "shvcontrolimplementerbuttonwin32.h"
+#include "shvcontrolimplementertabwin32.h"
 #include "../../../include/gui/shvcontrolcreator.h"
 #include "../../../include/gui/shvcontrolcreatorsubtype.h"
 #include "../../utilsimpl/shvregionimpl.h"
@@ -93,6 +94,9 @@ HINSTANCE hInstance = (HINSTANCE)GetConfig().FindPtr(CfgInstanceHandle).ToPtr();
 
 	RegisterFactory(SHVControl::TypeButton,SHVControlButton::SubTypeDefault,
 		new SHVControlCreator<SHVControlButton,SHVControlImplementerButtonWin32>());
+
+	RegisterFactory(SHVControl::TypeTab,SHVControlTab::SubTypeDefault,
+		new SHVControlCreator<SHVControlTab,SHVControlImplementerTabWin32>());
 
 
 	// Register fonts

@@ -6,6 +6,8 @@
 #include "../../../../../include/gui/utils/shvregion.h"
 #include "../../../../../include/gui/utils/shvdraw.h"
 
+#include "shvtabtestform.h"
+
 #define __MENU_MSGBOXES  1
 #define __MENU_STUFF     2
 #define __MENU_DIALOGTST 3
@@ -132,22 +134,10 @@ void SHVControlTester::OnEvent(SHVEvent* event)
 					break;
 				case __MENU_DIALOGTST:
 					{
-						TestDialog = GUIManager->NewDialog();
-						if (TestDialog->Create())
-						{
-						SHVMenuRef menu = TestDialog->CreateMenu(NULL);
-						SHVMenuRef submenu1 = menu->AddSubMenu(_T("Menu1"));
-						SHVMenuRef submenu2 = menu->AddSubMenu(_T("Menu2"));
-						SHVMenuRef submenu3 = menu->AddSubMenu(_T("Menu3"));
-						SHVMenuRef submenu4 = menu->AddSubMenu(_T("Menu4"));
-							submenu1->AddStringItem(SHVInt(),_T("1"));
-							submenu2->AddStringItem(SHVInt(),_T("2"));
-							submenu3->AddStringItem(SHVInt(),_T("3"));
-							submenu4->AddStringItem(SHVInt(),_T("4"));
-
-							menu->Show();
-							TestDialog->SetFlag(SHVControl::FlagVisible);
-						}
+					SHVControlContainer* dialog;
+						TestDialog = new SHVFormTabTest(GUIManager,dialog = GUIManager->NewDialog());
+						dialog->Create();
+						TestDialog->InitializeForm();
 					}
 					break;
 				}
@@ -179,7 +169,7 @@ void SHVControlTester::OnResizeControls(SHVControlContainer* container, SHVContr
 {
 SHVRegionRef rgn = GUIManager->CreateRegion(container);
 
-	rgn->Move(Label)->Top()->ClipTop();
+	rgn->Move(Label)->Top()->Left(100)->ClipTop();
 	rgn->Move(EditBox)->FillHorizontal(Label,NULL)->LeftOf(Label)->ClipTop();
 
 	rgn->Move(Button)->Bottom()->AlignHorizontal(NULL,NULL,SHVRegion::AlignHCenter)->ClipBottom(4);
@@ -204,8 +194,6 @@ void SHVControlTester::OnDrawContainer(SHVEvent* event)
 SHVDrawRef draw = SHVDraw::FromDrawEvent(event);
 SHVRect rct = draw->GetClientRect((SHVControl*)event->GetObject());
 
-	if (!Bitmap.IsNull())
-		SHVTRACE(_T("%d,%d\n"), (int)Bitmap->GetWidth(), (int)Bitmap->GetHeight());
 	draw->DrawBitmap(Bitmap,SHVPoint(0,0));
 	//draw->DrawRectFilled(rct,GUIManager->CreateColor(0xFF,0xFF,0xFF));
 }

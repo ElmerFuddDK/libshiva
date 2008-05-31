@@ -211,6 +211,14 @@
 					RelativePath=".\Modules\shvcontroltester.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\modules\shvtabtestform.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\modules\shvtabtestpageform.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -247,6 +255,14 @@
 				>
 				<File
 					RelativePath=".\Modules\shvcontroltester.h"
+					>
+				</File>
+				<File
+					RelativePath=".\modules\shvtabtestform.h"
+					>
+				</File>
+				<File
+					RelativePath=".\modules\shvtabtestpageform.h"
 					>
 				</File>
 			</Filter>
