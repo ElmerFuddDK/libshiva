@@ -246,6 +246,21 @@ size_t sourcelen = StrLen(source);
 	return (source ? (SHVWChar*)wcscat((wchar_t*)dest,(const wchar_t*)source) : dest);
 #endif
 }
+SHVStringBuffer16 SHVString16C::Format(const SHVWChar* str, ...)
+{
+SHVString16 retVal;
+SHVVA_LIST args;
+	SHVVA_START(args,str);
+	retVal.FormatList(str,args);
+	SHVVA_END(args);
+	return retVal.ReleaseBuffer();
+}
+SHVStringBuffer16 SHVString16C::FormatList(const SHVWChar* str, SHVVA_LIST args)
+{
+SHVString16 retVal;
+	retVal.FormatList(str,args);
+	return retVal.ReleaseBuffer();
+}
 
 
 // ========================================================================================================

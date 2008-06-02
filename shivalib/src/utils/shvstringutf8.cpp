@@ -139,6 +139,21 @@ SHVChar* SHVStringUTF8C::StrCat(SHVChar* dest, const SHVChar* source)
 {
 	return SHVString8C::StrCat(dest,source);
 }
+SHVStringBufferUTF8 SHVStringUTF8C::Format(const SHVChar* str, ...)
+{
+SHVStringUTF8 retVal;
+SHVVA_LIST args;
+	SHVVA_START(args,str);
+	retVal.FormatList(str,args);
+	SHVVA_END(args);
+	return retVal.ReleaseBuffer();
+}
+SHVStringBufferUTF8 SHVStringUTF8C::FormatList(const SHVChar* str, SHVVA_LIST args)
+{
+SHVStringUTF8 retVal;
+	retVal.FormatList(str,args);
+	return retVal.ReleaseBuffer();
+}
 
 
 // ========================================================================================================

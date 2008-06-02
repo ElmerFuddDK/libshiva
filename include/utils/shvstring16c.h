@@ -137,7 +137,8 @@ public:
 	static int    StrCmp(const SHVWChar* str1,const SHVWChar* str2);
 	static int    StrCaseCmp(const SHVWChar* str1,const SHVWChar* str2);
 	static SHVWChar* StrCat(SHVWChar* dest, const SHVWChar* source);
-
+	static SHVStringBuffer16 Format(const SHVWChar* str, ...);
+	static SHVStringBuffer16 FormatList(const SHVWChar* str, SHVVA_LIST args);
 
 protected:
 	///\cond INTERNAL

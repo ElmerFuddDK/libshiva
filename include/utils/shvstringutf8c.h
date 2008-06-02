@@ -114,6 +114,8 @@ public:
 	static int    StrCmp(const SHVChar* str1,const SHVChar* str2);
 	static int    StrCaseCmp(const SHVChar* str1,const SHVChar* str2);
 	static SHVChar* StrCat(SHVChar* dest, const SHVChar* source);
+	static SHVStringBufferUTF8 Format(const SHVChar* str, ...);
+	static SHVStringBufferUTF8 FormatList(const SHVChar* str, SHVVA_LIST args);
 
 
 protected:

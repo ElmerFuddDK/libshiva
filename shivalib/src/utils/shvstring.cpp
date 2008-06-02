@@ -103,6 +103,21 @@ SHVChar* SHVString8C::StrCat(SHVChar* dest, const SHVChar* source)
 {
 	return (source ? strcat(dest,source) : dest);
 }
+SHVStringBuffer8 SHVString8C::Format(const SHVChar* str, ...)
+{
+SHVString8 retVal;
+SHVVA_LIST args;
+	SHVVA_START(args,str);
+	retVal.FormatList(str,args);
+	SHVVA_END(args);
+	return retVal.ReleaseBuffer();
+}
+SHVStringBuffer8 SHVString8C::FormatList(const SHVChar* str, SHVVA_LIST args)
+{
+SHVString8 retVal;
+	retVal.FormatList(str,args);
+	return retVal.ReleaseBuffer();
+}
 
 
 // ========================================================================================================
