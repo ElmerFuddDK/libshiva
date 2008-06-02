@@ -146,7 +146,8 @@ size_t SHVVectorRef<T,GrowSize>::Add(T* item)
 template<class T, int GrowSize>
 void SHVVectorRef<T,GrowSize>::Remove(size_t index)
 {
-	((T*)SHVVectorBase::Remove(index))->DestroyRef();
+	if ((*this)[index])
+		((T*)SHVVectorBase::Remove(index))->DestroyRef();
 }
 
 /*************************************
@@ -155,7 +156,9 @@ void SHVVectorRef<T,GrowSize>::Remove(size_t index)
 template<class T, int GrowSize>
 void SHVVectorRef<T,GrowSize>::Replace(size_t index, T* item)
 {
-	((T*)SHVVectorBase::Replace(index,item))->DestroyRef();
+T* oldItem = (T*)SHVVectorBase::Replace(index,item ? item->CreateRef() : item);
+	if (oldItem)
+		oldItem->DestroyRef();
 }
 
 /*************************************
@@ -164,7 +167,9 @@ void SHVVectorRef<T,GrowSize>::Replace(size_t index, T* item)
 template<class T, int GrowSize>
 void SHVVectorRef<T,GrowSize>::Pop()
 {
-	((T*)SHVVectorBase::Pop(GrowSize))->DestroyRef();
+T* oldItem = (T*)SHVVectorBase::Pop(GrowSize);
+	if (oldItem)
+		oldItem->DestroyRef();
 }
 
 /*************************************
