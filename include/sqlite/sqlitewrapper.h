@@ -90,7 +90,7 @@ SHVBool SHVSQLiteWrapper::Open(const SHVStringC& fileName, int option)
 SHVSQLiteStatement*  SHVSQLiteWrapper::Prepare(SHVBool& ok, const SHVStringC& sql, SHVString& notparsed)
 {
 SHVStringUTF8 sqlUTF8 = sql.ToStrUTF8();
-SHVSQLiteStatementRef res;
+SHVSQLiteStatement* res;
 	SHVStringSQLite rest(NULL);
 	res = PrepareUTF8(ok, sqlUTF8, rest);
 	notparsed = rest.ToStrT();
