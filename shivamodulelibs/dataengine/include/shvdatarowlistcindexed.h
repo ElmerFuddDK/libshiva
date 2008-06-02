@@ -17,20 +17,17 @@ public:
 	// from SHVDataRowListSQLite
 	virtual SHVBool Reset();
 	virtual int GetRowCount() const;
-
+	virtual SHVDataRowKey* GetPosition();
 
 protected:
 	virtual ~SHVDataRowListCIndexed();
 
 	// from SHVDataRowListSQLite
 	virtual SHVStringBufferUTF8 BuildQuery(const SHVStringC& condition, bool reverse);
-	virtual SHVBool TempReset();
-	virtual void Reposition();
 	virtual SHVBool InternalRowChanged(SHVDataRow* row);
 
 private:
 	SHVString8 IndexTableName;
-	long TempPos;
 };
 typedef SHVRefObjectContainer<SHVDataRowListCIndexed> SHVDataRowList_Indexed;
 

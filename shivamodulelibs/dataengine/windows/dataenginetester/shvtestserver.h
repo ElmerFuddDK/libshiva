@@ -4,6 +4,7 @@
 #include "../../../../include/framework/shvmodule.h"
 #include "../../../../include/shvlogger.h"
 #include "../../../../include/utils/shvlist.h"
+#include "../../../../include/threadutils/shvmutex.h"
 
 
 class SHVTestResult;
@@ -97,6 +98,7 @@ private:
 	SHVString Title;
 	SHVList<SHVString,const SHVStringC&> Log;
 	SHVBool Result;
+	SHVMutex Lock;
 	///\endcond
 };
 typedef SHVRefObjectContainer<SHVTestResult> SHVTestResultRef;

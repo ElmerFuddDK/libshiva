@@ -13,34 +13,33 @@
 /*************************************
  * Constructor
  *************************************/
-SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(-1), Alias(alias), Ok(true)
+SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(-1), Alias(alias), Ok(true), HasShareLock(false)
 {
+	AliasID = SHVDataRowListC::GetAliasID(alias);
 }
 
-SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVStringC& sql, const SHVDataRowKey* sortKey): DataSession(session), RowCount(-1), Alias("")
+SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVStringC& sql, const SHVDataRowKey* sortKey): DataSession(session), RowCount(-1), Alias(""), HasShareLock(false)
 {
 SHVString rest;
 SHVDataStructImpl* st = new SHVDataStructImpl();
 SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
+	AliasID = -1;
 	StructCache = st;
 	Statement = SQLite->Prepare(Ok, sql, rest);
-	if (Ok.GetError() == SHVSQLiteWrapper::SQLite_SCHEMA)
-	{
-		if (SchemaChanged())
-			Statement = SQLite->Prepare(Ok, sql, rest);
-	}
 	if (sortKey)
 		st->AddIndex((SHVDataRowKey*) sortKey);
 	SortIndex = 0;	
 	Eof = !Ok;
 }
 
-SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias, const SHVStringC& condition, size_t index): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(-1), Alias(alias)
+SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias, const SHVStringC& condition, size_t index): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(-1), Alias(alias), HasShareLock(false)
 {
 SHVStringSQLite rest(NULL);
 SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
 SHVStringUTF8 sql;
 
+	Ok = SHVBool::True;
+	AliasID = SHVDataRowListC::GetAliasID(alias);
 	SHVASSERT(dataStruct->GetIndex(index));
 	if (!dataStruct->GetIndex(index))
 	{
@@ -49,20 +48,15 @@ SHVStringUTF8 sql;
 	}
 	SortIndex = index;
 	sql = BuildQuery(condition, false);
-	if (Ok.GetError() == SHVSQLiteWrapper::SQLite_SCHEMA)
-		sql = BuildQuery(condition, false);
-	Statement = SQLite->PrepareUTF8(Ok, sql, rest);
-	if (Ok.GetError() == SHVSQLiteWrapper::SQLite_SCHEMA)
-	{
-		if (SchemaChanged())
-			Statement = SQLite->PrepareUTF8(Ok, sql, rest);
-	}
+	if (Ok)
+		Statement = SQLite->PrepareUTF8(Ok, sql, rest);
 	Eof = !Ok;
 }
 
 SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, const SHVString8C& alias, size_t index): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(-1), Alias(alias)
 {
 	SHVASSERT(dataStruct->GetIndex(index));
+	AliasID = SHVDataRowListC::GetAliasID(alias);
 	Ok = SHVBool::True;
 	if (!dataStruct->GetIndex(index))
 	{
@@ -111,6 +105,14 @@ const SHVDataStructC* SHVDataRowListCSQLite::GetStruct() const
 const SHVString8C SHVDataRowListCSQLite::GetAlias() const
 {
 	return Alias;
+}
+
+/*************************************
+ * GetAliasID
+ *************************************/
+int SHVDataRowListCSQLite::GetAliasID() const
+{
+	return AliasID;
 }
 
 /*************************************
@@ -172,6 +174,26 @@ SHVDataRowC* retVal = NULL;
 }
 
 /*************************************
+ * GetPosition
+ *************************************/
+SHVDataRowKey* SHVDataRowListCSQLite::GetPosition()
+{
+SHVDataRowKey* retVal = NULL;
+	if (GetCurrentRow())
+		retVal = GetCurrentRow()->GetKey(SortIndex);
+	return retVal;
+}
+
+/*************************************
+ * SetPosition
+ *************************************/
+SHVBool SHVDataRowListCSQLite::SetPosition(const SHVDataRowKey* key)
+{
+SHVDataRowCRef row = Find(key);
+	return !row.IsNull() && row->MatchKey(key);
+}
+
+/*************************************
  * NextRow
  *************************************/
 SHVBool SHVDataRowListCSQLite::NextRow()
@@ -183,9 +205,10 @@ SHVBool retVal = IsOk();
 		if (RowCount < 0)
 		{
 			RowCount = 0;
-			while (NextRow()) RowCount++;
+			while (Statement->NextResult().GetError() == SHVSQLiteWrapper::SQLite_ROW) RowCount++;
 			Reset();
 		}
+		LockShared();
 		if (CurrentRow.IsNull())
 			CurrentRow = new SHVDataRowCSQLite(this);
 		retVal = Statement->NextResult();
@@ -276,6 +299,7 @@ SHVBool retVal = IsOk();
 		}
 		if (!retVal)
 			Eof = SHVBool::True;
+		Unlock();
 	}
 	return retVal;
 }
@@ -309,7 +333,9 @@ SHVBool SHVDataRowListCSQLite::RowListValid() const
  *************************************/
 SHVDataRowListCSQLite::~SHVDataRowListCSQLite()
 {
-	UnregisterDataList();
+	if (HasShareLock)
+		DataSession->GetFactory()->Unlock();
+	Statement = NULL;
 	DataSession = NULL;
 }
 
@@ -350,25 +376,35 @@ void SHVDataRowListCSQLite::AdjustRowCount(int delta)
 }
 
 /*************************************
- * TempReset
+ * LockShared
  *************************************/
-SHVBool SHVDataRowListCSQLite::TempReset()
+void SHVDataRowListCSQLite::LockShared()
 {
-	return Reset();
+	if (!HasShareLock && IsOk())
+	{
+		GetDataSession()->GetFactory()->LockShared();
+		HasShareLock = true;
+	}
 }
 
 /*************************************
- * Reposition
+ * Unlock
  *************************************/
-void SHVDataRowListCSQLite::Reposition()
+void SHVDataRowListCSQLite::Unlock()
 {
+	if (HasShareLock && IsOk())
+	{
+		HasShareLock = false;
+		GetDataSession()->GetFactory()->Unlock();
+	}
 }
 
 /*************************************
- * RowChanged
+ * InternalRowChanged
  *************************************/
 SHVBool SHVDataRowListCSQLite::InternalRowChanged(SHVDataRow* row)
 {
 	return SHVBool::True;
 }
+
 

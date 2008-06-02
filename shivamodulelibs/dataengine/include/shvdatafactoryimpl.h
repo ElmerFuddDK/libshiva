@@ -6,7 +6,9 @@
 #include "../../../include/modules/dataengine/shvdatarow.h"
 
 #include "../../../include/utils/shvlist.h"
+#include "../../../include/utils/shvhashtable.h"
 #include "../../../include/threadutils/shvmutex.h"
+#include "../../../include/threadutils/shvreadwritelock.h"
 #include "../../../include/sqlite/sqlitewrapper.h"
 
 //-=========================================================================================================
@@ -16,23 +18,23 @@
 class SHVDataStructReg
 {
 public:
-	inline SHVDataStructReg(const SHVString8C& name, const SHVDataStructC* datastruct);
+	inline SHVDataStructReg(const SHVString8C& name, int aliasID, const SHVDataStructC* datastruct);
 	inline const SHVDataStructC& GetStruct() const;
 	inline const SHVString8C& GetAlias() const;
-	inline void SetDeleted(bool deleted);
-	inline void SetTemp(bool temp);
+	inline int GetAliasID() const;
 	inline bool GetDeleted() const;
+	inline void SetDeleted(bool val);
 	inline bool GetTemp() const;
+	inline void SetTemp(bool val);
 private:
 	SHVDataStructCRef Struct;
 	SHVString8 Alias;
+	int AliasId;
 	bool Deleted;
 	bool Temp;
 };
 typedef SHVList<SHVDataStructReg> SHVDataSchemaAlias;
 
-// forward declares
-class SHVTranscationLocker;
 //-=========================================================================================================
 /// SHVDataFactoryImpl class - Implementation of the data factory
 /**
@@ -42,12 +44,13 @@ class SHVDataFactoryImpl: public SHVDataFactory
 {
 public:
 	SHVDataFactoryImpl(SHVDataEngine& engine, const SHVStringC& database);
-	SHVDataFactoryImpl(SHVDataEngine& engine, const SHVStringC& database, const SHVDataSchema* Scheme);
 
 	// from SHVDataFactory
-	virtual SHVBool RegisterTable(const SHVDataStructC* dataStruct, bool createTable = false);
+	virtual SHVBool RegisterTable(const SHVDataStructC* dataStruct, SHVDataSession* useSession = NULL);
 	virtual SHVBool RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear = false, SHVDataSession* useSession = NULL);
-	virtual SHVBool UnregisterAlias(const SHVString8C& alias);
+	virtual size_t RegisterIndex(const SHVString8C& table, SHVDataRowKey* IndexKey, SHVDataSession* useSession = NULL);
+	virtual SHVBool UnregisterAlias(const SHVString8C& alias, SHVDataSession* useSession = NULL);
+	virtual SHVBool ClearTable(const SHVString8C& table, SHVDataSession* useSession = NULL);
 
 	virtual const SHVDataStructC* FindStruct(const SHVString8C& table) const;
 	virtual const SHVDataSchema& GetDataSchema() const;
@@ -57,7 +60,7 @@ public:
 	virtual SHVDataVariant* CreateVariant() const;
 	virtual SHVDataRowKey* CreateKey() const;
 	virtual SHVDataRowKey* CopyKey(const SHVDataRowKey* key) const;
-	virtual SHVDataStructC* RetrieveStruct(const SHVString8C table, const SHVString8C alias = SHVString8C(NULL)) const;
+	virtual SHVDataStructC* RetrieveStruct(const SHVString8C table, SHVDataSession* useSession = NULL) const;
 
 	virtual const SHVStringC& GetDatabase() const;
 	virtual void BuildKeySQL(const SHVDataRowKey* key, SHVString8& condition, SHVString8& orderby, const SHVString8C& table, bool reverse = false) const;
@@ -65,53 +68,59 @@ public:
 	virtual void SubscribeRowChange(SHVEventSubscriberBase* sub);
 
 	virtual SHVDataEngine& GetDataEngine();
-	virtual SHVStringBuffer GetErrorMessage() const;
 
 	virtual SHVBool IsOk() const;
 
+	virtual void LockShared();
+	virtual void LockExclusive();
+	virtual SHVBool TryLockExclusive();
+	virtual void Unlock();
 
 protected:
 	virtual ~SHVDataFactoryImpl();
-	virtual SHVBool CreateTable(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct, const SHVString8C& tableName);
-	virtual SHVBool CreateIndex(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct, const SHVString8C& tableName, size_t index);
+	virtual SHVBool CreateTable(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct);
+	virtual SHVBool CreateView(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct, const SHVString8C& viewName, int& id);
+	virtual SHVBool CreateIndex(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct, size_t index);
+	virtual int GetAliasID(SHVSQLiteWrapper* sqlite, const SHVString8C& alias, bool create);
 	virtual bool TableMatch(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct, const SHVString8C& tableName, bool& exists);
-	virtual const SHVDataStructC* InternalFindAlias(const SHVString8C& table) const;
-	virtual const SHVDataStructC* InternalFindStruct(const SHVString8C& table) const;
-	virtual SHVBool InternalUnregisterAlias(const SHVString8C& alias, bool hasLock);
+	virtual SHVDataStructReg* InternalFindAlias(const SHVString8C& table) const;
+	virtual const size_t InternalFindStruct(const SHVString8C& table) const;
+	virtual void SchemaChanged(SHVSQLiteWrapper* sqlite);
 
 	// from SHVDataFactory
 	virtual void RegisterDataSession(SHVDataSession* session);
 	virtual void UnregisterDataSession(SHVDataSession* session);
-	virtual bool CheckAlias(SHVDataSession* session, const SHVString8C& alias);
 	virtual void RowChanged(SHVDataRow* row);
-	virtual bool LockTransaction();
-	virtual void UnlockTransaction();
-	virtual SHVBool BeginTransaction(SHVDataSession* session);
+	virtual SHVBool BeginTransaction(SHVDataSession* session, bool wait = false);
 	virtual SHVBool EndTransaction(SHVDataSession* session);
 	virtual SHVBool RollbackTransaction(SHVDataSession* session);
+	virtual bool GetInTransaction() const;
+	virtual SHVBool InternalBeginTransaction(SHVSQLiteWrapper* sqlite);
+	virtual SHVBool InternalEndTransaction(SHVSQLiteWrapper* sqlite);
+	virtual SHVBool InternalRollbackTransaction(SHVSQLiteWrapper* sqlite);
+	virtual int GetAliasID(const SHVDataSession* dataSession, const SHVString8C& alias) const;
 
 private:
 // friends
 friend class SHVDataEngineImpl;
-friend class SHVTransactionLocker;	
-	
-
-	virtual void CheckConnection();
-
 
 	SHVDataEngine& DataEngine;
-	SHVSQLiteWrapperRef SQLite;
 	SHVString Database;
 	SHVDataSchema Schema;
 	SHVDataSchemaAlias Alias;
 	SHVList<SHVDataSession*> ActiveSessions;
-	SHVList<SHVString8C> PendingUnregisterAlias;
-	SHVList<SHVString8C> PendingUnregisterAliasTransaction;
 	SHVEventSubscriberBaseRef DataChangedSubscription;
-	SHVMutex FactoryLock;
-	SHVMutex TransactionLock;
+	SHVReadWriteLock Lock;
+	SHVReadWriteLock SessionLock;
+	int InTransaction;
 	SHVBool Ok;
-	bool ConnectionDirty;
+	bool SchemaHasChanged;
+#ifdef DEBUG
+	SHVMutex SharedLocksMutex;
+	SHVHashTable<SHVThreadBase::ThreadID, int> SharedLocks;
+	SHVThreadBase::ThreadID OwnerThread;
+	bool HasExclusiveLock;
+#endif
 };
 
 // ============================================ implementation ============================================ //
@@ -119,7 +128,7 @@ friend class SHVTransactionLocker;
 /*************************************
  * Constructors
  *************************************/
-SHVDataStructReg::SHVDataStructReg(const SHVString8C& name, const SHVDataStructC* datastruct): Alias(name), Struct((SHVDataStructC*) datastruct), Temp(true), Deleted(false)
+SHVDataStructReg::SHVDataStructReg(const SHVString8C& name, int aliasID, const SHVDataStructC* datastruct): Alias(name), Struct((SHVDataStructC*) datastruct), Deleted(false), AliasId(aliasID)
 {
 }
 
@@ -140,20 +149,13 @@ const SHVString8C& SHVDataStructReg::GetAlias() const
 }
 
 /*************************************
- * SetDeleted
+ * GetAliasID
  *************************************/
-void SHVDataStructReg::SetDeleted(bool deleted)
+int SHVDataStructReg::GetAliasID() const
 {
-	Deleted = deleted;
+	return AliasId;
 }
 
-/*************************************
- * SetTemp
- *************************************/
-void SHVDataStructReg::SetTemp(bool temp)
-{
-	Temp = temp;
-}
 /*************************************
  * GetDeleted
  *************************************/
@@ -163,11 +165,26 @@ bool SHVDataStructReg::GetDeleted() const
 }
 
 /*************************************
+ * SetDeleted
+ *************************************/
+void SHVDataStructReg::SetDeleted(bool val)
+{
+	Deleted = val;
+}
+/*************************************
  * GetTemp
  *************************************/
 bool SHVDataStructReg::GetTemp() const
 {
 	return Temp;
+}
+
+/*************************************
+ * SetTemp
+ *************************************/
+void SHVDataStructReg::SetTemp(bool val)
+{
+	Temp = val;
 }
 
 #endif

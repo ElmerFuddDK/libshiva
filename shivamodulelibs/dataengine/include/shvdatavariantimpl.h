@@ -50,6 +50,7 @@ public:
 	inline SHVDataVariantImpl(SHVBool val);
 	inline SHVDataVariantImpl(const SHVString& val);
 	inline SHVDataVariantImpl(const SHVTime& val);
+	inline SHVDataVariantImpl(const SHVDataVariantImpl& copy);
 	inline SHVDataVariantImpl(const SHVDataVariant* copy);
 	inline SHVDataVariant& operator=(const SHVDataVariantImpl& val);
 
@@ -115,6 +116,14 @@ SHVDataVariantImpl::SHVDataVariantImpl(const SHVTime& val)
 	Data.stringVal = NULL;
 	SetTime(val);
 }
+
+SHVDataVariantImpl::SHVDataVariantImpl(const SHVDataVariantImpl& copy)
+{
+	DataType = SHVDataVariant::TypeUndefined;
+	Data.stringVal = NULL;
+	*this = copy;
+}
+
 SHVDataVariantImpl::SHVDataVariantImpl(const SHVDataVariant* copy)
 {
 	DataType = SHVDataVariant::TypeUndefined;

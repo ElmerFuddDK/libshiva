@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "../../../../include/platformspc.h"
 #include "../../../../include/utils/shvfile.h"
+#include "../../../../include/threadutils/shvreadwritelock.h"
+#include "../../../../include/threadutils/shvmutexlocker.h"
 
 #include "shvdataenginetest.h"
 #include "../../../../include/modules/dataengine/shvdataengine.h"
@@ -10,7 +12,7 @@
 #include "../../../../include/modules/dataengine/shvdatarowlistc.h"
 #include "../../../../include/modules/dataengine/shvdatarowlist.h"
 
-// ============================================== Test utility function ======================================
+// ====================================== Test utility function =====================================
 void DumpRow(SHVTestResult* result, const SHVDataRowC* row)
 {
 	if (row)
@@ -47,429 +49,474 @@ SHVBool retVal;
 		retVal = SHVBool::True;
 	return retVal;
 }
+// ============================================== Test utility class ================================
 
-// ============================================= Concurrency test class ======================================
-class SHVThreadDone
+class TimeIt
 {
 private:
-	SHVDataEngineTest& tester;
-public:
-	SHVThreadDone(SHVDataEngineTest& t): tester(t) {}
-	~SHVThreadDone() { tester.ThreadDone(); }
-};
-
-class SHVTestConcurrency
-{
-public:
-	SHVTestConcurrency(SHVDataEngine& dataEngine, SHVTestResult* result, SHVDataFactory* factory, SHVDataEngineTest& engineTester, const SHVString8C& alias);
-	void StartTest();
-	void RunThread();
-private:
-	SHVDataFactoryRef Factory;
-	SHVDataEngineTest& EngineTester;
+	size_t Ticks;
 	SHVTestResult* Result;
-	SHVString8 Alias;
-	SHVDataSessionRef InputData;
-	SHVThread<SHVTestConcurrency> Thread;
+	SHVString TestName;
+public:
+	inline TimeIt(SHVTestResult* result, const SHVString& testName): TestName(testName) 
+	{ 
+		Ticks = GetTickCount(); 
+		Result = result; 
+	}
+	inline size_t CurrentUsed() { return GetTickCount() - Ticks; }
+	inline ~TimeIt()
+	{
+		Result->AddLog(_T("Test %s took %u seconds"), TestName.GetSafeBuffer(), (GetTickCount() - Ticks) / 1000);
+		Result = NULL;
+	}
 };
 
-SHVTestConcurrency::SHVTestConcurrency(SHVDataEngine& dataEngine, SHVTestResult* result, SHVDataFactory* factory, SHVDataEngineTest& engineTester, const SHVString8C& alias): EngineTester(engineTester)
-{
-	Result = result;
-	Factory = factory;
-	Alias = alias;
-	InputData = dataEngine.CreateSession();
-}
 
-void SHVTestConcurrency::StartTest()
+class RandomServer
 {
-	Thread.Start(this, &SHVTestConcurrency::RunThread, SHVThreadBase::PrioNormal, Alias.ToStrT());
-}
+private:
+	SHVThread<RandomServer> RThread;
+	int CurrentNumber;
+	SHVMutexBase Signaler;
+	SHVMutexBase ResultSignaler;
+	SHVMutex Lock;
+	bool Running;
 
-void SHVTestConcurrency::RunThread()
-{
-SHVThreadDone Done(EngineTester);
-SHVDataSessionRef Session = Factory->CreateSession();
-SHVDataRowListCRef test;
-SHVDataRowListRef testInsert;
-SHVBool res = SHVBool::False;
-bool errLogged = false;
-int retry = 10;
-int step  = 0;	
-int bulkCount = 0;
-bool more = true;
-	res = Factory->RegisterAlias("test", Alias, true, Session);
-	if (res)
+	void SetRandom() 
 	{
-		step++;
-		test = InputData->QueryTable("test", _T(""), 1);
-		res = test->IsOk();
-	}
-	if (res)
-	{
-		step++;
-		testInsert = Session->GetRows(Alias, _T(""), 1);
-		if (!testInsert.IsNull())
-			res = testInsert->IsOk();
-		else
-			res.SetError(SHVSQLiteWrapper::SQLite_ERROR);
-	}
-	if (!res)
-	{
-		Result->AddLog(_T("Error(%s step %i) (Initializing): %s"), Alias.ToStrT().GetSafeBuffer(), step, Session->GetErrorMessage().GetSafeBuffer());
-	}
-	else
-	{
-		res = SHVBool::False;
-		while ((!res || more) && retry)
+		Signaler.Lock();
+		ResultSignaler.Unlock();
+		while (Running)
 		{
-			errLogged = false;
-			if (!more)
-			{
-				test->Reset();
-			}
-			else
-				more = true;
-			res = Session->StartEdit();
-			if (!res && !errLogged)
-			{
-				errLogged = true;
-				Result->AddLog(_T("Error(%s) (StartEdit): %s"), Alias.ToStrT().GetSafeBuffer(), Session->GetErrorMessage().GetSafeBuffer());
-			}
-			while (res && (res = test->NextRow()) && bulkCount++ < 100)
-			{
-				res = testInsert->IsOk();
-				if (res)
-				{
-				SHVDataRowRef newRow = testInsert->AddRow();
-					newRow->SetCorr(test->GetCurrentRow());
-					res = newRow->AcceptChanges();
-				}
-				if (!res && !errLogged)
-				{
-					Result->AddLog(_T("Error(%s) (Accept) : %s"), Alias.ToStrT().GetSafeBuffer(), Session->GetErrorMessage().GetSafeBuffer());
-					errLogged = true;
-				}
-			}
-			bulkCount = 0;
-			if (res.GetError() == SHVSQLiteWrapper::SQLite_DONE)
-			{
-				res = SHVBool::True;
-				more = false;
-			}
-			else
-			if (res.GetError() == SHVSQLiteWrapper::SQLite_ROW)
-			{
-				res = SHVBool::True;
-				more = true;
-			}
-			if (!res && !errLogged)
-			{
-				errLogged = true;
-				Result->AddLog(_T("Error(%s) (NextRow) : %s"), Alias.ToStrT().GetSafeBuffer(), Session->GetErrorMessage().GetSafeBuffer());
-			}
-			if (res)
-				res = Session->Commit();
-			if (!res)
-			{
-				if (!errLogged)
-					Result->AddLog(_T("Error(%s) (Commit %i) : %s"), Alias.ToStrT().GetSafeBuffer(), 11-retry, Session->GetErrorMessage().GetSafeBuffer());
-				Session->Rollback();
-			}
-			if (!more)
-				retry--;
-			else
-				retry = 10;
-			if (!res)
-				Result->AddLog(_T("Retry(%s) %i"), Alias.ToStrT().GetSafeBuffer(), 10-retry);
+			Signaler.Lock();
+			CurrentNumber = rand();
+			ResultSignaler.Unlock();
 		}
+		Signaler.Unlock();
 	}
-	if (!res)
-		Result->AddLog(_T("Total failure %s"), Alias.ToStrT().GetSafeBuffer());
-}
-
-// ============================================== Test functions =============================================
-SHVBool SHVDataEngineTest::AddPerson(SHVDataRowList* list, int pk_person, const SHVStringC& firstName, const SHVStringC& middleName, const SHVStringC& lastName)
-{
-SHVBool retVal;
-int before;
-SHVDataRowRef newRow = list->AddRow();
-	newRow->SetInt(0, pk_person);
-	newRow->SetString(1, firstName);
-	newRow->SetString(2, middleName);
-	newRow->SetString(3, lastName);
-	before = newRow->GetRefCount();
-	retVal = newRow->AcceptChanges();
-	return retVal;
-}
-
-SHVBool SHVDataEngineTest::TestInsert(SHVTestResult* result)
-{
-// Lets put some data into the test table
-SHVDataSessionRef Session = DataEngine->CreateSession();
-SHVDataRowListRef RowList;
-SHVDataRowListRef ChildRowList;
-SHVDataRowListCRef QueryData;
-SHVBool retVal = SHVBool::True;
-SHVFile file;
-SHVString data;
-SHVDataRowRef newRow;
-SHVTime time;
-int i = 0;
-
-	time.SetNow();
-	RowList = Session->GetRowsIndexed("test", _T(""), 1);
-	ChildRowList = Session->GetRowsIndexed("testchild", _T(""), 0);
-	file.Open(_T("testwords.txt"), SHVFile::FlagOpen|SHVFile::FlagRead);
-	data.SetBufferSize(file.GetSize() / sizeof(SHVWChar));
-	file.Seek(sizeof(SHVWChar));
-	file.ReadString(data);
-	Session->StartEdit();
-	for (size_t pos = 0; pos < data.GetLength();)
+public:
+	RandomServer(): Running(true) 
 	{
-		newRow = RowList->AddRow();
-		newRow->SetInt("key", ++i);
-		newRow->SetTime("sort", time);
-		newRow->SetString("descript1", data.Tokenize(_T(","), pos));
-		newRow->SetString("descript2", data.Tokenize(_T(","), pos));
-		if (!newRow->AcceptChanges())
-			Result->AddLog(_T("Error : %s"), Session->GetErrorMessage().GetSafeBuffer());
-		newRow = ChildRowList->AddRow();
-		newRow->SetInt("key", i);
-		newRow->SetString("descript3", data.Tokenize(_T(","), pos));
-		newRow->AcceptChanges();
+		ResultSignaler.Lock();
+		RThread.Start(this, &RandomServer::SetRandom); 
+		ResultSignaler.Lock();
+		ResultSignaler.Unlock();
 	}
-	Session->Commit();
-	Result->AddLog(_T("Rows added %i - %i"), RowList->GetRowCount(), i);
-	return retVal;
-}
 
-SHVBool SHVDataEngineTest::TestUpdate(SHVTestResult* result)
-{
-SHVBool retVal = SHVBool::True;
-	return retVal;
-}
-
-SHVBool SHVDataEngineTest::TestQueryTable(SHVTestResult* result)
-{
-SHVBool retVal = SHVBool::True;
-	return retVal;
-}
-
-SHVBool SHVDataEngineTest::TestQuery(SHVTestResult* result)
-{
-SHVBool retVal = SHVBool::True;
-	return retVal;
-}
-
-SHVBool SHVDataEngineTest::TestSpeed(SHVTestResult* result)
-{
-SHVBool retVal = SHVBool::True;	
-SHVDataFactoryRef DB = DataEngine->CreateFactory(_T("test3.db"), &DataEngine->GetDataSchema());
-SHVDataSessionRef Session = DB->CreateSession();
-SHVDataSessionRef SourceSession = DataEngine->CreateSession();
-SHVDataRowListCRef Source;
-SHVDataRowListRef Dest;
-int cnt = 0;
-	retVal = DB->RegisterAlias("test", "test", true, Session);
-	if (retVal)
+	~RandomServer()
 	{
-		Source = SourceSession->QueryTable("test", _T(""), 0);
-		retVal = Source->IsOk();
+	SHVMutexLocker lock(Lock);
+		Running = false;
+		ResultSignaler.Lock();
+		Signaler.Unlock();
+		ResultSignaler.Lock();
+		ResultSignaler.Unlock();
+		while (RThread.IsRunning()) SHVThreadBase::Sleep(10);
 	}
-	if (retVal)
-	{
-		Dest = Session->GetRows("test", _T(""), 0);
-		retVal = Dest->IsOk();
+
+	int GetNumber() 
+	{ 
+	SHVMutexLocker lock(Lock);
+		ResultSignaler.Lock();
+		Signaler.Unlock();
+		ResultSignaler.Lock();
+		ResultSignaler.Unlock();
+		return CurrentNumber;
 	}
-	if (retVal)
-	{
-		retVal = Session->StartEdit();
-	}
-	while (retVal && (retVal == Source->NextRow()))
-	{
-	SHVDataRowRef newRow;
-		newRow = Dest->AddRow();
-		newRow->SetCorr(Source->GetCurrentRow());
-		newRow->SetInt(0, ++cnt);
-		retVal = newRow->AcceptChanges();
-		
-		if (retVal)
-		{
-			newRow = Dest->AddRow();
-			newRow->SetCorr(Source->GetCurrentRow());
-			newRow->SetInt(0, ++cnt);
-			retVal = newRow->AcceptChanges();
-		}
+};
 
-		if (retVal)
-		{
-			newRow = Dest->AddRow();
-			newRow->SetCorr(Source->GetCurrentRow());
-			newRow->SetInt(0, ++cnt);
-			retVal = newRow->AcceptChanges();
-		}
-
-		if (retVal)
-		{
-			newRow = Dest->AddRow();
-			newRow->SetCorr(Source->GetCurrentRow());
-			newRow->SetInt(0, ++cnt);
-			retVal = newRow->AcceptChanges();
-		}
-
-		if (retVal)
-		{
-			newRow = Dest->AddRow();
-			newRow->SetCorr(Source->GetCurrentRow());
-			newRow->SetInt(0, ++cnt);
-			retVal = newRow->AcceptChanges();
-		}
-
-		if (retVal)
-		{
-			newRow = Dest->AddRow();
-			newRow->SetCorr(Source->GetCurrentRow());
-			newRow->SetInt(0, ++cnt);
-			retVal = newRow->AcceptChanges();
-		}
-
-		if (retVal)
-		{
-			newRow = Dest->AddRow();
-			newRow->SetCorr(Source->GetCurrentRow());
-			newRow->SetInt(0, ++cnt);
-			retVal = newRow->AcceptChanges();
-		}
-
-		if (retVal)
-		{
-			newRow = Dest->AddRow();
-			newRow->SetCorr(Source->GetCurrentRow());
-			newRow->SetInt(0, ++cnt);
-			retVal = newRow->AcceptChanges();
-		}
-	}
-	if (retVal == SHVSQLiteWrapper::SQLite_DONE)
-	{
-		retVal = Session->Commit();
-	}
-	Result->AddLog(_T("Rows inserted(%d)"), cnt);
-	return retVal;
-}
-
-SHVBool SHVDataEngineTest::TestSpeed2(SHVTestResult* result)
+class TestIt
 {
-SHVDataSessionRef session = DataEngine->CreateSession();
-SHVDataRowListRef rows;
-SHVBool retVal;
-SHVDataRowKeyRef key;
+public:
+	SHVDataEngine* DataEngine;
+	SHVString TestName;
+	SHVTestResult* Result;
+	TimeIt Timer;
+	RandomServer Rand;
 
-	DataEngine->RegisterAlias("person", "person111", false, session);
-	DataEngine->RegisterAlias("person", "person112", false, session);
+public:
+	inline TestIt(SHVDataEngine* dataEngine, SHVTestResult* result, const SHVStringC& testName):
+		DataEngine(dataEngine), 
+		TestName(testName), 
+		Result(result),
+		Timer(result, testName)
+		{
+		}
+	virtual SHVBool PerformTest() = 0;
+};
 
-	rows = session->GetRows("person111", _T(""), 0);
-	session->StartEdit();
-	AddPerson(rows, 1, _T("Mogens"), _T("Bak"), _T("Nielsen"));
-	AddPerson(rows, 2, _T("Hanne"), _T("Birkemose"), _T("Nielsen"));
-	AddPerson(rows, 3, _T("Laura"), _T("Birkemose"), _T("Nielsen"));
-	AddPerson(rows, 4, _T("Emma"), _T("Birkemose"), _T("Nielsen"));
-	session->Commit();
+class TestThread
+{
+private:
+	SHVThread<TestThread> Thread;
+	SHVReadWriteLock* TermLock;
+	SHVMutexBase StartLock;
+	SHVBool Ok;
+protected:
+	TestIt* Owner;
+	SHVString ThreadName;
+public:
+	inline bool IsRunning() { return Thread.IsRunning(); }
+
+	inline TestThread(const SHVStringC& threadName): ThreadName(threadName) {}
+	inline TestThread::~TestThread()
+	{
+		while (IsRunning())
+			SHVThreadBase::Sleep(10);
+	}
+	inline void Start(TestIt* owner, SHVReadWriteLock* termLock)
+	{
+		Owner = owner;
+		TermLock = termLock;
+		StartLock.Lock();
+		Thread.Start(this, &TestThread::BeginTheWork);
+		StartLock.Lock();
+		StartLock.Unlock();
+	}
+	inline SHVBool GetOk() { return Ok; }
+	inline const SHVStringC& GetName() { return ThreadName; }
+
+	virtual void BeginTheWork()
+	{
+		StartLock.Unlock();
+		TermLock->LockShared();
+		Ok = DoTheWork();
+		TermLock->Unlock();
+	}
+
+	virtual SHVBool DoTheWork() = 0;
+};
+
+class TestThreadServer: public TestIt
+{
+private:
+	SHVList<TestThread*> Tests;
+	SHVReadWriteLock Lock;
+
+public:
+	inline TestThreadServer(SHVDataEngine* dataEngine, SHVTestResult* result, const SHVStringC& testName):
+		TestIt(dataEngine, result, testName) 
+		{
+		}
+	inline void AddTest(TestThread& t)
+	{
+		Tests.AddTail(&t);
+	}
+	virtual SHVBool PerformTest()
+	{
+	SHVListIterator<TestThread*> Iter(Tests);
+	SHVBool retVal = SHVBool::True;
+		Lock.LockExclusive();
+		while (Iter.MoveNext())
+			Iter.Get()->Start(this, &Lock);
+		Lock.Unlock();
+		Lock.LockExclusive();
+		while (Iter.MoveNext())
+		{
+			if (!Iter.Get()->GetOk())
+				Result->AddLog(_T("Test thread %s failed"), Iter.Get()->GetName().GetSafeBuffer());
+			if (retVal)
+				retVal = Iter.Get()->GetOk();
+		}
+		return retVal;
+	}
+};
+
+// ==================================================== Test ========================================
+
+class TestShareEx: public TestThread
+{
+private:
+	int Runs;
+public:
+	inline TestShareEx(const SHVStringC& threadName, int runs): TestThread(threadName), Runs(runs) {}
+	virtual SHVBool DoTheWork();
+};
 
 
-	session->StartEdit();
-	rows = session->GetRows("person111", _T(""), 0);
-	key = DataEngine->CopyKey(rows->GetStruct()->GetIndex(0));
-	key->SetKeyValue(0, SHVInt(3));
-	rows->Find(key);
-	DataEngine->UnregisterAlias("person112");
-	session->Commit();
-	DataEngine->UnregisterAlias("person111");
+SHVBool TestShareEx::DoTheWork()
+{
+SHVDataSessionRef DataSession;
+SHVDataRowListRef DataList;
+SHVDataRowRef DataRow;
+SHVDataRowKeyRef Key;
+SHVBool ok;
 	
-	return retVal;
+	Owner->Result->AddLog(_T("%s is started"), ThreadName.GetSafeBuffer());
+	DataSession = Owner->DataEngine->CreateSession();
+	ok = Owner->DataEngine->RegisterAlias("testtable", ThreadName.ToStr8(), true, DataSession);
+	if (!ok)
+	{
+		Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+	}
+	for (int i = 0; ok && i < Runs; i++)
+	{
+		DataList = DataSession->GetRows(ThreadName.ToStr8(), _T(""), 0);
+		if (!DataList->IsOk())
+		{
+			Owner->Result->AddLog(_T("Could not load %s"), ThreadName.GetSafeBuffer());
+		}
+		ok = DataList->StartEdit();
+		if (ok)
+		{
+			// SHVThreadBase::Sleep(Owner->Rand.GetNumber() % 300);
+			for (int j = 0; ok && j < 10; j++)
+			{
+				DataRow = DataList->AddRow();
+				DataRow->SetInt(0, (i*10) + j);
+				DataRow->SetString(1, SHVStringC::Format(_T("%s_%d"), ThreadName.GetSafeBuffer(),(i*10) + j));
+				DataRow->SetString(2, SHVStringC::Format(_T("z%d"), (i*10) + j));
+				ok = DataRow->AcceptChanges();
+			}
+			if (!ok)
+				Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+			ok = DataList->EndEdit();
+			if (ok)
+			{
+				DataList->Reset();
+				while (DataList->NextRow())
+				{
+					DumpRow(Owner->Result, DataList->GetCurrentRow());
+					// SHVThreadBase::Sleep(Owner->Rand.GetNumber() % 50);
+				}
+			}
+			else
+				Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+			// Lets edit a record
+			if (ok)
+			{
+				DataList->Reset();
+				ok = DataList->StartEdit();
+				if (ok)
+				{
+					Key = DataSession->GetFactory()->CopyKey(DataList->GetStruct()->GetPrimaryIndex());
+					Key->SetKeyValue(0, SHVInt((i*10) + 5));
+					
+					if (DataList->SetPosition(Key))
+					{
+						DataRow = DataList->EditCurrentRow();
+						DataRow->SetString(2, _T("nisse"));
+						ok = DataRow->AcceptChanges();
+					}
+					if (ok)
+						DataList->EndEdit();
+					else
+					{
+						Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+						DataList->CancelEdit();
+					}
+				}
+				else
+					Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+			}
+			// Let delete a record
+			if (ok)
+			{
+				ok = DataList->StartEdit();
+				if (ok)
+				{
+					Key = DataSession->GetFactory()->CopyKey(DataList->GetStruct()->GetPrimaryIndex());
+					Key->SetKeyValue(0, SHVInt((i*10) + 3));
+					
+					if (DataList->SetPosition(Key))
+					{
+						DataRow = DataList->EditCurrentRow();
+						DataRow->Delete();
+						ok = DataRow->AcceptChanges();
+					}
+					if (ok)
+						DataList->EndEdit();
+					else
+					{
+						Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+						DataList->CancelEdit();
+					}
+				}
+				else
+					Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+			}
+		}
+		else
+			Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+	}
+	DataSession = NULL;
+	DataList = NULL;
+	DataRow = NULL;
+	return ok;
 }
 
-SHVBool SHVDataEngineTest::TestConcurrency(SHVTestResult* result)
+// ==================================================== Test ========================================
+
+class TestNotMultiInstance: public TestThread
 {
-SHVBool retVal = SHVBool::True;
-SHVDataSessionRef Session;
-SHVDataRowListCRef query;
-SHVDataFactoryRef DB1 = DataEngine->GetDefaultFactory();
-SHVDataFactoryRef DB2 = DataEngine->CreateFactory(_T("test2.db"), &DB1->GetDataSchema());
-SHVVector<SHVTestConcurrency> Tests;
-SHVString8 alias;
+private:
+	int Runs;
+	int IdOffset;
+public:
+	inline TestNotMultiInstance(const SHVStringC& threadName, int runs, int idOffset): TestThread(threadName), Runs(runs), IdOffset(idOffset) {}
+	virtual SHVBool DoTheWork();
+};
 
-	WaitLock.Lock();	
-	WaitRefCount = 0;
-	for (int i = 0; i < 10; i++)
-	{	
-	SHVTestConcurrency* con;
-		alias.Format("test%d", i+1);
-		con = new SHVTestConcurrency(*DataEngine, Result, DB2, *this, alias);
-		WaitRefCount++;
-		Tests.Add(con);
-		con->StartTest();
+
+SHVBool TestNotMultiInstance::DoTheWork()
+{
+SHVDataSessionRef DataSession;
+SHVDataRowListRef DataList;
+SHVDataRowRef DataRow;
+SHVBool ok;
+SHVDataRowKeyRef Key;
+int id;
+	
+	Owner->Result->AddLog(_T("%s is started"), ThreadName.GetSafeBuffer());
+	DataSession = Owner->DataEngine->CreateSession();
+	ok = DataSession->SessionValid();
+	for (int i = 0; i < Runs && ok; i++)
+	{
+		DataList = DataSession->GetRows("testtable_nisse", _T(""), 0);
+		if (!DataList->IsOk())
+		{
+			Owner->Result->AddLog(_T("Could not load %s"), ThreadName.GetSafeBuffer());
+		}
+		ok = DataList->StartEdit();
+		if (ok)
+		{
+			for (int j = 0; j < 10 && ok; j++)
+			{
+				id = (i*10) + j + IdOffset;
+				DataRow = DataList->AddRow();
+				DataRow->SetInt(0, id);
+				DataRow->SetString(1, SHVStringC::Format(_T("%s_%d"), ThreadName.GetSafeBuffer(),id));
+				DataRow->SetString(2, SHVStringC::Format(_T("z%d"), id));
+				ok = DataRow->AcceptChanges();
+			}
+			if (!ok)
+			{
+				Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+				DataList->CancelEdit();
+			}
+			else
+				ok = DataList->EndEdit();
+		}
+		else
+			Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+		// Lets edit a record
+		if (ok)
+		{
+			ok = DataList->StartEdit();
+			if (ok)
+			{
+				Key = DataSession->GetFactory()->CopyKey(DataList->GetStruct()->GetPrimaryIndex());
+				Key->SetKeyValue(0, SHVInt((i*10) + 5 + IdOffset));
+				
+				if (DataList->SetPosition(Key))
+				{
+					DataRow = DataList->EditCurrentRow();
+					DataRow->SetString(1, _T("nisse"));
+					ok = DataRow->AcceptChanges();
+				}
+				if (ok)
+					DataList->EndEdit();
+				else
+				{
+					Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+					DataList->CancelEdit();
+				}
+			}
+			else
+				Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+		}
+		// Let delete a record
+		if (ok)
+		{
+			ok = DataList->StartEdit();
+			if (ok)
+			{
+				Key = DataSession->GetFactory()->CopyKey(DataList->GetStruct()->GetPrimaryIndex());
+				Key->SetKeyValue(0, SHVInt((i*10) + 3 + IdOffset));
+				
+				if (DataList->SetPosition(Key))
+				{
+					DataRow = DataList->EditCurrentRow();
+					DataRow->Delete();
+					ok = DataRow->AcceptChanges();
+				}
+				if (ok)
+					DataList->EndEdit();
+				else
+				{
+					Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+					DataList->CancelEdit();
+				}
+			}
+			else
+				Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+		}
+
 	}
-	for (int i = 0; i < 10; i++)
-	{	
-	SHVTestConcurrency* con;
-		alias.Format("test%d", i + 11);
-		con = new SHVTestConcurrency(*DataEngine, Result, DB2, *this, alias);
-		WaitRefCount++;
-		Tests.Add(con);
-		con->StartTest();
-	}
-	WaitLock.Lock();
-	return SHVBool::True;
+	DataSession = NULL;
+	DataList = NULL;
+	DataRow = NULL;
+	return ok;
 }
-
+// ==================================================== Test ========================================
 void SHVDataEngineTest::PerformTest(SHVTestResult* result)
 {
 SHVBool ok;
-size_t time = GetTickCount();
-size_t step = time;
-size_t next;
-	TestSpeed2(result);
-    /*
-	Result = result;
-	result->AddLog(_T("Insert test"));
-	
-	ok = TestInsert(result);
-	
-	next = GetTickCount();
-	result->AddLog(_T("TestInsert time running %lu"), next - step);
-	step = next;
-	
-	if (ok)
-		ok = TestConcurrency(result);
-	
-	next = GetTickCount();
-	result->AddLog(_T("TestConcurrency time running %lu"), next - step);
-	step = next;
+SHVDataStructRef Struct = DataEngine->CreateStruct();
+SHVDataRowKeyRef Key;
+TestThreadServer testServer(DataEngine, result, _T("TestSharedExclusiveLocks"));
+TestShareEx ex1(_T("T1"), 10);
+TestShareEx ex2(_T("T2"), 10);
+TestShareEx ex3(_T("T3"), 10);
+TestShareEx ex4(_T("T4"), 10);
+TestShareEx ex5(_T("T5"), 10);
+TestNotMultiInstance tm1(_T("T6"), 10, 0);
+TestNotMultiInstance tm2(_T("T7"), 10, 100);
 
-	if (ok)
-		ok = TestSpeed(result);
+	Struct->SetTableName("testtable");
+	Struct->Add("id", SHVDataVariant::TypeInt);
+	Struct->Add("val1", SHVDataVariant::TypeString, 20);
+	Struct->Add("val2", SHVDataVariant::TypeString, 20);
 
-	next = GetTickCount();
-	result->AddLog(_T("TestSpeed time running %lu"), next - step);
-	step = next;
+	Key = Struct->CreateIndexKey();
+	Key->AddKey("id", false);
+	Struct->AddIndex(Key);
 
-	/*
-	if (ok)
-		ok = TestQuery(result);
-	if (ok)
-		ok = TestSpeed2(result);
-	*/
-	result->AddLog(_T("Total time running %lu"), GetTickCount() - time);
-	*result = ok;
+	Key = Struct->CreateIndexKey();
+	Key->AddKey("val1", false);
+	Struct->AddIndex(Key);
+	Struct->SetIsMultiInstance(true);
+
+	DataEngine->RegisterTable(Struct);
+
+	Struct = DataEngine->CreateStruct();
+	Struct->SetTableName("testtable_nisse");
+	Struct->Add("id", SHVDataVariant::TypeInt);
+	Struct->Add("val1", SHVDataVariant::TypeString, 20);
+	Struct->Add("val2", SHVDataVariant::TypeString, 20);
+
+	Key = Struct->CreateIndexKey();
+	Key->AddKey("id", false);
+	Struct->AddIndex(Key);
+
+	Key = Struct->CreateIndexKey();
+	Key->AddKey("val1", false);
+	Struct->AddIndex(Key);
+	Struct->SetIsMultiInstance(false);
+	DataEngine->RegisterTable(Struct);
+	DataEngine->ClearTable("testtable_nisse");
+
+	testServer.AddTest(ex1);
+	testServer.AddTest(ex2);
+	testServer.AddTest(ex3);
+	testServer.AddTest(ex4);
+	testServer.AddTest(ex5);
+	testServer.AddTest(tm1);
+	testServer.AddTest(tm2);
+
+	*result = testServer.PerformTest();
 }
 
-void SHVDataEngineTest::ThreadDone()
-{
-	WaitRefCount--;
-	if (!WaitRefCount)
-		WaitLock.Unlock();
-}
 
 SHVBool SHVDataEngineTest::Register()
 {
@@ -479,6 +526,7 @@ SHVDataRowKeyRef key;
 
 	DataEngine = (SHVDataEngine*) Modules.ResolveModule("DataEngine");
 	retVal = DataEngine != NULL;
+	/*
 	if (retVal)
 	{
 		DataEngine->EventSubscribe(SHVDataFactory::EventRowChanged, new SHVEventSubscriber(this));
@@ -497,7 +545,7 @@ SHVDataRowKeyRef key;
 		key->AddKey("descript1", false);
 		key->AddKey("key", false);
 		dataStruct->AddIndex(key);
-		DataEngine->RegisterTable(dataStruct, false);
+		DataEngine->RegisterTable(dataStruct);
 		DataEngine->RegisterAlias("test", "test", true);
 
 		// Table testchild
@@ -508,7 +556,7 @@ SHVDataRowKeyRef key;
 		key = dataStruct->CreateIndexKey();
 		key->AddKey("key", false);
 		dataStruct->AddIndex(key);
-		DataEngine->RegisterTable(dataStruct, false);
+		DataEngine->RegisterTable(dataStruct);
 		DataEngine->RegisterAlias("testchild", "testchild", true);
 
 		// Table testperson
@@ -528,8 +576,9 @@ SHVDataRowKeyRef key;
 		key->AddKey("lastName", false);
 		dataStruct->AddIndex(key);
 
-		DataEngine->RegisterTable(dataStruct, true);
+		DataEngine->RegisterTable(dataStruct);
 	}
+	*/
 
 	return SHVTestModule::Register() && retVal;
 }

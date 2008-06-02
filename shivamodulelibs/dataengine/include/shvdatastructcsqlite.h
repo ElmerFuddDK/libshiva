@@ -21,10 +21,11 @@
 class SHVDataStructCSQLite: public SHVDataStructC
 {
 public:
-	SHVDataStructCSQLite(SHVSQLiteWrapper* psqlite, const SHVString8C dbTableName, const SHVString8C structTableName = SHVString8C(NULL));
+	SHVDataStructCSQLite(SHVSQLiteWrapper* psqlite, const SHVString8C dbTableName);
 
 	// from SHVDataStructC
 	virtual const SHVString8C& GetTableName() const;
+	virtual bool GetIsMultiInstance() const;
 	virtual const SHVDataStructColumnC* operator[](size_t idx) const;
 	virtual const SHVBool FindColumnIndex(size_t& index, const SHVString8C& colName) const;
 	virtual size_t GetColumnCount() const;
@@ -32,12 +33,15 @@ public:
 	virtual const SHVDataRowKey* GetIndex(size_t IdxID) const;
 	virtual const size_t IndexCount() const;
 	virtual SHVBool IsEqual(const SHVDataStructC* dataStruct) const;
+	virtual SHVBool IsIndexesEqual(const SHVDataStructC* dataStruct) const;
 
 	inline SHVBool TableExists() { return !Struct.IsNull(); }
 
 
 protected:
 	virtual ~SHVDataStructCSQLite();
+	// from SHVDataStructC
+	virtual SHVDataStruct* GetInternalStruct();
 
 
 private:

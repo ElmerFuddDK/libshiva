@@ -110,13 +110,14 @@ void SHVDataStructColumnImpl::SetAutoInc(SHVBool flag)
  *************************************/
 SHVDataStructImpl::SHVDataStructImpl()
 {
+	IsMultiInstance = false;
 }
 	
 SHVDataStructImpl::SHVDataStructImpl(const SHVDataStructC* dataStruct)
 {
 	for (size_t i = 0; i < dataStruct->GetColumnCount(); i++)
 	{
-		Add(new SHVDataStructColumnImpl((const SHVDataStructColumnC*)(*dataStruct)[i]));
+		Add(new SHVDataStructColumnImpl((*dataStruct)[i]));
 	}
 	SetTableName(dataStruct->GetTableName());
 	for (size_t i = 0; i < dataStruct->IndexCount(); i++)
@@ -141,6 +142,22 @@ const SHVString8C& SHVDataStructImpl::GetTableName() const
 void SHVDataStructImpl::SetTableName(const SHVString8C& name)
 {
 	TableName = name;
+}
+
+/*************************************
+ * GetIsMultiInstance
+ *************************************/
+bool SHVDataStructImpl::GetIsMultiInstance() const
+{
+	return IsMultiInstance;
+}
+
+/*************************************
+ * SetIsMultiInstance
+ *************************************/
+void SHVDataStructImpl::SetIsMultiInstance(bool isMultiInstance)
+{
+	IsMultiInstance = isMultiInstance;
 }
 
 /*************************************
@@ -196,16 +213,14 @@ void SHVDataStructImpl::InsertAt(size_t idx, SHVDataStructColumn& col)
 /*************************************
  * RemoveAt
  *************************************/
-SHVDataStructColumn* SHVDataStructImpl::RemoveAt(size_t idx)
+void SHVDataStructImpl::RemoveAt(size_t idx)
 {
 size_t size = Columns.CalculateCount()-1;
-SHVDataStructColumn* result = Columns[idx];
 	for (size_t i = idx; i < size; i++)
 	{
-		Columns.Replace(idx, Columns[idx+1]);
+		Columns.Replace(i, Columns[i+1]);
 	}
-	Columns.Remove(size-1);
-	return result;
+	Columns.Pop();
 }
 
 /*************************************
@@ -265,7 +280,7 @@ SHVBool retVal = SHVBool::False;
 const SHVDataStructC& This = *this;
 const SHVDataStructC& Struct = *dataStruct;
 
-	if (Struct.GetColumnCount() == GetColumnCount())
+	if (Struct.GetColumnCount() == GetColumnCount() && Struct.GetIsMultiInstance() == GetIsMultiInstance())
 	{
 		retVal = SHVBool::True;
 		for (size_t i = 0; i < GetColumnCount() && retVal; i++)
@@ -292,6 +307,20 @@ const SHVDataStructC& Struct = *dataStruct;
 	}
 	return retVal;
 }
+/*************************************
+ * IsIndexesEqual
+ *************************************/
+SHVBool SHVDataStructImpl::IsIndexesEqual(const SHVDataStructC* dataStruct) const
+{
+SHVBool retVal = SHVBool::True;
+const SHVDataStructC& Struct = *dataStruct;
+	retVal = Struct.IndexCount() != IndexCount();
+	for (size_t i = 0; i < Struct.IndexCount() && retVal; i++)
+	{
+		retVal = Struct.GetIndex(i)->KeyDefEquals(GetIndex(i));			
+	}
+	return retVal;
+}
 
 /*************************************
  * GetIndex
@@ -315,9 +344,18 @@ const size_t SHVDataStructImpl::IndexCount() const
 /*************************************
  * AddIndex
  *************************************/
-void SHVDataStructImpl::AddIndex(SHVDataRowKey* index)
+size_t SHVDataStructImpl::AddIndex(SHVDataRowKey* index)
 {
-	Indexes.Add(index);
+	return Indexes.Add(index);
+}
+/*************************************
+ * RemoveLastIndex
+ *************************************/
+size_t SHVDataStructImpl::RemoveLastIndex()
+{
+	if (Indexes.CalculateCount())
+		Indexes.Pop();
+	return IndexCount();
 }
 
 /*************************************
@@ -326,4 +364,12 @@ void SHVDataStructImpl::AddIndex(SHVDataRowKey* index)
 SHVDataRowKey* SHVDataStructImpl::CreateIndexKey() const
 {
 	return new SHVDataRowKeyImpl();
+}
+
+/*************************************
+ * GetInternalStruct
+ *************************************/
+SHVDataStruct* SHVDataStructImpl::GetInternalStruct()
+{
+	return this;
 }

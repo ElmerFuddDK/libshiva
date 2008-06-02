@@ -26,9 +26,12 @@ public:
 	virtual SHVBool IsOk() const;
 	virtual const SHVDataStructC* GetStruct() const;
 	virtual const SHVString8C GetAlias() const;
+	virtual int GetAliasID() const;
 	virtual int GetRowCount() const;
 
 	virtual SHVDataRowC* Find(const SHVDataRowKey* key);
+	virtual SHVDataRowKey* GetPosition();
+	virtual SHVBool SetPosition(const SHVDataRowKey* key);
 	virtual SHVBool NextRow();
 	virtual SHVDataRowListC* Reverse(const SHVStringC& condition);
 	virtual SHVBool Reset();
@@ -44,16 +47,17 @@ protected:
 	
 	// from SHVDataRowListC
 	virtual void AdjustRowCount(int delta);
-	virtual SHVBool TempReset();
-	virtual void Reposition();
 	virtual SHVBool InternalRowChanged(SHVDataRow* row);
+
+	void LockShared();
+	void Unlock();
 
 private:
 	SHVDataRowListCSQLite(SHVDataSession* session, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, const SHVString8C& alias, size_t index);
 	SHVDataStructCRef StructCache;
 	SHVDataRowCRef CurrentRow;
 	SHVDataSessionRef DataSession;
-
+	int AliasID;
 
 protected:
 	size_t SortIndex;
@@ -62,6 +66,7 @@ protected:
 	SHVBool Ok;
 	int RowCount;
 	SHVString8 Alias;
+	bool HasShareLock;
 };
 typedef SHVRefObjectContainer<SHVDataRowListC> SHVDataRowListCRef;
 

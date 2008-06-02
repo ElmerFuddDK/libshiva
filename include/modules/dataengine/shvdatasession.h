@@ -4,6 +4,7 @@
 #include "../../utils/shvrefobject.h"
 #include "../../framework/shveventsubscriber.h"
 #include "../../framework/shveventdata.h"
+#include "../../threadutils/shvmutex.h"
 
 // forward declare
 class SHVDataRowList;
@@ -33,10 +34,9 @@ public:
 	virtual SHVDataRowListC* QueryTableIndexed(const SHVString8C& tableName, const SHVStringC& condition, size_t index) = 0;
 	virtual SHVBool ExecuteNonQuery(const SHVStringC& sql) = 0;
 
-	virtual SHVBool IsEditting() const = 0;
+	inline SHVBool IsEditting() const;
 
 	virtual void SubscribeDataChange(SHVEventSubscriberBase* sub) = 0;
-	virtual bool AliasActive(const SHVString8C& alias) = 0;
 	virtual void* GetProvider() = 0;
 	virtual SHVDataFactory* GetFactory() const = 0;
 	virtual SHVStringBuffer GetErrorMessage() const = 0;
@@ -52,26 +52,18 @@ friend class SHVDataRowList;
 friend class SHVDataFactory;
 
 	virtual ~SHVDataSession() {}
-	virtual void ClearOwnership() = 0;
 	virtual SHVBool UpdateRow(SHVDataRow* row) = 0;
 	virtual SHVBool IsValid() const = 0;
-	virtual bool SchemaChanged() = 0;
-	virtual void RegisterDataList(SHVDataRowListC* rowList) = 0;
-	virtual void UnregisterDataList(SHVDataRowListC* rowList) = 0;
+	virtual void SchemaChanged() = 0;
 
 	// inlines
-	inline SHVBool SessionReset();
-	inline void SessionReposition();
-	inline void UnregisterDataSession();
 	inline void RowChanged(SHVDataRow* row);
-	inline SHVBool DataListTempReset(SHVDataRowListC* dataList);
-	inline void DataListReposition(SHVDataRowListC* dataList);
-	inline bool CheckAlias(const SHVString8C& alias);
-	inline bool LockTransaction();
-	inline void UnlockTransaction();
+	inline void UnregisterDataSession();
 	inline SHVBool InternalBeginTransaction();
 	inline SHVBool InternalEndTransaction();
 	inline SHVBool InternalRollbackTransaction();
+	inline int GetAliasID(SHVDataRowListC* rowList) const;
+	inline int GetAliasID(const SHVString8C alias) const;
 };
 typedef SHVRefObjectContainer<SHVDataSession> SHVDataSessionRef;
 
@@ -85,20 +77,19 @@ typedef SHVRefObjectContainer<SHVDataSession> SHVDataSessionRef;
 #include "shvdatarowlistc.h"
 
 /*************************************
+ * IsEditting
+ *************************************/
+SHVBool SHVDataSession::IsEditting() const
+{
+	return GetFactory() != NULL && GetFactory()->GetInTransaction();
+}
+
+/*************************************
  * SessionValid
  *************************************/
 SHVBool SHVDataSession::SessionValid() const
 {
 	return GetFactory() != NULL && IsValid();
-}
-
-/*************************************
- * UnregisterDataSession
- *************************************/
-void SHVDataSession::UnregisterDataSession()
-{
-	if (GetFactory())
-		GetFactory()->UnregisterDataSession(this);
 }
 
 /*************************************
@@ -110,51 +101,14 @@ void SHVDataSession::RowChanged(SHVDataRow* row)
 }
 
 /*************************************
- * DataListTempReset
+ * UnregisterDataSession
  *************************************/
-SHVBool SHVDataSession::DataListTempReset(SHVDataRowListC* dataList)
-{
-	return dataList->TempReset();
-}
-
-/*************************************
- * DataListReposition
- *************************************/
-void SHVDataSession::DataListReposition(SHVDataRowListC* dataList)
-{
-	dataList->Reposition();
-}
-
-/*************************************
- * CheckAlias
- *************************************/
-bool SHVDataSession::CheckAlias(const SHVString8C& alias)
+void SHVDataSession::UnregisterDataSession()
 {
 	if (GetFactory())
-		return GetFactory()->CheckAlias(this, alias);
-	else
-		return false;
+		GetFactory()->UnregisterDataSession(this);
 }
 
-/*************************************
- * LockTransaction
- *************************************/
-bool SHVDataSession::LockTransaction()
-{
-	if (GetFactory())
-		return GetFactory()->LockTransaction();
-	else
-		return false;
-}
-
-/*************************************
- * UnlockTransaction
- *************************************/
-void SHVDataSession::UnlockTransaction()
-{
-	if (GetFactory())
-		GetFactory()->UnlockTransaction();
-}
 
 /*************************************
  * InternalStartTransaction
@@ -163,7 +117,7 @@ inline SHVBool SHVDataSession::InternalBeginTransaction()
 {
 SHVBool retVal = SHVBool::False;
 	if (GetFactory())
-		retVal = GetFactory()->BeginTransaction(this);
+		retVal = GetFactory()->BeginTransaction(this, true);
 	return retVal;
 }
 
@@ -189,4 +143,19 @@ SHVBool retVal = SHVBool::False;
 	return retVal;
 }
 
+/*************************************
+ * GetAliasID
+ *************************************/
+int SHVDataSession::GetAliasID(SHVDataRowListC* rowList) const
+{
+	return rowList->GetAliasID();
+}
+
+int SHVDataSession::GetAliasID(const SHVString8C alias) const
+{
+int retVal = -1;
+	if (GetFactory())
+		retVal = GetFactory()->GetAliasID(this, alias);
+	return retVal;
+}
 #endif

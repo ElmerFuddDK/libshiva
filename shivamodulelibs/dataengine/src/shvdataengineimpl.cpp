@@ -26,10 +26,6 @@ SHVBool ok;
 	else
 	{
 		Factory = new SHVDataFactoryImpl(*this, datapath);
-		if (!Factory->IsOk())
-		{
-			Modules.AddStartupError(Factory->GetErrorMessage());
-		}
 	}
 }
 
@@ -57,9 +53,9 @@ void SHVDataEngineImpl::Unregister()
 /*************************************
  * RegisterTable
  *************************************/
-SHVBool SHVDataEngineImpl::RegisterTable(const SHVDataStructC* dataStruct, bool createTable)
+SHVBool SHVDataEngineImpl::RegisterTable(const SHVDataStructC* dataStruct, SHVDataSession* useSession)
 {
-	return Factory->RegisterTable(dataStruct, createTable);
+	return Factory->RegisterTable(dataStruct, useSession);
 }
 
 /*************************************
@@ -71,13 +67,28 @@ SHVBool SHVDataEngineImpl::RegisterAlias(const SHVString8C& table, const SHVStri
 }
 
 /*************************************
- * UnregisterAlias
+ * RegisterIndex
  *************************************/
-SHVBool SHVDataEngineImpl::UnregisterAlias(const SHVString8C& alias)
+size_t SHVDataEngineImpl::RegisterIndex(const SHVString8C& table, SHVDataRowKey* IndexKey, SHVDataSession* useSession)
 {
-	return Factory->UnregisterAlias(alias);
+	return Factory->RegisterIndex(table, IndexKey, useSession);
 }
 
+/*************************************
+ * UnregisterAlias
+ *************************************/
+SHVBool SHVDataEngineImpl::UnregisterAlias(const SHVString8C& alias, SHVDataSession* useSession)
+{
+	return Factory->UnregisterAlias(alias, useSession);
+}
+
+/*************************************
+ * ClearTable
+ *************************************/
+SHVBool SHVDataEngineImpl::ClearTable(const SHVString8C &table, SHVDataSession *useSession)
+{
+	return Factory->ClearTable(table, useSession);
+}
 
 /*************************************
  * FindStruct
@@ -146,9 +157,9 @@ SHVDataRowKey* SHVDataEngineImpl::CopyKey(const SHVDataRowKey* key) const
 /*************************************
  * RetrieveStruct
  *************************************/
-SHVDataStructC* SHVDataEngineImpl::RetrieveStruct(const SHVString8C table, const SHVString8C alias) const
+SHVDataStructC* SHVDataEngineImpl::RetrieveStruct(const SHVString8C table, SHVDataSession* useSession) const
 {
-	return Factory->RetrieveStruct(table, alias);
+	return Factory->RetrieveStruct(table, useSession);
 }
 
 /*************************************
@@ -171,9 +182,13 @@ SHVSQLiteWrapperRef retVal = (SHVSQLiteWrapper*) SQLiteDll.CreateObjectInt(&Modu
 	SHVStringSQLite rest("");
 	// Lets setup a default memory database
 		if (dataBase != _T(":memory"))
-			retVal->ExecuteUTF8(Ok, "attach database :memory as memdb", rest)->ValidateRefCount();
+			retVal->ExecuteUTF8(Ok, "attach database :memory as memdb", rest);
 		if (Ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
-			Ok = SHVBool::True;
+		{
+			retVal->ExecuteUTF8(Ok, "create table if not exists shv_alias(id integer primary key, alias varchar(200))", rest);
+			if (Ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+				Ok = SHVBool::True;
+		}		
 	}
 	return retVal.ReleaseReference();
 }
@@ -181,9 +196,9 @@ SHVSQLiteWrapperRef retVal = (SHVSQLiteWrapper*) SQLiteDll.CreateObjectInt(&Modu
 /*************************************
  * CreateFactory
  *************************************/
-SHVDataFactory* SHVDataEngineImpl::CreateFactory(const SHVStringC& database, const SHVDataSchema* schema)
+SHVDataFactory* SHVDataEngineImpl::CreateFactory(const SHVStringC& database)
 {
-	return new SHVDataFactoryImpl(*this, database, schema);
+	return new SHVDataFactoryImpl(*this, database);
 }
 
 /*************************************

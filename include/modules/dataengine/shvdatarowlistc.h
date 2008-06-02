@@ -26,9 +26,12 @@ public:
 	virtual SHVBool IsOk() const = 0;
 	virtual const SHVDataStructC* GetStruct() const = 0;
 	virtual const SHVString8C GetAlias() const = 0;
+	virtual int GetAliasID() const = 0;
 	virtual int GetRowCount() const = 0;
 
 	virtual SHVDataRowC* Find(const SHVDataRowKey* key) = 0;
+	virtual SHVDataRowKey* GetPosition() = 0;
+	virtual SHVBool SetPosition(const SHVDataRowKey* key) = 0;
 	virtual SHVBool NextRow() = 0;
 	virtual SHVDataRowListC* Reverse(const SHVStringC& condition) = 0;
 	virtual SHVBool Reset() = 0;
@@ -45,16 +48,11 @@ friend class SHVDataRowList;
 
 	virtual ~SHVDataRowListC() {}
 	virtual void AdjustRowCount(int delta) = 0;
-	virtual SHVBool TempReset() = 0;
-	virtual void Reposition() = 0;
 	virtual SHVBool InternalRowChanged(SHVDataRow* row) = 0;
+	inline int GetAliasID(const SHVString8C alias) const;
 
 // inlines
-	inline void UnregisterDataList();
-	inline SHVBool TempReset(SHVDataRowListC* list);
-	inline void Reposition(SHVDataRowListC* list);
 	inline SHVBool InternalRowChanged(SHVDataRowListC* list, SHVDataRow* row);
-	inline bool SchemaChanged();
 
 
 private:
@@ -71,50 +69,20 @@ typedef SHVRefObjectContainer<SHVDataRowListC> SHVDataRowListCRef;
 #define __SHIVA_DATAENGINE_DATAROWLISTC_INL
 
 #include "shvdatasession.h"
-// #include "shvdatarow.h"
 
 /*************************************
- * UnregisterDataList
- *************************************/
-void SHVDataRowListC::UnregisterDataList()
-{ 
-	if (GetDataSession())
-		GetDataSession()->UnregisterDataList(this);   
-}
-
-/*************************************
- * TempReset
- *************************************/
-SHVBool SHVDataRowListC::TempReset(SHVDataRowListC* list)
-{
-	return list->TempReset();
-}
-
-/*************************************
- * Reposition
- *************************************/
-void SHVDataRowListC::Reposition(SHVDataRowListC* list)
-{
-	list->Reposition();
-}
-
-/*************************************
- * RowChanged
+ * InternalRowChanged
  *************************************/
 SHVBool SHVDataRowListC::InternalRowChanged(SHVDataRowListC* list, SHVDataRow* row)
 {
 	return list->InternalRowChanged(row);
 }
-
 /*************************************
- * SchemaChanged
+ * InternalRowChanged
  *************************************/
-bool SHVDataRowListC::SchemaChanged()
+int SHVDataRowListC::GetAliasID(const SHVString8C alias) const
 {
-	if (GetDataSession())
-		return GetDataSession()->SchemaChanged();
-	else
-		return false;
+	return ((SHVDataRowListC*) this)->GetDataSession()->GetAliasID(alias);
 }
 
 #endif

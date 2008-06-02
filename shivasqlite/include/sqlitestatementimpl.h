@@ -44,6 +44,8 @@ public:
 private:
 	sqlite3_stmt* Statement;
 	SHVSQLiteWrapperRef Owner;
+
+	bool IsValid(int columnIdx) const;
 #ifdef DEBUG
 	SHVThreadBase::ThreadID OwnerThread;
 #endif

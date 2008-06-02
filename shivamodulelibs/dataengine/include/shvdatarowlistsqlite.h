@@ -23,6 +23,10 @@ public:
 	SHVDataRowListSQLite(SHVDataSession* dataSession, SHVDataRowListC *rowList);
 	
 	// from SHVDataRowList
+	virtual SHVBool StartEdit();
+	virtual SHVBool EndEdit();
+	virtual SHVBool CancelEdit();
+
 	virtual SHVDataRow* EditCurrentRow();
 	virtual SHVDataRow* AddRow();
 
@@ -39,6 +43,8 @@ public:
 	virtual int GetRowCount() const;
 
 	virtual SHVDataRowC* Find(const SHVDataRowKey* key);
+	virtual SHVDataRowKey* GetPosition();
+	virtual SHVBool SetPosition(const SHVDataRowKey* key);
 	virtual SHVBool NextRow();
 	virtual SHVDataRowListC* Reverse(const SHVStringC& condition);
 	virtual SHVBool Reset();
@@ -59,10 +65,8 @@ protected:
 
 	// from SHVDataRowListC
 	virtual void AdjustRowCount(int delta);
-	virtual SHVBool TempReset();
-	virtual void Reposition();
 	virtual SHVBool InternalRowChanged(SHVDataRow* row);
-	
+	virtual int GetAliasID() const;	
 
 private:
 	SHVDataRowListCRef RowList;
@@ -72,6 +76,7 @@ private:
 	int InsertedRows;
 	bool EventsEnabled;
 	bool NonAcceptedEnabled;
+	SHVDataRowKeyRef SavePosition;
 };
 typedef SHVRefObjectContainer<SHVDataRowListSQLite> SHVDataRowListSQLiteRef;
 

@@ -11,7 +11,9 @@
  *************************************/
 SHVSQLiteStatementImpl::SHVSQLiteStatementImpl(sqlite3_stmt* statement, SHVSQLiteWrapper* owner, int rowcount)
 {
+#ifdef DEBUG
 	OwnerThread = SHVThreadBase::GetCurrentThreadID();
+#endif
 	Statement = statement;	
 	Owner = owner;
 }
@@ -29,7 +31,7 @@ SHVSQLiteStatementImpl::~SHVSQLiteStatementImpl()
 SHVBool SHVSQLiteStatementImpl::GetLong(long& val, int columnIdx) const
 {
 	SHVTHREADCHECK(OwnerThread);
-	if (columnIdx < sqlite3_column_count(Statement) && columnIdx >= 0)
+	if (IsValid(columnIdx))
 	{
 		val = sqlite3_column_int(Statement, columnIdx);
 		return SHVBool(SHVSQLiteWrapper::SQLite_OK);
@@ -44,7 +46,7 @@ SHVBool SHVSQLiteStatementImpl::GetLong(long& val, int columnIdx) const
 SHVBool SHVSQLiteStatementImpl::GetInt64(SHVInt64Val& val, int columnIdx) const
 {
 	SHVTHREADCHECK(OwnerThread);
-	if (columnIdx < sqlite3_column_count(Statement) && columnIdx >= 0)
+	if (IsValid(columnIdx))
 	{
 		val = sqlite3_column_int64(Statement, columnIdx);
 		return SHVBool(SHVSQLiteWrapper::SQLite_OK);
@@ -59,7 +61,7 @@ SHVBool SHVSQLiteStatementImpl::GetInt64(SHVInt64Val& val, int columnIdx) const
 SHVBool SHVSQLiteStatementImpl::GetDouble(double& val, int columnIdx) const
 {
 	SHVTHREADCHECK(OwnerThread);
-	if (columnIdx < sqlite3_column_count(Statement) && columnIdx >= 0)
+	if (IsValid(columnIdx))
 	{
 		val = sqlite3_column_double(Statement, columnIdx);
 		return SHVBool(SHVSQLiteWrapper::SQLite_OK);
@@ -74,7 +76,7 @@ SHVBool SHVSQLiteStatementImpl::GetDouble(double& val, int columnIdx) const
 SHVBool SHVSQLiteStatementImpl::GetBlob(const void*& blob, int& len, int columnIdx) const
 {
 	SHVTHREADCHECK(OwnerThread);
-	if (columnIdx < sqlite3_column_count(Statement) && columnIdx >= 0)
+	if (IsValid(columnIdx))
 	{
 		len = sqlite3_column_count(Statement);
 		blob = sqlite3_column_blob(Statement, columnIdx);
@@ -90,7 +92,7 @@ SHVBool SHVSQLiteStatementImpl::GetBlob(const void*& blob, int& len, int columnI
 SHVBool SHVSQLiteStatementImpl::GetStringUTF8(SHVStringSQLite& text, int& len, int columnIdx) const
 {
 	SHVTHREADCHECK(OwnerThread);
-	if (columnIdx < sqlite3_column_count(Statement) && columnIdx >= 0)
+	if (IsValid(columnIdx))
 	{
 		len = sqlite3_column_bytes(Statement, columnIdx);
 		text = SHVStringSQLite((const SHVChar*) sqlite3_column_text(Statement, columnIdx));
@@ -309,4 +311,13 @@ SHVBool SHVSQLiteStatementImpl::Reset()
 	return SHVBool(sqlite3_reset(Statement));
 }	
 
+/*************************************
+ * IsValid
+ *************************************/
+bool SHVSQLiteStatementImpl::IsValid(int columnIdx) const
+{
+	return columnIdx < sqlite3_column_count(Statement) && 
+		columnIdx >= 0 && 
+		sqlite3_column_type(Statement, columnIdx) != SQLITE_NULL;
+}
 

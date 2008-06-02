@@ -15,6 +15,10 @@ class SHVDataRow;
 class SHVDataRowList: public SHVDataRowListC
 {
 public:
+	virtual SHVBool StartEdit() = 0;
+	virtual SHVBool EndEdit() = 0;
+	virtual SHVBool CancelEdit() = 0;
+
 	virtual SHVDataRow* EditCurrentRow() = 0;
 	virtual SHVDataRow* AddRow() = 0;	
 
@@ -28,6 +32,7 @@ public:
 	virtual SHVBool IsOk() const = 0;
 	virtual const SHVDataStructC* GetStruct() const = 0;
 	virtual const SHVString8C GetAlias() const = 0;
+	virtual int GetAliasID() const = 0;
 	virtual int GetRowCount() const = 0;
 
 	virtual SHVDataRowC* Find(const SHVDataRowKey* key) = 0;
@@ -51,8 +56,6 @@ friend class SHVDataRow;
 
 // from SHVDataRowListC
 	virtual void AdjustRowCount(int delta) = 0;
-	virtual SHVBool TempReset() = 0;
-	virtual void Reposition() = 0;
 	virtual SHVBool InternalRowChanged(SHVDataRow* row) = 0;
 
 // inlines

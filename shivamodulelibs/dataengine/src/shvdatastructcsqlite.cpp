@@ -7,7 +7,7 @@
 /*************************************
  * Constructor
  *************************************/
-SHVDataStructCSQLite::SHVDataStructCSQLite(SHVSQLiteWrapper* psqlite, const SHVString8C dbTableName, const SHVString8C structTableName)
+SHVDataStructCSQLite::SHVDataStructCSQLite(SHVSQLiteWrapper* psqlite, const SHVString8C dbTableName)
 {
 SHVStringUTF8 query;
 SHVStringSQLite notparsed(NULL);
@@ -17,10 +17,8 @@ SHVSQLiteWrapperRef sqlite = psqlite;
 int len;
 SHVBool ok;
 	Struct = new SHVDataStructImpl();
-	if (structTableName.IsNull())
-		Struct->SetTableName(dbTableName);
-	else
-		Struct->SetTableName(structTableName);
+	Struct->SetTableName(dbTableName);
+	Struct->SetIsMultiInstance(false);
 
 	query.Format("PRAGMA table_info(%s)", dbTableName.GetSafeBuffer());
 
@@ -31,39 +29,43 @@ SHVBool ok;
 		// Lets get the table structure
 		while (statement->NextResult().GetError() == SHVSQLiteWrapper::SQLite_ROW)
 		{
-		SHVDataStructColumnImplRef col = new SHVDataStructColumnImpl();
+		SHVDataStructColumnImplRef col;
 		SHVString val;
 		SHVStringUTF8C type("");
-
-			if (statement->GetStringUTF8(valUTF8, len, 1))
-				col->SetColumnName(SHVString8C(valUTF8.GetSafeBuffer()));
-			if (statement->GetStringUTF8(valUTF8, len, 2))
+			if (statement->GetStringUTF8(valUTF8, len, 1) && valUTF8 != "shv_alias")
 			{
-				col->SetDataLength(-1);
-				if (!SHVStringUTF8::StrCaseCmp(valUTF8.GetSafeBuffer(), __SQLITE_TYPE_INT))
-					col->SetDataType(SHVDataVariant::TypeInt);
-				if (!SHVStringUTF8::StrCaseCmp(valUTF8.GetSafeBuffer(), __SQLITE_TYPE_INT64))
-					col->SetDataType(SHVDataVariant::TypeInt64);
-				if (!SHVStringUTF8::StrCaseCmp(valUTF8.GetSafeBuffer(), __SQLITE_TYPE_DOUBLE))
-					col->SetDataType(SHVDataVariant::TypeDouble);
-				if (!SHVStringUTF8::StrCaseCmp(valUTF8.GetSafeBuffer(), __SQLITE_TYPE_DATETIME))
-					col->SetDataType(SHVDataVariant::TypeTime);
-				if (!SHVStringUTF8::StrCaseCmp(valUTF8.GetSafeBuffer(), __SQLITE_TYPE_BOOL))
-					col->SetDataType(SHVDataVariant::TypeBool);
-				if (!SHVStringUTF8::StrCaseCmp(valUTF8.Left(SHVString8::StrLen(__SQLITE_TYPE_STRING)).GetSafeBuffer(), __SQLITE_TYPE_STRING))
+				col = new SHVDataStructColumnImpl();
+				col->SetColumnName(SHVString8C(valUTF8.GetSafeBuffer()));
+				if (statement->GetStringUTF8(valUTF8, len, 2))
 				{
-					col->SetDataType(SHVDataVariant::TypeString);
-					col->SetDataLength(SHVString8C::StrToL(valUTF8.GetSafeBuffer() + SHVString8::StrLen(__SQLITE_TYPE_STRING) + 1, NULL, 10));
-				}				
+					col->SetDataLength(-1);
+					if (!SHVStringUTF8::StrCaseCmp(valUTF8.GetSafeBuffer(), __SQLITE_TYPE_INT))
+						col->SetDataType(SHVDataVariant::TypeInt);
+					if (!SHVStringUTF8::StrCaseCmp(valUTF8.GetSafeBuffer(), __SQLITE_TYPE_INT64))
+						col->SetDataType(SHVDataVariant::TypeInt64);
+					if (!SHVStringUTF8::StrCaseCmp(valUTF8.GetSafeBuffer(), __SQLITE_TYPE_DOUBLE))
+						col->SetDataType(SHVDataVariant::TypeDouble);
+					if (!SHVStringUTF8::StrCaseCmp(valUTF8.GetSafeBuffer(), __SQLITE_TYPE_DATETIME))
+						col->SetDataType(SHVDataVariant::TypeTime);
+					if (!SHVStringUTF8::StrCaseCmp(valUTF8.GetSafeBuffer(), __SQLITE_TYPE_BOOL))
+						col->SetDataType(SHVDataVariant::TypeBool);
+					if (!SHVStringUTF8::StrCaseCmp(valUTF8.Left(SHVString8::StrLen(__SQLITE_TYPE_STRING)).GetSafeBuffer(), __SQLITE_TYPE_STRING))
+					{
+						col->SetDataType(SHVDataVariant::TypeString);
+						col->SetDataLength(SHVString8C::StrToL(valUTF8.GetSafeBuffer() + SHVString8::StrLen(__SQLITE_TYPE_STRING) + 1, NULL, 10));
+					}				
+				}
+				if (statement->GetStringUTF8(valUTF8, len, 3))
+					col->SetAllowNull(valUTF8 == "1");
+				else
+					col->SetAllowNull(SHVBool::True);
+				col->SetAutoInc(SHVBool::False);
+				Struct->Add(col);
 			}
-			if (statement->GetStringUTF8(valUTF8, len, 3))
-				col->SetAllowNull(valUTF8 == "1");
 			else
-				col->SetAllowNull(SHVBool::True);
-			col->SetAutoInc(SHVBool::False);
-			Struct->Add(col);
+				Struct->SetIsMultiInstance(true);
 		}
-		// now lest find the primary index
+		// now lets find the primary index
 		query.Format("sql is null", dbTableName.GetSafeBuffer());
 		ResolveIndexes(psqlite, dbTableName.GetSafeBuffer(), query);
 		// now lets find the secondary indexes
@@ -78,6 +80,14 @@ SHVBool ok;
 const SHVString8C& SHVDataStructCSQLite::GetTableName() const
 {
 	return Struct->GetTableName();
+}
+
+/*************************************
+ * GetIsMultiInstance
+ *************************************/
+bool SHVDataStructCSQLite::GetIsMultiInstance() const
+{
+	return Struct->GetIsMultiInstance();
 }
 
 /*************************************
@@ -135,6 +145,13 @@ SHVBool SHVDataStructCSQLite::IsEqual(const SHVDataStructC* dataStruct) const
 {
 	return Struct->IsEqual(dataStruct);
 }
+/*************************************
+ * IsEqual
+ *************************************/
+SHVBool SHVDataStructCSQLite::IsIndexesEqual(const SHVDataStructC* dataStruct) const
+{
+	return Struct->IsIndexesEqual(dataStruct);
+}
 
 /*************************************
  * Destructor
@@ -186,7 +203,7 @@ short affinity;
 						if (indexInfo->GetStringUTF8(valUTF8, len, 2))
 						{
 						size_t colIdx;
-							if (Struct->FindColumnIndex(colIdx, valUTF8.GetSafeBuffer()))
+							if (valUTF8 != "shv_alias" && Struct->FindColumnIndex(colIdx, valUTF8.GetSafeBuffer()))
 							{
 								if (hasSQL)
 								{
@@ -210,4 +227,12 @@ short affinity;
 			}
 		}
 	}
+}
+
+/*************************************
+ * GetInternalStruct
+ *************************************/
+SHVDataStruct* SHVDataStructCSQLite::GetInternalStruct()
+{
+	return Struct;
 }

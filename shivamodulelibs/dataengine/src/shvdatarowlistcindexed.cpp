@@ -16,15 +16,15 @@ SHVDataRowListCIndexed::SHVDataRowListCIndexed(SHVDataSession* session, const SH
 {
 SHVStringSQLite rest(NULL);
 SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
+SHVStringUTF8 query;
 	SortIndex = index;
-	TempPos = -1;
 	SHVASSERT(GetStruct()->GetIndex(index));
 	if (!GetStruct()->GetIndex(index))
 	{
 		Ok = SHVBool::False;
 		return;
 	}
-SHVStringUTF8 query = BuildQuery(condition, false);
+	query = BuildQuery(condition, false);
 	if (Ok)
 		Statement = SQLite->PrepareUTF8(Ok, query, rest);
 	Eof = !Ok;
@@ -51,6 +51,7 @@ SHVBool retVal = IsOk();
 		Statement->SetParameterNullUTF8("@idx");
 		if (!retVal)
 			Eof = SHVBool::True;
+		Unlock();
 	}
 	return retVal;
 }
@@ -61,6 +62,21 @@ SHVBool retVal = IsOk();
 int SHVDataRowListCIndexed::GetRowCount() const
 {
 	return RowCount;
+}
+
+/*************************************
+ * GetPosition
+ *************************************/
+SHVDataRowKey* SHVDataRowListCIndexed::GetPosition()
+{
+SHVDataRowKey* retVal = NULL;
+long p;
+	if (GetCurrentRow() && Statement->GetLong(p, (int) GetStruct()->GetColumnCount()))
+	{
+		retVal = new SHVDataRowKeyImpl();	
+		retVal->AddKey("idx", new SHVDataVariantImpl(SHVInt(p)), false);
+	}
+	return retVal;
 }
 
 /*************************************
@@ -192,39 +208,6 @@ long rc;
 }
 
 /*************************************
- * TempReset
- *************************************/
-SHVBool SHVDataRowListCIndexed::TempReset()
-{
-	if (!IsOk())
-		return SHVBool::False;
-	if (GetCurrentRow())
-	{
-	long p;
-		if (Statement->GetLong(p, (int) GetStruct()->GetColumnCount()))
-			TempPos = p;
-	}
-	else
-		TempPos = -1;
-	Reset();
-	return SHVBool::True;
-}
-
-/*************************************
- * Reposition
- *************************************/
-void SHVDataRowListCIndexed::Reposition()
-{
-	if (TempPos >= 0)
-	{
-	SHVDataRowKeyRef Key = new SHVDataRowKeyImpl();
-		Key->AddKey("idx", new SHVDataVariantImpl(SHVInt(TempPos)), false);
-		Find(Key);
-		TempPos = -1;
-	}
-}
-
-/*************************************
  * InternalRowChanged
  *************************************/
 SHVBool SHVDataRowListCIndexed::InternalRowChanged(SHVDataRow* row)
@@ -268,10 +251,7 @@ SHVSQLiteStatementRef statement;
 			sql.Format("select max(idx) from memdb.%s", IndexTableName.GetSafeBuffer());
 			statement = SQLite->ExecuteUTF8(retVal, sql, rest);
 			if (retVal.GetError() == SHVSQLiteWrapper::SQLite_ROW)
-			{
 				retVal = SHVBool::True;
-				statement->GetLong((long) TempPos, 0);
-			}
 		}
 	}
 	else

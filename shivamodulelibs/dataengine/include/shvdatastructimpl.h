@@ -56,13 +56,16 @@ public:
 	virtual const SHVString8C& GetTableName() const;
 	virtual void SetTableName(const SHVString8C& name);
 
+	virtual bool GetIsMultiInstance() const;
+	virtual void SetIsMultiInstance(bool isMultiInstance);
+
 	virtual const SHVDataStructColumnC* operator[](size_t idx) const;
 	virtual SHVDataStructColumn* operator[](size_t idx);
 	virtual const SHVBool FindColumnIndex(size_t& index, const SHVString8C& colName) const;
 
 	virtual SHVDataStructColumn* CreateNew();
 	virtual void InsertAt(size_t idx, SHVDataStructColumn& col);
-	virtual SHVDataStructColumn* RemoveAt(size_t idx);
+	virtual void RemoveAt(size_t idx);
 	virtual size_t Add(SHVDataStructColumn* col);
 	virtual size_t Add(const SHVString8C& colName, int dataType, int dataLength = -1, SHVBool PrimaryKey = SHVBool::False, SHVBool AllowNull = SHVBool::False, SHVBool AutoInc = SHVBool::False);
 	virtual size_t GetColumnCount() const;
@@ -71,13 +74,20 @@ public:
 	virtual const SHVDataRowKey* GetIndex(size_t IdxID) const;
 	virtual const size_t IndexCount() const;
 	virtual SHVDataRowKey* CreateIndexKey() const;
-	virtual void AddIndex(SHVDataRowKey* index);
+	virtual size_t AddIndex(SHVDataRowKey* index);
+	virtual size_t RemoveLastIndex();
 	virtual SHVBool IsEqual(const SHVDataStructC* dataStruct) const;
+	virtual SHVBool IsIndexesEqual(const SHVDataStructC* dataStruct) const;
+
+protected:
+	// from SHVDataStructC
+	virtual SHVDataStruct* GetInternalStruct();
 
 private:
 	SHVVectorRef<SHVDataStructColumn> Columns;
 	SHVVectorRef<SHVDataRowKey> Indexes;
 	SHVString8 TableName;
+	bool IsMultiInstance;
 };
 typedef SHVRefObjectContainer<SHVDataStructImpl> SHVDataStructImplRef;
 

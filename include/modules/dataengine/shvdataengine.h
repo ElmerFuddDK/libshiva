@@ -22,9 +22,12 @@ class SHVDataEngine: public SHVModule
 {
 public:
 	virtual ~SHVDataEngine() {}
-	virtual SHVBool RegisterTable(const SHVDataStructC* dataStruct, bool createTable = false) = 0;
+	virtual SHVBool RegisterTable(const SHVDataStructC* dataStruct, SHVDataSession* useSession = NULL) = 0;
 	virtual SHVBool RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear = false, SHVDataSession* useSession = NULL) = 0;
-	virtual SHVBool UnregisterAlias(const SHVString8C& alias) = 0;
+	virtual size_t RegisterIndex(const SHVString8C& table, SHVDataRowKey* IndexKey, SHVDataSession* useSession = NULL) = 0;
+	virtual SHVBool UnregisterAlias(const SHVString8C& alias, SHVDataSession* useSession = NULL) = 0;
+	virtual SHVBool ClearTable(const SHVString8C& table, SHVDataSession* useSession = NULL) = 0;
+
 	virtual const SHVDataStructC* FindStruct(const SHVString8C& table) const = 0;
 	virtual const SHVDataSchema& GetDataSchema() const = 0;
 	virtual const SHVStringC& GetDatabase() const = 0;
@@ -34,12 +37,12 @@ public:
 	virtual SHVDataVariant* CreateVariant() const = 0;
 	virtual SHVDataRowKey* CreateKey() const = 0;
 	virtual SHVDataRowKey* CopyKey(const SHVDataRowKey* key) const = 0;
-	virtual SHVDataStructC* RetrieveStruct(const SHVString8C table, const SHVString8C alias = SHVString8C(NULL)) const = 0;
+	virtual SHVDataStructC* RetrieveStruct(const SHVString8C table, SHVDataSession* useSession = NULL) const = 0;
 	virtual void BuildKeySQL(const SHVDataRowKey* key, SHVString8& condition, SHVString8& orderby, const SHVString8C& table, bool reverse = false) const = 0;
 
 	virtual SHVSQLiteWrapper* CreateConnection(SHVBool& Ok, const SHVStringC& dataBase) = 0;
 
-	virtual SHVDataFactory* CreateFactory(const SHVStringC& database, const SHVDataSchema* schema = NULL) = 0;
+	virtual SHVDataFactory* CreateFactory(const SHVStringC& database) = 0;
 	virtual SHVDataFactory* GetDefaultFactory() = 0;
 
 	// inlines 

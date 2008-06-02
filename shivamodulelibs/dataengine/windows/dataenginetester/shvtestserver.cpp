@@ -32,6 +32,7 @@
 #include "../../../../include/platformspc.h"
 
 #include "shvtestserver.h"
+#include "../../../../include/threadutils/shvmutexlocker.h"
 
 //=========================================================================================================
 // SHVTestServer class - Implements the test framework - use from test modules
@@ -198,10 +199,12 @@ SHVTestResult::SHVTestResult(SHVModule* caller, const SHVStringC& title) : Calle
  *************************************/
 void SHVTestResult::AddLog(const SHVStringC& log)
 {
+SHVMutexLocker lock(Lock);
 	Log.AddTail(log);
 }
 void SHVTestResult::AddLog(const SHVTChar* s, ...)
 {
+
 SHVString str;
 SHVVA_LIST args;
 	SHVVA_START(args, s);

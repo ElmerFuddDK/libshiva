@@ -9,7 +9,9 @@
  *************************************/
 SHVSQLiteWrapperImpl::SHVSQLiteWrapperImpl(void)
 {
+#ifdef DEBUG
 	OwnerThread = SHVThreadBase::GetCurrentThreadID();
+#endif
 	Sqlite = NULL;
 }
 
@@ -85,6 +87,8 @@ SHVSQLiteStatement* retVal = NULL;
 		notparsed = rest;
 		retVal = new SHVSQLiteStatementImpl(sqlite_statement, this, sqlite3_data_count(sqlite_statement));
 	}
+	else
+		ok.SetError(SHVSQLiteWrapper::SQLite_ERROR);
 	return retVal;
 } 
 
@@ -103,13 +107,13 @@ const char* rest = NULL;
 	if (Sqlite)
 	{
 		ok = SHVBool(sqlite3_prepare_v2(Sqlite, sql.GetSafeBuffer(), -1, &sqlite_statement, &rest));
+		retVal = new SHVSQLiteStatementImpl(sqlite_statement, this, sqlite3_data_count(sqlite_statement));
 		if (ok)
-		{
-			retVal = new SHVSQLiteStatementImpl(sqlite_statement, this, sqlite3_data_count(sqlite_statement));
 			ok = SHVBool(retVal->NextResult().GetError());
-		}
 		notparsed = rest;
 	}
+	else
+		ok.SetError(SHVSQLiteWrapper::SQLite_ERROR);
 	return retVal;
 } 
 
