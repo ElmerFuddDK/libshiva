@@ -86,6 +86,7 @@ SOURCES += ../../src/framework/shvevent.cpp \
            ../../src/frameworkimpl/shvtimerimpl.cpp \
            ../../src/threadutils/shvmutexbase.cpp \
            ../../src/threadutils/shvmutex.cpp \
+           ../../src/threadutils/shvreadwritelock.cpp \
            ../../src/threadutils/shvthreadbase.cpp \
            ../../src/utils/shvassert.cpp \
            ../../src/utils/shvbufferc.cpp \
