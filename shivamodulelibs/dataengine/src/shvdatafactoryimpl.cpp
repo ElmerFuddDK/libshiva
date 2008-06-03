@@ -549,10 +549,10 @@ int lockCount = 0;
 				SharedLocks[SHVThreadBase::GetCurrentThreadID()] = lockCount;
 		}
 	}
+	HasExclusiveLock = false;
 	SharedLocksMutex.Unlock();
 #endif
 	Lock.Unlock();
-	HasExclusiveLock = false;
 }
 
 /*************************************
