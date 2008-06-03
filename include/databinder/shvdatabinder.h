@@ -1,5 +1,5 @@
-#ifndef __SHIVA_GUI_CONTROLDATA_H
-#define __SHIVA_GUI_CONTROLDATA_H
+#ifndef __SHIVA_DATABINDER_DATABINDER_H
+#define __SHIVA_DATABINDER_DATABINDER_H
 
 #include "../../include/utils/shvrefobject.h"
 #include "../../include/utils/shvstring.h"
@@ -7,12 +7,12 @@
 
 
 //-=========================================================================================================
-/// SHVControlData - interface for data binding to controls
+/// SHVDataBinder - interface for data binding
 /**
- * Control data interface class.
+ * Data interface class.
  */
 
-class SHVControlData : public SHVRefObject
+class SHVDataBinder : public SHVRefObject
 {
 public:
 
@@ -32,12 +32,12 @@ public:
 	virtual SHVStringBuffer GetValue(const SHVString8C col) = 0;
 	virtual SHVBool SetValue(const SHVStringC value, const SHVString8C col) = 0;
 
-	virtual SHVControlData* GetSubData(int entityIndex) = 0;
-	virtual SHVControlData* GetSubData(SHVStringC entityName) = 0;
+	virtual SHVDataBinder* GetSubData(int entityIndex) = 0;
+	virtual SHVDataBinder* GetSubData(SHVStringC entityName) = 0;
+
+	virtual SHVBool PerformAction(SHVChar* actionID) = 0;
 
 };
-typedef SHVRefObjectContainer<SHVControlData> SHVControlDataRef;
-
-
+typedef SHVRefObjectContainer<SHVDataBinder> SHVDataBinderRef;
 
 #endif

@@ -15,7 +15,7 @@ int SHVControlLabel::GetType()
 /*************************************
  * GetData
  *************************************/
-SHVBool SHVControlLabel::GetData(SHVControlData* data)
+SHVBool SHVControlLabel::GetData(SHVDataBinder* data)
 {
 	if (data)
 	{
@@ -28,7 +28,7 @@ SHVBool SHVControlLabel::GetData(SHVControlData* data)
 /*************************************
  * SetData
  *************************************/
-SHVBool SHVControlLabel::SetData(SHVControlData* data)
+SHVBool SHVControlLabel::SetData(SHVDataBinder* data)
 {
 	if (data)
 	{

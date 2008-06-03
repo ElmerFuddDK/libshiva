@@ -54,7 +54,7 @@ int SHVControlTab::GetType()
 /*************************************
  * GetData
  *************************************/
-SHVBool SHVControlTab::GetData(SHVControlData* data)
+SHVBool SHVControlTab::GetData(SHVDataBinder* data)
 {
 	return SHVBool::False;
 }
@@ -62,7 +62,7 @@ SHVBool SHVControlTab::GetData(SHVControlData* data)
 /*************************************
  * SetData
  *************************************/
-SHVBool SHVControlTab::SetData(SHVControlData* data)
+SHVBool SHVControlTab::SetData(SHVDataBinder* data)
 {
 	return SHVBool::False;
 }

@@ -46,7 +46,7 @@ int SHVControlWrapperWin32::GetType()
 /*************************************
  * GetData
  *************************************/
-SHVBool SHVControlWrapperWin32::GetData(SHVControlData* data)
+SHVBool SHVControlWrapperWin32::GetData(SHVDataBinder* data)
 {
 	return SHVBool::False;
 }
@@ -54,7 +54,7 @@ SHVBool SHVControlWrapperWin32::GetData(SHVControlData* data)
 /*************************************
  * SetData
  *************************************/
-SHVBool SHVControlWrapperWin32::SetData(SHVControlData* data)
+SHVBool SHVControlWrapperWin32::SetData(SHVDataBinder* data)
 {
 	return SHVBool::False;
 }

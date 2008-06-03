@@ -30,8 +30,8 @@ public:
 
 
 	// Data handling
-	virtual SHVBool GetData(SHVControlData* data);
-	virtual SHVBool SetData(SHVControlData* data);
+	virtual SHVBool GetData(SHVDataBinder* data);
+	virtual SHVBool SetData(SHVDataBinder* data);
 
 	inline SHVControlContainer* AddPage(const SHVStringC name, size_t atIndex = SIZE_T_MAX);
 	inline SHVControlContainer* GetPage(size_t index);

@@ -24,8 +24,8 @@ public:
 	virtual void Enable();
 	virtual void Disable();
 
-	virtual SHVBool GetData(SHVControlData* data);
-	virtual SHVBool SetData(SHVControlData* data);
+	virtual SHVBool GetData(SHVDataBinder* data);
+	virtual SHVBool SetData(SHVDataBinder* data);
 
 	virtual SHVString8C GetEntityName();
 

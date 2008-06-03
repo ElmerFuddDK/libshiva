@@ -43,7 +43,7 @@ SHVMenuRef toplevelmenu, menu;
 /*************************************
  * SetData
  *************************************/
-SHVBool SHVFormTabTestPage::SetData(SHVControlData* data)
+SHVBool SHVFormTabTestPage::SetData(SHVDataBinder* data)
 {
 SHVBool retVal(SHVBool::False);
 
@@ -53,7 +53,7 @@ SHVBool retVal(SHVBool::False);
 /*************************************
  * GetData
  *************************************/
-SHVBool SHVFormTabTestPage::GetData(SHVControlData* data)
+SHVBool SHVFormTabTestPage::GetData(SHVDataBinder* data)
 {
 SHVBool retVal(SHVBool::False);
 

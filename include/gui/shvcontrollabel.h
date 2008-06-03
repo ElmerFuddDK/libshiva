@@ -30,8 +30,8 @@ public:
 
 	inline SHVControlLabel* SetParent(SHVControlContainer* parent, int flags = FlagVisible);
 
-	virtual SHVBool GetData(SHVControlData* data);
-	virtual SHVBool SetData(SHVControlData* data);
+	virtual SHVBool GetData(SHVDataBinder* data);
+	virtual SHVBool SetData(SHVDataBinder* data);
 
 	inline SHVControlLabel* SetText(const SHVStringC& text, bool autoSize = true);
 	inline SHVStringBuffer GetText();

@@ -29,8 +29,8 @@ public:
 	virtual void Enable();
 	virtual void Disable();
 
-	virtual SHVBool GetData(SHVControlData* data);
-	virtual SHVBool SetData(SHVControlData* data);
+	virtual SHVBool GetData(SHVDataBinder* data);
+	virtual SHVBool SetData(SHVDataBinder* data);
 
 	virtual SHVString8C GetEntityName();
 
@@ -115,7 +115,7 @@ void SHVForm<T>::Disable()
  * GetData
  *************************************/
 template <class T>
-SHVBool SHVForm<T>::GetData(SHVControlData* data)
+SHVBool SHVForm<T>::GetData(SHVDataBinder* data)
 {
 	return Base->GetData(data);
 }
@@ -124,7 +124,7 @@ SHVBool SHVForm<T>::GetData(SHVControlData* data)
  * SetData
  *************************************/
 template <class T>
-SHVBool SHVForm<T>::SetData(SHVControlData* data)
+SHVBool SHVForm<T>::SetData(SHVDataBinder* data)
 {
 	return Base->SetData(data);
 }

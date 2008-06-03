@@ -24,8 +24,8 @@ public:
 
 	virtual int GetType();
 
-	virtual SHVBool GetData(SHVControlData* data);
-	virtual SHVBool SetData(SHVControlData* data);
+	virtual SHVBool GetData(SHVDataBinder* data);
+	virtual SHVBool SetData(SHVDataBinder* data);
 
 	virtual SHVBool Create(int flags);
 };

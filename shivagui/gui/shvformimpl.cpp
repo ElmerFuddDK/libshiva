@@ -54,7 +54,7 @@ void SHVFormImpl::Disable()
 /*************************************
  * GetData
  *************************************/
-SHVBool SHVFormImpl::GetData(SHVControlData* data)
+SHVBool SHVFormImpl::GetData(SHVDataBinder* data)
 {
 	return ControlContainer->GetData(data);
 }
@@ -62,7 +62,7 @@ SHVBool SHVFormImpl::GetData(SHVControlData* data)
 /*************************************
  * SetData
  *************************************/
-SHVBool SHVFormImpl::SetData(SHVControlData* data)
+SHVBool SHVFormImpl::SetData(SHVDataBinder* data)
 {
 	return ControlContainer->SetData(data);
 }

@@ -4,7 +4,7 @@
 #include "../../include/framework/shvmodulelist.h"
 #include "../../include/utils/shvrefobject.h"
 #include "../../include/utils/shvstring.h"
-#include "shvcontroldata.h"
+#include "../../include/databinder/shvdatabinder.h"
 #include "shvcontrolimplementer.h"
 #include "shvmenu.h"
 #include "utils/shvrect.h"
@@ -66,8 +66,8 @@ public:
 	inline SHVControl* SetParent(SHVControlContainer* parent, int flags = FlagVisible);
 	inline SHVControlContainer* GetParent();
 
-	virtual SHVBool GetData(SHVControlData* data) = 0;
-	virtual SHVBool SetData(SHVControlData* data) = 0;
+	virtual SHVBool GetData(SHVDataBinder* data) = 0;
+	virtual SHVBool SetData(SHVDataBinder* data) = 0;
 
 	virtual SHVMenu* CreatePopupMenu(SHVEventSubscriberBase* subscriber);
 

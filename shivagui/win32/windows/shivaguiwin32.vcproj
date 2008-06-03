@@ -615,6 +615,14 @@
 						</File>
 					</Filter>
 				</Filter>
+				<Filter
+					Name="databinder"
+					>
+					<File
+						RelativePath="..\..\..\include\databinder\shvdatabinder.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter

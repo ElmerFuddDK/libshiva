@@ -17,8 +17,8 @@ public:
 
 	virtual void InitializeForm(SHVControlLayout* layout) = 0;
 
-	virtual SHVBool GetData(SHVControlData* data);
-	virtual SHVBool SetData(SHVControlData* data);
+	virtual SHVBool GetData(SHVDataBinder* data);
+	virtual SHVBool SetData(SHVDataBinder* data);
 
 	virtual SHVBool PreClose();
 

@@ -25,7 +25,7 @@ int SHVControlButton::GetType()
 /*************************************
  * GetData
  *************************************/
-SHVBool SHVControlButton::GetData(SHVControlData* data)
+SHVBool SHVControlButton::GetData(SHVDataBinder* data)
 {
 	if (data)
 	{
@@ -38,7 +38,7 @@ SHVBool SHVControlButton::GetData(SHVControlData* data)
 /*************************************
  * SetData
  *************************************/
-SHVBool SHVControlButton::SetData(SHVControlData* data)
+SHVBool SHVControlButton::SetData(SHVDataBinder* data)
 {
 	if (data)
 	{

@@ -39,8 +39,8 @@ public:
 	inline SHVControlEdit* SetParent(SHVControlContainer* parent, int flags = FlagVisible);
 
 	// Data handling
-	virtual SHVBool GetData(SHVControlData* data);
-	virtual SHVBool SetData(SHVControlData* data);
+	virtual SHVBool GetData(SHVDataBinder* data);
+	virtual SHVBool SetData(SHVDataBinder* data);
 
 	inline SHVStringBuffer GetText();
 	inline SHVControlEdit* SetText(const SHVStringC& title);

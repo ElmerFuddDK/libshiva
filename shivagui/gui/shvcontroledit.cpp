@@ -25,7 +25,7 @@ int SHVControlEdit::GetType()
 /*************************************
  * GetData
  *************************************/
-SHVBool SHVControlEdit::GetData(SHVControlData* data)
+SHVBool SHVControlEdit::GetData(SHVDataBinder* data)
 {
 	if (data)
 	{
@@ -38,7 +38,7 @@ SHVBool SHVControlEdit::GetData(SHVControlData* data)
 /*************************************
  * SetData
  *************************************/
-SHVBool SHVControlEdit::SetData(SHVControlData* data)
+SHVBool SHVControlEdit::SetData(SHVDataBinder* data)
 {
 	if (data)
 	{

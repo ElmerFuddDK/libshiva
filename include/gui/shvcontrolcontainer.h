@@ -63,8 +63,8 @@ public:
 
 
 	// Data handling
-	virtual SHVBool GetData(SHVControlData* data);
-	virtual SHVBool SetData(SHVControlData* data);
+	virtual SHVBool GetData(SHVDataBinder* data);
+	virtual SHVBool SetData(SHVDataBinder* data);
 
 	inline SHVStringBuffer GetTitle();
 	inline SHVControlContainer* SetTitle(const SHVStringC& title);

@@ -21,8 +21,8 @@ public:
 
 	virtual void InitializeForm();
 
-	virtual SHVBool SetData(SHVControlData* data);
-	virtual SHVBool GetData(SHVControlData* data);
+	virtual SHVBool SetData(SHVDataBinder* data);
+	virtual SHVBool GetData(SHVDataBinder* data);
 
 private:
 	

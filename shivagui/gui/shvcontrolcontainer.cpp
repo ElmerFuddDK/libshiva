@@ -139,7 +139,7 @@ SHVFontRef font = GetFont();
 /*************************************
  * GetData
  *************************************/
-SHVBool SHVControlContainer::GetData(SHVControlData* data)
+SHVBool SHVControlContainer::GetData(SHVDataBinder* data)
 {
 	if (data)
 	{
@@ -152,7 +152,7 @@ SHVBool SHVControlContainer::GetData(SHVControlData* data)
 /*************************************
  * SetData
  *************************************/
-SHVBool SHVControlContainer::SetData(SHVControlData* data)
+SHVBool SHVControlContainer::SetData(SHVDataBinder* data)
 {
 	if (data)
 	{
