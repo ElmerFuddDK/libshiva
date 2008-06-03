@@ -90,7 +90,7 @@ public:
 	virtual SHVMenu* CreatePopupMenu(SHVEventSubscriberBase* subscriber, SHVControl* parent) = 0;
 
 	// Factories for template inherited classes
-	virtual SHVFormImplementer* ContructFormImplementer(SHVFormBase* owner, SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVString8C entityName) = 0;
+	virtual SHVFormImplementer* ConstructFormImplementer(SHVFormBase* owner, SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVString8C entityName) = 0;
 
 
 	// Register controls

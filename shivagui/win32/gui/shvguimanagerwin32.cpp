@@ -192,9 +192,9 @@ SHVMenu* SHVGUIManagerWin32::CreatePopupMenu(SHVEventSubscriberBase* subscriber,
 }
 
 /*************************************
- * ContructFormImplementer
+ * ConstructFormImplementer
  *************************************/
-SHVFormImplementer* SHVGUIManagerWin32::ContructFormImplementer(SHVFormBase* owner, SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVString8C entityName)
+SHVFormImplementer* SHVGUIManagerWin32::ConstructFormImplementer(SHVFormBase* owner, SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVString8C entityName)
 {
 	return new SHVFormImpl(owner,manager,controlContainer,entityName);
 }

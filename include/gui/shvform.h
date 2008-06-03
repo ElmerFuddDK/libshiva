@@ -63,7 +63,7 @@ private:
 template <class T>
 SHVForm<T>::SHVForm(SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVString8C entityName)
 {
-	Base = manager->ContructFormImplementer(this,manager,controlContainer,entityName);
+	Base = manager->ConstructFormImplementer(this,manager,controlContainer,entityName);
 }
 
 /*************************************
