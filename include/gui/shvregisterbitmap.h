@@ -16,7 +16,7 @@ public:
 #ifdef __SHIVA_WIN32
 	struct Registration {
 		int ResourceID;
-		SHVInt BitmapID;
+		int BitmapID;
 	};
 
 
