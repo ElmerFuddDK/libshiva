@@ -6,7 +6,7 @@
 
 #define __SHIVA_WIN32
 
-#ifdef _WIN32_WCE_PSPC
+#if defined(_WIN32_WCE_PSPC) || defined(WIN32_PLATFORM_PSPC)
 # define __SHIVA_POCKETPC
 #endif
 #if (_WIN32_WCE < 400)
