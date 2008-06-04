@@ -50,10 +50,13 @@ public:
 	inline SHVStringBuffer GetValue() const;
 
 	virtual SHVBool Parse(SHVStreamIn& stream) = 0;
+	virtual SHVBool ParseDirect(const char* buffer, int actualLen, bool isFinal) = 0;
 	virtual int GetErrorCode() const = 0;
 	virtual void SetStartElementCallBack(SHVXmlReaderCallbackBase* callback) = 0;
 	virtual void SetEndElementCallBack(SHVXmlReaderCallbackBase* callback) = 0;
 	virtual void SetValueCallback(SHVXmlReaderCallbackBase* callback) = 0;
+	virtual void SetMultidocument(bool val) = 0;
+	virtual bool GetMultidocument() const = 0;
 
 };
 typedef SHVPtrContainer<SHVXmlReader> SHVXmlReaderPtr;
