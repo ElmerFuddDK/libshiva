@@ -8,33 +8,29 @@
  *************************************/
 SHVXmlReaderImpl::SHVXmlReaderImpl(ParserEncoding enc, size_t bufferSize)
 {
-const TCHAR* encoding;
 	StartElementCallback = EndElementCallback = ValueCallback = NULL;
 	BufferSize = bufferSize;
-	switch (enc)
+	Encoding = enc;
+	switch (Encoding)
 	{
 	case ParserEncodingUTF8:
-		encoding = _T("UTF-8");
+		EncodingExpat = _T("UTF-8");
 		break;
 #ifndef UNICODE
 	case ParserEncodingNative:
-		encoding = _T("ISO-8859-1");
+		EncodingExpat = _T("ISO-8859-1");
 		break;
 #else
 	// native encoding is UTF16 when unicode is defined
 	case ParserEncodingNative:
 #endif
 	case ParserEncodingUTF16:
-		encoding = _T("UTF-16");
+		EncodingExpat = _T("UTF-16");
 		break;
 	}
-	Encoding = enc;
-	Parser = XML_ParserCreate(encoding);
-	XML_SetElementHandler(Parser,
-		&SHVXmlReaderImpl::StartElementHandler,
-		&SHVXmlReaderImpl::EndElementHandler);
-	XML_SetCharacterDataHandler(Parser, &SHVXmlReaderImpl::DefaultHandler);
-	XML_SetUserData(Parser, this);
+	Parser = XML_ParserCreate(EncodingExpat);
+	InitializeExpat();
+	MultiDocument = false;
 }
 
 /*************************************
@@ -211,6 +207,33 @@ SHVStringBufferUTF8 SHVXmlReaderImpl::GetValueUTF8() const
 }
 
 /*************************************
+ * ParseDirect
+ *************************************/
+SHVBool SHVXmlReaderImpl::ParseDirect(const char* buffer, int actualLen, bool isFinal)
+{
+bool more = true;
+SHVBool retVal = SHVBool::True;
+bool status;
+
+	CurrPos = 0;
+	while (retVal && more)
+	{
+		more = false;
+		status = XML_Parse(Parser, buffer + CurrPos, actualLen, (isFinal ? 1 : 0)) == XML_STATUS_OK;
+		if (!status && MultiDocument && XML_GetErrorCode(Parser) == XML_ERROR_JUNK_AFTER_DOC_ELEMENT && DocLevel == 0)
+		{
+			more = true;
+			actualLen -= CurrPos;
+			XML_ParserReset(Parser, EncodingExpat);
+			InitializeExpat();
+		}
+		else
+			retVal.SetError(XML_GetErrorCode(Parser));
+	}
+	return retVal;
+}
+
+/*************************************
  * Parse
  *************************************/
 SHVBool SHVXmlReaderImpl::Parse(SHVStreamIn& stream)
@@ -222,7 +245,7 @@ SHVBool retVal = SHVBool::True;
 	Value = NULL;
 	while (stream.ReadBuffer(buffer, BufferSize, actualLen) && retVal)
 	{
-		retVal = XML_Parse(Parser, (const char*) buffer, (int) actualLen, stream.Eof()) == XML_STATUS_OK;
+		retVal = ParseDirect((const char*) buffer, (int) actualLen, stream.Eof());
 	}
 	free(buffer);
 	return retVal;
@@ -264,6 +287,36 @@ void SHVXmlReaderImpl::SetValueCallback(SHVXmlReaderCallbackBase* callback)
 }
 
 /*************************************
+ * SetMultidocument
+ *************************************/
+void SHVXmlReaderImpl::SetMultidocument(bool val)
+{
+	MultiDocument = val;
+}
+
+/*************************************
+ * GetMultidocument
+ *************************************/
+bool SHVXmlReaderImpl::GetMultidocument() const
+{
+	return MultiDocument;
+}
+
+/*************************************
+ * InitializeExpat
+ *************************************/
+void SHVXmlReaderImpl::InitializeExpat()
+{
+	XML_SetElementHandler(Parser,
+		&SHVXmlReaderImpl::StartElementHandler,
+		&SHVXmlReaderImpl::EndElementHandler);
+	XML_SetCharacterDataHandler(Parser, &SHVXmlReaderImpl::DefaultHandler);
+	XML_SetUserData(Parser, this);
+	DocLevel = 0;
+	CurrPos = 0;
+}
+
+/*************************************
  * StartElementHandler
  *************************************/
 void SHVXmlReaderImpl::StartElementHandler(void *userData, const XML_Char *name, const XML_Char **atts)
@@ -281,6 +334,7 @@ SHVXmlReaderImpl* self = (SHVXmlReaderImpl*) userData;
 		self->StartElementCallback->PerformCallback(*self);
 	self->Value = NULL;
 	self->Attributes = NULL;
+	self->DocLevel++;
 }
 
 /*************************************
@@ -299,6 +353,8 @@ SHVXmlReaderImpl* self = (SHVXmlReaderImpl*) userData;
 	if (self->EndElementCallback)
 		self->EndElementCallback->PerformCallback(*self);
 	self->Value = NULL;
+	self->DocLevel--;
+	self->CurrPos = XML_GetCurrentByteIndex(self->Parser) + XML_GetCurrentByteCount(self->Parser);
 }
 
 /*************************************

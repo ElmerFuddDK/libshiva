@@ -99,7 +99,7 @@ SHVBool retVal;
 		}
 	}
 
-	mainqueue.GetModuleList().GetConfig().Set(_T("ApplicationPath"), GetAppPath());
+	mainqueue.GetModuleList().GetConfig().Set(_T("applicationpath"), GetAppPath());
 	mainqueue.GetModuleList().AddModule(new SHVTestDone(mainqueue.GetModuleList()));
 	mainqueue.GetModuleList().AddModule(new SHVTestServer(mainqueue.GetModuleList(),logger));
 	mainqueue.GetModuleList().AddModule(new SHVXmlStreamTester(mainqueue.GetModuleList()));

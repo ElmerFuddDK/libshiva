@@ -8,12 +8,28 @@ void SHVXmlStreamTester::PerformTest(SHVTestResult* result)
 SHVBool ok;
 	Result = result;
 SHVString FilePath;
-	FilePath = Modules.GetConfig().Find(_T("ApplicationPath")).ToString();
+	FilePath = Modules.GetConfig().Find(_T("applicationpath")).ToString();
 	FilePath += _T("test.xml");
 SHVStreamOutTest testout(FilePath);
 	if (testout.IsOk())
 	{
 	SHVXmlWriter* writer = XmlStream->CreateWriter(SHVXmlWriter::WriterEncodingUTF8);
+		writer->WriteStartElementUTF8(testout, "persons");
+
+		writer->WriteStartElementUTF8(testout, "person");
+		writer->WriteAttributeUTF8(testout, "firstName", "Mog\tens\r\n");
+		writer->WriteAttributeUTF8(testout, "middleName", "Bak");
+		writer->WriteAttributeUTF8(testout, "lastName", "Nielsen");
+		writer->WriteEndElement(testout);
+
+		writer->WriteStartElementUTF8(testout, "person");
+		writer->WriteAttributeUTF8(testout, "firstName", "Hanne");
+		writer->WriteAttributeUTF8(testout, "middleName", "Birkemose");
+		writer->WriteAttributeUTF8(testout, "lastName", "Nielsen");
+		writer->WriteEndElement(testout);
+
+		writer->WriteText(testout, _T("This is j\tust a test\r\n"));
+		writer->WriteEndElement(testout);
 		writer->WriteStartElementUTF8(testout, "persons");
 
 		writer->WriteStartElementUTF8(testout, "person");
@@ -36,6 +52,7 @@ SHVStreamInTest test(FilePath);
 	if (test.IsOk())
 	{
 	SHVXmlReader *reader = XmlStream->CreateReader(SHVXmlReader::ParserEncodingUTF8);
+		reader->SetMultidocument(true);
 		reader->SetStartElementCallBack(new SHVXmlReaderCallback<SHVXmlStreamTester>(this, &SHVXmlStreamTester::StartElem));
 		reader->SetEndElementCallBack(new SHVXmlReaderCallback<SHVXmlStreamTester>(this, &SHVXmlStreamTester::EndElem));
 		reader->SetValueCallback(new SHVXmlReaderCallback<SHVXmlStreamTester>(this, &SHVXmlStreamTester::CharData));
@@ -148,7 +165,7 @@ void SHVStreamInTest::Close()
 
 SHVStreamOutTest::SHVStreamOutTest(const SHVStringC& fileName)
 {
-	Ok = File.Open(fileName, SHVFile::FlagOpen|SHVFile::FlagOverride|SHVFile::FlagWrite);
+	Ok = File.Open(fileName, SHVFile::FlagOpen|SHVFile::FlagOverride|SHVFile::FlagWrite|SHVFile::FlagCreate);
 }
 
 SHVStreamOutTest::~SHVStreamOutTest()

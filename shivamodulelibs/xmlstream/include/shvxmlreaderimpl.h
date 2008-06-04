@@ -37,11 +37,17 @@ public:
 	virtual SHVStringBufferUTF8 GetValueUTF8() const;
 
 	virtual SHVBool Parse(SHVStreamIn& stream);
+	virtual SHVBool ParseDirect(const char* buffer, int actualLen, bool isFinal);
 	virtual int GetErrorCode() const;
 	virtual void SetStartElementCallBack(SHVXmlReaderCallbackBase* callback);
 	virtual void SetEndElementCallBack(SHVXmlReaderCallbackBase* callback);
 	virtual void SetValueCallback(SHVXmlReaderCallbackBase* callback);
+	virtual void SetMultidocument(bool val);
+	virtual bool GetMultidocument() const;
+
 private:
+	void InitializeExpat();
+
 	static void StartElementHandler(void *userData, const XML_Char *name, const XML_Char **atts);
 	static void EndElementHandler(void *userData, const XML_Char *name);
 	static void DefaultHandler(void *userData, const XML_Char *s, int len);
@@ -59,8 +65,12 @@ private:
 //  Expat specific data
 	const XML_Char **Attributes;
 	const XML_Char *Value;
+	const XML_Char *EncodingExpat;
 	int Len;
 	XML_Parser Parser;
+	bool MultiDocument;
+	int DocLevel;
+	int CurrPos;
 };
 
 
