@@ -33,13 +33,16 @@
 #include "../../../include/utils/shvassert.h"
 #include "../../../include/utils/shvstring.h"
 
-#ifdef __SHIVA_WIN32
+#if defined(__SHIVA_WIN32) && !defined(__SHIVA_WINCE)
 # include <crtdbg.h>
 #endif
 
 bool SHVAPI SHVAssert::ReportError(const char* fileName, int lineNo)
 {
-#ifdef __SHIVA_WIN32
+#if defined(__SHIVA_WINCE)
+	///\todo Implement assertions for wince
+	return true;
+#elif defined(__SHIVA_WIN32)
 # ifdef DEBUG
 	// we remove WM_QUIT because if it is in the queue then the message box
 	// won't display

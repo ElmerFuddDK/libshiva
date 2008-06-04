@@ -1,5 +1,5 @@
 #if !defined(__SHIVA_MFC) // include this if you have an MFC project
-# ifdef DEBUG
+# if defined(DEBUG) && !defined(__SHIVA_WINCE)
 #  define _CRTDBG_MAP_ALLOC
 #  include <crtdbg.h>
 #  define SHVBREAKPOINT (_CrtDbgBreak(), 0)
@@ -12,7 +12,7 @@
 # include <winnls.h>
   typedef wchar_t WCHAR;
 #else
-# ifdef DEBUG
+# if defined(DEBUG) && !defined(__SHIVA_WINCE)
 #  include <crtdbg.h>
 #  define SHVBREAKPOINT (_CrtDbgBreak(), 0)
 # endif
