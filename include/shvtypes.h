@@ -4,7 +4,11 @@
 #include "utils/shvhashvalue.h"
 
 typedef char SHVByte;
-typedef long long SHVInt64Val;
+#if defined(__SHIVA_WINCE) && (_WIN32_WCE < 500)
+ typedef __int64 SHVInt64Val;
+#else
+ typedef long long SHVInt64Val;
+#endif
 #define SHVChar  char
 #ifdef __SHIVA_WIN32
 # define SHVWChar wchar_t
