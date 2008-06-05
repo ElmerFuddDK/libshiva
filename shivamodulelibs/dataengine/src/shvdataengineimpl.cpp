@@ -15,13 +15,15 @@ SHVDataEngineImpl::SHVDataEngineImpl(SHVModuleList& modules): SHVDataEngine(modu
 SHVString database = modules.GetConfig().Find(__DATAENGINE_DEFAULT_DATABASE, _T("database.db")).ToString();
 SHVString datapath = modules.GetConfig().Find(__DATAENGINE_DATAPATH, Modules.GetConfig().Find(SHVModuleList::DefaultCfgAppPath).ToString()).ToString();
 SHVBool ok;
+SHVString driverPath;
 
 	datapath += SHVDir::Delimiter() + database;
 	
-	ok = SQLiteDll.Load(SQLiteDll.CreateLibFileName(_T("shivasqlite"),modules.GetConfig().Find(SHVModuleList::DefaultCfgAppPath).ToString()));
+	driverPath = SQLiteDll.CreateLibFileName(_T("shivasqlite"),modules.GetConfig().Find(SHVModuleList::DefaultCfgAppPath).ToString());
+	ok = SQLiteDll.Load(driverPath);
 	if (!ok)
 	{
-		Modules.AddStartupError(_T("Could not load shvsqlite.dll"));
+		Modules.AddStartupError(SHVStringC::Format(_T("Could not load %s"), driverPath.GetSafeBuffer()));
 	}
 	else
 	{
