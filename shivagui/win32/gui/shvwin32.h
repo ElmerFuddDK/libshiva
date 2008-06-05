@@ -12,6 +12,19 @@
 # error This code only works for win32
 #endif
 
+#if defined(__SHIVA_WINCE) && !defined(MulDiv)
+# define MulDiv(num,numerator,denom) (num*numerator)/denom
+#endif
+
+#ifndef WS_EX_CONTROLPARENT
+# define WS_EX_CONTROLPARENT 0
+#endif
+
+#ifndef WS_EX_NOPARENTNOTIFY
+# define WS_EX_NOPARENTNOTIFY 0
+#endif
+
+
 
 #define WM_SHV_DISPATCHMESSAGES    0x8001
 #define WM_SHV_PRETRANSLATEMESSAGE 0x8002

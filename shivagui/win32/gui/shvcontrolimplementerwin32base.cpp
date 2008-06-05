@@ -235,6 +235,7 @@ SHVPoint SHVControlImplementerWin32Base::CalculateMinSize(SHVControl* owner, int
 
 void SHVControlImplementerWin32Base::SetResizable(bool resizable)
 {
+#ifndef __SHIVA_POCKETPC
 DWORD style = ::GetWindowLong(GetHandle(), GWL_STYLE);
 DWORD oldStyle = style;
 
@@ -246,7 +247,7 @@ DWORD oldStyle = style;
 
 	if (style != oldStyle)
 		::SetWindowLong(GetHandle(), GWL_STYLE, style);
-
+#endif
 }
 
 /*************************************

@@ -4,6 +4,24 @@
 #include "shvmenuwin32.h"
 #include "shvwin32.h"
 
+#ifndef TPM_LEFTBUTTON
+# define TPM_LEFTBUTTON 0
+#endif
+
+#ifndef TPM_RIGHTBUTTON
+# define TPM_RIGHTBUTTON 0
+#endif
+
+///\todo Implement control container menu support in windows CE
+#ifdef __SHIVA_WINCE
+HMENU GetMenu(HWND hWnd)
+{
+	return NULL;
+}
+void SetMenu(HWND hWnd, HMENU hMenu)
+{
+}
+#endif
 
 //=========================================================================================================
 // SHVMenuWin32

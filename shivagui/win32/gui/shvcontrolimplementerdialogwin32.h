@@ -11,6 +11,10 @@
 # error This code does not work in MFC mode
 #endif
 
+#ifdef __SHIVA_POCKETPC
+# include <aygshell.h>
+#endif
+
 
 // Forward declare
 class SHVMainThreadEventDispatcherWin32;
@@ -68,6 +72,10 @@ private:
 	SHVPoint MinSize;
 	SHVPoint DecorationsSize;
 	SHVColorRef Color;
+#ifdef __SHIVA_POCKETPC
+	HWND hCmdWnd;
+	SHACTIVATEINFO s_sai;
+#endif
 
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	///\endcond

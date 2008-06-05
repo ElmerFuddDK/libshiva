@@ -3,7 +3,7 @@
  *
  *
  *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU Library General Public License as
+ *1it under the terms of the GNU Library General Public License as
  *   published by the Free Software Foundation; either version 2 of the
  *   License, or (at your option) any later version with the following
  *   exeptions:
@@ -38,6 +38,10 @@
 #include "shvmenuwin32.h"
 
 #include <commctrl.h>
+#ifdef __SHIVA_POCKETPC
+# include <sipapi.h>
+# define MENU_HEIGHT 26
+#endif
 
 
 #define SHVWIN32CLASS_DIALOG _T("SHV_Dialog")
@@ -74,7 +78,9 @@ SHVBool SHVControlImplementerDialogWin32::Create(SHVControl* owner, SHVControlIm
 	if (!IsCreated() && !parent)
 	{
 #ifdef __SHIVA_WINCE
-	DWORD styles = Win32::MapFlags(flags);
+	DWORD styles = WS_VISIBLE|Win32::MapFlags(flags);
+		memset (&s_sai, 0, sizeof(s_sai));
+		s_sai.cbSize = sizeof(s_sai);
 #else
 	DWORD styles = WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU|Win32::MapFlags(flags);
 #endif
@@ -85,6 +91,29 @@ SHVBool SHVControlImplementerDialogWin32::Create(SHVControl* owner, SHVControlIm
 		if (IsCreated())
 		{
 		RECT winRect, clientRect;
+#ifdef __SHIVA_POCKETPC
+		SHMENUBARINFO mbi;
+
+			memset(&mbi, 0, sizeof(SHMENUBARINFO));
+			mbi.cbSize     = sizeof(SHMENUBARINFO);
+			mbi.hwndParent = GetHandle();
+			mbi.nToolBarId = 0;
+			mbi.hInstRes   = Win32::GetInstance(owner);
+			mbi.nBmpId     = 0;
+			mbi.cBmpImages = 0;
+			mbi.dwFlags    = SHCMBF_EMPTYBAR;
+
+			SHCreateMenuBar(&mbi);
+			hCmdWnd = mbi.hwndMB;
+
+			///\todo Add a better way to determine the correct size of the initial window
+			if (hCmdWnd)
+			{
+				GetWindowRect(GetHandle(), &winRect);
+				winRect.bottom -= MENU_HEIGHT*2;
+				MoveWindow(GetHandle(), winRect.left, winRect.top, winRect.right, winRect.bottom, FALSE);
+			}
+#endif
 
 			owner->SetFont(NULL,false);
 
@@ -145,6 +174,7 @@ RECT nativeRect;
  *************************************/
 void SHVControlImplementerDialogWin32::SetSize(SHVControlContainer* owner, int widthInPixels, int heightInPixels, SHVControlContainer::PosModes mode)
 {
+#ifndef __SHIVA_POCKETPC
 SHVRect parentRect(owner->GetManager()->GetMainWindow()->GetRect());
 SHVRect rect(GetRect(owner));
 
@@ -166,6 +196,7 @@ SHVRect rect(GetRect(owner));
 	}
 
 	SetRect(owner,rect);
+#endif
 }
 
 /*************************************
@@ -278,6 +309,8 @@ void SHVControlImplementerDialogWin32::SetResizable(bool resizable)
 	SHVControlImplementerWin32Base::SetResizable(resizable);
 }
 
+int afadf;
+
 ///\cond INTERNAL
 /*************************************
  * WndProc
@@ -324,7 +357,21 @@ SHVControlContainerRef refToSelf;
 		if (owner->PreDestroy())
 			owner->Close();
 		break;
+	case WM_ACTIVATE:
+#ifdef __SHIVA_POCKETPC
+		// Notify shell of our activate message
+		SHHandleWMActivate(hWnd, wParam, lParam, &self->s_sai, FALSE);
+#endif
+     	break;
+	case WM_SETTINGCHANGE:
+#ifdef __SHIVA_POCKETPC
+		SHHandleWMSettingChange(hWnd, wParam, lParam, &self->s_sai);
+#endif
+		break;
 	case WM_DESTROY:
+#ifdef __SHIVA_POCKETPC
+		CommandBar_Destroy(self->hCmdWnd);
+#endif
 		::BringWindowToTop(Win32::GetMainWndHandle(owner));
 #ifdef __SHIVA_WINCE
 		::SetFocus(Win32::GetMainWndHandle(owner));

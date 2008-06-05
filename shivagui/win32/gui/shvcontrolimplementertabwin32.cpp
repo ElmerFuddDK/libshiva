@@ -266,20 +266,25 @@ LRESULT res = 0;
 			}
 		}
 		break;
+#ifdef WM_SIZING
 	case WM_SIZING:
 		::SendMessage(hWnd,WM_SETREDRAW,FALSE,0);
 		break;
+#endif
 	case WM_SIZE:
 		processed = true;
 		res = CallWindowProc(self->OrigProc,hWnd, message, wParam, lParam);
 		self->SetContainerSize();
+#ifdef WM_SIZING
 		::SendMessage(hWnd,WM_SETREDRAW,TRUE,0);
+#endif
 		::InvalidateRect(hWnd,NULL,FALSE);
 		break;
 	case WM_DESTROY:
 		SHVASSERT(!self->IsCreated());
 		self->Pages.Clear();
 		break;
+#ifndef __SHIVA_WINCE
 	case WM_ERASEBKGND:
 
 		if (owner)
@@ -308,6 +313,7 @@ LRESULT res = 0;
 			}
 		}
 		break;
+#endif
 /*	case WM_PAINT:
 		if (owner && self->GetTabCount(owner))
 		{

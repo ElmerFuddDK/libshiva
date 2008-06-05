@@ -35,7 +35,9 @@
 #include "shvcontrolimplementermainwindowwin32.h"
 #include "../../../include/utils/shvdir.h"
 
+#ifndef __SHIVA_WINCE
 # include <locale.h>
+#endif
 
 
 
@@ -85,8 +87,10 @@ long i;
 	Queue->GetModuleList().GetConfig().Set(SHVModuleList::DefaultCfgAppName,appName);
 
 
+#ifndef __SHIVA_WINCE
 	// set up POSIX locale according to win32 locale
 	setlocale(LC_ALL, "");
+#endif
 }
 
 /*************************************

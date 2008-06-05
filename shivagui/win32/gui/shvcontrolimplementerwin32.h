@@ -11,6 +11,10 @@
 # error This code does not work in MFC mode
 #endif
 
+#if defined(__SHIVA_WINCE) && !defined(MulDiv)
+# define MulDiv(num,numerator,denom) (num*numerator)/denom
+#endif
+
 
 //-=========================================================================================================
 /// SHVControlImplementerWin32 - template class for implementing implementers in win32

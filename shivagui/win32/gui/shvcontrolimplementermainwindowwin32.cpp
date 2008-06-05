@@ -38,6 +38,10 @@
 #include "shvmenuwin32.h"
 
 #include <commctrl.h>
+#ifdef __SHIVA_POCKETPC
+# include <sipapi.h>
+# define MENU_HEIGHT 26
+#endif
 
 
 #define SHVWIN32CLASS_MAINWND _T("SHV_MainWnd")
@@ -91,11 +95,15 @@ SHVBool retVal(parent == NULL && !IsCreated());
 #endif
 
 #ifdef __SHIVA_WINCE
-	DWORD styles = Win32::MapFlags(flags);
+	DWORD styles = WS_VISIBLE|Win32::MapFlags(flags);
+	TCHAR* title = _T("SHIVA Application");
+		memset (&s_sai, 0, sizeof(s_sai));
+		s_sai.cbSize = sizeof(s_sai);
 #else
 	DWORD styles = WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU|WS_MINIMIZEBOX|WS_MAXIMIZEBOX|Win32::MapFlags(flags);
+	TCHAR* title = _T("");
 #endif
-		SetHandle(::CreateWindowEx(WS_EX_CONTROLPARENT,SHVWIN32CLASS_MAINWND, _T(""), styles,
+		SetHandle(::CreateWindowEx(WS_EX_CONTROLPARENT,SHVWIN32CLASS_MAINWND, title, styles,
 			CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL));
 
 		retVal = IsCreated();
@@ -103,6 +111,29 @@ SHVBool retVal(parent == NULL && !IsCreated());
 		if (retVal)
 		{
 		RECT winRect, clientRect;
+#ifdef __SHIVA_POCKETPC
+		SHMENUBARINFO mbi;
+
+			memset(&mbi, 0, sizeof(SHMENUBARINFO));
+			mbi.cbSize     = sizeof(SHMENUBARINFO);
+			mbi.hwndParent = GetHandle();
+			mbi.nToolBarId = 0;
+			mbi.hInstRes   = hInstance;
+			mbi.nBmpId     = 0;
+			mbi.cBmpImages = 0;
+			mbi.dwFlags    = SHCMBF_EMPTYBAR;
+
+			SHCreateMenuBar(&mbi);
+			hCmdWnd = mbi.hwndMB;
+
+			///\todo Add a better way to determine the correct size of the initial window
+			if (hCmdWnd)
+			{
+				GetWindowRect(GetHandle(), &winRect);
+				winRect.bottom -= MENU_HEIGHT*2;
+				MoveWindow(GetHandle(), winRect.left, winRect.top, winRect.right, winRect.bottom, FALSE);
+			}
+#endif
 
 			SetWindowLongPtr(GetHandle(),0,(LONG_PTR)owner);
 
@@ -111,6 +142,7 @@ SHVBool retVal(parent == NULL && !IsCreated());
 
 			DecorationsSize.x = (winRect.right - winRect.left) - (clientRect.right - clientRect.left);
 			DecorationsSize.y = (winRect.bottom - winRect.top) - (clientRect.bottom - clientRect.top);
+
 		}
 	}
 
@@ -136,6 +168,7 @@ RECT nativeRect;
  *************************************/
 void SHVControlImplementerMainWindowWin32::SetSize(SHVControlContainer* owner, int widthInPixels, int heightInPixels, SHVControlContainer::PosModes mode)
 {
+#ifndef __SHIVA_POCKETPC
 SHVRect rect(GetRect(owner));
 
 	SHVASSERT(IsCreated());
@@ -154,6 +187,7 @@ SHVRect rect(GetRect(owner));
 	}
 
 	SetRect(owner,rect);
+#endif
 }
 
 /*************************************
@@ -316,7 +350,21 @@ LRESULT retVal = 0;
 			EndPaint(hWnd, &ps);
 		}
 		break;
+	case WM_ACTIVATE:
+#ifdef __SHIVA_POCKETPC
+		// Notify shell of our activate message
+		SHHandleWMActivate(hWnd, wParam, lParam, &self->s_sai, FALSE);
+#endif
+     	break;
+	case WM_SETTINGCHANGE:
+#ifdef __SHIVA_POCKETPC
+		SHHandleWMSettingChange(hWnd, wParam, lParam, &self->s_sai);
+#endif
+		break;
 	case WM_DESTROY:
+#ifdef __SHIVA_POCKETPC
+		CommandBar_Destroy(self->hCmdWnd);
+#endif
 		SHVASSERT(!self->IsCreated());
 		owner->Clear();
 		PostQuitMessage(0);
