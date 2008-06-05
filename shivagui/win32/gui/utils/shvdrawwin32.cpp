@@ -5,6 +5,23 @@
 #include "shvbitmapwin32.h"
 #include "../shvwin32.h"
 
+
+#ifdef __SHIVA_WINCE
+struct SHV_DrawWin32_LineDraw
+{
+	POINT p[2];
+	inline SHV_DrawWin32_LineDraw() { p[0].x = p[0].y = p[1].x = p[1].y = 0; }
+};
+# define SHVLINEDRAW SHV_DrawWin32_LineDraw __drawlines
+# define SHVMOVETOEX(dc,_x,_y,point) __drawlines.p[0].x = _x; __drawlines.p[0].y = _y
+# define SHVLINETO(dc,_x,_y) __drawlines.p[1].x = _x; __drawlines.p[1].y = _y; ::Polyline(dc, __drawlines.p, 2)
+#else
+# define SHVLINEDRAW
+# define SHVMOVETOEX(dc,x,y,point) ::MoveToEx(dc,x,y,point)
+# define SHVLINETO(dc,x,y) ::LineTo(dc,x,y)
+#endif
+
+
 //=========================================================================================================
 // SHVDrawWin32 - drawing class
 //=========================================================================================================
@@ -36,11 +53,14 @@ void SHVDrawWin32::DrawLine(SHVPoint from, SHVPoint to, SHVPen* pen)
 {
 int dcBackup = ::SaveDC(hDC);
 POINT point;
+SHVLINEDRAW;
+
+	SHVUNUSED_PARAM(point);
 
 	::SelectObject(hDC, SHVDrawWin32::GetPen(pen));
 
-	::MoveToEx(hDC, from.x, from.y, &point);
-	::LineTo(hDC, to.x, to.y);
+	SHVMOVETOEX(hDC, from.x, from.y, &point);
+	SHVLINETO(hDC, to.x, to.y);
 
 	::RestoreDC(hDC,dcBackup);
 
@@ -56,9 +76,12 @@ void SHVDrawWin32::DrawXORLine(SHVPoint from, SHVPoint to)
 int dcBackup = ::SaveDC(hDC);
 POINT point;
 int drawMode = ::SetROP2(hDC,R2_NOT);
+SHVLINEDRAW;
 
-	::MoveToEx(hDC, from.x, from.y, &point);
-	::LineTo(hDC, to.x, to.y);
+	SHVUNUSED_PARAM(point);
+
+	SHVMOVETOEX(hDC, from.x, from.y, &point);
+	SHVLINETO(hDC, to.x, to.y);
 
 	::SetROP2(hDC,drawMode);
 	::RestoreDC(hDC,dcBackup);
@@ -82,14 +105,17 @@ void SHVDrawWin32::DrawRect(SHVRect rect, SHVColor* color)
 SHVPenRef pen = GUIManager->CreatePen(color);
 int dcBackup = ::SaveDC(hDC);
 POINT point;
+SHVLINEDRAW;
+
+	SHVUNUSED_PARAM(point);
 
 	::SelectObject(hDC, SHVDrawWin32::GetPen(pen));
 	
-	::MoveToEx(hDC, rect.GetLeft(), rect.GetTop(), &point);
-	::LineTo(hDC, rect.GetRight(), rect.GetTop());
-	::LineTo(hDC, rect.GetRight(), rect.GetBottom());
-	::LineTo(hDC, rect.GetLeft(), rect.GetBottom());
-	::LineTo(hDC, rect.GetLeft(), rect.GetTop());
+	SHVMOVETOEX(hDC, rect.GetLeft(), rect.GetTop(), &point);
+	SHVLINETO(hDC, rect.GetRight(), rect.GetTop());
+	SHVLINETO(hDC, rect.GetRight(), rect.GetBottom());
+	SHVLINETO(hDC, rect.GetLeft(), rect.GetBottom());
+	SHVLINETO(hDC, rect.GetLeft(), rect.GetTop());
 
 	::RestoreDC(hDC,dcBackup);
 	if (color)
@@ -117,12 +143,15 @@ void SHVDrawWin32::DrawXORRect(SHVRect rect)
 int dcBackup = ::SaveDC(hDC);
 POINT point;
 int drawMode = ::SetROP2(hDC,R2_NOT);
+SHVLINEDRAW;
+
+	SHVUNUSED_PARAM(point);
 	
-	::MoveToEx(hDC, rect.GetLeft(), rect.GetTop(), &point);
-	::LineTo(hDC, rect.GetRight(), rect.GetTop());
-	::LineTo(hDC, rect.GetRight(), rect.GetBottom());
-	::LineTo(hDC, rect.GetLeft(), rect.GetBottom());
-	::LineTo(hDC, rect.GetLeft(), rect.GetTop());
+	SHVMOVETOEX(hDC, rect.GetLeft(), rect.GetTop(), &point);
+	SHVLINETO(hDC, rect.GetRight(), rect.GetTop());
+	SHVLINETO(hDC, rect.GetRight(), rect.GetBottom());
+	SHVLINETO(hDC, rect.GetLeft(), rect.GetBottom());
+	SHVLINETO(hDC, rect.GetLeft(), rect.GetTop());
 
 	::SetROP2(hDC,drawMode);
 	::RestoreDC(hDC,dcBackup);
