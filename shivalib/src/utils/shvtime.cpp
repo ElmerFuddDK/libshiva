@@ -287,7 +287,10 @@ SHVTChar* retVal = (SHVTChar*)::malloc(__SHVTIME_MAXDATESTR*sizeof(SHVTChar));
 
 	retVal[0] = 0;
 
-#if defined(UNICODE)
+#if defined(__SHIVA_WINCE)
+	///\todo Implement SHVTime::Format for Windows CE
+	SHVStringC::StrCat(retVal,_T("SHVTime::Format not supported in CE"));
+#elif defined(UNICODE)
 	wcsftime(retVal,__SHVTIME_MAXDATESTR,s.GetSafeBuffer(),&Time);
 #else
 	strftime(retVal,__SHVTIME_MAXDATESTR,s.GetSafeBuffer(),&Time);
