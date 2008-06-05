@@ -67,7 +67,15 @@ long SHVString8C::StrToL(const SHVChar* str, SHVChar** ptr, int base)
 }
 SHVInt64Val SHVString8C::StrToInt64(const SHVChar* str, SHVChar** ptr, int base)
 {
-#ifdef __SHIVA_WIN32
+#ifdef __SHIVA_WINCE
+SHVInt64Val retVal = (str ? ::_atoi64(str) : 0);
+	if (ptr)
+	{
+		*ptr = (char*)str;
+		while (*ptr && (*ptr)[0] >= '0' && (*ptr)[0] <= '9') (*ptr)++;
+	}
+	return retVal;
+#elif defined(__SHIVA_WIN32)
 	return (str ? ::_strtoi64(str,ptr,base) : 0);
 #else
 	return (str ? ::strtoll(str,ptr,base) : 0);
