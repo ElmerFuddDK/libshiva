@@ -4,6 +4,7 @@
 #include "shvfontwin32.h"
 #include "../shvwin32.h"
 
+
 //=========================================================================================================
 // SHVFontWin32
 //=========================================================================================================
@@ -158,21 +159,24 @@ LOGFONT lf;
  *************************************/
 SHVFontWin32* SHVFontWin32::CreateSystemFont()
 {
-/*#ifdef __SHIVA_WINCE
+#ifdef __SHIVA_WINCE
 LOGFONT lf;
+
+	///\todo Implement a way to get the real message font from the system on windows CE
+
 	memset(&lf, 0, sizeof(LOGFONT));
 	lf.lfHeight = 13; // 8DPI size calculated to pixels from the windows PPI factor (96)
 	lf.lfWeight = FW_NORMAL;
 	_tcscpy(lf.lfFaceName, _T("MS Shell Dlg"));
 	return new SHVFontWin32(::CreateFontIndirect(&lf));
-#else*/
+#else
 NONCLIENTMETRICS ncm;
 
 	memset(&ncm, 0, sizeof(NONCLIENTMETRICS));
 	ncm.cbSize = sizeof(NONCLIENTMETRICS);
 	SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 0, &ncm, 0);
 	return new SHVFontWin32(::CreateFontIndirect(&ncm.lfMessageFont));
-//#endif
+#endif
 }
 
 /*************************************
