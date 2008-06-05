@@ -3,6 +3,10 @@
 
 #include "shvpenwin32.h"
 
+#ifndef PS_COSMETIC
+# define PS_COSMETIC PS_SOLID
+#endif
+
 
 //=========================================================================================================
 // SHVColorWin32
