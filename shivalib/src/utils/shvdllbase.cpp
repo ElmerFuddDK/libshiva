@@ -191,7 +191,7 @@ SHVBool retVal(SHVBool::False);
 	if (IsLoaded())
 	{
 #if defined(__SHIVA_WIN32)
-# ifdef UNICODE
+# if defined(UNICODE) && !defined(__SHIVA_WIN32)
 	SHVString8 name8(name.ToStr8());
 		*symbol = (void*)GetProcAddress(hDll,name8.GetBufferConst());
 # else
