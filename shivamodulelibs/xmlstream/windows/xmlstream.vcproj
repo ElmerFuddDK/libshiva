@@ -185,7 +185,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\shvxmlstreamfactory.cpp"
+				RelativePath="..\src\shvxmlstreamfactory.cpp"
 				>
 			</File>
 			<File
@@ -295,7 +295,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\shvxmlstreamfactory.h"
+				RelativePath="..\src\shvxmlstreamfactory.h"
 				>
 			</File>
 			<File
