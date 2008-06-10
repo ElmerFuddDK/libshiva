@@ -45,6 +45,10 @@ public:
 	// Factories for template inherited classes
 	virtual SHVFormImplementer* ConstructFormImplementer(SHVFormBase* owner, SHVGUIManager* manager, SHVControlContainer* controlContainer, SHVString8C entityName);
 
+	// Additional control events
+	virtual SHVBool ControlEventSubscribe(SHVInt controlEvent, SHVControl* control, SHVEventSubscriberBase* subscriber);
+	virtual void ClearControlEvents(SHVControl* control);
+
 	// Create draw context
 	virtual SHVDrawWin32* CreateDraw(HDC dc);
 	virtual SHVDrawPaintWin32* CreateDrawPaint(HWND window);
@@ -58,6 +62,8 @@ public:
 
 protected:
 friend class SHVMenuWin32;
+
+	virtual void EmitControlEvent(SHVControl* control, SHVInt controlEvent);
 
 	///\cond INTERNAL
 	int CreateCommandID(HANDLE handle, SHVInt value);
@@ -74,6 +80,18 @@ friend class SHVMenuWin32;
 	};
 	SHVVector<CommandID> CommandIDMap;
 	SHVHashTable<HMENU,SHVMenuRef,HMENU,SHVMenu*> MenuMap;
+
+	struct ControlEvent
+	{
+		SHVEventSubscriberBaseRef Subscriber;
+		SHVInt Event;
+		UINT WinMessage;
+
+		inline ControlEvent(SHVEventSubscriberBase* subs, SHVInt ctrlE, UINT msg) : Subscriber(subs), Event(ctrlE), WinMessage(msg) {}
+	};
+	typedef SHVList<ControlEvent> SHVListControlEvent;
+	typedef SHVListIterator<ControlEvent> SHVListIteratorControlEvent;
+	SHVHashTable<SHVControl*,SHVListControlEvent> ControlEventMap;
 	///\endcond
 };
 

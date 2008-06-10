@@ -293,6 +293,7 @@ LRESULT result = 0;
 	case WM_DESTROY:
 		SHVASSERT(!self->IsCreated());
 		owner->Clear();
+		self->EmitControlEvent(owner,SHVGUIManager::CtrlEventContainerDestroy);
 		break;
 	case WM_SIZE:
 		///\todo Add minimum resize code for platforms that do not support WM_SIZING

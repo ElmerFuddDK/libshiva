@@ -42,6 +42,11 @@ public:
 
 	virtual void* GetNative() = 0;
 
+
+protected:
+
+	virtual void EmitControlEvent(SHVControl* owner, SHVInt controlEvent);
+
 };
 typedef SHVPtrContainer<SHVControlImplementer> SHVControlImplementerPtr;
 

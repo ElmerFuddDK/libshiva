@@ -15,6 +15,7 @@
 SHVControl::~SHVControl()
 {
 	GetImplementor()->Destroy(this);
+	GUIManager->ClearControlEvents(this);
 	Implementor = NULL;
 }
 
@@ -110,3 +111,12 @@ SHVBool ok(SHVBool::True);
 	}
 }
 ///\endcond
+
+/*************************************
+ * EmitControlEvent
+ *************************************/
+void SHVControlImplementer::EmitControlEvent(SHVControl* owner, SHVInt controlEvent)
+{
+	owner->GetManager()->EmitControlEvent(owner,controlEvent);
+}
+

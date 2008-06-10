@@ -200,6 +200,51 @@ SHVFormImplementer* SHVGUIManagerWin32::ConstructFormImplementer(SHVFormBase* ow
 }
 
 /*************************************
+ * ControlEventSubscribe
+ *************************************/
+SHVBool SHVGUIManagerWin32::ControlEventSubscribe(SHVInt controlEvent, SHVControl* control, SHVEventSubscriberBase* subscriber)
+{
+SHVBool retVal(SHVBool::True);
+UINT message;
+
+	switch (controlEvent)
+	{
+	case CtrlEventContainerDestroy:
+		message = WM_DESTROY;
+		retVal = ( control->GetType() == SHVControl::TypeContainer );
+		break;
+	default:
+		retVal = SHVBool::False;
+		break;
+	}
+
+	if (retVal)
+	{
+	SHVListControlEvent* list = ControlEventMap.Find(control);
+
+		if (!list)
+		{
+			ControlEventMap[control].AddTail(ControlEvent(subscriber,controlEvent,message));
+		}
+		else
+		{
+			list->AddTail(ControlEvent(subscriber,controlEvent,message));
+		}
+	}
+
+
+	return retVal;
+}
+
+/*************************************
+ * ClearControlEvents
+ *************************************/
+void SHVGUIManagerWin32::ClearControlEvents(SHVControl* control)
+{
+	ControlEventMap.Remove(control);
+}
+
+/*************************************
  * CreateDraw
  *************************************/
 SHVDrawWin32* SHVGUIManagerWin32::CreateDraw(HDC dc)
@@ -262,6 +307,50 @@ HWND hWnd = message->hwnd;
 		EmitEvent(new SHVEventData<MSG*>(message,this,EventPreTranslateMessage));
 
 	return retVal;
+}
+
+/*************************************
+ * EmitControlEvent
+ *************************************/
+void SHVGUIManagerWin32::EmitControlEvent(SHVControl* control, SHVInt controlEvent)
+{
+SHVListControlEvent* list = ControlEventMap.Find(control);
+
+	if (list)
+	{
+	SHVEventRef event = new SHVEvent(this,EventControl,controlEvent,control);
+	bool lock = Modules.LockEvent();
+
+		if (lock)
+		{
+		SHVEventQueue* queue;
+		SHVList<SHVEventQueue*> queuelist;
+		SHVListIterator<SHVEventQueue*> queueItr(queuelist);
+		SHVListIteratorControlEvent itr(*list);
+
+			// emit the event
+			while (itr.MoveNext())
+			{
+				if (itr.Get().Event == controlEvent)
+				{
+					queue = itr.Get().Subscriber->Emit(Modules,event);
+		
+					if (queue)
+					{
+						if (!queuelist.Find(queue))
+							queuelist.AddTail(queue);
+					}
+				}
+			}
+
+			// signal event queues
+			while (queueItr.MoveNext())
+				queueItr.Get()->SignalDispatcher();
+
+
+			Modules.UnlockEvent();
+		}
+	}
 }
 
 /*************************************

@@ -50,13 +50,18 @@ public:
 	};
 
 	enum Events {
-		EventPreTranslateMessage
+		EventPreTranslateMessage,
+		EventControl
 	};
 
 	enum MsgBoxTypes {
 		MsgBoxOK,
 		MsgBoxOKCancel,
 		MsgBoxDefault = MsgBoxOK
+	};
+
+	enum AdditionalControlEvents {
+		CtrlEventContainerDestroy
 	};
 
 
@@ -102,13 +107,22 @@ public:
 	virtual SHVControl* NewControl(int controlType, int controlSubType) = 0;
 	virtual SHVControl* NewControl(const SHVString8C& controlName) = 0;
 
+	// Additional control events
+	virtual SHVBool ControlEventSubscribe(SHVInt controlEvent, SHVControl* control, SHVEventSubscriberBase* subscriber) = 0;
+	virtual void ClearControlEvents(SHVControl* control) = 0;
+
 
 	virtual SHVModuleList& GetModuleList() = 0;
 	virtual SHVConfig& GetConfig() = 0;
 
 	virtual SHVControlContainer* GetMainWindow() = 0;
 
+
 protected:
+friend class SHVControlImplementer;
+
+	virtual void EmitControlEvent(SHVControl* control, SHVInt controlEvent) = 0;
+
 	///\cond INTERNAL
 	inline SHVGUIManager(SHVModuleList& modules) : SHVModule(modules,"GUIManager") {}
 	///\endcond

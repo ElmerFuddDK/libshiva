@@ -136,6 +136,7 @@ void SHVControlTester::OnEvent(SHVEvent* event)
 					{
 					SHVControlContainer* dialog;
 						TestDialog = new SHVFormTabTest(GUIManager,dialog = GUIManager->NewDialog());
+						GUIManager->ControlEventSubscribe(SHVGUIManager::CtrlEventContainerDestroy,dialog, new SHVEventSubscriber(this,&Modules));
 						dialog->Create();
 						TestDialog->InitializeForm();
 					}
@@ -154,6 +155,15 @@ void SHVControlTester::OnEvent(SHVEvent* event)
 					break;
 				}
 			}
+		}
+	}
+	else if (event->GetCaller() == GUIManager)
+	{
+		if (SHVEvent::Equals(event,SHVGUIManager::EventControl,SHVGUIManager::CtrlEventContainerDestroy))
+		{
+		SHVControlContainer* ctrl = (SHVControlContainer*)event->GetObject();
+			GUIManager->ShowMessageBox(SHVStringC::Format(_T("The dialog has been destroyed"), ctrl->GetTitle().GetSafeBuffer()),_T("GUI"),SHVGUIManager::MsgBoxOKCancel);
+			TestDialog = NULL;
 		}
 	}
 }

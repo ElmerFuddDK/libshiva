@@ -66,6 +66,8 @@ void SHVGUIManagerImpl::Unregister()
 	SHVASSERT(TopLevelDialogs.GetCount() == 0);
 	SHVASSERT(TopLevelModalDialogs.GetCount() == 0);
 
+	MainWindow = NULL;
+
 	SHVModule::Unregister();
 }
 

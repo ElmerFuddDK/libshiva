@@ -380,6 +380,7 @@ SHVControlContainerRef refToSelf;
 #endif
 		SHVASSERT(!self->IsCreated());
 		owner->Clear();
+		self->EmitControlEvent(owner,SHVGUIManager::CtrlEventContainerDestroy);
 		break;
 #ifdef WM_SIZING
 	case WM_SIZING:

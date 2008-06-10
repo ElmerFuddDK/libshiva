@@ -92,6 +92,7 @@ public:
 
 
 protected:
+
 	// Create the internal control - before parent is set
 	virtual SHVBool CreateInternal(SHVControlContainer* newParent, int flags);
 
