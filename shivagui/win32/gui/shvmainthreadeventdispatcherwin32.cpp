@@ -137,9 +137,22 @@ void SHVMainThreadEventDispatcherWin32::RunEventLoop()
 MSG msg;
 HWND wnd, topwnd;
 bool processed;
+BOOL msgRetVal;
 
-	while (Running() && GetMessage(&msg, NULL, 0, 0)) 
+	while (Running()) 
 	{
+		msgRetVal = GetMessage(&msg, NULL, 0, 0);
+
+		if (msgRetVal == -1)
+		{
+			continue;
+		}
+		else if (msgRetVal == 0)
+		{
+			MainWindow->Close();
+			continue;
+		}
+
 		if (!GUIManager->PreTranslateMessage(&msg))
 		{
 			processed = false;
@@ -175,7 +188,11 @@ bool processed;
 		}
 	}
 
-	MainWindow->Clear();
+	// Noone should have references to the window at this point besides us
+	SHVASSERT(MainWindow->GetRefCount() == 1);
+
+	MainWindow = NULL;
+	GUIManager = NULL;
 }
 
 /*************************************
