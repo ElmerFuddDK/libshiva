@@ -93,6 +93,7 @@ void SHVFormTabTest::OnEvent(SHVEvent* event)
 					tbTabs->SetPageForm(tbTabs->GetPageCount()-1, form = new SHVFormTabTestPage(GetManager(),cnt,str));
 
 					form->InitializeForm();
+					tbTabs->SelectPage(tbTabs->GetPageCount()-1);
 				}
 				break;
 			case 3:
