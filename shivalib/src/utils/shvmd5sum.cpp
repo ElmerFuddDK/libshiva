@@ -32,6 +32,7 @@
 #include "../../../include/platformspc.h"
 
 #include "../../../include/utils/shvmd5sum.h"
+#include "../../../include/utils/shvbuffer.h"
 
 extern "C"
 {
@@ -116,4 +117,24 @@ SHVString retVal;
 	}
 
 	return retVal.ReleaseBuffer();
+}
+
+/*************************************
+ * GetMd5
+ *************************************/
+SHVBuffer* SHVMd5Sum::GetMd5AsBinary()
+{
+SHVBuffer* retVal = NULL;
+
+	if (IsInitialized())
+	{
+
+		retVal = new SHVBufferChunk<Md5BinaryLen>();
+
+		::MD5Final( (unsigned char*)retVal->GetBuffer(), (MD5_CTX*)Md5Context );
+		::free(Md5Context);
+		Md5Context = NULL;
+	}
+
+	return retVal;
 }

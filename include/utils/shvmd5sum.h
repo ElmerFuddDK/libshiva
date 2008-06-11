@@ -15,6 +15,8 @@ class SHVAPI SHVMd5Sum
 {
 public:
 
+	enum { Md5BinaryLen = 16 };
+
 
 	// constructor
 	SHVMd5Sum();
@@ -28,6 +30,7 @@ public:
 	inline void CalculateString16(const SHVString16C str);
 	inline void CalculateString(const SHVStringC str);
 	SHVStringBuffer GetMd5();
+	SHVBuffer* GetMd5AsBinary();
 
 
 private:
