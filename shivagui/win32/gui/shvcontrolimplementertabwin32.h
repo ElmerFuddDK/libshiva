@@ -39,6 +39,9 @@ public:
 	virtual void RemovePage(SHVControlTab* owner, size_t index);
 	virtual void Clear(SHVControlTab* owner);
 
+	virtual size_t GetSelectedPage(SHVControlTab* owner);
+	virtual void SelectPage(SHVControlTab* owner, size_t index);
+
 	virtual void SetPageForm(SHVControlTab* owner, size_t index, SHVFormBase* form);
 	virtual SHVFormBase* GetPageForm(SHVControlTab* owner, size_t index);
 

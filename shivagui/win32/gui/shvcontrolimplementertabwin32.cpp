@@ -176,6 +176,31 @@ void SHVControlImplementerTabWin32::Clear(SHVControlTab* owner)
 }
 
 /*************************************
+ * GetSelectedPage
+ *************************************/
+size_t SHVControlImplementerTabWin32::GetSelectedPage(SHVControlTab* owner)
+{
+	return (size_t)TabCtrl_GetCurSel(GetHandle());
+}
+
+/*************************************
+ * SelectPage
+ *************************************/
+void SHVControlImplementerTabWin32::SelectPage(SHVControlTab* owner, size_t index)
+{
+	if (index < GetPageCount(owner))
+	{
+		if (CurrentContainer)
+			CurrentContainer->SetFlag(SHVControl::FlagVisible,false);
+		TabCtrl_SetCurSel(GetHandle(),index);
+		CurrentContainer = Pages[index]->Container;
+		SetContainerSize();
+		CurrentContainer->SetFlag(SHVControl::FlagVisible);
+		::InvalidateRect(GetHandle(),NULL,TRUE);
+	}
+}
+
+/*************************************
  * SetPageForm
  *************************************/
 void SHVControlImplementerTabWin32::SetPageForm(SHVControlTab* owner, size_t index, SHVFormBase* form)

@@ -38,6 +38,9 @@ public:
 	inline void RemovePage(size_t index);
 	inline void Clear();
 
+	inline size_t GetSelectedPage();
+	inline void SelectPage(size_t index);
+
 	inline void SetPageForm(size_t index, SHVFormBase* form);
 	inline SHVFormBase* GetPageForm(size_t index);
 
@@ -68,6 +71,9 @@ public:
 	virtual SHVControlContainer* GetPage(SHVControlTab* owner, size_t index) = 0;
 	virtual void RemovePage(SHVControlTab* owner, size_t index) = 0;
 	virtual void Clear(SHVControlTab* owner) = 0;
+
+	virtual size_t GetSelectedPage(SHVControlTab* owner) = 0;
+	virtual void SelectPage(SHVControlTab* owner, size_t index) = 0;
 
 	virtual void SetPageForm(SHVControlTab* owner, size_t index, SHVFormBase* form) = 0;
 	virtual SHVFormBase* GetPageForm(SHVControlTab* owner, size_t index) = 0;
@@ -128,6 +134,22 @@ void SHVControlTab::RemovePage(size_t index)
 void SHVControlTab::Clear()
 {
 	GetImplementor()->Clear(this);
+}
+
+/*************************************
+ * GetSelectedPage
+ *************************************/
+size_t SHVControlTab::GetSelectedPage()
+{
+	return GetImplementor()->GetSelectedPage(this);
+}
+
+/*************************************
+ * SelectPage
+ *************************************/
+void SHVControlTab::SelectPage(size_t index)
+{
+	GetImplementor()->SelectPage(this,index);
 }
 
 /*************************************
