@@ -60,6 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="Ws2_32.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -134,6 +135,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="Ws2_32.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -212,6 +214,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="Ws2_32.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -372,6 +375,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\utils\shvuuid.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\utils\shvvectorbase.cpp"
 					>
 				</File>
@@ -489,6 +496,66 @@
 				>
 				<File
 					RelativePath="..\src\md5\md5.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug8|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+			</Filter>
+			<Filter
+				Name="uuid"
+				>
+				<File
+					RelativePath="..\src\uuid\sysdep.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug8|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\src\uuid\uuid.c"
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
@@ -677,6 +744,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\include\utils\shvuuid.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\utils\shvvector.h"
 						>
 					</File>
@@ -841,14 +912,34 @@
 						</File>
 					</Filter>
 				</Filter>
-				<Filter
-					Name="md5"
+			</Filter>
+			<Filter
+				Name="md5"
+				>
+				<File
+					RelativePath="..\src\md5\md5.h"
 					>
-					<File
-						RelativePath="..\src\md5\md5.h"
-						>
-					</File>
-				</Filter>
+				</File>
+			</Filter>
+			<Filter
+				Name="uuid"
+				>
+				<File
+					RelativePath="..\src\uuid\copyrt.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\uuid\globals.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\uuid\sysdep.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\uuid\uuid.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
