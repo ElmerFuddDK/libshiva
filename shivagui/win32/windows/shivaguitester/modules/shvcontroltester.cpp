@@ -162,7 +162,7 @@ void SHVControlTester::OnEvent(SHVEvent* event)
 		if (SHVEvent::Equals(event,SHVGUIManager::EventControl,SHVGUIManager::CtrlEventContainerDestroy))
 		{
 		SHVControlContainer* ctrl = (SHVControlContainer*)event->GetObject();
-			GUIManager->ShowMessageBox(SHVStringC::Format(_T("The dialog has been destroyed"), ctrl->GetTitle().GetSafeBuffer()),_T("GUI"),SHVGUIManager::MsgBoxOKCancel);
+			GUIManager->ShowMessageBox(SHVStringC::Format(_T("The dialog has been destroyed")),_T("GUI"),SHVGUIManager::MsgBoxOKCancel);
 			TestDialog = NULL;
 		}
 	}
