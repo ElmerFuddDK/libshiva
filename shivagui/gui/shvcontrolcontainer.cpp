@@ -182,8 +182,6 @@ void SHVControlContainer::SetLayoutEngine(SHVControlLayout* engine)
 	LayoutEngine = engine;
 
 	GetImplementor()->SetResizable(engine ? true : false);
-
-	ResizeControls();
 }
 
 /*************************************
