@@ -119,7 +119,7 @@ public:
 
 
 protected:
-friend class SHVControlImplementer;
+friend class SHVControl;
 
 	virtual void EmitControlEvent(SHVControl* control, SHVInt controlEvent) = 0;
 

@@ -105,8 +105,11 @@ protected:
 
 
 private:
+friend class SHVControlImplementer;
+
 	///\cond INTERNAL
 	virtual void SetParentInternal(SHVControlContainer* parent, int flags);
+	virtual void EmitControlEvent(SHVInt controlEvent);
 
 	SHVControlContainer* Parent;
 	///\endcond

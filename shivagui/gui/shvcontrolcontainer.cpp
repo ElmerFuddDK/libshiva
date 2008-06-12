@@ -22,6 +22,7 @@ SHVControlContainer::~SHVControlContainer()
 	{
 		Close();
 	}
+	GUIManager->ClearControlEvents(this);
 	GetImplementor()->Destroy(this);
 }
 

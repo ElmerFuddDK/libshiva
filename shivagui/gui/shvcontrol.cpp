@@ -14,8 +14,8 @@
  *************************************/
 SHVControl::~SHVControl()
 {
-	GetImplementor()->Destroy(this);
 	GUIManager->ClearControlEvents(this);
+	GetImplementor()->Destroy(this);
 	Implementor = NULL;
 }
 
@@ -117,6 +117,11 @@ SHVBool ok(SHVBool::True);
  *************************************/
 void SHVControlImplementer::EmitControlEvent(SHVControl* owner, SHVInt controlEvent)
 {
-	owner->GetManager()->EmitControlEvent(owner,controlEvent);
+	owner->EmitControlEvent(controlEvent);
+}
+void SHVControl::EmitControlEvent(SHVInt controlEvent)
+{
+	if (!ObjectIsDeleting())
+		GetManager()->EmitControlEvent(this,controlEvent);
 }
 
