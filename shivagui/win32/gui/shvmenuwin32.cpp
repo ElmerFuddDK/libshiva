@@ -189,6 +189,7 @@ void SHVMenuWin32::EnsureMenuCreated()
  *************************************/
 void SHVMenuWin32::EmitEvent(SHVInt id)
 {
+SHVMenuRef refSelf = this; // make sure we aren't destroyed in this process
 	if (!Subscriber.IsNull())
 	{
 		Subscriber->EmitNow(Manager->GetModuleList(),new SHVEvent(NULL,SHVControl::EventMenu,id,Parent));
@@ -196,7 +197,6 @@ void SHVMenuWin32::EmitEvent(SHVInt id)
 	if (Type == TypePopup && hMenu)
 	{
 	HMENU tmpMenu = hMenu;
-	SHVMenuRef refSelf = this; // make sure we don't destroy ourselves in this process
 
 		SHVASSERT(hMenuTopLevel == hMenu);
 

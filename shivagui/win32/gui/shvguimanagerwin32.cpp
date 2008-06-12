@@ -295,8 +295,8 @@ HWND hWnd = message->hwnd;
 			HMENU hmenu = (HMENU)CommandIDToHandle(id);
 				if (hmenu && MenuMap.Find(hmenu))
 				{
-				SHVMenu* menu = MenuMap[hmenu];
-					((SHVMenuWin32*)menu)->EmitEvent(CommandIDToValue(id));
+				SHVMenuRef menu = MenuMap[hmenu];
+					((SHVMenuWin32*)(SHVMenu*)menu)->EmitEvent(CommandIDToValue(id));
 				}
 			}
 			break;
