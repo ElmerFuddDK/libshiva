@@ -7,7 +7,7 @@
 #include "../../../include/shvversion.h"
 #include "../../../include/framework/shvmodulelist.h"
 
-#include "shvxmlstreamfactory.h"
+#include "../src/shvxmlstreamfactory.h"
 
 
 
