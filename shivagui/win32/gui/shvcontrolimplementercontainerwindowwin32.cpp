@@ -33,6 +33,7 @@
 #include "../../../include/framework/shveventdata.h"
 
 #include "shvcontrolimplementercontainerwindowwin32.h"
+#include "shvcontrolimplementertabwin32.h"
 #include "shvmainthreadeventdispatcherwin32.h"
 #include "shvwin32.h"
 #include "utils/shvdrawwin32.h"
@@ -132,26 +133,44 @@ void SHVControlImplementerContainerWindowWin32::SetSize(SHVControlContainer* own
 /*************************************
  * GetTitle
  *************************************/
-SHVStringBuffer SHVControlImplementerContainerWindowWin32::GetTitle()
+SHVStringBuffer SHVControlImplementerContainerWindowWin32::GetTitle(SHVControlContainer* owner)
 {
 SHVString retVal;
 
 	SHVASSERT(IsCreated());
 
-	retVal.SetBufferSize( GetWindowTextLength(GetHandle())+1 );
-	GetWindowText(GetHandle(),(TCHAR*)retVal.GetBuffer(), (int)retVal.GetBufferLen());
 
+	if (SubType == SHVControlContainer::SubTypeTabPage)
+	{
+	SHVControlTab* tab = (SHVControlTab*)GetWindowLongPtr(::GetParent(GetHandle()),GWLP_USERDATA);
+	SHVControlImplementerTabWin32* parent = (SHVControlImplementerTabWin32*)tab->GetImplementor();
+		retVal = parent->GetPageNameByContainer(tab,owner);
+	}
+	else
+	{
+		retVal.SetBufferSize( GetWindowTextLength(GetHandle())+1 );
+		GetWindowText(GetHandle(),(TCHAR*)retVal.GetBuffer(), (int)retVal.GetBufferLen());
+	}
 	return retVal.ReleaseBuffer();
 }
 
 /*************************************
  * SetTitle
  *************************************/
-void SHVControlImplementerContainerWindowWin32::SetTitle(const SHVStringC& title)
+void SHVControlImplementerContainerWindowWin32::SetTitle(SHVControlContainer* owner, const SHVStringC& title)
 {
 	SHVASSERT(IsCreated());
 
-	SetWindowText(GetHandle(),title.GetSafeBuffer());
+	if (SubType == SHVControlContainer::SubTypeTabPage)
+	{
+	SHVControlTab* tab = (SHVControlTab*)GetWindowLongPtr(::GetParent(GetHandle()),GWLP_USERDATA);
+	SHVControlImplementerTabWin32* parent = (SHVControlImplementerTabWin32*)tab->GetImplementor();
+		parent->SetPageNameByContainer(tab,owner,title);
+	}
+	else
+	{
+		SetWindowText(GetHandle(),title.GetSafeBuffer());
+	}
 }
 
 /*************************************

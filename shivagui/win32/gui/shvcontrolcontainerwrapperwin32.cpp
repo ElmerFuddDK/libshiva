@@ -122,7 +122,7 @@ void SHVControlImplementerContainerWrapperWin32::SetSize(SHVControlContainer* ow
 /*************************************
  * GetTitle
  *************************************/
-SHVStringBuffer SHVControlImplementerContainerWrapperWin32::GetTitle()
+SHVStringBuffer SHVControlImplementerContainerWrapperWin32::GetTitle(SHVControlContainer* owner)
 {
 SHVString retVal;
 
@@ -132,7 +132,7 @@ SHVString retVal;
 /*************************************
  * SetTitle
  *************************************/
-void SHVControlImplementerContainerWrapperWin32::SetTitle(const SHVStringC& title)
+void SHVControlImplementerContainerWrapperWin32::SetTitle(SHVControlContainer* owner, const SHVStringC& title)
 {
 }
 

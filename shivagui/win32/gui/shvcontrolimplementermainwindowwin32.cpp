@@ -201,7 +201,7 @@ SHVMenu* SHVControlImplementerMainWindowWin32::CreateMenu(SHVControlContainer* o
 /*************************************
  * GetTitle
  *************************************/
-SHVStringBuffer SHVControlImplementerMainWindowWin32::GetTitle()
+SHVStringBuffer SHVControlImplementerMainWindowWin32::GetTitle(SHVControlContainer* owner)
 {
 SHVString retVal;
 
@@ -216,7 +216,7 @@ SHVString retVal;
 /*************************************
  * SetTitle
  *************************************/
-void SHVControlImplementerMainWindowWin32::SetTitle(const SHVStringC& title)
+void SHVControlImplementerMainWindowWin32::SetTitle(SHVControlContainer* owner, const SHVStringC& title)
 {
 	SHVASSERT(IsCreated());
 

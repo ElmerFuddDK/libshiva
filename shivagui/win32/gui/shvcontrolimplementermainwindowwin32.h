@@ -44,8 +44,8 @@ public:
 	virtual void SetSize(SHVControlContainer* owner, int widthInPixels, int heightInPixels, SHVControlContainer::PosModes mode);
 	virtual SHVMenu* CreateMenu(SHVControlContainer* owner, SHVEventSubscriberBase* subscriber);
 
-	virtual SHVStringBuffer GetTitle();
-	virtual void SetTitle(const SHVStringC& title);
+	virtual SHVStringBuffer GetTitle(SHVControlContainer* owner);
+	virtual void SetTitle(SHVControlContainer* owner, const SHVStringC& title);
 
 	virtual SHVColor* GetColor(SHVControlContainer* owner);
 	virtual void SetColor(SHVControlContainer* owner, SHVColor* color);

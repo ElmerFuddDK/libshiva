@@ -252,6 +252,52 @@ void SHVControlImplementerTabWin32::SetContainerSize()
 }
 
 /*************************************
+ * SetPageNameByContainer
+ *************************************/
+void SHVControlImplementerTabWin32::SetPageNameByContainer(SHVControlTab* owner, SHVControlContainer* cont, const SHVStringC name)
+{
+size_t pagecount = Pages.CalculateCount();
+
+	for (size_t i=0; i<pagecount; i++)
+	{
+		if (Pages[i]->Container == cont)
+		{
+		TCITEM item;
+
+			Pages[i]->Name = name;
+
+			::memset(&item,0,sizeof(TCITEM));
+			item.pszText = (LPTSTR)name.GetSafeBuffer();
+			item.cchTextMax = (int)name.GetLength();
+			item.mask = TCIF_TEXT;
+
+			TabCtrl_SetItem(GetHandle(),i,&item);
+			break;
+		}
+	}
+}
+
+/*************************************
+ * GetPageNameByContainer
+ *************************************/
+SHVStringBuffer SHVControlImplementerTabWin32::GetPageNameByContainer(SHVControlTab* owner, SHVControlContainer* cont)
+{
+size_t pagecount = Pages.CalculateCount();
+SHVString retVal;
+
+	for (size_t i=0; i<pagecount; i++)
+	{
+		if (Pages[i]->Container == cont)
+		{
+			retVal = GetPageName(owner,i);
+			break;
+		}
+	}
+
+	return retVal.ReleaseBuffer();
+}
+
+/*************************************
  * WndProc
  *************************************/
 LRESULT CALLBACK SHVControlImplementerTabWin32::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)

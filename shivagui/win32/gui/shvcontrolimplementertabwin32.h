@@ -7,6 +7,8 @@
 #include "../../../include/gui/shvformbase.h"
 #include "shvcontrolimplementerwin32.h"
 
+class SHVControlImplementerContainerWindowWin32;
+
 #ifndef __SHIVA_WIN32
 # error This code only works for win32
 #elif defined(__SHIVA_MFC)
@@ -51,6 +53,7 @@ public:
 
 
 private:
+friend class SHVControlImplementerContainerWindowWin32;
 	///\cond INTERNAL
 	WNDPROC OrigProc;
 
@@ -66,6 +69,9 @@ private:
 	SHVControlContainer* CurrentContainer;
 
 	void SetContainerSize();
+
+	void SetPageNameByContainer(SHVControlTab* owner, SHVControlContainer* cont, const SHVStringC name);
+	SHVStringBuffer GetPageNameByContainer(SHVControlTab* owner, SHVControlContainer* cont);
 
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	///\endcond

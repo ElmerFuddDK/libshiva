@@ -70,6 +70,7 @@ void SHVFormTabTestPage::OnEvent(SHVEvent* event)
 		if (SHVEvent::Equals(event,SHVControlButton::EventClicked))
 		{
 			Label->SetText(EditBox->GetText());
+			GetContainer()->SetTitle(GetContainer()->GetTitle()+SHVStringC(_T("*")));
 			GetContainer()->ResizeControls();
 		}
 	}

@@ -210,7 +210,7 @@ SHVMenu* SHVControlImplementerDialogWin32::CreateMenu(SHVControlContainer* owner
 /*************************************
  * GetTitle
  *************************************/
-SHVStringBuffer SHVControlImplementerDialogWin32::GetTitle()
+SHVStringBuffer SHVControlImplementerDialogWin32::GetTitle(SHVControlContainer* owner)
 {
 SHVString retVal;
 
@@ -225,7 +225,7 @@ SHVString retVal;
 /*************************************
  * SetTitle
  *************************************/
-void SHVControlImplementerDialogWin32::SetTitle(const SHVStringC& title)
+void SHVControlImplementerDialogWin32::SetTitle(SHVControlContainer* owner, const SHVStringC& title)
 {
 	SHVASSERT(IsCreated());
 

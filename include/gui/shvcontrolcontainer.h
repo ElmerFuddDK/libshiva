@@ -139,8 +139,8 @@ public:
 
 	virtual SHVMenu* CreateMenu(SHVControlContainer* owner, SHVEventSubscriberBase* subscriber);
 
-	virtual SHVStringBuffer GetTitle() = 0;
-	virtual void SetTitle(const SHVStringC& title) = 0;
+	virtual SHVStringBuffer GetTitle(SHVControlContainer* owner) = 0;
+	virtual void SetTitle(SHVControlContainer* owner, const SHVStringC& title) = 0;
 
 	virtual SHVColor* GetColor(SHVControlContainer* owner) = 0;
 	virtual void SetColor(SHVControlContainer* owner, SHVColor* color) = 0;
@@ -214,7 +214,7 @@ SHVMenu* SHVControlContainer::CreateMenu(SHVEventSubscriberBase* subscriber)
  *************************************/
 SHVStringBuffer SHVControlContainer::GetTitle()
 {
-	return GetImplementor()->GetTitle();
+	return GetImplementor()->GetTitle(this);
 }
 
 /*************************************
@@ -222,7 +222,7 @@ SHVStringBuffer SHVControlContainer::GetTitle()
  *************************************/
 SHVControlContainer* SHVControlContainer::SetTitle(const SHVStringC& title)
 {
-	GetImplementor()->SetTitle(title);
+	GetImplementor()->SetTitle(this,title);
 	return this;
 }
 
