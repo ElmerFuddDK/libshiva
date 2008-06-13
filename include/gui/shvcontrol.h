@@ -34,6 +34,7 @@ public:
 		TypeList,
 		TypeGrid,
 		TypeTab,
+		TypeDateTime,
 		TypeCustom = 0xFE,
 		TypeContainer = 0xFF
 	};

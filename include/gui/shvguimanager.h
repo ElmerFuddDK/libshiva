@@ -7,6 +7,7 @@
 #include "shvcontroledit.h"
 #include "shvcontrollabel.h"
 #include "shvcontrolbutton.h"
+#include "shvcontroldatetime.h"
 #include "shvcontroltab.h"
 #include "shvformimplementer.h"
 #include "shvformbase.h"
@@ -81,6 +82,7 @@ public:
 	inline SHVControlLabel* NewLabelCustomDraw(SHVEventSubscriberBase* subscriber);
 	inline SHVControlButton* NewButton(int subType = SHVControlButton::SubTypeDefault);
 	inline SHVControlTab* NewTab(int subType = SHVControlTab::SubTypeDefault);
+	inline SHVControlDateTime* NewDateTime(int subType = SHVControlDateTime::SubTypeDefault);
 
 	// Font functions
 	inline SHVFont* GetFont(int cfgID);
@@ -216,6 +218,14 @@ SHVControlButton* SHVGUIManager::NewButton(int subType)
 SHVControlTab* SHVGUIManager::NewTab(int subType)
 {
 	return (SHVControlTab*)NewControl(SHVControl::TypeTab,subType);
+}
+
+/*************************************
+ * NewDateTime
+ *************************************/
+SHVControlDateTime* SHVGUIManager::NewDateTime(int subType)
+{
+	return (SHVControlDateTime*)NewControl(SHVControl::TypeDateTime,subType);
 }
 
 /*************************************

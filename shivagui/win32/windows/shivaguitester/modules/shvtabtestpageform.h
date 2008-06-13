@@ -34,6 +34,8 @@ private:
 	SHVControlLabelRef Label;
 	SHVControlEditRef EditBox;
 	SHVControlButtonRef Button;
+	SHVControlLabelRef lblLongDate, lblShortDate, lblTime;
+	SHVControlDateTimeRef dtLongDate, dtShortDate, dtTime;
 };
 typedef SHVRefObjectContainer<SHVFormTabTestPage> SHVFormTabTestPageRef;
 

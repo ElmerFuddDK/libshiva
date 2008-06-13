@@ -226,6 +226,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\gui\shvcontroldatetime.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\gui\shvcontroledit.cpp"
 					>
 				</File>
@@ -263,6 +267,10 @@
 				</File>
 				<File
 					RelativePath="..\gui\shvcontrolimplementercontainerwindowwin32.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\gui\shvcontrolimplementerdatetimewin32.cpp"
 					>
 				</File>
 				<File
@@ -373,6 +381,10 @@
 				</File>
 				<File
 					RelativePath="..\gui\shvcontrolimplementercontainerwindowwin32.h"
+					>
+				</File>
+				<File
+					RelativePath="..\gui\shvcontrolimplementerdatetimewin32.h"
 					>
 				</File>
 				<File
@@ -524,6 +536,10 @@
 					</File>
 					<File
 						RelativePath="..\..\..\include\gui\shvcontroldata.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\gui\shvcontroldatetime.h"
 						>
 					</File>
 					<File
