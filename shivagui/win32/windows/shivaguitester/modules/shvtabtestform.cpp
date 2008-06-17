@@ -31,7 +31,7 @@ SHVMenuRef toplevelmenu, menu;
 	GetContainer()->SetMinimumSize(200,100);
 
 	tbTabs = GetManager()->NewTab();
-	tbTabs->SetParent(GetContainer());
+	tbTabs->SetParent(GetContainer())->SubscribeSelectedPageChanged(new SHVEventSubscriber(this));
 
 	toplevelmenu = GetContainer()->CreateMenu(new SHVEventSubscriber(this,&GetManager()->GetModuleList()));
 
@@ -103,6 +103,13 @@ void SHVFormTabTest::OnEvent(SHVEvent* event)
 				GetContainer()->SetColor(GetManager()->CreateColor(::rand()&0xFF,::rand()&0xFF,::rand()&0xFF));
 				break;
 			}
+		}
+	}
+	else if (event->GetCaller() == NULL && event->GetObject() == tbTabs)
+	{
+		if (SHVEvent::Equals(event,SHVControlTab::EventSelectedPageChanged))
+		{
+			SHVTRACE(_T("Tab number %d selected\n"), (int)event->GetSubID());
 		}
 	}
 }

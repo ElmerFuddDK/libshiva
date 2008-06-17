@@ -18,6 +18,11 @@ class SHVControlTab : public SHVControl
 {
 public:
 
+	
+	enum Events {
+		EventSelectedPageChanged = EventSubClass
+	};
+
 
 	// constructor
 	inline SHVControlTab(SHVGUIManager* manager, SHVControlImplementer* implementor);
@@ -49,10 +54,20 @@ public:
 	inline size_t GetPageCount();
 
 
+	// Perform selected page event
+	virtual void PerformSelectedPageChanged();
+	virtual void SubscribeSelectedPageChanged(SHVEventSubscriberBase* subscriber);
+
+
 	// obtain pointer to the implementor
 	inline SHVControlImplementerTab* GetImplementor();
 
 
+private:
+
+	///\cond INTERNAL
+	SHVEventSubscriberBaseRef SelectedPageChanged;
+	///\endcond
 };
 typedef SHVRefObjectContainer<SHVControlTab> SHVControlTabRef;
 

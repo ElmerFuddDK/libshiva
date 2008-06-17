@@ -161,6 +161,7 @@ size_t count = Pages.CalculateCount();
 
 		::SendMessage(GetHandle(),WM_SETREDRAW,TRUE,0);
 		::InvalidateRect(GetHandle(),NULL,TRUE);
+		owner->PerformSelectedPageChanged();
 	}
 }
 
@@ -334,6 +335,7 @@ LRESULT res = 0;
 				{
 					self->CurrentContainer = NULL;
 				}
+				owner->PerformSelectedPageChanged();
 			}
 		}
 		break;

@@ -31,6 +31,7 @@
 #include "../../include/platformspc.h"
 
 #include "../../include/gui/shvcontroltab.h"
+#include "../../include/gui/shvguimanager.h"
 
 //=========================================================================================================
 // SHVControlTab
@@ -65,4 +66,23 @@ SHVBool SHVControlTab::GetData(SHVDataBinder* data)
 SHVBool SHVControlTab::SetData(SHVDataBinder* data)
 {
 	return SHVBool::False;
+}
+
+/*************************************
+ * PerformSelectedPageChanged
+ *************************************/
+void SHVControlTab::PerformSelectedPageChanged()
+{
+	if (!SelectedPageChanged.IsNull())
+	{
+		SelectedPageChanged->EmitNow(GetManager()->GetModuleList(),new SHVEvent(NULL,EventSelectedPageChanged,(int)GetSelectedPage(),this));
+	}
+}
+
+/*************************************
+ * SubscribeSelectedPageChanged
+ *************************************/
+void SHVControlTab::SubscribeSelectedPageChanged(SHVEventSubscriberBase* subscriber)
+{
+	SelectedPageChanged = subscriber;
 }
