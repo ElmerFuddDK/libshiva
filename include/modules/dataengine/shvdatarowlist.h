@@ -6,7 +6,7 @@
 
 // forward declare
 class SHVDataRow;
-
+class SHVDataRowChangeCache;
 //-=========================================================================================================
 /// SHVDataRowListC class - Interface for SHVDataRowList
 /**
@@ -26,6 +26,9 @@ public:
 	virtual bool GetEventsEnabled() const = 0;
 	virtual void EnableNonAccepted(bool enable) = 0;
 	virtual bool GetNonAcceptedEnabled() const = 0;
+	virtual void EnableCacheChanges(bool enable) = 0;
+	virtual bool GetCacheChangesEnabled() const = 0;
+	virtual const SHVDataRowChangeCache* GetChangeCache() const = 0;
 
 // from SHVDataRowListC
 	virtual const SHVDataRowC* GetCurrentRow() const = 0;

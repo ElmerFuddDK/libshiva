@@ -10,13 +10,14 @@
 #include "../../../include/modules/dataengine/shvdatarowlist.h"
 #include "../../../include/modules/dataengine/shvdatasession.h"
 #include "../../../include/modules/dataengine/shvdatarow.h"
-
+#include "shvdatarowchangecacheimpl.h"
 //-=========================================================================================================
 /// SHVDataRowListSQLite class - SQLite implementation of a datarow list.
 /**
  * Objects of this class handles all the necessary logic for maintaining a sqlite datatable.
  */
 class SHVDataRowCSQLite;
+
 class SHVDataRowListSQLite: public SHVDataRowList
 {
 public:
@@ -34,6 +35,9 @@ public:
 	virtual bool GetEventsEnabled() const;
 	virtual void EnableNonAccepted(bool enable);
 	virtual bool GetNonAcceptedEnabled() const;
+	virtual void EnableCacheChanges(bool enable);
+	virtual bool GetCacheChangesEnabled() const;
+	virtual const SHVDataRowChangeCache* GetChangeCache() const;
 
 	// from SHVDataRowListC
 	virtual const SHVDataRowC* GetCurrentRow() const;
@@ -77,6 +81,7 @@ private:
 	bool EventsEnabled;
 	bool NonAcceptedEnabled;
 	SHVDataRowKeyRef SavePosition;
+	SHVDataRowChangeCacheImplPtr ChangeCache;
 };
 typedef SHVRefObjectContainer<SHVDataRowListSQLite> SHVDataRowListSQLiteRef;
 

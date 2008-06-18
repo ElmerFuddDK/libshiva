@@ -23,6 +23,8 @@ SHVDataRowListSQLite::SHVDataRowListSQLite(SHVDataSession* dataSession, SHVDataR
 SHVBool SHVDataRowListSQLite::StartEdit()
 {
 SHVBool retVal;
+	if (!ChangeCache.IsNull())
+		ChangeCache.Clear();
 	SavePosition = RowList->GetPosition();
 	Reset();
 	retVal = GetDataSession()->StartEdit();
@@ -131,6 +133,33 @@ void SHVDataRowListSQLite::EnableNonAccepted(bool enable)
 bool SHVDataRowListSQLite::GetNonAcceptedEnabled() const
 {
 	return NonAcceptedEnabled;
+}
+
+/*************************************
+ * EnableCacheChanges
+ *************************************/
+void SHVDataRowListSQLite::EnableCacheChanges(bool enable)
+{
+	if (enable && ChangeCache.IsNull())
+		ChangeCache = new SHVDataRowChangeCacheImpl();
+	else
+		ChangeCache = NULL;
+}
+
+/*************************************
+ * GetCacheChangesEnabled
+ *************************************/
+bool SHVDataRowListSQLite::GetCacheChangesEnabled() const
+{
+	return ChangeCache.IsNull();
+}
+
+/*************************************
+ * GetChangeCache
+ *************************************/
+const SHVDataRowChangeCache* SHVDataRowListSQLite::GetChangeCache() const
+{
+	return ChangeCache.AsConst();
 }
 
 /*************************************
@@ -317,6 +346,8 @@ SHVListPos pos =  PendingRows.Find(rrow);
 		retVal = SHVDataRowListC::InternalRowChanged(RowList, row);
 		if (retVal)
 		{
+			if (!ChangeCache.IsNull())
+				ChangeCache->AddItem(row);
 			RowChanged(rrow);
 			retVal = UpdateRow(row);
 			if (retVal)

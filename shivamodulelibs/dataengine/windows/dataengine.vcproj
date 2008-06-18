@@ -228,6 +228,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\shvdatarowchangecacheimpl.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\shvdatarowcsqlite.cpp"
 					>
 				</File>
@@ -280,6 +284,10 @@
 			</File>
 			<File
 				RelativePath="..\include\shvdatafactoryimpl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\shvdatarowchangecacheimpl.h"
 				>
 			</File>
 			<File
@@ -401,6 +409,10 @@
 						</File>
 						<File
 							RelativePath="..\..\..\include\modules\dataengine\shvdatarowc.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\modules\dataengine\shvdatarowchangecache.h"
 							>
 						</File>
 						<File
