@@ -26,6 +26,8 @@ public:
 	SHVBool TryLockExclusive();
 	void Unlock();
 
+	bool IsExclusiveLocked();
+
 
 private:
 

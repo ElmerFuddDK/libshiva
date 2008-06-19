@@ -150,3 +150,11 @@ void SHVReadWriteLock::Unlock()
 	}
 	Lock.Unlock();
 }
+
+/*************************************
+ * IsExclusiveLocked
+ *************************************/
+bool SHVReadWriteLock::IsExclusiveLocked()
+{
+	return (ExclusiveOwner != SHVMutexBase::InvalidThreadID);
+}
