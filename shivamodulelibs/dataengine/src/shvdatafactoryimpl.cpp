@@ -479,7 +479,7 @@ void SHVDataFactoryImpl::LockShared()
 #ifdef DEBUG
 int lockCount = 0;
 	SharedLocksMutex.Lock();
-	if (!HasExclusiveLock)
+	if (!Lock.IsExclusiveLocked())
 	{
 		if (SharedLocks.Find(SHVThreadBase::GetCurrentThreadID()))
 			lockCount = SharedLocks[SHVThreadBase::GetCurrentThreadID()];
@@ -503,9 +503,6 @@ int lockCount = 0;
 	SharedLocksMutex.Unlock();
 #endif
 	Lock.LockExclusive();
-#ifdef DEBUG
-	HasExclusiveLock = true;
-#endif
 }
 
 /*************************************
@@ -518,16 +515,8 @@ int lockCount = 0;
 	SharedLocksMutex.Lock();
 	SHVASSERT(!SharedLocks.Find(SHVThreadBase::GetCurrentThreadID()));
 	SharedLocksMutex.Unlock();
-	if (Lock.TryLockExclusive())
-	{
-		HasExclusiveLock = true;
-		return true;
-	}
-	else
-		return false;
-#else
-	return Lock.TryLockExclusive();
 #endif
+	return Lock.TryLockExclusive();
 }
 
 /*************************************
@@ -538,7 +527,7 @@ void SHVDataFactoryImpl::Unlock()
 #ifdef DEBUG
 int lockCount = 0;
 	SharedLocksMutex.Lock();
-	if (!HasExclusiveLock)
+	if (!Lock.IsExclusiveLocked())
 	{
 		if (SharedLocks.Find(SHVThreadBase::GetCurrentThreadID()))
 		{
@@ -549,7 +538,6 @@ int lockCount = 0;
 				SharedLocks[SHVThreadBase::GetCurrentThreadID()] = lockCount;
 		}
 	}
-	HasExclusiveLock = false;
 	SharedLocksMutex.Unlock();
 #endif
 	Lock.Unlock();

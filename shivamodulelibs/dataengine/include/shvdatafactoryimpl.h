@@ -119,7 +119,6 @@ friend class SHVDataEngineImpl;
 	SHVMutex SharedLocksMutex;
 	SHVHashTable<SHVThreadBase::ThreadID, int> SharedLocks;
 	SHVThreadBase::ThreadID OwnerThread;
-	bool HasExclusiveLock;
 #endif
 };
 
