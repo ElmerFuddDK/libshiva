@@ -2,7 +2,11 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
+#ifndef _WIN32_WCE
+# include <time.h>
+#else
+# include <winsock.h>
+#endif
 #include "sysdep.h"
 #include "uuid.h"
 #include "globals.h"

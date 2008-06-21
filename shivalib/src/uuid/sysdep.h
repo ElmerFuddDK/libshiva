@@ -1,6 +1,7 @@
 #include "copyrt.h"
-/* remove the following define if you aren't running WIN32 */
-#define WININC 0
+#if defined(_WINDOWS_) || defined(_WIN32_WCE)
+# define WININC 0
+#endif
 
 #ifdef WININC
 #include <windows.h>

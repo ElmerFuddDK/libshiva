@@ -41,7 +41,53 @@ GLOB;
 /* system dependent call to get the current system time. Returned as
    100ns ticks since UUID epoch, but resolution may be less than
    100ns. */
-#ifdef _WINDOWS_
+#if defined(_WIN32_WCE)
+
+void get_system_time(uuid_time_t *uuid_time)
+{
+	SYSTEMTIME st;
+    ULARGE_INTEGER time;
+
+    /* NT keeps time in FILETIME format which is 100ns ticks since
+       Jan 1, 1601. UUIDs use time in 100ns ticks since Oct 15, 1582.
+       The difference is 17 Days in Oct + 30 (Nov) + 31 (Dec)
+       + 18 years and 5 leap days. */
+	GetSystemTime(&st);
+	SystemTimeToFileTime(&st,(FILETIME *)&time);
+    time.QuadPart +=
+
+          (unsigned __int64) (1000*1000*10)       // seconds
+        * (unsigned __int64) (60 * 60 * 24)       // days
+        * (unsigned __int64) (17+30+31+365*18+5); // # of days
+    *uuid_time = time.QuadPart;
+}
+
+/* Sample code, not for use in production; see RFC 1750 */
+void get_random_info(char seed[16])
+{
+	SYSTEMTIME st;
+    MD5_CTX c;
+    struct {
+        MEMORYSTATUS m;
+        SYSTEM_INFO s;
+        FILETIME t;
+        LARGE_INTEGER pc;
+        DWORD tc;
+        DWORD l;
+    } r;
+
+    MD5Init(&c);
+    GlobalMemoryStatus(&r.m);
+    GetSystemInfo(&r.s);
+	GetSystemTime(&st);
+	SystemTimeToFileTime(&st,&r.t);
+    QueryPerformanceCounter(&r.pc);
+    r.tc = GetTickCount();
+    MD5Update(&c, (unsigned char*)&r, sizeof r);
+    MD5Final(seed, &c);
+}
+
+#elif defined(_WINDOWS_)
 
 void get_system_time(uuid_time_t *uuid_time)
 {

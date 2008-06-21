@@ -151,7 +151,7 @@ uuid_t n;
 SHVUUID::ID SHVUUID::FromString8(const SHVString8C uuid)
 {
 SHVUUID::ID retVal(Null());
-uuid_t* id((uuid_t*)&retVal.Bytes);
+uuid_t* id = (uuid_t*)&retVal.Bytes;
 int mode=0;
 size_t count = uuid.GetLength();
 bool ok = ( count == 36);
@@ -235,7 +235,7 @@ int SHVUUID::CharToInt(bool& ok, const char ch)
  *************************************/
 SHVStringBuffer8 SHVUUID::ID::ToString8()
 {
-uuid_t* id((uuid_t*)&Bytes);
+uuid_t* id = (uuid_t*)&Bytes;
 	return SHVString8C::Format("%8.8x-%4.4x-%4.4x-%2.2x%2.2x-%2.2x%2.2x%2.2x%2.2x%2.2x%2.2x",
 								id->time_low,
 								id->time_mid,
@@ -258,7 +258,7 @@ SHVStringBuffer16 SHVUUID::ID::ToString16()
 #ifdef __SHIVA_LINUX
 	return ToString8().ToStr16();
 #else
-uuid_t* id((uuid_t*)&Bytes);
+uuid_t* id = (uuid_t*)&Bytes;
 	return SHVString16C::Format(L"%8.8x-%4.4x-%4.4x-%2.2x%2.2x-%2.2x%2.2x%2.2x%2.2x%2.2x%2.2x",
 								id->time_low,
 								id->time_mid,
