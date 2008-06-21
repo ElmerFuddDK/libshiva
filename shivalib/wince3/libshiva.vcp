@@ -61,7 +61,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 commctrl.lib coredll.lib /nologo /base:"0x00100000" /stack:0x10000,0x1000 /entry:"_DllMainCRTStartup" /dll /nodefaultlib:"$(CENoDefaultLib)" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
-# ADD LINK32 coredll.lib /nologo /base:"0x00100000" /stack:0x10000,0x1000 /entry:"_DllMainCRTStartup" /dll /nodefaultlib:"$(CENoDefaultLib)" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
+# ADD LINK32 coredll.lib Winsock.lib /nologo /base:"0x00100000" /stack:0x10000,0x1000 /entry:"_DllMainCRTStartup" /dll /nodefaultlib:"$(CENoDefaultLib)" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
 
 !ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE ARM) Debug"
 
@@ -94,7 +94,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 commctrl.lib coredll.lib /nologo /base:"0x00100000" /stack:0x10000,0x1000 /entry:"_DllMainCRTStartup" /dll /debug /nodefaultlib:"$(CENoDefaultLib)" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
-# ADD LINK32 coredll.lib /nologo /base:"0x00100000" /stack:0x10000,0x1000 /entry:"_DllMainCRTStartup" /dll /debug /nodefaultlib:"$(CENoDefaultLib)" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
+# ADD LINK32 coredll.lib Winsock.lib /nologo /base:"0x00100000" /stack:0x10000,0x1000 /entry:"_DllMainCRTStartup" /dll /debug /nodefaultlib:"$(CENoDefaultLib)" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
 
 !ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE x86) Release"
 
@@ -127,7 +127,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) /nologo /base:"0x00100000" /stack:0x10000,0x1000 /entry:"_DllMainCRTStartup" /dll /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
-# ADD LINK32 coredll.lib $(CEx86Corelibc) /nologo /base:"0x00100000" /stack:0x10000,0x1000 /entry:"_DllMainCRTStartup" /dll /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
+# ADD LINK32 coredll.lib Winsock.lib $(CEx86Corelibc) /nologo /base:"0x00100000" /stack:0x10000,0x1000 /entry:"_DllMainCRTStartup" /dll /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
 
 !ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE x86) Debug"
 
@@ -160,7 +160,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) /nologo /base:"0x00100000" /stack:0x10000,0x1000 /entry:"_DllMainCRTStartup" /dll /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
-# ADD LINK32 coredll.lib $(CEx86Corelibc) /nologo /base:"0x00100000" /stack:0x10000,0x1000 /entry:"_DllMainCRTStartup" /dll /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
+# ADD LINK32 coredll.lib Winsock.lib $(CEx86Corelibc) /nologo /base:"0x00100000" /stack:0x10000,0x1000 /entry:"_DllMainCRTStartup" /dll /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
 
 !ENDIF 
 
@@ -4346,6 +4346,7 @@ DEP_CPP_SHVMD=\
 	"..\..\include\platformspc.h"\
 	"..\..\include\shvtypes.h"\
 	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvbuffer.h"\
 	"..\..\include\utils\shvbufferc.h"\
 	"..\..\include\utils\shvhashvalue.h"\
 	"..\..\include\utils\shvmd5sum.h"\
@@ -4369,6 +4370,7 @@ DEP_CPP_SHVMD=\
 	"..\..\include\platformspc.h"\
 	"..\..\include\shvtypes.h"\
 	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvbuffer.h"\
 	"..\..\include\utils\shvbufferc.h"\
 	"..\..\include\utils\shvhashvalue.h"\
 	"..\..\include\utils\shvmd5sum.h"\
@@ -5130,6 +5132,125 @@ DEP_CPP_SHVTIM=\
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\utils\shvuuid.cpp
+
+!IF  "$(CFG)" == "libshiva - Win32 (WCE ARM) Release"
+
+DEP_CPP_SHVUU=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvbuffer.h"\
+	"..\..\include\utils\shvbufferc.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvmd5sum.h"\
+	"..\..\include\utils\shvrefobject.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvuuid.h"\
+	"..\src\md5\md5.h"\
+	"..\src\utils\stdafx.h"\
+	"..\src\uuid\copyrt.h"\
+	"..\src\uuid\globals.h"\
+	"..\src\uuid\sysdep.h"\
+	"..\src\uuid\uuid.h"\
+	
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE ARM) Debug"
+
+DEP_CPP_SHVUU=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvbuffer.h"\
+	"..\..\include\utils\shvbufferc.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvmd5sum.h"\
+	"..\..\include\utils\shvrefobject.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvuuid.h"\
+	"..\src\md5\md5.h"\
+	"..\src\utils\stdafx.h"\
+	"..\src\uuid\copyrt.h"\
+	"..\src\uuid\globals.h"\
+	"..\src\uuid\sysdep.h"\
+	"..\src\uuid\uuid.h"\
+	
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE x86) Release"
+
+DEP_CPP_SHVUU=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvbuffer.h"\
+	"..\..\include\utils\shvbufferc.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvmd5sum.h"\
+	"..\..\include\utils\shvrefobject.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvuuid.h"\
+	"..\src\md5\md5.h"\
+	"..\src\utils\stdafx.h"\
+	"..\src\uuid\copyrt.h"\
+	"..\src\uuid\globals.h"\
+	"..\src\uuid\sysdep.h"\
+	"..\src\uuid\uuid.h"\
+	
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE x86) Debug"
+
+DEP_CPP_SHVUU=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvbuffer.h"\
+	"..\..\include\utils\shvbufferc.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvmd5sum.h"\
+	"..\..\include\utils\shvrefobject.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvuuid.h"\
+	"..\src\md5\md5.h"\
+	"..\src\utils\stdafx.h"\
+	"..\src\uuid\copyrt.h"\
+	"..\src\uuid\globals.h"\
+	"..\src\uuid\sysdep.h"\
+	"..\src\uuid\uuid.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\utils\shvvectorbase.cpp
 
 !IF  "$(CFG)" == "libshiva - Win32 (WCE ARM) Release"
@@ -5195,6 +5316,108 @@ DEP_CPP_SHVVE=\
 	"..\src\utils\stdafx.h"\
 	
 # ADD CPP /Yu"stdafx.h"
+
+!ENDIF 
+
+# End Source File
+# End Group
+# Begin Group "uuid"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\src\uuid\sysdep.c
+
+!IF  "$(CFG)" == "libshiva - Win32 (WCE ARM) Release"
+
+DEP_CPP_SYSDE=\
+	"..\src\md5\md5.h"\
+	"..\src\uuid\copyrt.h"\
+	"..\src\uuid\globals.h"\
+	"..\src\uuid\sysdep.h"\
+	
+# SUBTRACT CPP /YX
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE ARM) Debug"
+
+DEP_CPP_SYSDE=\
+	"..\src\md5\md5.h"\
+	"..\src\uuid\copyrt.h"\
+	"..\src\uuid\globals.h"\
+	"..\src\uuid\sysdep.h"\
+	
+# SUBTRACT CPP /YX
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE x86) Release"
+
+DEP_CPP_SYSDE=\
+	"..\src\md5\md5.h"\
+	"..\src\uuid\copyrt.h"\
+	"..\src\uuid\globals.h"\
+	"..\src\uuid\sysdep.h"\
+	
+# SUBTRACT CPP /YX
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE x86) Debug"
+
+DEP_CPP_SYSDE=\
+	"..\src\md5\md5.h"\
+	"..\src\uuid\copyrt.h"\
+	"..\src\uuid\globals.h"\
+	"..\src\uuid\sysdep.h"\
+	
+# SUBTRACT CPP /YX
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\uuid\uuid.c
+
+!IF  "$(CFG)" == "libshiva - Win32 (WCE ARM) Release"
+
+DEP_CPP_UUID_=\
+	"..\src\md5\md5.h"\
+	"..\src\uuid\copyrt.h"\
+	"..\src\uuid\globals.h"\
+	"..\src\uuid\sysdep.h"\
+	"..\src\uuid\uuid.h"\
+	
+# SUBTRACT CPP /YX
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE ARM) Debug"
+
+DEP_CPP_UUID_=\
+	"..\src\md5\md5.h"\
+	"..\src\uuid\copyrt.h"\
+	"..\src\uuid\globals.h"\
+	"..\src\uuid\sysdep.h"\
+	"..\src\uuid\uuid.h"\
+	
+# SUBTRACT CPP /YX
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE x86) Release"
+
+DEP_CPP_UUID_=\
+	"..\src\md5\md5.h"\
+	"..\src\uuid\copyrt.h"\
+	"..\src\uuid\globals.h"\
+	"..\src\uuid\sysdep.h"\
+	"..\src\uuid\uuid.h"\
+	
+# SUBTRACT CPP /YX
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE x86) Debug"
+
+DEP_CPP_UUID_=\
+	"..\src\md5\md5.h"\
+	"..\src\uuid\copyrt.h"\
+	"..\src\uuid\globals.h"\
+	"..\src\uuid\sysdep.h"\
+	"..\src\uuid\uuid.h"\
+	
+# SUBTRACT CPP /YX
 
 !ENDIF 
 
@@ -5512,6 +5735,10 @@ SOURCE=..\..\include\utils\shvtime.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\utils\shvuuid.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\utils\shvvector.h
 # End Source File
 # Begin Source File
@@ -5554,6 +5781,34 @@ SOURCE=..\..\include\shvtypes.h
 # Begin Source File
 
 SOURCE=..\..\include\shvversion.h
+# End Source File
+# End Group
+# Begin Group "md5 No. 1"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\src\md5\md5.h
+# End Source File
+# End Group
+# Begin Group "uuid No. 1"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\src\uuid\copyrt.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\uuid\globals.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\uuid\sysdep.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\uuid\uuid.h
 # End Source File
 # End Group
 # Begin Source File
