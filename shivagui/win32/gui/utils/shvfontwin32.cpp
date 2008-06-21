@@ -159,7 +159,7 @@ LOGFONT lf;
  *************************************/
 SHVFontWin32* SHVFontWin32::CreateSystemFont()
 {
-#ifdef __SHIVA_WINCE
+#if defined(__SHIVA_WINCE) && (_WIN32_WCE < 500)
 LOGFONT lf;
 
 	///\todo Implement a way to get the real message font from the system on windows CE
@@ -169,6 +169,9 @@ LOGFONT lf;
 	lf.lfWeight = FW_NORMAL;
 	_tcscpy(lf.lfFaceName, _T("MS Shell Dlg"));
 	return new SHVFontWin32(::CreateFontIndirect(&lf));
+#elif defined(__SHIVA_WINCE)
+	///\todo Test if this method works for older wince's
+	return new SHVFontWin32((HFONT)::GetStockObject(SYSTEM_FONT),false);
 #else
 NONCLIENTMETRICS ncm;
 
