@@ -1,5 +1,5 @@
 #include "copyrt.h"
-#if defined(_WINDOWS_) || defined(_WIN32_WCE)
+#if defined(_WINDOWS_) || defined(_WIN32_WCE) || defined(_WINDOWS)
 # define WININC 0
 #endif
 
