@@ -189,6 +189,7 @@ BOOL msgRetVal;
 	}
 
 	// Noone should have references to the window at this point besides us
+	GUIManager->SetMainWindow(NULL);
 	SHVASSERT(MainWindow->GetRefCount() == 1);
 
 	MainWindow = NULL;
