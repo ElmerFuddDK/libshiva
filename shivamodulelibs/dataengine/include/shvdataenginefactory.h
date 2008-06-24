@@ -1,5 +1,5 @@
-#ifndef __SHIVA_MODULEFACTORY_H
-#define __SHIVA_MODULEFACTORY_H
+#ifndef __SHIVA_DATAENGINE_MODULEFACTORY_H
+#define __SHIVA_DATAENGINE_MODULEFACTORY_H
 
 #include "../../../include/framework/shvmodulefactory.h"
 

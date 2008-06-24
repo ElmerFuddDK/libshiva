@@ -189,7 +189,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\shvdataenginefactory.cpp"
+				RelativePath="..\src\shvdataenginefactory.cpp"
 				>
 			</File>
 			<File
