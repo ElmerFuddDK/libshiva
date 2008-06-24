@@ -55,6 +55,7 @@ HEADERS += ../../../include/platformspc.h \
            ../../../include/utils/shvvectorbase.h \
            ../../../include/utils/shvvector.h \
            ../../../include/utils/shvvectorref.h \
+           ../../../include/framework/shveventstdin.h \
            ../../../include/framework/shveventsubscriberdynamic.h \
            ../../../include/framework/shveventsubscriberbase.h \
            ../../../include/framework/shveventsubscriber.h \
@@ -66,10 +67,12 @@ HEADERS += ../../../include/platformspc.h \
            ../../../include/frameworkimpl/shvmainthreadeventqueue.h \
            ../../../include/frameworkimpl/shvmodulelistimpl.h \
            ../../../include/frameworkimpl/shvmoduleloaderimpl.h \
-           ../../../include/frameworkimpl/shvtimerimpl.h 
+           ../../../include/frameworkimpl/shvtimerimpl.h  \
+           ../../../include/frameworkimpl/shvmainthreadeventdispatcherconsole.h
 SOURCES += ../../src/framework/shvevent.cpp \
            ../../src/framework/shveventemitter.cpp \
            ../../src/framework/shveventqueuelist.cpp \
+           ../../src/framework/shveventstdin.cpp \
            ../../src/framework/shveventstring.cpp \
            ../../src/framework/shveventsubscriberbase.cpp \
            ../../src/framework/shveventsubscriber.cpp \
@@ -105,7 +108,11 @@ SOURCES += ../../src/framework/shvevent.cpp \
            ../../src/utils/shvfilebase.cpp \
            ../../src/utils/shvfile.cpp \
            ../../src/utils/shvhashtablebase.cpp \
-           ../../src/utils/shvlistbase.cpp 
+           ../../src/utils/shvlistbase.cpp  \
+           ../../src/frameworkimpl/shvmainthreadeventdispatcherconsole.cpp \
+ ../../src/utils/shvbufferstream.cpp \
+ ../../src/utils/shvstreambufferin.cpp \
+ ../../src/utils/shvstreambufferout.cpp
 LIBS += -lrt \
         -lunicode 
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
