@@ -136,7 +136,7 @@ SHVStringBuffer SHVXmlReader::GetAttributeValueByName(const SHVStringC& name) co
 #ifdef UNICODE
 	return GetAttributeValueByName16(name);
 #else
-	return GetAttributeName8(name);
+	return GetAttributeValueByName8(name);
 #endif
 }
 

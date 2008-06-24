@@ -94,12 +94,15 @@ void SHVXmlWriterImpl::WriteAttribute16(SHVStreamOut& Streamout, const SHVString
 		WriteAttribute8(Streamout, attrName.ToStr8(), value.ToStr8());
 		break;
 	case Internal16:
-		Streamout.WriteChar16(L' ');
+	{
+	static const SHVWChar equalsquote[] = {'=','"','\0'};
+		Streamout.WriteChar16(' ');
 		Streamout.WriteString16(attrName.GetBufferConst());
-		Streamout.WriteString16(L"=\"");
+		Streamout.WriteString16(equalsquote);
 		InternalWriteText16(Streamout, value);
-		Streamout.WriteChar16(L'"');
+		Streamout.WriteChar16('"');
 		break;
+	}
 	case InternalUTF8:
 		WriteAttributeUTF8(Streamout, attrName.ToStrUTF8(), value.ToStrUTF8());
 		break;
@@ -109,14 +112,14 @@ void SHVXmlWriterImpl::WriteAttribute16(SHVStreamOut& Streamout, const SHVString
 /*************************************
  * WriteText16
  *************************************/
-void SHVXmlWriterImpl::WriteText16(SHVStreamOut& Streamout, const SHVStringC& text)
+void SHVXmlWriterImpl::WriteText16(SHVStreamOut& Streamout, const SHVString16C& text)
 {
 	if (CurrentShortClose())
 	{
 		switch (InternalEncoding)
 		{
 		case Internal16:
-			Streamout.WriteChar16(L'>');
+			Streamout.WriteChar16('>');
 			break;
 		case Internal8:
 		case InternalUTF8:
@@ -146,7 +149,7 @@ void SHVXmlWriterImpl::WriteStartElement8(SHVStreamOut& Streamout, const SHVStri
 		Streamout.WriteString8(elementName.GetBufferConst());
 		break;
 	case Internal16:
-		WriteStartElement(Streamout, elementName.ToStr16());
+		WriteStartElement16(Streamout, elementName.ToStr16());
 		break;
 	case InternalUTF8:
 		WriteStartElementUTF8(Streamout, elementName.ToStrUTF8());
@@ -187,7 +190,7 @@ void SHVXmlWriterImpl::WriteText8(SHVStreamOut& Streamout, const SHVString8C& te
 		switch (InternalEncoding)
 		{
 		case Internal16:
-			Streamout.WriteChar16(L'>');
+			Streamout.WriteChar16('>');
 			break;
 		case Internal8:
 		case InternalUTF8:
@@ -258,7 +261,7 @@ void SHVXmlWriterImpl::WriteTextUTF8(SHVStreamOut& Streamout, const SHVStringUTF
 		switch (InternalEncoding)
 		{
 		case Internal16:
-			Streamout.WriteChar16(L'>');
+			Streamout.WriteChar16('>');
 			break;
 		case Internal8:
 		case InternalUTF8:
@@ -294,14 +297,17 @@ bool ShortClose;
 	case Internal16:
 		{
 		SHVString16 elementName = Pop16(ShortClose);
+		static const SHVWChar lessslash[] = {'<','/','\0'};
+		static const SHVWChar slashgreater[] = {'/','>','\0'};
 			if (!ShortClose)
 			{
-				Streamout.WriteString16(L"</");
+
+				Streamout.WriteString16(lessslash);
 				Streamout.WriteString16(elementName.GetBufferConst());
 				Streamout.WriteChar16('>');
 			}
 			else
-				Streamout.WriteString16(L"/>");
+				Streamout.WriteString16(slashgreater);
 		}
 		break;
 	case InternalUTF8:
@@ -421,7 +427,7 @@ SHVListPos tail = ((SHVList<TagStackElem>*) &TagStack)->GetTailPosition();
 /*************************************
  * InternalWriteText16
  *************************************/
-void SHVXmlWriterImpl::InternalWriteText16(SHVStreamOut& Streamout, const SHVStringC& text)
+void SHVXmlWriterImpl::InternalWriteText16(SHVStreamOut& Streamout, const SHVString16C& text)
 {
 size_t len;
 	switch (InternalEncoding)
@@ -432,35 +438,43 @@ size_t len;
 	case Internal8:
 		WriteText8(Streamout, text.ToStr8());
 	case Internal16:
+	{
+	static const SHVWChar amp[] = {'&','a','m','p',';','\0'};
+	static const SHVWChar lt[] = {'&','l','t',';','\0'};
+	static const SHVWChar gt[] = {'&','g','t',';','\0'};
+	static const SHVWChar quot[] = {'&','q','u','o','t',';','\0'};
+	static const SHVWChar andhash[] = {'&','#','\0'};
+
 		len = text.GetLength();
 		for (size_t strpos = 0; strpos < len; strpos++)
 		{
 			switch(text.GetBufferConst()[strpos])
 			{
 			case '&':
-				Streamout.WriteString16(L"&amp;");
+				Streamout.WriteString16(amp);
 				break;
 			case '<':
-				Streamout.WriteString16(L"&lt;");
+				Streamout.WriteString16(lt);
 				break;
 			case '>':
-				Streamout.WriteString16(L"&gt;");
+				Streamout.WriteString16(gt);
 				break;
 			case '"':
-				Streamout.WriteString16(L"&quot;");
+				Streamout.WriteString16(quot);
 				break;
 			case 9:
 			case 10:
 			case 13:
-				Streamout.WriteString16(L"&#");
+				Streamout.WriteString16(andhash);
 				Streamout.WriteString16(SHVString16::LongToString(text.GetBufferConst()[strpos]).GetBufferConst());
-				Streamout.WriteChar16(L';');
+				Streamout.WriteChar16(';');
 				break;
 			default:
 				Streamout.WriteChar16(text.GetBufferConst()[strpos]);
 			}
 		}
 		break;
+	}
 	}	
 }
 

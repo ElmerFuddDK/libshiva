@@ -21,7 +21,7 @@ public:
 	};
 	virtual ~SHVXmlWriter() {}
 	virtual void WriteStartElement16(SHVStreamOut& Streamout, const SHVString16C& elementName) = 0;
-	virtual void WriteAttribute16(SHVStreamOut& Streamout, const SHVString16C& attrName, const SHVStringC& value) = 0;
+	virtual void WriteAttribute16(SHVStreamOut& Streamout, const SHVString16C& attrName, const SHVString16C& value) = 0;
 	virtual void WriteText16(SHVStreamOut& Streamout, const SHVString16C& text) = 0;
 
 	virtual void WriteStartElement8(SHVStreamOut& Streamout, const SHVString8C& elementName) = 0;

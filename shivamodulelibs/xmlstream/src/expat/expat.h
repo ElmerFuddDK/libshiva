@@ -191,7 +191,7 @@ XML_SetXmlDeclHandler(XML_Parser parser,
 
 
 typedef struct {
-#ifdef __SYMBIAN32__
+#if defined(__SYMBIAN32__) || !defined(_MSC_EXTENSIONS)
   void *(*malloc_fcn)(size_t size);
   void *(*realloc_fcn)(void *ptr, size_t size);
   void (*free_fcn)(void *ptr);

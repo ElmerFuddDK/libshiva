@@ -19,7 +19,7 @@ public:
 	virtual ~SHVXmlWriterImpl();
 
 	virtual void WriteStartElement16(SHVStreamOut& Streamout, const SHVString16C& elementName);
-	virtual void WriteAttribute16(SHVStreamOut& Streamout, const SHVString16C& attrName, const SHVStringC& value);
+	virtual void WriteAttribute16(SHVStreamOut& Streamout, const SHVString16C& attrName, const SHVString16C& value);
 	virtual void WriteText16(SHVStreamOut& Streamout, const SHVString16C& text);
 
 	virtual void WriteStartElement8(SHVStreamOut& Streamout, const SHVString8C& elementName);

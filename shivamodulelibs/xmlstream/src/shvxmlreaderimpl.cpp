@@ -91,7 +91,12 @@ SHVStringBuffer16 SHVXmlReaderImpl::GetAttributeValue16(size_t idx) const
 SHVStringBuffer16 SHVXmlReaderImpl::GetAttributeValueByName16(const SHVString16C& name) const
 {
 size_t idx = 0;
-	for (; Attributes && Attributes[idx] && SHVStringC::StrCmp(name.GetBufferConst(), Attributes[idx]); idx+=2);
+#ifdef UNICODE
+	for (; Attributes && Attributes[idx] && SHVString16C::StrCmp(name.GetBufferConst(), Attributes[idx]); idx+=2);
+#else
+SHVStringUTF8 nameUTF8(name.ToStrUTF8());
+	for (; Attributes && Attributes[idx] && SHVStringUTF8C::StrCmp(nameUTF8.GetBufferConst(), Attributes[idx]); idx+=2);	
+#endif 
 	if (Attributes && Attributes[idx])
 		return XML_Char2String16(Attributes[idx+1]);
 	else
@@ -103,7 +108,7 @@ size_t idx = 0;
  *************************************/
 SHVStringBuffer16 SHVXmlReaderImpl::GetValue16() const
 {
-	return SHVString(ValueCol).ReleaseBuffer();
+	return ValueCol.ToStr16();
 }
 
 /*************************************
@@ -153,11 +158,7 @@ size_t idx = 0;
  *************************************/
 SHVStringBuffer8 SHVXmlReaderImpl::GetValue8() const
 {
-#ifdef UNICODE
 	return ValueCol.ToStr8();
-#else
-	return ValueCol.GetSafeBuffer();
-#endif
 }
 
 /*************************************
