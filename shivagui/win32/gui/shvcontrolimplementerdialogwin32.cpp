@@ -109,8 +109,10 @@ SHVBool SHVControlImplementerDialogWin32::Create(SHVControl* owner, SHVControlIm
 			///\todo Add a better way to determine the correct size of the initial window
 			if (hCmdWnd)
 			{
+			RECT menubarRect;
 				GetWindowRect(GetHandle(), &winRect);
-				winRect.bottom -= MENU_HEIGHT*2;
+				GetWindowRect(hCmdWnd, &menubarRect);
+				winRect.bottom -= 2*(menubarRect.bottom - menubarRect.top);
 				MoveWindow(GetHandle(), winRect.left, winRect.top, winRect.right, winRect.bottom, FALSE);
 			}
 #endif
