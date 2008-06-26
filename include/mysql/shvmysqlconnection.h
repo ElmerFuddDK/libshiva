@@ -8,7 +8,6 @@
 // forward declares
 class SHVMySQLResultSet;
 
-
 //-=========================================================================================================
 /// SHVMySQLConnectionParms class - Parameters for setting up a MySQL connection
 /**
