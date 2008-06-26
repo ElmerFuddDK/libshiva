@@ -44,7 +44,7 @@ struct SHV_DrawWin32_LineDraw
 };
 # define SHVLINEDRAW SHV_DrawWin32_LineDraw __drawlines
 # define SHVMOVETOEX(dc,_x,_y,point) __drawlines.p[0].x = _x; __drawlines.p[0].y = _y
-# define SHVLINETO(dc,_x,_y) __drawlines.p[1].x = _x; __drawlines.p[1].y = _y; ::Polyline(dc, __drawlines.p, 2)
+# define SHVLINETO(dc,_x,_y) __drawlines.p[1].x = _x; __drawlines.p[1].y = _y; ::Polyline(dc, __drawlines.p, 2); __drawlines.p[0] = __drawlines.p[1]
 #else
 # define SHVLINEDRAW
 # define SHVMOVETOEX(dc,x,y,point) ::MoveToEx(dc,x,y,point)
