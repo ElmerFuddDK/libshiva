@@ -7,6 +7,12 @@
 #include "../../include/utils/shvtime.h"
 #include "shvmysqlconnection.h"
 
+//-=========================================================================================================
+/// SHVMySQLResultSet class - Row iterator
+/**
+ * This class is used to retrieve the resulting rows from the query
+ */
+
 class SHVMySQLResultSet: public SHVRefObject
 {
 public:
