@@ -26,6 +26,7 @@ public:
 	virtual SHVBool RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear = false, SHVDataSession* useSession = NULL) = 0;
 	virtual size_t RegisterIndex(const SHVString8C& table, SHVDataRowKey* IndexKey, SHVDataSession* useSession = NULL) = 0;
 	virtual SHVBool UnregisterAlias(const SHVString8C& alias, SHVDataSession* useSession = NULL) = 0;
+	virtual SHVBool DropAlias(const SHVString8C& table, const SHVString8C& alias, SHVDataSession* useSession = NULL) = 0;
 	virtual SHVBool ClearTable(const SHVString8C& table, SHVDataSession* useSession = NULL) = 0;
 
 	virtual const SHVDataStructC* FindStruct(const SHVString8C& table) const = 0;
@@ -51,8 +52,6 @@ public:
 
 protected:
 	virtual void SubscribeRowChange(SHVEventSubscriberBase* sub) = 0;
-	virtual void RegisterDataList(SHVDataRowListC* rowList) = 0;
-	virtual void UnregisterDataList(SHVDataRowListC* rowList) = 0;
 	virtual void RowChanged(SHVDataRow* row) = 0;
 
 	// inlines
