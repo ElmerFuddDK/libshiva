@@ -32,7 +32,9 @@
 #include "../../../include/platformspc.h"
 
 #include "../include/shvsocketserverimpl.h"
-#include <arpa/inet.h>
+#ifndef __SHIVA_WIN32
+# include <arpa/inet.h>
+#endif
 
 
 //=========================================================================================================
@@ -124,7 +126,7 @@ SHVSocket* retVal = NULL;
  *************************************/
 SHVIPv4Addr SHVSocketServerImpl::Inetv4Addr(const SHVStringC strIp)
 {
-	return (SHVIPv4Addr)::inet_addr(strIp.GetSafeBuffer());
+	return (SHVIPv4Addr)::inet_addr(strIp.ToStr8().GetSafeBuffer());
 }
 
 ///\cond INTERNAL

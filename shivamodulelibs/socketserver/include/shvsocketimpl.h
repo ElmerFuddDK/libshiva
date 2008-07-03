@@ -2,7 +2,16 @@
 #define __SHIVA_SOCKETSERVERIMPL_SOCKET_H
 
 #include "../../../include/modules/socketserver/shvsocketserver.h"
-
+#ifdef __SHIVA_WIN32
+# ifdef __SHIVA_WINCE
+#  include "../../../include/threadutils/shvthread.h"
+#  include "../../../include/threadutils/shvmutexbase.h"
+# endif
+# include <winsock.h>
+# define SHVSOCKTYPE SOCKET
+#else
+# define SHVSOCKTYPE int
+#endif
 
 
 class SHVSocketServerImpl;
@@ -44,7 +53,7 @@ friend class SHVSocketServerThread;
 
 	///\cond INTERNAL
 	SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* socketServer, SHVSocket::Types type);
-	SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* socketServer, SHVSocket::Types type, int sock);
+	SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* socketServer, SHVSocket::Types type, SHVSOCKTYPE sock);
 	virtual ~SHVSocketImpl();
 	
 	enum { InvalidSocket = -1 };
@@ -71,7 +80,15 @@ friend class SHVSocketServerThread;
 	bool RecvPending;
 
 #ifdef __SHIVA_WIN32
-#error NOT IMPLEMENTED
+	SOCKET Socket;
+# ifdef __SHIVA_WINCE
+	bool IsPending;
+	SHVThread<SHVSocketImpl> ReadThread;
+	SHVMutexBase ReadThreadSignal;
+
+	void StartReadThread();
+	void ReadThreadFunc();
+# endif
 #elif defined(__SHIVA_EPOC)
 #error NOT IMPLEMENTED
 #else

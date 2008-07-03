@@ -49,7 +49,9 @@ private:
 	
 	SHVEventQueueList EventList;
 	
+#ifndef __SHIVA_WINCE
 	int PipeSignal[2];
+#endif
 };
 ///\endcond
 

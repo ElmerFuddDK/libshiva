@@ -1,0 +1,5 @@
+LIBRARY	"socketserver"
+
+EXPORTS
+  CreateObjectInt
+  CreateObjectString

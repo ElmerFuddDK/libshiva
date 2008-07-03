@@ -34,12 +34,21 @@
 
 #include "../include/shvsocketserverimpl.h"
 
-#include <netinet/in.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>
-#include <errno.h>
+#ifdef __SHIVA_WIN32
+# define MSG_DONTWAIT 0
+# define MSG_NOSIGNAL 0
+# ifndef __SHIVA_WINCE
+#  include <fcntl.h>
+#  include <errno.h>
+# endif
+#else
+# include <netinet/in.h>
+# include <sys/types.h>
+# include <sys/socket.h>
+# include <sys/ioctl.h>
+# include <fcntl.h>
+# include <errno.h>
+#endif
 
 
 //=========================================================================================================
@@ -50,7 +59,7 @@
 /*************************************
  * Constructor
  *************************************/
-SHVSocketImpl::SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* socketServer, SHVSocket::Types type, int sock)
+SHVSocketImpl::SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* socketServer, SHVSocket::Types type, SHVSOCKTYPE sock)
 	: SHVSocket(socketServer->GetModules().CreateTag(),SHVSocket::StateConnected), EventSubscriber(subs), Type(type)
 {
 	SocketServer = socketServer;
@@ -59,6 +68,11 @@ SHVSocketImpl::SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* 
 	BytesRead = 0;
 	
 	BufferSize = DefaultBufferSize;
+
+#ifdef __SHIVA_WINCE
+	IsPending = false;
+	StartReadThread();
+#endif
 }
 SHVSocketImpl::SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* socketServer, SHVSocket::Types type)
 	: SHVSocket(socketServer->GetModules().CreateTag(),SHVSocket::StateNone), EventSubscriber(subs), Type(type)
@@ -69,11 +83,15 @@ SHVSocketImpl::SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* 
 	
 	BufferSize = DefaultBufferSize;
 	
+#ifdef __SHIVA_WINCE
+	IsPending = false;
+#endif
+
 	if (!subs)
 	{
 		Socket = InvalidSocket;
 		State = StateError;
-		Error = SHVSocket::ErrInvalidSubscriber;
+		Error.SetError(SHVSocket::ErrInvalidSubscriber);
 		return;
 	}
 
@@ -129,6 +147,15 @@ SHVSocketImpl::~SHVSocketImpl()
 		::close(Socket);
 #endif
 	}
+
+#ifdef __SHIVA_WINCE
+	Socket = InvalidSocket;
+	while (ReadThread.IsRunning())
+	{
+		ReadThreadSignal.Unlock();
+		SHVThreadBase::Sleep(10);
+	}
+#endif
 }
 ///\endcond
 
@@ -177,6 +204,9 @@ SHVBool retVal;
 			if (!status)
 			{
 				State = SHVSocket::StateListening;
+#ifdef __SHIVA_WINCE
+				StartReadThread();
+#endif
 				retVal = SHVBool::True;
 			}
 			else
@@ -213,7 +243,7 @@ SHVBool retVal(SHVSocket::ErrInvalidOperation);
 	SocketServer->SocketServerLock.Lock();
 	if (State == SHVSocket::StateConnected)
 	{
-		if (::send(Socket,buf.GetBufferConst(),buf.GetSize(),MSG_DONTWAIT|MSG_NOSIGNAL) <= 0)
+		if (::send(Socket,buf.GetBufferConst(),(int)buf.GetSize(),MSG_DONTWAIT|MSG_NOSIGNAL) <= 0)
 		{
 			Close();
 			retVal = SetError(SHVSocket::ErrGeneric);
@@ -287,7 +317,7 @@ SHVBool SHVSocketImpl::Close()
 	if (Socket != InvalidSocket)
 	{
 	int tempUnlocks;
-	int sock = Socket;
+	SHVSOCKTYPE sock = Socket;
 		//::shutdown(Socket, 2); // close both recv and send
 		Socket = InvalidSocket;
 		SetError(SHVSocket::ErrClosed);
@@ -324,10 +354,15 @@ SHVBool retVal(SHVSocket::ErrInvalidOperation);
 		host.sin_port = htons(port);
 		
 		result = ::connect(Socket, (sockaddr*)&host, sizeof(sockaddr_in));
-		
+#ifdef __SHIVA_WIN32
+		if (result == -1 && WSAGetLastError() != WSAEWOULDBLOCK) // failure
+#else
 		if (result == -1 && errno != EINPROGRESS) // failure
+#endif
 		{
+#ifndef __SHIVA_WIN32
 			printf("SOCKET CONNECT Err: %d\n", errno);
+#endif
 			Close();
 			retVal = SetError(SHVSocket::ErrGeneric);
 		}
@@ -335,6 +370,9 @@ SHVBool retVal(SHVSocket::ErrInvalidOperation);
 		{
 			State = SHVSocket::StateConnecting;
 			retVal.SetError(SHVSocket::ErrNone);
+#ifdef __SHIVA_WINCE
+			StartReadThread();
+#endif
 		}
 	}
 	SocketServer->SocketServerLock.Unlock();
@@ -426,8 +464,12 @@ int sz;
 	case SHVSocket::StateConnected: // received something
 		bufPtr = new SHVBufferPtr();
 		bufPtr->SetBufferSize(BufferSize);
-		
+
+#ifdef __SHIVA_WIN32
+		sz = ::recv(Socket,(char*)bufPtr->GetBufferAsVoid(),(int)BufferSize,MSG_DONTWAIT);
+#else
 		sz = ::recv(Socket,bufPtr->GetBufferAsVoid(),BufferSize,MSG_DONTWAIT);
+#endif
 		
 		if (sz<=0) // error
 		{
@@ -458,6 +500,11 @@ int sz;
 	{
 		queue->SignalDispatcher();
 	}
+
+#ifdef __SHIVA_WINCE
+	IsPending = false;
+	ReadThreadSignal.Unlock();
+#endif
 }
 
 /*************************************
@@ -476,12 +523,56 @@ SHVBool SHVSocketImpl::SetError(SHVBool err)
 int SHVSocketImpl::RetreiveSocketError()
 {
 int sockerr;
-socklen_t len = sizeof(sockerr);
 #ifdef _WIN32
+int len = sizeof(sockerr);
 	getsockopt(Socket, SOL_SOCKET, SO_ERROR, (char *)&sockerr, &len);
 #else
+socklen_t len = sizeof(sockerr);
 	getsockopt(Socket, SOL_SOCKET, SO_ERROR, &sockerr, &len);
 #endif
 	return sockerr;
 }
+
+
+#ifdef __SHIVA_WINCE
+void SHVSocketImpl::StartReadThread()
+{
+	ReadThread.Start(this,&SHVSocketImpl::ReadThreadFunc);
+}
+
+void SHVSocketImpl::ReadThreadFunc()
+{
+fd_set rfds;
+fd_set wfds;
+fd_set* fds;
+int nextFD, retVal;
+
+	while (GetState() != SHVSocket::StateError && Socket != SHVSocketImpl::InvalidSocket)
+	{
+		FD_ZERO(&rfds);
+		FD_ZERO(&wfds);
+		fds = (GetState() == SHVSocket::StateConnecting ? &wfds : &rfds);
+		FD_SET(Socket, fds);
+		nextFD = Socket+1;
+
+		retVal = select(nextFD, &rfds, &wfds, NULL, NULL);
+
+		if (retVal == -1) // ERROR!
+		{
+			Close();
+			SetError();
+			IsPending = true;
+		}
+		else if (FD_ISSET(Socket,fds))
+		{
+			IsPending = true;
+			ReadThreadSignal.Lock(); // request signal
+			SocketServer->SocketServerThread.SignalDispatcher(); // signal the socket server thread
+
+			ReadThreadSignal.Lock();
+			ReadThreadSignal.Unlock();
+		}
+	}
+}
+#endif
 ///\endcond

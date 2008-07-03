@@ -32,10 +32,18 @@
 #include "../../../include/platformspc.h"
 
 #include "../include/shvsocketserverimpl.h"
-#include <unistd.h>
-#include <fcntl.h>
+#if defined(__SHIVA_WINCE)
+// nothing special - use a mutex for signalling
+#elif defined(__SHIVA_WIN32)
+# include <io.h>
+# define pipe(x) _pipe(x,50,0);
+# include <fcntl.h>
+#else
+# include <unistd.h>
+# include <arpa/inet.h>
+# include <fcntl.h>
+#endif
 
-#include <arpa/inet.h>
 
 ///\cond INTERNAL
 //=========================================================================================================
@@ -47,10 +55,13 @@
  *************************************/
 SHVSocketServerThread::SHVSocketServerThread(SHVSocketServerImpl* server) : SocketServer(server)
 {
+#ifndef __SHIVA_WINCE
 	// Initialize pipe signaller for the select statement
 	pipe(PipeSignal);
+#endif
 
 	// disable blocking mode on the pipes - close on failure
+#ifndef __SHIVA_WIN32
 	if (fcntl(PipeSignal[0], F_SETFL, O_NONBLOCK) < 0)
 	{
 		close(PipeSignal[0]);
@@ -61,6 +72,7 @@ SHVSocketServerThread::SHVSocketServerThread(SHVSocketServerImpl* server) : Sock
 		close(PipeSignal[1]);
 		PipeSignal[1] = 0;
 	}
+#endif
 	
 	QueueSignalled = false;
 }
@@ -71,10 +83,12 @@ SHVSocketServerThread::SHVSocketServerThread(SHVSocketServerImpl* server) : Sock
 SHVSocketServerThread::~SHVSocketServerThread()
 {
 	WaitForTermination();
+#ifndef __SHIVA_WINCE
 	if (PipeSignal[0])
 		close(PipeSignal[0]);
 	if (PipeSignal[1])
 		close(PipeSignal[1]);
+#endif
 }
 
 
@@ -83,9 +97,11 @@ SHVSocketServerThread::~SHVSocketServerThread()
  *************************************/
 SHVBool SHVSocketServerThread::StartThread(SHVModuleList& modules)
 {
-	// don't start the thread if the 
+#ifndef __SHIVA_WINCE
+	// don't start the thread if the pipe isn't created
 	if (!PipeSignal[0] || !PipeSignal[1])
 		return SHVBool::False;
+#endif
 		
 	if (!SocketThread.IsRunning())
 	{
@@ -139,11 +155,16 @@ void SHVSocketServerThread::EnqueueEvent(SHVEvent* event, SHVEventSubscriberBase
 void SHVSocketServerThread::SignalDispatcher()
 {
 	SocketServer->SocketServerLock.Lock();
+#ifdef __SHIVA_WINCE
+	if (SocketThread.IsRunning() && SocketServer->ThreadSignal.IsLocked())
+		SocketServer->ThreadSignal.Unlock();
+#else
 	if (SocketThread.IsRunning() && !QueueSignalled)
 	{
 		QueueSignalled = true;
 		write(PipeSignal[1],"1",1);
 	}
+#endif
 	SocketServer->SocketServerLock.Unlock();
 }
 
@@ -177,9 +198,12 @@ void SHVSocketServerThread::UnlockEvent()
  *************************************/
 void SHVSocketServerThread::ThreadFunc()
 {
+#ifndef __SHIVA_WINCE
 fd_set rfds;
+fd_set wfds;
 int nextFD, retVal;
 char dummyBuffer[50];
+#endif
 SHVListIterator<SHVSocketImplRef,SHVSocketImpl*> SocketListItr(SocketServer->SocketList);
 SHVList<SHVSocketImplRef,SHVSocketImpl*> pendingList;
 SHVListIterator<SHVSocketImplRef,SHVSocketImpl*> pendingListItr(pendingList);
@@ -188,8 +212,12 @@ SHVListIterator<SHVSocketImplRef,SHVSocketImpl*> pendingListItr(pendingList);
 
 	while (!KillSignal)
 	{
+#ifdef __SHIVA_WINCE
+		SocketServer->ThreadSignal.Lock(); // will block until we get a signal
+#else
 		// fill file decriptor list for select
 		FD_ZERO(&rfds);
+		FD_ZERO(&wfds);
 		FD_SET(PipeSignal[0], &rfds);
 		nextFD = PipeSignal[0]+1;
 		
@@ -200,17 +228,19 @@ SHVListIterator<SHVSocketImplRef,SHVSocketImpl*> pendingListItr(pendingList);
 			if (SocketListItr.Get()->GetState() != SHVSocket::StateError &&
 				SocketListItr.Get()->Socket != SHVSocketImpl::InvalidSocket)
 			{
-				FD_SET(SocketListItr.Get()->Socket,&rfds);
+				if (SocketListItr.Get()->GetState() == SHVSocket::StateConnecting)
+					FD_SET(SocketListItr.Get()->Socket,&wfds);
+				else
+					FD_SET(SocketListItr.Get()->Socket,&rfds);
 				
-				if (SocketListItr.Get()->Socket >= nextFD)
-					nextFD = SocketListItr.Get()->Socket+1;
+				if ((int)SocketListItr.Get()->Socket >= nextFD)
+					nextFD = int(SocketListItr.Get()->Socket)+1;
 			}
 		}
 		SocketServer->SocketServerLock.Unlock();
 		
-		
 		// wait for incoming events
-		retVal = select(nextFD, &rfds, NULL, NULL, NULL);
+		retVal = select(nextFD, &rfds, &wfds, NULL, NULL);
 		
 		if (!retVal || KillSignal) // nothing happened, or terminating
 		{
@@ -232,6 +262,7 @@ SHVListIterator<SHVSocketImplRef,SHVSocketImpl*> pendingListItr(pendingList);
 			read(PipeSignal[0], dummyBuffer, 50);
 			SocketServer->SocketServerLock.Unlock();
 		}
+#endif	
 		
 		
 		// Dispatch normal events
@@ -242,7 +273,11 @@ SHVListIterator<SHVSocketImplRef,SHVSocketImpl*> pendingListItr(pendingList);
 		for (SocketListItr.Pos() = NULL; SocketListItr.MoveNext();)
 		{
 			// check for activity on socket
-			if (FD_ISSET(SocketListItr.Get()->Socket,&rfds))
+#ifdef __SHIVA_WINCE
+			if (SocketListItr.Get()->IsPending)
+#else
+			if (FD_ISSET(SocketListItr.Get()->Socket,&rfds) || FD_ISSET(SocketListItr.Get()->Socket,&wfds))
+#endif
 			{
 				pendingList.AddTail(SocketListItr.Get());
 			}
@@ -256,5 +291,8 @@ SHVListIterator<SHVSocketImplRef,SHVSocketImpl*> pendingListItr(pendingList);
 		pendingList.RemoveAll();
 		
 	}
+#ifdef __SHIVA_WINCE
+	SocketServer->ThreadSignal.Unlock(); // release the signal
+#endif
 }
 ///\endcond
