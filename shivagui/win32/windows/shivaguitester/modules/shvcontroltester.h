@@ -38,6 +38,7 @@ private:
 	SHVControlLabelRef LabelCustomDraw;
 	SHVControlEditRef EditBox;
 	SHVControlButtonRef Button;
+	SHVControlComboBoxRef ComboBox;
 	SHVBitmapRef Bitmap;
 
 	SHVFormBaseRef TestDialog;

@@ -222,6 +222,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\gui\shvcontrolcombobox.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\gui\shvcontrolcontainer.cpp"
 					>
 				</File>
@@ -263,6 +267,10 @@
 				</File>
 				<File
 					RelativePath="..\gui\shvcontrolimplementerbuttonwin32.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\gui\shvcontrolimplementercomboboxwin32.cpp"
 					>
 				</File>
 				<File
@@ -377,6 +385,10 @@
 				</File>
 				<File
 					RelativePath="..\gui\shvcontrolimplementerbuttonwin32.h"
+					>
+				</File>
+				<File
+					RelativePath="..\gui\shvcontrolimplementercomboboxwin32.h"
 					>
 				</File>
 				<File

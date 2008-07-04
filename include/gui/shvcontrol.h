@@ -35,6 +35,7 @@ public:
 		TypeGrid,
 		TypeTab,
 		TypeDateTime,
+		TypeComboBox,
 		TypeCustom = 0xFE,
 		TypeContainer = 0xFF
 	};

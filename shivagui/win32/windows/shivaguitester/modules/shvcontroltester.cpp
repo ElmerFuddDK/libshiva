@@ -98,6 +98,8 @@ SHVFontRef ownerDrawFont = GUIManager->GetFont(SHVGUIManager::CfgFontNormal)->Cr
 	LabelCustomDraw = GUIManager->NewLabelCustomDraw(subsOnDrawLabel)->SetParent(Container)->SetText(_T(""));
 	EditBox = GUIManager->NewEdit(SHVControlEdit::SubTypeMultiLine)->SetParent(Container)->SetText(_T("Edit\ntext"))->SetLimit(50);
 	Button = GUIManager->NewButton()->SetParent(Container)->SetText(_T("Click Me!"));
+	ComboBox = GUIManager->NewComboBox(SHVControlComboBox::SubTypeComboBoxList)->SetParent(Container)->SetDropdownHeight(4);
+	ComboBox->AddItem(_T("Test1"))->AddItem(_T("Test2"))->AddItem(_T("Test3"))->AddItem(_T("Test4"))->AddItem(_T("Test5"))->SetSelected(0);
 
 
 	LabelCustomDraw->SetFont(ownerDrawFont,true);
@@ -105,6 +107,7 @@ SHVFontRef ownerDrawFont = GUIManager->GetFont(SHVGUIManager::CfgFontNormal)->Cr
 
 
 	Button->SubscribeClicked(new SHVEventSubscriber(this,&Modules));
+	ComboBox->SubscribeSelectedChanged(new SHVEventSubscriber(this,&Modules));
 
 	GUIManager->GetMainWindow()->SetFlag(SHVControl::FlagVisible);
 	GUIManager->GetMainWindow()->ResizeControls();
@@ -140,14 +143,7 @@ void SHVControlTester::OnEvent(SHVEvent* event)
 {
 	if (event->GetCaller() == NULL) // GUI Events
 	{
-		if (event->GetObject() == Button && SHVEvent::Equals(event,SHVControlButton::EventClicked))
-		{
-		SHVMenuRef menu = Button->CreatePopupMenu(new SHVEventSubscriber(this,&Modules));
-			menu->AddStringItem(__MENU_STUFF,_T("Stuff"));
-			menu->Show(SHVMenu::PopupBelowWindow);
-			menu = NULL;
-		}
-		else if (event->GetObject() == GUIManager->GetMainWindow())
+		if (event->GetObject() == GUIManager->GetMainWindow())
 		{
 			if (SHVEvent::Equals(event,SHVControl::EventMenu))
 			{
@@ -176,7 +172,14 @@ void SHVControlTester::OnEvent(SHVEvent* event)
 		}
 		else if (event->GetObject() == Button)
 		{
-			if (SHVEvent::Equals(event,SHVControl::EventMenu))
+			if (SHVEvent::Equals(event,SHVControlButton::EventClicked))
+			{
+			SHVMenuRef menu = Button->CreatePopupMenu(new SHVEventSubscriber(this,&Modules));
+				menu->AddStringItem(__MENU_STUFF,_T("Stuff"));
+				menu->Show(SHVMenu::PopupBelowWindow);
+				menu = NULL;
+			}
+			else if (SHVEvent::Equals(event,SHVControl::EventMenu))
 			{
 				switch (event->GetSubID())
 				{
@@ -184,6 +187,13 @@ void SHVControlTester::OnEvent(SHVEvent* event)
 					GUIManager->GetMainWindow()->SetColor(GUIManager->CreateColor(::rand()&0xFF,::rand()&0xFF,::rand()&0xFF));
 					break;
 				}
+			}
+		}
+		else if (event->GetObject() == ComboBox)
+		{
+			if (SHVEvent::Equals(event,SHVControlComboBox::EventSelectedChanged))
+			{
+				GUIManager->ShowMessageBox(SHVStringC(_T("Selected item ")) + SHVStringC::LongToString(ComboBox->GetSelected()) + SHVStringC(_T(", ")) + ComboBox->GetItemText(ComboBox->GetSelected()));
 			}
 		}
 	}
@@ -215,6 +225,8 @@ SHVRegionRef rgn = GUIManager->CreateRegion(container);
 	rgn->Move(Button)->Bottom()->AlignHorizontal(NULL,NULL,SHVRegion::AlignHCenter)->ClipBottom(4);
 
 	rgn->Move(LabelCustomDraw)->FillHorizontal()->Top()->ClipTop();
+
+	rgn->Move(ComboBox)->CtrlWidth(200)->Top()->Left()->ClipTop();
 }
 
 void SHVControlTester::OnDrawLabel(SHVEvent* event)

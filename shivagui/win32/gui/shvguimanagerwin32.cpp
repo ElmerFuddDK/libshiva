@@ -47,6 +47,7 @@
 #include "shvcontrolimplementerbuttonwin32.h"
 #include "shvcontrolimplementertabwin32.h"
 #include "shvcontrolimplementerdatetimewin32.h"
+#include "shvcontrolimplementercomboboxwin32.h"
 #include "../../../include/gui/shvcontrolcreator.h"
 #include "../../../include/gui/shvcontrolcreatorsubtype.h"
 #include "../../utilsimpl/shvregionimpl.h"
@@ -105,6 +106,11 @@ HINSTANCE hInstance = (HINSTANCE)GetConfig().FindPtr(CfgInstanceHandle).ToPtr();
 		new SHVControlCreatorSubType<SHVControlDateTime,SHVControlImplementerDateTimeWin32,SHVControlDateTime::SubTypeShortDate>());
 	RegisterFactory(SHVControl::TypeDateTime,SHVControlDateTime::SubTypeTime,
 		new SHVControlCreatorSubType<SHVControlDateTime,SHVControlImplementerDateTimeWin32,SHVControlDateTime::SubTypeTime>());
+
+	RegisterFactory(SHVControl::TypeComboBox,SHVControlComboBox::SubTypeComboBox,
+		new SHVControlCreatorSubType<SHVControlComboBox,SHVControlImplementerComboBoxWin32,SHVControlComboBox::SubTypeComboBox>());
+	RegisterFactory(SHVControl::TypeComboBox,SHVControlComboBox::SubTypeComboBoxList,
+		new SHVControlCreatorSubType<SHVControlComboBox,SHVControlImplementerComboBoxWin32,SHVControlComboBox::SubTypeComboBoxList>());
 
 
 	// Register fonts
