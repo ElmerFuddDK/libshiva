@@ -20,6 +20,10 @@ echo Building modules/dataengine
 devenv.exe "%CD%\shivamodulelibs\dataengine\windows\dataengine.vcproj" /rebuild Debug
 devenv.exe "%CD%\shivamodulelibs\dataengine\windows\dataengine.vcproj" /rebuild Release
 
+echo Building modules/socketserver
+devenv.exe "%CD%\shivamodulelibs\socketserver\windows\socketserver.vcproj" /rebuild Debug
+devenv.exe "%CD%\shivamodulelibs\socketserver\windows\socketserver.vcproj" /rebuild Release
+
 echo Building modules/xmlstream
 devenv.exe "%CD%\shivamodulelibs\xmlstream\windows\xmlstream.vcproj" /rebuild Debug
 devenv.exe "%CD%\shivamodulelibs\xmlstream\windows\xmlstream.vcproj" /rebuild Release
