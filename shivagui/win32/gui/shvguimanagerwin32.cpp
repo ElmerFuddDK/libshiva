@@ -107,10 +107,10 @@ HINSTANCE hInstance = (HINSTANCE)GetConfig().FindPtr(CfgInstanceHandle).ToPtr();
 	RegisterFactory(SHVControl::TypeDateTime,SHVControlDateTime::SubTypeTime,
 		new SHVControlCreatorSubType<SHVControlDateTime,SHVControlImplementerDateTimeWin32,SHVControlDateTime::SubTypeTime>());
 
-	RegisterFactory(SHVControl::TypeComboBox,SHVControlComboBox::SubTypeComboBox,
-		new SHVControlCreatorSubType<SHVControlComboBox,SHVControlImplementerComboBoxWin32,SHVControlComboBox::SubTypeComboBox>());
-	RegisterFactory(SHVControl::TypeComboBox,SHVControlComboBox::SubTypeComboBoxList,
-		new SHVControlCreatorSubType<SHVControlComboBox,SHVControlImplementerComboBoxWin32,SHVControlComboBox::SubTypeComboBoxList>());
+	RegisterFactory(SHVControl::TypeComboBox,SHVControlComboBox::SubTypeEdit,
+		new SHVControlCreatorSubType<SHVControlComboBox,SHVControlImplementerComboBoxWin32,SHVControlComboBox::SubTypeEdit>());
+	RegisterFactory(SHVControl::TypeComboBox,SHVControlComboBox::SubTypeList,
+		new SHVControlCreatorSubType<SHVControlComboBox,SHVControlImplementerComboBoxWin32,SHVControlComboBox::SubTypeList>());
 
 
 	// Register fonts

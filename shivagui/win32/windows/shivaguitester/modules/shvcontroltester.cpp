@@ -98,7 +98,7 @@ SHVFontRef ownerDrawFont = GUIManager->GetFont(SHVGUIManager::CfgFontNormal)->Cr
 	LabelCustomDraw = GUIManager->NewLabelCustomDraw(subsOnDrawLabel)->SetParent(Container)->SetText(_T(""));
 	EditBox = GUIManager->NewEdit(SHVControlEdit::SubTypeMultiLine)->SetParent(Container)->SetText(_T("Edit\ntext"))->SetLimit(50);
 	Button = GUIManager->NewButton()->SetParent(Container)->SetText(_T("Click Me!"));
-	ComboBox = GUIManager->NewComboBox(SHVControlComboBox::SubTypeComboBoxList)->SetParent(Container)->SetDropdownHeight(4);
+	ComboBox = GUIManager->NewComboBox(SHVControlComboBox::SubTypeList)->SetParent(Container)->SetDropdownHeight(4);
 	ComboBox->AddItem(_T("Test1"))->AddItem(_T("Test2"))->AddItem(_T("Test3"))->AddItem(_T("Test4"))->AddItem(_T("Test5"))->SetSelected(0);
 
 

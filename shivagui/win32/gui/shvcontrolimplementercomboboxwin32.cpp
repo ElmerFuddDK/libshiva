@@ -62,11 +62,11 @@ SHVBool SHVControlImplementerComboBoxWin32::Create(SHVControl* owner, SHVControl
 
 		switch (SubType)
 		{
-		case SHVControlComboBox::SubTypeComboBox:
+		case SHVControlComboBox::SubTypeEdit:
 			styles |= CBS_DROPDOWN;
 			break;
 		default:
-		case SHVControlComboBox::SubTypeComboBoxList:
+		case SHVControlComboBox::SubTypeList:
 			styles |= CBS_DROPDOWNLIST;
 			break;
 		}

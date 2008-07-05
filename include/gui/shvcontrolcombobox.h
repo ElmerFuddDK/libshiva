@@ -20,8 +20,8 @@ public:
 
 	// defines and constants
 	enum SubTypes {
-		SubTypeComboBox = SubTypeDefault,
-		SubTypeComboBoxList
+		SubTypeEdit = SubTypeDefault,
+		SubTypeList
 	};
 
 	enum Events {
