@@ -63,6 +63,7 @@ protected:
 	size_t BufferSize;
 	///\endcond
 };
+typedef SHVRefObjectContainer<SHVBufferCStream> SHVBufferCStreamRef;
 
 
 // ============================================= implementation ============================================= //
