@@ -362,12 +362,14 @@ SHVControlContainerRef refToSelf;
 	case WM_ACTIVATE:
 #ifdef __SHIVA_POCKETPC
 		// Notify shell of our activate message
-		SHHandleWMActivate(hWnd, wParam, lParam, &self->s_sai, FALSE);
+		if (self)
+			SHHandleWMActivate(hWnd, wParam, lParam, &self->s_sai, FALSE);
 #endif
      	break;
 	case WM_SETTINGCHANGE:
 #ifdef __SHIVA_POCKETPC
-		SHHandleWMSettingChange(hWnd, wParam, lParam, &self->s_sai);
+		if (self)
+			SHHandleWMSettingChange(hWnd, wParam, lParam, &self->s_sai);
 #endif
 		break;
 	case WM_DESTROY:
