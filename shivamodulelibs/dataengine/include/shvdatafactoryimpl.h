@@ -50,6 +50,7 @@ public:
 	virtual SHVBool RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear = false, SHVDataSession* useSession = NULL);
 	virtual size_t RegisterIndex(const SHVString8C& table, SHVDataRowKey* IndexKey, SHVDataSession* useSession = NULL);
 	virtual SHVBool UnregisterAlias(const SHVString8C& alias, SHVDataSession* useSession = NULL);
+	virtual SHVBool DropAlias(const SHVString8C& table, const SHVString8C& alias, SHVDataSession* useSession = NULL);
 	virtual SHVBool ClearTable(const SHVString8C& table, SHVDataSession* useSession = NULL);
 
 	virtual const SHVDataStructC* FindStruct(const SHVString8C& table) const;
@@ -86,6 +87,7 @@ protected:
 	virtual SHVDataStructReg* InternalFindAlias(const SHVString8C& table) const;
 	virtual const size_t InternalFindStruct(const SHVString8C& table) const;
 	virtual void SchemaChanged(SHVSQLiteWrapper* sqlite);
+	virtual SHVBool InternalDropAlias(const SHVString8C& table, const SHVString8C& alias, SHVDataStructReg* aliasfound, SHVDataSession* useSession);
 
 	// from SHVDataFactory
 	virtual void RegisterDataSession(SHVDataSession* session);

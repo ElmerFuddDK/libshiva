@@ -115,6 +115,14 @@ SHVBool SHVDataEngineImpl::UnregisterAlias(const SHVString8C& alias, SHVDataSess
 }
 
 /*************************************
+ * DropAlias
+ *************************************/
+SHVBool SHVDataEngineImpl::DropAlias(const SHVString8C& table, const SHVString8C& alias, SHVDataSession* useSession)
+{
+	return Factory->DropAlias(table, alias, useSession);
+}
+
+/*************************************
  * ClearTable
  *************************************/
 SHVBool SHVDataEngineImpl::ClearTable(const SHVString8C &table, SHVDataSession *useSession)
@@ -246,20 +254,7 @@ SHVDataFactory* SHVDataEngineImpl::GetDefaultFactory()
  *************************************/
 void SHVDataEngineImpl::SubscribeRowChange(SHVEventSubscriberBase* sub)
 {
-}
-
-/*************************************
- * RegisterDataList
- *************************************/
-void SHVDataEngineImpl::RegisterDataList(SHVDataRowListC* rowList)
-{
-}
-
-/*************************************
- * UnregisterDataList
- *************************************/
-void SHVDataEngineImpl::UnregisterDataList(SHVDataRowListC* rowList)
-{
+	Factory->SubscribeRowChange(sub);
 }
 
 /*************************************

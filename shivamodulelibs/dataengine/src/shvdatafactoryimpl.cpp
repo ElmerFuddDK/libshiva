@@ -277,46 +277,30 @@ SHVSQLiteWrapperRef SQLite = (useSession ? (SHVSQLiteWrapper*) useSession->GetPr
 SHVBool SHVDataFactoryImpl::UnregisterAlias(const SHVString8C& alias, SHVDataSession* useSession)
 {
 SHVDataFactoryExclusiveLocker lock(this);
-SHVBool retVal = SHVBool::False;
 SHVDataStructReg* aliasfound;
-SHVStringSQLite rest("");
-SHVSQLiteWrapperRef SQLite = (useSession ? (SHVSQLiteWrapper*) useSession->GetProvider() : DataEngine.CreateConnection(Ok, Database));
 
 	aliasfound = InternalFindAlias(alias);	
 	SHVASSERT(!aliasfound || aliasfound->GetAliasID() != -1);
-	InternalBeginTransaction(SQLite);
 	if (aliasfound)
-	{
-		aliasfound->SetDeleted(true);
-		SQLite->ExecuteUTF8(retVal, SHVStringUTF8C::Format("drop view %s", alias.GetSafeBuffer()), rest);
-		if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
-		{
-			SQLite->ExecuteUTF8(retVal, 
-				SHVStringUTF8C::Format("delete from %s where shv_alias=%d", 
-					aliasfound->GetStruct().GetTableName(), 
-					aliasfound->GetAliasID()
-				), 
-				rest);
-			if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
-			{
-				SQLite->ExecuteUTF8(retVal, 
-					SHVStringUTF8C::Format("delete from shv_alias where id=%d",
-						aliasfound->GetAliasID()
-					), 
-					rest);
-			}
-			retVal = (retVal == SHVSQLiteWrapper::SQLite_DONE ? SHVBool::True : retVal);
-		}		
-	}
-	if (retVal)
-	{
-		SchemaHasChanged = true;
-		InternalEndTransaction(SQLite);
-	}
+		return InternalDropAlias(aliasfound->GetStruct().GetTableName(), alias, aliasfound, useSession);
 	else
-		InternalRollbackTransaction(SQLite);
-	return retVal;
+		return SHVBool::False;
 }
+
+/*************************************
+ * DropAlias
+ *************************************/
+SHVBool SHVDataFactoryImpl::DropAlias(const SHVString8C& table, const SHVString8C& alias, SHVDataSession* useSession)
+{
+SHVDataFactoryExclusiveLocker lock(this);
+SHVBool retVal = SHVBool::False;
+SHVDataStructReg* aliasfound;
+
+	aliasfound = InternalFindAlias(alias);	
+	SHVASSERT(!aliasfound || aliasfound->GetAliasID() != -1);
+	return InternalDropAlias(table, alias, aliasfound, useSession);
+}
+
 
 /*************************************
  * ClearTable
@@ -791,6 +775,53 @@ SHVListIterator<SHVDataSession*> Iter(ActiveSessions);
 			SHVDataFactory::SchemaChanged(Iter.Get());
 	}
 	SessionLock.Unlock();
+}
+
+/*************************************
+ * InternalDropAlias
+ *************************************/
+SHVBool SHVDataFactoryImpl::InternalDropAlias(const SHVString8C& table, const SHVString8C& alias, SHVDataStructReg* aliasfound, SHVDataSession* useSession)
+{
+int id = -1;
+SHVBool retVal = SHVBool::False;
+SHVStringSQLite rest("");
+SHVSQLiteWrapperRef SQLite = (useSession ? (SHVSQLiteWrapper*) useSession->GetProvider() : DataEngine.CreateConnection(Ok, Database));
+
+	if (aliasfound)
+		id = aliasfound->GetAliasID();
+	else
+		id = GetAliasID(SQLite, alias, false);
+	SHVASSERT(id != -1);
+	InternalBeginTransaction(SQLite);
+	if (aliasfound)
+		aliasfound->SetDeleted(true);
+	SQLite->ExecuteUTF8(retVal, SHVStringUTF8C::Format("drop view %s", alias.GetSafeBuffer()), rest);
+	if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+	{
+		SQLite->ExecuteUTF8(retVal, 
+			SHVStringUTF8C::Format("delete from %s where shv_alias=%d", 
+				table.GetSafeBuffer(), 
+				id
+			), 
+			rest);
+		if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+		{
+			SQLite->ExecuteUTF8(retVal, 
+				SHVStringUTF8C::Format("delete from shv_alias where id=%d",
+					id
+				), 
+				rest);
+		}
+		retVal = (retVal == SHVSQLiteWrapper::SQLite_DONE ? SHVBool::True : retVal);
+	}
+	if (retVal)
+	{
+		SchemaHasChanged = true;
+		InternalEndTransaction(SQLite);
+	}
+	else
+		InternalRollbackTransaction(SQLite);
+	return retVal;
 }
 
 /*************************************
