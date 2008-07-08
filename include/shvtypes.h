@@ -136,8 +136,12 @@ public:
 	inline operator int();
 	inline operator SHVHashValue() const;
 	inline SHVInt& operator =(const SHVInt& val);
-	inline SHVInt& operator =(const int* val);
 	inline bool operator==(const SHVInt& val) const;
+
+
+	// statics
+	inline static SHVInt FromIntPtr(const int* val);
+
 
 private:
 	///\cond INTERNAL
@@ -175,8 +179,12 @@ public:
 	inline operator SHVInt64Val();
 	inline operator SHVHashValue() const;
 	inline SHVInt64& operator =(const SHVInt64& val);
-	inline SHVInt64& operator =(const SHVInt64Val* val);
 	inline bool operator==(const SHVInt64& val) const;
+
+
+	// statics
+	inline static SHVInt64 FromInt64Ptr(const SHVInt64Val* val);
+
 
 private:
 	///\cond INTERNAL
@@ -214,8 +222,12 @@ public:
 	inline operator double();
 	inline operator SHVHashValue() const;
 	inline SHVDouble& operator =(const SHVDouble& val);
-	inline SHVDouble& operator =(const double* val);
 	inline bool operator==(const SHVDouble& val) const;
+
+
+	// statics
+	inline static SHVDouble FromDoublePtr(const double* val);
+
 
 private:
 	///\cond INTERNAL
@@ -275,8 +287,9 @@ bool SHVBool::operator!() const { return Val != True; }
 SHVInt::operator int() { return Val; }
 SHVInt::operator SHVHashValue() const { return ( Null ? 0 : Val ); } // makes sure the null integer is smaller than whatever matches its hash key (zero)
 SHVInt& SHVInt::operator =(const SHVInt& val) { Null = val.Null; Val = val.Val; return *this; }
-SHVInt& SHVInt::operator =(const int* val) { if (val) { Null = false; Val = *val; } else SetToNull(); return *this; }
 bool SHVInt::operator==(const SHVInt& val) const { return ( (val.Null && Null) || ( val.Null == Null && val.Val == Val ) ); }
+
+SHVInt SHVInt::FromIntPtr(const int* val) { if (val) return SHVInt(*val); return SHVInt(); }
 
 SHVInt64::operator SHVInt64Val() { return Val; }
 SHVInt64::operator SHVHashValue() const
@@ -288,13 +301,15 @@ SHVByte* buf = (SHVByte*)&Val;
 	return retVal;
 }
 SHVInt64& SHVInt64::operator =(const SHVInt64& val) { Null = val.Null; Val = val.Val; return *this; }
-SHVInt64& SHVInt64::operator =(const SHVInt64Val* val) { if (val) { Null = false; Val = *val; } else SetToNull(); return *this; }
 bool SHVInt64::operator==(const SHVInt64& val) const { return ( (val.Null && Null) || ( val.Null == Null && val.Val == Val ) ); }
+
+SHVInt64 SHVInt64::FromInt64Ptr(const SHVInt64Val* val) { if (val) return SHVInt64(*val); return SHVInt64(); }
 
 SHVDouble::operator double() { return Val; }
 SHVDouble::operator SHVHashValue() const { unsigned char* ptr = (unsigned char*)this; size_t retVal = 0; for (size_t i=0; i<sizeof(SHVDouble); i++,ptr++) retVal += *ptr; return retVal; }
 SHVDouble& SHVDouble::operator =(const SHVDouble& val) { Null = val.Null; Val = val.Val; return *this; }
-SHVDouble& SHVDouble::operator =(const double* val) { if (val) { Null = false; Val = *val; } else SetToNull(); return *this; }
 bool SHVDouble::operator==(const SHVDouble& val) const { return ( (val.Null && Null) || ( val.Null == Null && val.Val == Val ) ); }
+
+SHVDouble SHVDouble::FromDoublePtr(const double* val) { if (val) return SHVDouble(*val); return SHVDouble(); }
 
 #endif
