@@ -153,6 +153,48 @@ SHVLINEDRAW;
 }
 
 /*************************************
+ * DrawEdgeAndShrink
+ *************************************/
+void SHVDrawWin32::DrawEdgeAndShrink(SHVRect& rect, SHVDraw::EdgeTypes type, int flags)
+{
+RECT winRect(MapRect(rect));
+UINT winType, winFlags;
+
+	winFlags = BF_ADJUST;
+
+	switch (type)
+	{
+	default:
+		SHVASSERT(false); // unknown type
+	case SHVDraw::EdgeTypeFrame:
+		winType = EDGE_ETCHED;
+		break;
+	case SHVDraw::EdgeTypeRaised:
+		winType = ( flags&SHVDraw::EdgeFlagThick ? EDGE_RAISED : BDR_RAISEDINNER );
+		break;
+	case SHVDraw::EdgeTypeSunken:
+		winType = ( flags&SHVDraw::EdgeFlagThick ? EDGE_SUNKEN : BDR_SUNKENINNER );
+		break;
+	case SHVDraw::EdgeTypeFlat:
+		winType = ( flags&SHVDraw::EdgeFlagThick ? EDGE_RAISED : BDR_RAISEDINNER );
+		winFlags |= BF_FLAT;
+	}
+
+	if (flags&SHVDraw::EdgeFlagLeft)
+		winFlags |= BF_LEFT;
+	if (flags&SHVDraw::EdgeFlagTop)
+		winFlags |= BF_TOP;
+	if (flags&SHVDraw::EdgeFlagRight)
+		winFlags |= BF_RIGHT;
+	if (flags&SHVDraw::EdgeFlagBottom)
+		winFlags |= BF_BOTTOM;
+
+	::DrawEdge(hDC,&winRect,winType,winFlags);
+
+	rect = MapRect(winRect);
+}
+
+/*************************************
  * DrawRectFilled
  *************************************/
 void SHVDrawWin32::DrawRectFilled(SHVRect rect, SHVColor* color)

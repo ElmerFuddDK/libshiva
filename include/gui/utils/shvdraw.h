@@ -40,6 +40,24 @@ public:
 		TextDefault = TextSingleLine|TextVCenter|TextEndEllipsis
 	};
 
+	enum EdgeTypes {
+		EdgeTypeSunken,
+		EdgeTypeRaised,
+		EdgeTypeFlat,
+		EdgeTypeFrame,
+		EdgeTypeDefault = EdgeTypeSunken
+	};
+
+	enum EdgeFlags {
+		EdgeFlagLeft = 1,
+		EdgeFlagRight = 2,
+		EdgeFlagTop = 4,
+		EdgeFlagBottom = 8,
+		EdgeFlagRect = EdgeFlagLeft|EdgeFlagRight|EdgeFlagTop|EdgeFlagBottom,
+		EdgeFlagThick = 16,
+		EdgeFlagDefault = EdgeFlagRect
+	};
+
 
 	// Access to the GUI manager
 	inline SHVGUIManager* GetManager();
@@ -64,6 +82,8 @@ public:
 	// DrawRect
 	virtual void DrawRect(SHVRect rect, SHVColor* color) = 0;
 	virtual void DrawRectFilled(SHVRect rect, SHVColor* color) = 0;
+	inline  void DrawEdge(SHVRect rect, EdgeTypes type = EdgeTypeDefault, int flags = EdgeFlagDefault);
+	virtual void DrawEdgeAndShrink(SHVRect& rect, EdgeTypes type = EdgeTypeDefault, int flags = EdgeFlagDefault) = 0;
 
 	virtual void DrawXORRect(SHVRect rect) = 0;
 
@@ -112,6 +132,14 @@ SHVDraw::SHVDraw(SHVGUIManager* manager) : GUIManager(manager)
 SHVGUIManager* SHVDraw::GetManager()
 {
 	return GUIManager;
+}
+
+/*************************************
+ * DrawEdge
+ *************************************/
+void SHVDraw::DrawEdge(SHVRect rect, SHVDraw::EdgeTypes type, int flags)
+{
+	DrawEdgeAndShrink(rect,type,flags);
 }
 
 /*************************************

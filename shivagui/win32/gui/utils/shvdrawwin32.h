@@ -48,6 +48,7 @@ public:
 	// DrawRect
 	virtual void DrawRect(SHVRect rect, SHVColor* color);
 	virtual void DrawRectFilled(SHVRect rect, SHVColor* color);
+	virtual void DrawEdgeAndShrink(SHVRect& rect, EdgeTypes type = EdgeTypeDefault, int flags = EdgeFlagDefault);
 
 	virtual void DrawXORRect(SHVRect rect);
 
