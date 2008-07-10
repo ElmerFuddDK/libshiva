@@ -36,10 +36,10 @@ public:
 
 	virtual SHVBool PreClose();
 
-protected:
-
 	inline SHVGUIManager* GetManager();
 	inline SHVControlContainer* GetContainer();
+
+protected:
 
 	virtual void SetStandardLayoutEngine(); // sets a standard layout engine that calls onresizeform
 	virtual void OnResizeForm(SHVControlContainer* container, SHVControlLayout* layout);
