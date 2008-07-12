@@ -140,7 +140,8 @@ SHVSocketImpl::~SHVSocketImpl()
 {
 	if (Socket != InvalidSocket)
 	{
-		//::shutdown(Socket, 2); // close both recv and send
+		if (State == StateConnected)
+			::shutdown(Socket, 2); // close both recv and send
 #ifdef __SHIVA_WIN32
 		::closesocket(Socket);
 #else
@@ -318,11 +319,14 @@ SHVBool SHVSocketImpl::Close()
 	{
 	int tempUnlocks;
 	SHVSOCKTYPE sock = Socket;
+	States oldState = State;
+
 		Socket = InvalidSocket;
 		SetError(SHVSocket::ErrClosed);
 		tempUnlocks = SocketServer->SocketServerLock.UnlockAll(); // totally free the lock since this close might block
 		
-		::shutdown(sock, 2); // close both recv and send
+		if (oldState == StateConnected)
+			::shutdown(sock, 2); // close both recv and send
 #ifdef __SHIVA_WIN32
 		::closesocket(sock);
 #else
