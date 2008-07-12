@@ -12,6 +12,9 @@
 																///< ID is delay in millisecs or 0 for infinite
 #define __EVENT_GLOBAL_DELAYSHUTDOWNFINISHED "DelayShutdownFinished" ///< send this to cancel delay shutdown
 
+#define __EVENT_GLOBAL_DEBUGMSG              "DebugMSG" ///< Emit this to send debug messages
+#define __EVENT_GLOBAL_LOGMSG                "LogMSG"   ///< Emit this to log messages
+
 
 class SHVModuleListIterator;
 class SHVEventQueueList;
