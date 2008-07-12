@@ -62,6 +62,9 @@ public:
 
 protected:
 friend class SHVMenuWin32;
+#ifdef __SHIVA_POCKETPC
+friend class SHVMenuCommandBarPocketPC;
+#endif
 
 	virtual void EmitControlEvent(SHVControl* control, SHVInt controlEvent);
 

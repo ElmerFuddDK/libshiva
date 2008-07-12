@@ -13,6 +13,7 @@
 
 #ifdef __SHIVA_POCKETPC
 # include <aygshell.h>
+# include "shvmenuwin32.h"
 #endif
 
 
@@ -73,7 +74,7 @@ private:
 	SHVPoint DecorationsSize;
 	SHVColorRef Color;
 #ifdef __SHIVA_POCKETPC
-	HWND hCmdWnd;
+	SHVMenuCommandBarPocketPCPtr CmdWnd;
 	SHACTIVATEINFO s_sai;
 #endif
 

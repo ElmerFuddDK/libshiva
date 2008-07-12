@@ -11,6 +11,11 @@
 # error This code does not work in MFC mode
 #endif
 
+#ifdef __SHIVA_POCKETPC
+///\cond INTERNAL
+class SHVMenuCommandBarPocketPC;
+///\endcond
+#endif
 
 //-=========================================================================================================
 /// SHVMenuWin32
@@ -40,9 +45,18 @@ public:
 
 	void EmitEvent(SHVInt id);
 
+
+
 private:
 	///\cond INTERNAL
 	void EnsureMenuCreated();
+
+#ifdef __SHIVA_POCKETPC
+friend class SHVMenuCommandBarPocketPC;
+	SHVMenuCommandBarPocketPC* CmdBar;
+	SHVString TopLevelMenuName;
+	bool TopLevelNeedSeparator;
+#endif
 
 	HMENU hMenuTopLevel;
 	HMENU hMenu;
@@ -52,5 +66,39 @@ private:
 	SHVControl* Parent;
 	///\endcond
 };
+
+
+#ifdef __SHIVA_POCKETPC
+///\cond INTERNAL
+
+//-=========================================================================================================
+/// SHVMenuCommandBarPocketPC
+/**
+ * Internal class for handling the command bar in PocketPC
+ */
+
+class SHVMenuCommandBarPocketPC
+{
+public:
+
+	SHVMenuCommandBarPocketPC(HWND parent, HINSTANCE hInstance, SHVGUIManagerWin32* manager);
+	~SHVMenuCommandBarPocketPC();
+
+
+	void InitializeMenu(SHVMenuWin32* menu);
+	bool SetMenu(HWND parent, HMENU hmenu, const SHVStringC menuName); // returns true if the menu needs to be shown
+	bool OnCommandMsg(HWND hWnd, WPARAM wParam, LPARAM lParam); // returns true if it thinks this message is for this command bar
+
+
+	HWND hCmdWnd;
+
+protected:
+	HMENU hMenu;
+	HINSTANCE hInstance;
+	SHVGUIManagerWin32* Manager;
+};
+typedef SHVPtrContainer<SHVMenuCommandBarPocketPC> SHVMenuCommandBarPocketPCPtr;
+///\endcond
+#endif
 
 #endif

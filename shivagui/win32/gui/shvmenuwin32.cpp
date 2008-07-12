@@ -43,7 +43,9 @@
 #endif
 
 ///\todo Implement control container menu support in windows CE
-#ifdef __SHIVA_WINCE
+#if defined(__SHIVA_POCKETPC)
+# include <aygshell.h>
+#elif defined(__SHIVA_WINCE)
 HMENU GetMenu(HWND hWnd)
 {
 	return NULL;
@@ -65,6 +67,11 @@ SHVMenuWin32::SHVMenuWin32(SHVGUIManagerWin32* manager, SHVMenu::Types type, SHV
 {
 	hMenuTopLevel = NULL;
 	hMenu = NULL;
+
+#ifdef __SHIVA_POCKETPC
+	CmdBar = NULL;
+	TopLevelNeedSeparator = false;
+#endif
 }
 
 /*************************************
@@ -98,6 +105,9 @@ void SHVMenuWin32::AddStringItem(SHVInt id, const SHVStringC name)
 	{
 	int cmdID = Manager->CreateCommandID(hMenuTopLevel,id);
 		::AppendMenu(hMenu,MF_STRING,cmdID,name.GetSafeBuffer());
+#ifdef __SHIVA_POCKETPC
+		TopLevelNeedSeparator = (Type == TypeControlContainer);
+#endif
 	}
 }
 
@@ -109,6 +119,9 @@ void SHVMenuWin32::AddSeparator()
 	EnsureMenuCreated();
 	if (hMenu)
 		::AppendMenu(hMenu,MF_SEPARATOR,0,_T(""));
+#ifdef __SHIVA_POCKETPC
+	TopLevelNeedSeparator = false;
+#endif
 }
 
 /*************************************
@@ -116,12 +129,30 @@ void SHVMenuWin32::AddSeparator()
  *************************************/
 SHVMenu* SHVMenuWin32::AddSubMenu(const SHVStringC name)
 {
+	// a hack that makes the first sub menu the main menu
+#ifdef __SHIVA_POCKETPC
+	if (!hMenu && Type == TypeControlContainer)
+	{
+		EnsureMenuCreated();
+		TopLevelMenuName = name;
+		return this;
+	}
+	else if (hMenu && TopLevelNeedSeparator)
+	{
+		AddSeparator();
+		TopLevelNeedSeparator = false;
+	}
+#endif
+
 	EnsureMenuCreated();
 	if (hMenu)
 	{
 	SHVMenuWin32* retVal = new SHVMenuWin32(Manager,SHVMenu::TypeSub, NULL, Parent);
 		retVal->hMenu = ::CreatePopupMenu();
 		retVal->hMenuTopLevel = hMenuTopLevel;
+#ifdef __SHIVA_POCKETPC
+		retVal->CmdBar = CmdBar;
+#endif
 		::AppendMenu(hMenu,MF_POPUP,(UINT_PTR)retVal->hMenu,name.GetSafeBuffer());
 		return retVal;
 	}
@@ -184,6 +215,18 @@ int flags;
 			}
 			break;
 		case TypeControlContainer:
+#ifdef __SHIVA_POCKETPC
+			SHVUNUSED_PARAM(oldMenu);
+			if (!CmdBar || !CmdBar->hCmdWnd)
+			{
+				Manager->RemoveCommandIDs(hMenu);
+				Manager->MenuMap.Remove(hMenu); // will destroy us
+			}
+			else
+			{
+				CmdBar->SetMenu(hParent, hMenu, TopLevelMenuName);
+			}
+#else
 			oldMenu = ::GetMenu(hParent);
 			if (oldMenu)
 			{
@@ -195,27 +238,27 @@ int flags;
 				::DestroyMenu(oldMenu);
 			}
 			::SetMenu(hParent,hMenu);
+#endif
 			break;
 		default:
 			SHVASSERT(false);
 			return;
 		}
 	}
-}
-
-/*************************************
- * EnsureMenuCreated
- *************************************/
-void SHVMenuWin32::EnsureMenuCreated()
-{
-	if (!hMenu)
+#ifdef __SHIVA_POCKETPC
+	else if (Type == TypeControlContainer && hMenu && hParent && Manager->MenuMap.Find(hMenu))
 	{
-		hMenuTopLevel = hMenu = ( Type == TypePopup ? ::CreatePopupMenu() :  ::CreateMenu() );
+	int cmd = ::TrackPopupMenu(hMenu,TPM_LEFTBUTTON|TPM_RIGHTBUTTON|TPM_LEFTALIGN|TPM_BOTTOMALIGN|TPM_RETURNCMD,offset.x,offset.y,0,hParent,NULL);
+		if (!cmd)
+			EmitEvent(SHVInt());
+		else
+			::PostMessage(Win32::GetHandle(Manager->GetMainWindow()),WM_COMMAND,cmd,NULL);
 	}
+#endif
 }
 
 /*************************************
- * EnsureMenuCreated
+ * EmitEvent
  *************************************/
 void SHVMenuWin32::EmitEvent(SHVInt id)
 {
@@ -236,3 +279,162 @@ SHVMenuRef refSelf = this; // make sure we aren't destroyed in this process
 		::DestroyMenu(tmpMenu);
 	}
 }
+
+///\cond INTERNAL
+/*************************************
+ * EnsureMenuCreated
+ *************************************/
+void SHVMenuWin32::EnsureMenuCreated()
+{
+	if (!hMenu)
+	{
+#ifdef __SHIVA_POCKETPC
+		hMenuTopLevel = hMenu = ::CreatePopupMenu();
+#else
+		hMenuTopLevel = hMenu = ( Type == TypePopup ? ::CreatePopupMenu() :  ::CreateMenu() );
+#endif
+	}
+}
+
+
+#ifdef __SHIVA_POCKETPC
+//=========================================================================================================
+// SHVMenuCommandBarPocketPC
+//=========================================================================================================
+
+/*************************************
+ * Consrtructor
+ *************************************/
+SHVMenuCommandBarPocketPC::SHVMenuCommandBarPocketPC(HWND parent, HINSTANCE hinstance, SHVGUIManagerWin32* manager)
+	: hInstance(hinstance), Manager(manager)
+{
+SHMENUBARINFO mbi;
+
+	hMenu = NULL;
+
+	memset(&mbi, 0, sizeof(SHMENUBARINFO));
+	mbi.cbSize     = sizeof(SHMENUBARINFO);
+	mbi.hwndParent = parent;
+	mbi.nToolBarId = 100;
+	mbi.hInstRes   = hInstance;
+	mbi.nBmpId     = 0;
+	mbi.cBmpImages = 0;
+	mbi.dwFlags    = SHCMBF_EMPTYBAR;
+
+	SHCreateMenuBar(&mbi);
+	hCmdWnd = mbi.hwndMB;
+
+}
+
+/*************************************
+ * Destructor
+ *************************************/
+SHVMenuCommandBarPocketPC::~SHVMenuCommandBarPocketPC()
+{
+	if (hCmdWnd)
+		CommandBar_Destroy(hCmdWnd);
+
+	SetMenu(NULL, NULL, NULL);
+}
+
+
+/*************************************
+ * InitializeMenu
+ *************************************/
+void SHVMenuCommandBarPocketPC::InitializeMenu(SHVMenuWin32* menu)
+{
+	if (menu && menu->Type == SHVMenu::TypeControlContainer)
+		menu->CmdBar = this;
+}
+
+/*************************************
+ * Show
+ *************************************/
+bool SHVMenuCommandBarPocketPC::SetMenu(HWND parent, HMENU hmenu, const SHVStringC menuName) // returns true if the menu needs to be shown
+{
+
+	if (hMenu && hMenu == hmenu)
+		return true;
+
+	if (hMenu)
+	{
+	SHMENUBARINFO mbi;
+
+		// Reset the command bar
+		SHVVERIFY(::DestroyWindow(hCmdWnd));
+		memset(&mbi, 0, sizeof(SHMENUBARINFO));
+		mbi.cbSize     = sizeof(SHMENUBARINFO);
+		mbi.hwndParent = parent;
+		mbi.nToolBarId = 100;
+		mbi.hInstRes   = hInstance;
+		mbi.nBmpId     = 0;
+		mbi.cBmpImages = 0;
+		mbi.dwFlags    = SHCMBF_EMPTYBAR;
+
+		SHCreateMenuBar(&mbi);
+		hCmdWnd = mbi.hwndMB;
+
+
+		// Remove the old menu stuff, thus destroying it
+		Manager->RemoveCommandIDs(hMenu);
+		Manager->MenuMap.Remove(hMenu);
+		hMenu = NULL; // rely on the SHVMenuWin32 destructor to delete it
+	}
+
+	hMenu = hmenu;
+
+	if (hMenu)
+	{
+	TBBUTTON tbButton;
+
+		///\todo figure out why the buttons don't get shown on older pocket pc's
+
+		memset(&tbButton, 0, sizeof(TBBUTTON));
+		tbButton.iBitmap   = I_IMAGENONE;
+		tbButton.fsState   = TBSTATE_ENABLED;
+		tbButton.fsStyle   = TBSTYLE_BUTTON|TBSTYLE_AUTOSIZE;
+		tbButton.dwData    = 0;
+		tbButton.idCommand = 0;
+		tbButton.iString   = ::SendMessage(hCmdWnd, TB_ADDSTRING,NULL,(LPARAM)menuName.GetSafeBuffer());
+		::SendMessage(hCmdWnd,TB_INSERTBUTTON,::SendMessage(hCmdWnd,TB_BUTTONCOUNT,0,0),(LPARAM)&tbButton);
+
+		memset(&tbButton, 0, sizeof(TBBUTTON));
+		tbButton.iBitmap   = I_IMAGENONE;
+		tbButton.fsState   = TBSTATE_ENABLED;
+		tbButton.fsStyle   = TBSTYLE_BUTTON|TBSTYLE_AUTOSIZE;
+		tbButton.dwData    = 0;
+		tbButton.idCommand = 1;
+		tbButton.iString   = ::SendMessage(hCmdWnd, TB_ADDSTRING,NULL,(LPARAM)_T("Close")); ///\todo Add some way to obtain a better close button text
+		::SendMessage(hCmdWnd,TB_INSERTBUTTON,::SendMessage(hCmdWnd,TB_BUTTONCOUNT,0,0),(LPARAM)&tbButton);
+
+	}
+
+	return false;
+}
+
+/*************************************
+ * OnCommandMsg
+ *************************************/
+bool SHVMenuCommandBarPocketPC::OnCommandMsg(HWND hWnd, WPARAM wParam, LPARAM lParam) // returns true if it thinks this message is for this command bar
+{
+	if (!HIWORD(wParam))
+	{
+		if (LOWORD(wParam) == 0)
+		{
+			if (hMenu && Manager->MenuMap.Find(hMenu))
+			{
+			RECT rect;
+				::GetWindowRect(hCmdWnd,&rect);
+				Manager->MenuMap[hMenu]->Show(SHVMenu::PopupDefault,SHVPoint(rect.left,rect.top));
+			}
+		}
+		else if (LOWORD(wParam) == 1)
+		{
+			::PostMessage(hWnd,WM_CLOSE,0,0);
+		}
+		return true;
+	}
+	return false;
+}
+#endif
+///\endcond

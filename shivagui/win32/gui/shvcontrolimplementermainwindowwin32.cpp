@@ -112,28 +112,20 @@ SHVBool retVal(parent == NULL && !IsCreated());
 		{
 		RECT winRect, clientRect;
 #ifdef __SHIVA_POCKETPC
-		SHMENUBARINFO mbi;
-
-			memset(&mbi, 0, sizeof(SHMENUBARINFO));
-			mbi.cbSize     = sizeof(SHMENUBARINFO);
-			mbi.hwndParent = GetHandle();
-			mbi.nToolBarId = 0;
-			mbi.hInstRes   = hInstance;
-			mbi.nBmpId     = 0;
-			mbi.cBmpImages = 0;
-			mbi.dwFlags    = SHCMBF_EMPTYBAR;
-
-			SHCreateMenuBar(&mbi);
-			hCmdWnd = mbi.hwndMB;
+			CmdWnd = new SHVMenuCommandBarPocketPC(GetHandle(),hInstance,(SHVGUIManagerWin32*)owner->GetManager());
 
 			///\todo Add a better way to determine the correct size of the initial window
-			if (hCmdWnd)
+			if (CmdWnd->hCmdWnd)
 			{
 			RECT menubarRect;
 				GetWindowRect(GetHandle(), &winRect);
-				GetWindowRect(hCmdWnd, &menubarRect);
+				GetWindowRect(CmdWnd->hCmdWnd, &menubarRect);
 				winRect.bottom -= 2*(menubarRect.bottom - menubarRect.top);
 				MoveWindow(GetHandle(), winRect.left, winRect.top, winRect.right, winRect.bottom, FALSE);
+			}
+			else
+			{
+				CmdWnd = NULL;
 			}
 #endif
 
@@ -197,7 +189,17 @@ SHVRect rect(GetRect(owner));
  *************************************/
 SHVMenu* SHVControlImplementerMainWindowWin32::CreateMenu(SHVControlContainer* owner, SHVEventSubscriberBase* subscriber)
 {
+#ifdef __SHIVA_POCKETPC
+SHVMenuWin32* retVal = NULL;
+	if (!CmdWnd.IsNull())
+	{
+		retVal = new SHVMenuWin32((SHVGUIManagerWin32*)owner->GetManager(),SHVMenu::TypeControlContainer,subscriber,owner);
+		CmdWnd->InitializeMenu(retVal);
+	}
+	return retVal;
+#else
 	return new SHVMenuWin32((SHVGUIManagerWin32*)owner->GetManager(),SHVMenu::TypeControlContainer,subscriber,owner);
+#endif
 }
 
 /*************************************
@@ -315,6 +317,7 @@ LRESULT CALLBACK SHVControlImplementerMainWindowWin32::WndProc(HWND hWnd, UINT m
 SHVControlContainer* owner = (SHVControlContainer*)GetWindowLongPtr(hWnd,0);
 SHVControlImplementerMainWindowWin32* self = (owner ? (SHVControlImplementerMainWindowWin32*)owner->GetImplementor() : NULL);
 LRESULT retVal = 0;
+SHVControlContainerRef refToSelf;
 
 	switch (message) 
 	{
@@ -367,12 +370,18 @@ LRESULT retVal = 0;
 		break;
 	case WM_DESTROY:
 #ifdef __SHIVA_POCKETPC
-		CommandBar_Destroy(self->hCmdWnd);
+		self->CmdWnd = NULL;
 #endif
 		SHVASSERT(!self->IsCreated());
 		owner->Clear();
 		PostQuitMessage(0);
 		break;
+	case WM_COMMAND:
+#ifdef __SHIVA_POCKETPC
+		if (self && !self->CmdWnd.IsNull())
+			self->CmdWnd->OnCommandMsg(hWnd,wParam,lParam);
+#endif
+		retVal = DefWindowProc(hWnd, message, wParam, lParam);
 #ifdef WM_SIZING
 	case WM_SIZING:
 		retVal = DefWindowProc(hWnd, message, wParam, lParam);

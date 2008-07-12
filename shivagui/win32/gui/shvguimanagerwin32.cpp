@@ -311,6 +311,7 @@ HWND hWnd = message->hwnd;
 				{
 				SHVMenuRef menu = MenuMap[hmenu];
 					((SHVMenuWin32*)(SHVMenu*)menu)->EmitEvent(CommandIDToValue(id));
+					retVal = true;
 				}
 			}
 			break;

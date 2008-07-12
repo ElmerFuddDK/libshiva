@@ -114,6 +114,8 @@ SHVFontRef ownerDrawFont = GUIManager->GetFont(SHVGUIManager::CfgFontNormal)->Cr
 	menu2->AddSeparator();
 	menu2->AddStringItem(__MENU_STUFF,_T("More stuff"));
 	menu2->AddStringItem(__MENU_DIALOGTST,_T("Dialog test"));
+	menu2 = menu->AddSubMenu(_T("Test2"));
+	menu2->AddStringItem(__MENU_STUFF,_T("Even more stuff"));
 	menu->Show();
 
 	SHVModule::PostRegister();
@@ -156,9 +158,9 @@ void SHVControlTester::OnEvent(SHVEvent* event)
 				{
 				case __MENU_MSGBOXES:
 					GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"),_T("Knap"),SHVGUIManager::MsgBoxOKCancel);
-					GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"));
-					GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"),_T("Knap"));
-					GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"));
+//					GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"));
+//					GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"),_T("Knap"));
+//					GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"));
 					break;
 				case __MENU_STUFF:
 					GUIManager->GetMainWindow()->SetColor(GUIManager->CreateColor(::rand()&0xFF,::rand()&0xFF,::rand()&0xFF));
