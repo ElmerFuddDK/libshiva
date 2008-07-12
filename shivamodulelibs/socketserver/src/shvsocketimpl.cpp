@@ -318,11 +318,11 @@ SHVBool SHVSocketImpl::Close()
 	{
 	int tempUnlocks;
 	SHVSOCKTYPE sock = Socket;
-		//::shutdown(Socket, 2); // close both recv and send
 		Socket = InvalidSocket;
 		SetError(SHVSocket::ErrClosed);
 		tempUnlocks = SocketServer->SocketServerLock.UnlockAll(); // totally free the lock since this close might block
 		
+		::shutdown(sock, 2); // close both recv and send
 #ifdef __SHIVA_WIN32
 		::closesocket(sock);
 #else

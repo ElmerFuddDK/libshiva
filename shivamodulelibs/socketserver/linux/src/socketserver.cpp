@@ -164,7 +164,7 @@ public:
 			{
 				if (!Socket.IsNull())
 				{
-					printf("Closing socket");
+					printf("Closing socket\n");
 					Socket->Close();
 					Socket = NULL;
 				}
