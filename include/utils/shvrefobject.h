@@ -69,7 +69,7 @@ public:
 
 	// constructor
 	inline SHVRefObjectTemplate();
-	inline SHVRefObjectTemplate(T& obj);
+	inline SHVRefObjectTemplate(const T& obj);
 
 
 	// Operators
@@ -189,7 +189,7 @@ void SHVRefObject::ValidateRefCount() { if (References <= 0 && !DeleteInProgress
 template <class T>
 SHVRefObjectTemplate<T>::SHVRefObjectTemplate() {}
 template <class T>
-SHVRefObjectTemplate<T>::SHVRefObjectTemplate(T& obj) : Obj(obj) {}
+SHVRefObjectTemplate<T>::SHVRefObjectTemplate(const T& obj) : Obj(obj) {}
 
 /*************************************
  * Operator T
