@@ -382,6 +382,7 @@ SHVControlContainerRef refToSelf;
 			self->CmdWnd->OnCommandMsg(hWnd,wParam,lParam);
 #endif
 		retVal = DefWindowProc(hWnd, message, wParam, lParam);
+		break;
 #ifdef WM_SIZING
 	case WM_SIZING:
 		retVal = DefWindowProc(hWnd, message, wParam, lParam);
