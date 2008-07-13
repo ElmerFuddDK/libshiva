@@ -40,6 +40,7 @@
 #include <commctrl.h>
 #ifdef __SHIVA_POCKETPC
 # include <sipapi.h>
+# include <aygshell.h>
 # define MENU_HEIGHT 26
 #endif
 
@@ -81,17 +82,22 @@ SHVBool SHVControlImplementerDialogWin32::Create(SHVControl* owner, SHVControlIm
 	DWORD styles = WS_VISIBLE|Win32::MapFlags(flags);
 		memset (&s_sai, 0, sizeof(s_sai));
 		s_sai.cbSize = sizeof(s_sai);
+
+		SetHandle(::CreateWindowEx(WS_EX_CONTROLPARENT, SHVWIN32CLASS_DIALOG, _T(" "), styles,
+			CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, Win32::GetInstance(owner), NULL));
+
 #else
 	DWORD styles = WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU|Win32::MapFlags(flags);
-#endif
 
 		SetHandle(::CreateWindowEx(WS_EX_CONTROLPARENT, SHVWIN32CLASS_DIALOG, _T(" "), styles,
 			CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, Win32::GetMainWndHandle(owner), NULL, Win32::GetInstance(owner), NULL));
+#endif
 
 		if (IsCreated())
 		{
 		RECT winRect, clientRect;
 #ifdef __SHIVA_POCKETPC
+		SHINITDLGINFO shidi;
 			CmdWnd = new SHVMenuCommandBarPocketPC(GetHandle(),Win32::GetInstance(owner),(SHVGUIManagerWin32*)owner->GetManager());
 
 			///\todo Add a better way to determine the correct size of the initial window
@@ -107,6 +113,11 @@ SHVBool SHVControlImplementerDialogWin32::Create(SHVControl* owner, SHVControlIm
 			{
 				CmdWnd = NULL;
 			}
+
+			shidi.dwMask = SHIDIM_FLAGS;
+			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIZEDLGFULLSCREEN;
+			shidi.hDlg = GetHandle();
+			SHInitDialog(&shidi);
 #endif
 
 			owner->SetFont(NULL,false);
@@ -378,9 +389,11 @@ SHVControlContainerRef refToSelf;
 #ifdef __SHIVA_POCKETPC
 		self->CmdWnd = NULL;
 #endif
+		///\todo Activate the next modal dialog instead of main window, if present
 		::BringWindowToTop(Win32::GetMainWndHandle(owner));
 #ifdef __SHIVA_WINCE
 		::SetFocus(Win32::GetMainWndHandle(owner));
+		::SetForegroundWindow(Win32::GetMainWndHandle(owner));
 #else
 		::SetForegroundWindow(Win32::GetMainWndHandle(owner));
 #endif
@@ -390,7 +403,9 @@ SHVControlContainerRef refToSelf;
 		break;
 	case WM_COMMAND:
 #ifdef __SHIVA_POCKETPC
-		if (self && !self->CmdWnd.IsNull())
+		if (HIWORD(wParam) == 0x1000 && LOWORD(wParam) == IDOK) // must be IDOK
+			::PostMessage(hWnd,WM_CLOSE,0,0);
+		else if (self && !self->CmdWnd.IsNull())
 			self->CmdWnd->OnCommandMsg(hWnd,wParam,lParam);
 #endif
 		retVal = DefWindowProc(hWnd, message, wParam, lParam);
