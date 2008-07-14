@@ -173,7 +173,7 @@ UINT winType, winFlags;
 		winType = ( flags&SHVDraw::EdgeFlagThick ? EDGE_RAISED : BDR_RAISEDINNER );
 		break;
 	case SHVDraw::EdgeTypeSunken:
-		winType = ( flags&SHVDraw::EdgeFlagThick ? EDGE_SUNKEN : BDR_SUNKENINNER );
+		winType = ( flags&SHVDraw::EdgeFlagThick ? EDGE_SUNKEN : BDR_SUNKENOUTER );
 		break;
 	case SHVDraw::EdgeTypeFlat:
 		winType = ( flags&SHVDraw::EdgeFlagThick ? EDGE_RAISED : BDR_RAISEDINNER );
