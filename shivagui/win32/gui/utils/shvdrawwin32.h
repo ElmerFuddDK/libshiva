@@ -60,6 +60,7 @@ public:
 	virtual void DrawBitmap(SHVBitmap* bitmap, SHVPoint position, int width, int height, SHVColor* transparentColor = NULL);
 	virtual void DrawBitmap(SHVBitmap* bitmap, SHVPoint position, SHVColor* transparentColor = NULL);
 	virtual void DrawBitmapCentered(SHVBitmap* bitmap, SHVRect rDest, SHVColor* transparentColor = NULL);
+	virtual void DrawBitmapCentered(SHVBitmap* bitmap, SHVRect rDest, int width, int height, SHVColor* transparentColor = NULL);
 
 	// Draw text
 	virtual void DrawText(const SHVStringC txt, SHVRect rect, SHVColor* color = NULL, int options = TextDefault);

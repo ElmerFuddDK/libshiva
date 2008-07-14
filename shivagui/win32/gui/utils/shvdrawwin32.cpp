@@ -334,11 +334,32 @@ void SHVDrawWin32::DrawBitmap(SHVBitmap* bitmap, SHVPoint position, SHVColor* tr
 /*************************************
  * DrawBitmapCentered
  *************************************/
-void SHVDrawWin32::DrawBitmapCentered(SHVBitmap* bitmap, SHVRect rDest, SHVColor* transparentColor)
+void SHVDrawWin32::DrawBitmapCentered(SHVBitmap* bitmap, SHVRect rDest, int width, int height, SHVColor* transparentColor)
 {
-	bitmap->ValidateRefCount();
+	if (bitmap)
+	{
+	SHVPoint p;
+
+		if (width == 0)
+			width = bitmap->GetWidth();
+		if (height == 0)
+			height = bitmap->GetHeight();
+
+		p.x = (rDest.GetWidth()-width)/2 + rDest.GetLeft();
+		p.y = (rDest.GetHeight()-height)/2 + rDest.GetTop();
+
+		DrawBitmap(bitmap,p,width,height,transparentColor);
+	}
 	if (transparentColor)
 		transparentColor->ValidateRefCount();
+}
+
+/*************************************
+ * DrawBitmapCentered
+ *************************************/
+void SHVDrawWin32::DrawBitmapCentered(SHVBitmap* bitmap, SHVRect rDest, SHVColor* transparentColor)
+{
+	DrawBitmapCentered(bitmap,rDest,0,0,transparentColor);
 }
 
 /*************************************
