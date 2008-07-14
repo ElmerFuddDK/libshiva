@@ -76,6 +76,8 @@ public:
 
 protected:
 	///\cond INTERNAL
+	void TransparentBlit(HDC bmDC, SHVPoint position, int width, int height, COLORREF colorTransparent, bool stretchmode, int targetWidth, int targetHeight);
+
 	HDC hDC;
 	HWND hWnd;
 	///\endcond

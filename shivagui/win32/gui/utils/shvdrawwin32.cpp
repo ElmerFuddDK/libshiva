@@ -311,7 +311,9 @@ HGDIOBJ oldBM;
 		bmDC = ::CreateCompatibleDC(hDC);
 		oldBM = ::SelectObject(bmDC,hBitmap);
 
-		if(width != bitmap->GetWidth() || height != bitmap->GetHeight())
+		if (transparentColor)
+			TransparentBlit(bmDC,position,bitmap->GetWidth(),bitmap->GetHeight(),((SHVColorWin32*)transparentColor)->GetColor(),(width != bitmap->GetWidth() || height != bitmap->GetHeight()),width,height);
+		else if(width != bitmap->GetWidth() || height != bitmap->GetHeight())
 			::StretchBlt(hDC,position.x, position.y, width, height, bmDC, 0,0, bitmap->GetWidth(), bitmap->GetHeight(), SRCCOPY);
 		else
 			::BitBlt(hDC,position.x, position.y, width, height, bmDC, 0, 0, SRCCOPY);
@@ -424,6 +426,62 @@ bool endEllipsis = ( (options&TextEndEllipsis) ? true : false );
 		font->ValidateRefCount();
 	if (color)
 		color->ValidateRefCount();
+}
+
+/*************************************
+ * TransparentBlit
+ *************************************/
+void SHVDrawWin32::TransparentBlit(HDC bmDC, SHVPoint position, int width, int height, COLORREF colorTransparent, bool stretchmode, int targetWidth, int targetHeight)
+{
+HDC memDC, maskDC;
+HBITMAP maskBitmap, imageBitmap;
+HGDIOBJ oldMemBmp = NULL;
+HGDIOBJ oldMaskBmp = NULL;
+HGDIOBJ oldTempBmp = NULL;
+
+	maskDC = ::CreateCompatibleDC(hDC);
+	memDC = ::CreateCompatibleDC(hDC);
+	
+	
+	imageBitmap = ::CreateCompatibleBitmap( hDC, width, height );
+	oldMemBmp = ::SelectObject( memDC, imageBitmap );
+	
+	::BitBlt(memDC,0,0,width, height, bmDC, 0, 0, SRCCOPY );
+	
+	maskBitmap = ::CreateBitmap( width, height, 1, 1, NULL );	// Create monochrome bitmap for the mask
+	oldMaskBmp = ::SelectObject(maskDC, maskBitmap );
+	::SetBkColor(memDC, colorTransparent);
+	
+	::BitBlt(maskDC, 0, 0, width, height, memDC, 0, 0, SRCCOPY);	// Create the mask from the memory DC
+	
+	// Set the background in memDC to black. Using SRCPAINT with black 
+	// and any other color results in the other color, thus making 
+	// black the transparent color
+	::SetBkColor(memDC,RGB(0,0,0));
+	::SetTextColor(memDC,RGB(255,255,255));
+	::BitBlt(memDC, 0, 0, width, height, maskDC, 0, 0, SRCAND);
+	
+	::SetTextColor(hDC,RGB(0,0,0));	// Set the foreground to black. See comment above.
+	::SetBkColor(hDC,RGB(255,255,255));
+
+	if (stretchmode)
+	{
+		::StretchBlt(hDC, position.x, position.y, targetWidth, targetHeight, maskDC, 0, 0, width, height, SRCAND);
+		::StretchBlt(hDC, position.x, position.y, targetWidth, targetHeight, memDC, 0, 0, width, height, SRCPAINT);	// Combine the foreground with the background
+	}
+	else
+	{
+		::BitBlt(hDC, position.x, position.y, width, height, maskDC, 0, 0, SRCAND);
+		::BitBlt(hDC, position.x, position.y, width, height, memDC, 0, 0, SRCPAINT);	// Combine the foreground with the background
+	}
+	
+	if (oldMaskBmp) ::SelectObject(maskDC, oldMaskBmp);
+	if (oldMemBmp)  ::SelectObject(memDC, oldMemBmp);
+
+	::DeleteDC(memDC);
+	::DeleteDC(maskDC);
+	::DeleteObject(maskBitmap);
+	::DeleteObject(imageBitmap);
 }
 
 
