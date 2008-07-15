@@ -26,7 +26,7 @@
 #else
 
 #define BUILDING_DLL 1
-#include <expat_config.h>
+#include "expat_config.h"
 
 #ifdef __declspec
 #ifndef XMLPARSEAPI
