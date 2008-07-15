@@ -49,6 +49,7 @@ public:
 	virtual int GetNativeType(int columnIdx) const = 0;
 	virtual int GetColumnLen(int columnIdx) const = 0;
 	virtual SHVBool NextRow() = 0;
+	virtual SHVBool NextResult() = 0;
 	virtual void Reset() = 0;
 	virtual SHVBool IsOk() const = 0;
 protected:

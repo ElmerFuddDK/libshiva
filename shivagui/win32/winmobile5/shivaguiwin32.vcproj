@@ -146,7 +146,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /subsystem:windowsce,5.01"
-				AdditionalDependencies="..\..\..\shivalib\winmobile5\$(OutDir)\libshiva.lib commctrl.lib"
+				AdditionalDependencies="&quot;..\..\..\shivalib\winmobile5\$(OutDir)\libshiva.lib&quot; commctrl.lib"
 				OutputFile="$(OutDir)/shivaguiwin32.dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile="shivaguiwin32.def"

@@ -164,7 +164,7 @@
       </envvars>
     </run>
     <general>
-      <activedir>tester</activedir>
+      <activedir>src</activedir>
     </general>
     <make>
       <abortonerror>true</abortonerror>

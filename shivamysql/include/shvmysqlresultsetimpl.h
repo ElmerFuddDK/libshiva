@@ -27,6 +27,7 @@ public:
 	virtual int GetNativeType(int columnIdx) const;
 	virtual int GetColumnLen(int columnIdx) const;
 	virtual SHVBool NextRow();
+	virtual SHVBool NextResult();
 	virtual void Reset();
 	virtual SHVBool IsOk() const;
 protected:
