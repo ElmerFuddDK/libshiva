@@ -244,8 +244,25 @@ SHVBool SHVMySQLResultSetImpl::NextRow()
 	return Result && (CurrentRow = mysql_fetch_row(Result)) != NULL;
 }
 
-void SHVMySQLResultSetImpl::Reset()
+SHVBool SHVMySQLResultSetImpl::NextResult()
 {
+	if (Result)
+	{
+		mysql_free_result(Result);
+		Result = NULL;		
+	}
+	if (mysql_next_result(GetMYSQL()) == 0)
+	{
+		Result = mysql_use_result(GetMYSQL());
+		NumFields = mysql_field_count(GetMYSQL());
+		return SHVBool::True;
+	}
+	else
+		return SHVBool::False;
+}
+
+void SHVMySQLResultSetImpl::Reset()
+{	
 	Ok = PerformQuery();
 }
 
