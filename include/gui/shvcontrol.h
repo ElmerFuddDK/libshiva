@@ -36,6 +36,7 @@ public:
 		TypeTab,
 		TypeDateTime,
 		TypeComboBox,
+		TypeListView,
 		TypeCustom = 0xFE,
 		TypeContainer = 0xFF
 	};

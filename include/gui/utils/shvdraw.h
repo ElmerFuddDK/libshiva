@@ -3,18 +3,18 @@
 
 #include "../../../include/utils/shvrefobject.h"
 
-#include "../shvguimanager.h"
-
+#include "../shvcontrol.h"
+#include "shvrect.h"
 #include "shvbitmap.h"
 #include "shvcolor.h"
 #include "shvfont.h"
 #include "shvpen.h"
 #include "shvpoint.h"
 
+// forward declare
+class SHVGUIManager;
+class SHVDrawEventData;
 
-// SHVPen == HPEN
-// SHVPoint == x,y / create conversion in SHVDraw to POINT
-// SHVBitmap == HBITMAP
 
 //-=========================================================================================================
 /// SHVDraw - interface for drawing routines
@@ -100,9 +100,6 @@ public:
 	virtual void DrawText(const SHVStringC txt, SHVRect rect, SHVColor* color = NULL, int options = TextDefault) = 0;
 	virtual void DrawText(SHVFont* font, const SHVStringC txt, SHVRect rect, SHVColor* color = NULL, int options = TextDefault) = 0;
 
-	// Obtain default transparent color
-	inline SHVColor* GetTransparentColor();
-
 	// Obtain a SHVDraw* from an EventDraw
 	inline static SHVDraw* FromDrawEvent(SHVEvent* event);
 
@@ -115,9 +112,15 @@ protected:
 };
 typedef SHVRefObjectContainer<SHVDraw> SHVDrawRef;
 
+#endif
 
 
 // ============================================ implementation ============================================ //
+
+#ifndef __SHIVA_GUIUTILS_DRAW_INL
+#define __SHIVA_GUIUTILS_DRAW_INL
+
+#include "shvdraweventdata.h"
 
 /*************************************
  * Constructor
@@ -143,19 +146,11 @@ void SHVDraw::DrawEdge(SHVRect rect, SHVDraw::EdgeTypes type, int flags)
 }
 
 /*************************************
- * GetTransparentColor
- *************************************/
-SHVColor* SHVDraw::GetTransparentColor()
-{
-	return ( GUIManager ? (SHVColor*)GUIManager->GetConfig().FindRef(SHVGUIManager::CfgColorTransparent).ToRef() : NULL );
-}
-
-/*************************************
  * FromDrawEvent
  *************************************/
 SHVDraw* SHVDraw::FromDrawEvent(SHVEvent* event)
 {
-	return *((SHVDrawRef*)event->GetData());
+	return ((SHVDrawEventData*)event->GetData())->Draw;
 }
 
 #endif

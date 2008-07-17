@@ -10,6 +10,7 @@
 #include "shvcontroldatetime.h"
 #include "shvcontrolcombobox.h"
 #include "shvcontroltab.h"
+#include "shvcontrollistview.h"
 #include "shvformimplementer.h"
 #include "shvformbase.h"
 #include "utils/shvfont.h"
@@ -18,6 +19,7 @@
 #include "utils/shvpen.h"
 #include "utils/shvbrush.h"
 #include "utils/shvregion.h"
+#include "utils/shvdraw.h"
 
 
 
@@ -85,10 +87,15 @@ public:
 	inline SHVControlTab* NewTab(int subType = SHVControlTab::SubTypeDefault);
 	inline SHVControlDateTime* NewDateTime(int subType = SHVControlDateTime::SubTypeDefault);
 	inline SHVControlComboBox* NewComboBox(int subType = SHVControlDateTime::SubTypeDefault);
+	inline SHVControlListView* NewListView(int subType = SHVControlListView::SubTypeDefault);
+	inline SHVControlListView* NewListViewCustomDraw(SHVEventSubscriberBase* subscriber);
 
 	// Font functions
 	inline SHVFont* GetFont(int cfgID);
 	virtual SHVFont* CreateFont(const SHVStringC name, int height, int styles = SHVFont::StyleNormal) = 0;
+
+	// Obtain default transparent color
+	inline SHVColor* GetTransparentColor();
 
 	// Factories
 	virtual SHVColor* CreateColor(SHVColor::ColorVal r, SHVColor::ColorVal g, SHVColor::ColorVal b) = 0;
@@ -238,6 +245,28 @@ SHVControlComboBox* SHVGUIManager::NewComboBox(int subType)
 	return (SHVControlComboBox*)NewControl(SHVControl::TypeComboBox,subType);
 }
 
+/*************************************
+ * NewListView
+ *************************************/
+SHVControlListView* SHVGUIManager::NewListView(int subType)
+{
+	return (SHVControlListView*)NewControl(SHVControl::TypeListView,subType);
+}
+
+/*************************************
+ * NewListViewCustomDraw
+ *************************************/
+SHVControlListView* SHVGUIManager::NewListViewCustomDraw(SHVEventSubscriberBase* subscriber)
+{
+SHVControlListView* retVal = (SHVControlListView*)NewControl(SHVControl::TypeListView,SHVControlListView::SubTypeCustomDraw);
+
+	if (retVal)
+		((SHVControlImplementerListViewCustomDraw*)retVal->GetImplementor())->SubscribeDraw(subscriber);
+	else
+		subscriber->ValidateRefCount();
+
+	return retVal;
+}
 
 /*************************************
  * GetFont
@@ -247,5 +276,12 @@ SHVFont* SHVGUIManager::GetFont(int cfgID)
 	return (SHVFont*)GetConfig().FindRef(cfgID).ToRef();
 }
 
+/*************************************
+ * GetTransparentColor
+ *************************************/
+SHVColor* SHVGUIManager::GetTransparentColor()
+{
+	return (SHVColor*)GetConfig().FindRef(SHVGUIManager::CfgColorTransparent).ToRef();
+}
 
 #endif
