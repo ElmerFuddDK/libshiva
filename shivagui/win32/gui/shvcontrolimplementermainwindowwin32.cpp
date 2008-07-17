@@ -321,6 +321,24 @@ SHVControlContainerRef refToSelf;
 
 	switch (message) 
 	{
+
+	// message types that needs to be forwarded to the child control it came from
+	case WM_NOTIFY:
+		{
+		LPNMHDR nhdr = (LPNMHDR)lParam;
+			if (nhdr && nhdr->hwndFrom != hWnd)
+				retVal = ::SendMessage(nhdr->hwndFrom,WM_SHV_NOTIFY,wParam,lParam);
+		}
+		break;
+	case WM_DRAWITEM:
+		{
+		LPDRAWITEMSTRUCT drawstr = (LPDRAWITEMSTRUCT)lParam;
+			if (drawstr && drawstr->hwndItem != hWnd)
+				retVal = ::SendMessage(drawstr->hwndItem,WM_SHV_DRAWITEM,wParam,lParam);
+		}
+		break;
+
+	// normal message types
 	case WM_SHV_DISPATCHMESSAGES:
 		self->Dispatcher->DispatchEvents();
 		break;

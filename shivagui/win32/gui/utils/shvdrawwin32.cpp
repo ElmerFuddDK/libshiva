@@ -32,6 +32,7 @@
 #include "../../../../include/platformspc.h"
 
 #include "shvdrawwin32.h"
+#include "../../../../include/gui/shvguimanager.h"
 #include "shvbitmapwin32.h"
 #include "../shvwin32.h"
 

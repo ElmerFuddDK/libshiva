@@ -66,22 +66,31 @@ SHVMenuRef toplevelmenu, menu;
 	Button->SetParent(GetContainer())->SetText(_T("Click me"))->SubscribeClicked(new SHVEventSubscriber(this));
 
 	lblLongDate = GetManager()->NewLabel();
-	lblLongDate->SetParent(GetContainer())->SetText(_T("Lang dato:"));
+	lblLongDate->SetParent(GetContainer())->SetText(_T("Long date:"));
 
 	dtLongDate = GetManager()->NewDateTime(SHVControlDateTime::SubTypeLongDate);
 	dtLongDate->SetParent(GetContainer());
 
 	lblShortDate = GetManager()->NewLabel();
-	lblShortDate->SetParent(GetContainer())->SetText(_T("Kort dato:"));
+	lblShortDate->SetParent(GetContainer())->SetText(_T("Short date:"));
 
 	dtShortDate = GetManager()->NewDateTime(SHVControlDateTime::SubTypeShortDate);
 	dtShortDate->SetParent(GetContainer());
 
 	lblTime = GetManager()->NewLabel();
-	lblTime->SetParent(GetContainer())->SetText(_T("Tid:"));
+	lblTime->SetParent(GetContainer())->SetText(_T("Time:"));
 
 	dtTime = GetManager()->NewDateTime(SHVControlDateTime::SubTypeTime);
 	dtTime->SetParent(GetContainer());
+
+	lvData = GetManager()->NewListView();
+	lvData->SetParent(GetContainer())->AddColumn(_T("Data"),50)->AddColumn(_T("Note"),100)->AddColumn(_T("Other"),50);
+	lvData->AddItem(_T("Stuff"))->SetItemText(_T("Note"),0,1);
+	lvData->AddItem(_T("Stuff1"))->SetItemText(_T("Note"),1,1);
+	lvData->AddItem(_T("Stuff2"))->SetItemText(_T("Note"),2,1);
+	lvData->AddItem(_T("Stuff3"))->SetItemText(_T("Note"),3,1);
+
+	lvData->SubscribeSelectedChanged(new SHVEventSubscriber(this));
 
 	GetContainer()->ResizeControls();
 
@@ -130,7 +139,15 @@ void SHVFormTabTestPage::OnEvent(SHVEvent* event)
 			GetContainer()->ResizeControls();
 
 			dtLongDate->SetTime(dtShortDate->GetTime());
+
+			if (!lvData->GetSelected().IsNull())
+				lvData->SetItemText(EditBox->GetText(),lvData->GetSelected(),2);
 		}
+	}
+	else if (event->GetCaller() == NULL && event->GetObject() == lvData)
+	{
+		if (!event->GetSubID().IsNull())
+			EditBox->SetText(lvData->GetItemText(event->GetSubID(),2));
 	}
 }
 
@@ -154,5 +171,7 @@ SHVRegionRef rgn = GetManager()->CreateRegion(container);
 	rgn->Move(lblTime)->Top()->Left();
 	rgn->Move(dtTime)->Top()->LeftOf(lblTime)->ClipTop();
 
-	rgn->Move(Button)->Bottom()->Right();
+	rgn->Move(Button)->Bottom()->Right()->ClipBottom();
+
+	rgn->Move(lvData)->FillPercent(0,0,100,100);
 }

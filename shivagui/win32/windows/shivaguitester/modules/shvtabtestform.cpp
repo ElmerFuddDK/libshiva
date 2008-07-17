@@ -58,7 +58,7 @@ SHVMenuRef toplevelmenu, menu;
 
 	GetContainer()->SetTitle(_T("Tab test dialog"));
 
-	GetContainer()->SetMinimumSize(200,100);
+	GetContainer()->SetMinimumSize(230,185);
 
 	tbTabs = GetManager()->NewTab();
 	tbTabs->SetParent(GetContainer())->SubscribeSelectedPageChanged(new SHVEventSubscriber(this));

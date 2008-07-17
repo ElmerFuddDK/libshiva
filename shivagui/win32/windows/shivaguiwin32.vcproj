@@ -242,6 +242,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\gui\shvcontrollistview.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\gui\shvcontroltab.cpp"
 					>
 				</File>
@@ -291,6 +295,10 @@
 				</File>
 				<File
 					RelativePath="..\gui\shvcontrolimplementerlabelwin32.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\gui\shvcontrolimplementerlistviewwin32.cpp"
 					>
 				</File>
 				<File
@@ -409,6 +417,10 @@
 				</File>
 				<File
 					RelativePath="..\gui\shvcontrolimplementerlabelwin32.h"
+					>
+				</File>
+				<File
+					RelativePath="..\gui\shvcontrolimplementerlistviewwin32.h"
 					>
 				</File>
 				<File
@@ -571,6 +583,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\..\include\gui\shvcontrollistview.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\..\include\gui\shvcontroltab.h"
 						>
 					</File>
@@ -619,6 +635,10 @@
 						</File>
 						<File
 							RelativePath="..\..\..\include\gui\utils\shvdraw.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\gui\utils\shvdraweventdata.h"
 							>
 						</File>
 						<File

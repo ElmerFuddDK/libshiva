@@ -168,7 +168,7 @@ LRESULT retVal = 0;
 			if (!self->Subscriber.IsNull())
 			{
 				refToSelf = owner; // ensure the validity of the object through this function
-				self->Subscriber->EmitNow(owner->GetModuleList(),new SHVEventData<SHVDrawRef>((SHVDraw*)draw,NULL,SHVControl::EventDraw,NULL,owner));
+				self->Subscriber->EmitNow(owner->GetModuleList(),new SHVEventData<SHVDrawEventData>(SHVDrawEventData(draw),NULL,SHVControl::EventDraw,NULL,owner));
 			}
 			else
 			{

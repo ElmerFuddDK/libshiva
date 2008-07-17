@@ -28,6 +28,8 @@
 
 #define WM_SHV_DISPATCHMESSAGES    0x8001
 #define WM_SHV_PRETRANSLATEMESSAGE 0x8002
+#define WM_SHV_NOTIFY              0x8003
+#define WM_SHV_DRAWITEM            0x8004
 
 
 class Win32

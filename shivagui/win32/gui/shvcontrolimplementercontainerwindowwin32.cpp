@@ -272,6 +272,24 @@ LRESULT result = 0;
 
 	switch (message) 
 	{
+
+	// message types that needs to be forwarded to the child control it came from
+	case WM_NOTIFY:
+		{
+		LPNMHDR nhdr = (LPNMHDR)lParam;
+			if (nhdr && nhdr->hwndFrom != hWnd)
+				result = ::SendMessage(nhdr->hwndFrom,WM_SHV_NOTIFY,wParam,lParam);
+		}
+		break;
+	case WM_DRAWITEM:
+		{
+		LPDRAWITEMSTRUCT drawstr = (LPDRAWITEMSTRUCT)lParam;
+			if (drawstr && drawstr->hwndItem != hWnd)
+				result = ::SendMessage(drawstr->hwndItem,WM_SHV_DRAWITEM,wParam,lParam);
+		}
+		break;
+
+	// normal message types
 	case WM_PAINT:
 		{
 		PAINTSTRUCT ps;
@@ -298,7 +316,7 @@ LRESULT result = 0;
 				{
 					drawn = true;
 					refToSelf = owner; // ensure the validity of the object through this function
-					self->Subscriber->EmitNow(owner->GetModuleList(),new SHVEventData<SHVDrawRef>((SHVDraw*)draw,NULL,SHVControl::EventDraw,NULL,owner));
+					self->Subscriber->EmitNow(owner->GetModuleList(),new SHVEventData<SHVDrawEventData>(SHVDrawEventData(draw),NULL,SHVControl::EventDraw,NULL,owner));
 				}
 
 			}
