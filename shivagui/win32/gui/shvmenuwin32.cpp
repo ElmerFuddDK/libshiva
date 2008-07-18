@@ -98,13 +98,14 @@ SHVMenu::Types SHVMenuWin32::GetType()
 /*************************************
  * AddStringItem
  *************************************/
-void SHVMenuWin32::AddStringItem(SHVInt id, const SHVStringC name)
+void SHVMenuWin32::AddStringItem(SHVInt id, const SHVStringC name, int flags)
 {
 	EnsureMenuCreated();
 	if (hMenu)
 	{
+	int disabledflag = ( (flags&FlagDisabled) ? MF_DISABLED|MF_GRAYED : 0);
 	int cmdID = Manager->CreateCommandID(hMenuTopLevel,id);
-		::AppendMenu(hMenu,MF_STRING,cmdID,name.GetSafeBuffer());
+		::AppendMenu(hMenu,MF_STRING|disabledflag,cmdID,name.GetSafeBuffer());
 #ifdef __SHIVA_POCKETPC
 		TopLevelNeedSeparator = (Type == TypeControlContainer);
 #endif

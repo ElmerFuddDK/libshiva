@@ -40,12 +40,18 @@ public:
 		PopupCenterWindow
 	};
 
+	enum Flags {
+		FlagNone = 0,
+		FlagDisabled  = 1,
+		FlagDefault = FlagNone
+	};
+
 
 	// Obtain type
 	virtual Types GetType() = 0;
 	
 	// Manipulation items
-	virtual void AddStringItem(SHVInt id, const SHVStringC name) = 0;
+	virtual void AddStringItem(SHVInt id, const SHVStringC name, int flags = FlagDefault) = 0;
 	virtual void AddSeparator() = 0;
 	virtual SHVMenu* AddSubMenu(const SHVStringC name) = 0;
 

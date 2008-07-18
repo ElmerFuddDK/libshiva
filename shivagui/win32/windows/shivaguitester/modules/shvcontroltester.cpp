@@ -118,6 +118,7 @@ SHVFontRef ownerDrawFont = GUIManager->GetFont(SHVGUIManager::CfgFontNormal)->Cr
 	menu2->AddSeparator();
 	menu2->AddStringItem(__MENU_STUFF,_T("More stuff"));
 	menu2->AddStringItem(__MENU_DIALOGTST,_T("Dialog test"));
+	menu2->AddStringItem(__MENU_DIALOGTST,_T("Disabled item"), SHVMenu::FlagDisabled);
 	menu->Show();
 
 	SHVModule::PostRegister();

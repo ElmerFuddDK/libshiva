@@ -36,7 +36,7 @@ public:
 	virtual Types GetType();
 	
 	// Manipulation items
-	virtual void AddStringItem(SHVInt id, const SHVStringC name);
+	virtual void AddStringItem(SHVInt id, const SHVStringC name, int flags = FlagDefault);
 	virtual void AddSeparator();
 	virtual SHVMenu* AddSubMenu(const SHVStringC name);
 
