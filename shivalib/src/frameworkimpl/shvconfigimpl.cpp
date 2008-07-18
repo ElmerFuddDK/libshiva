@@ -222,7 +222,7 @@ SHVFile file;
 	else
 		FileName = fileName;
 
-	if (retVal && SHVDir::Exist(FileName) && file.Open(FileName,SHVFileBase::FlagOpen|SHVFileBase::FlagRead))
+	if (retVal && SHVDir::FileExist(FileName) && file.Open(FileName,SHVFileBase::FlagOpen|SHVFileBase::FlagRead))
 	{
 	SHVString8 line;
 	SHVString8 name;

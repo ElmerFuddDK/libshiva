@@ -47,7 +47,8 @@ public:
 	// Operations involving a file
 	static SHVFilePos GetSize(const SHVStringC fileName);
 	static SHVBool DeleteFile(const SHVStringC fileName);
-	static bool Exist(const SHVStringC fileName);
+	static bool FileExist(const SHVStringC fileName);
+	static bool DirExist(const SHVStringC fileName);
 	static void ExecuteFile(const SHVStringC fileName);
 
 

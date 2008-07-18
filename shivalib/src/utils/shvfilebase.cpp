@@ -284,7 +284,7 @@ SHVBool retVal( (flags&FlagRead) || (flags&FlagWrite) ? (int)SHVBool::True : (in
 	// check for file state
 	if (retVal)
 	{
-	bool exists = SHVDir::Exist(fileName);
+	bool exists = SHVDir::FileExist(fileName);
 
 		if (exists && !(flags&FlagOpen))
 			retVal.SetError(ErrExists);

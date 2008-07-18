@@ -83,7 +83,7 @@ void SHVModuleLoaderImpl::AddModuleLibs(const SHVStringC modulePath)
  *************************************/
 SHVBool SHVModuleLoaderImpl::AddModuleLib(const SHVStringC fileName)
 {
-SHVBool retVal(SHVDir::Exist(fileName));
+SHVBool retVal(SHVDir::FileExist(fileName));
 
 	if (retVal)
 	{

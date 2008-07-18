@@ -260,11 +260,11 @@ SHVBool SHVDir::Move(const SHVStringC from, const SHVStringC to)
 {
 SHVBool retVal;
 
-	if (!SHVDir::Exist(from))
+	if (!SHVDir::FileExist(from))
 	{
 		retVal.SetError(ErrDoesNotExist);
 	}
-	else if (SHVDir::Exist(to))
+	else if (SHVDir::FileExist(to) || SHVDir::DirExist(to))
 	{
 		retVal.SetError(ErrExists);
 	}
@@ -293,11 +293,11 @@ SHVBool SHVDir::Copy(const SHVStringC from, const SHVStringC to)
 {
 SHVBool retVal;
 
-	if (!SHVDir::Exist(from))
+	if (!SHVDir::FileExist(from))
 	{
 		retVal.SetError(ErrDoesNotExist);
 	}
-	else if (SHVDir::Exist(to))
+	else if (SHVDir::FileExist(to) || SHVDir::DirExist(to))
 	{
 		retVal.SetError(ErrExists);
 	}
@@ -334,7 +334,7 @@ SHVBool SHVDir::CreateDir(const SHVStringC dirName)
 {
 SHVBool retVal;
 
-	if (SHVDir::Exist(dirName))
+	if (SHVDir::FileExist(dirName) || SHVDir::DirExist(dirName))
 	{
 		retVal.SetError(ErrExists);
 	}
@@ -380,7 +380,7 @@ SHVBool SHVDir::DeleteFile(const SHVStringC fileName)
 {
 SHVBool retVal;
 
-	if (!SHVDir::Exist(fileName))
+	if (!SHVDir::FileExist(fileName))
 	{
 		retVal.SetError(ErrDoesNotExist);
 	}
@@ -399,14 +399,14 @@ SHVBool retVal;
 }
 
 /*************************************
- * Exist
+ * FileExist
  *************************************/
 /// Tests if a file exists
 /**
  \param fileName Name of file to check for, with path
  \return true if it exists and is not a directory
  */
-bool SHVDir::Exist(const SHVStringC fileName)
+bool SHVDir::FileExist(const SHVStringC fileName)
 {
 #ifdef __SHIVA_WIN32
 DWORD attrib = ::GetFileAttributes( (const TCHAR*)fileName.GetSafeBuffer()); // returns 0xFFFFFFFF on failure
@@ -417,6 +417,28 @@ struct stat fileStat;
 #else
 struct stat fileStat;
 	return ( !stat( fileName.GetSafeBuffer(), &fileStat ) && fileStat.st_mode&S_IFREG );
+#endif
+}
+
+/*************************************
+ * DirExist
+ *************************************/
+/// Tests if a directory exists
+/**
+ \param fileName Name of dir to check for, with path
+ \return true if it exists and is a directory
+ */
+bool SHVDir::DirExist(const SHVStringC fileName)
+{
+#ifdef __SHIVA_WIN32
+DWORD attrib = ::GetFileAttributes( (const TCHAR*)fileName.GetSafeBuffer()); // returns 0xFFFFFFFF on failure
+	return ( attrib != INVALID_FILE_ATTRIBUTES && (attrib&FILE_ATTRIBUTE_DIRECTORY) );
+#elif defined(UNICODE)
+struct stat fileStat;
+	return ( !wstat( fileName.GetSafeBuffer(), &fileStat ) && fileStat.st_mode&S_IFDIR );
+#else
+struct stat fileStat;
+	return ( !stat( fileName.GetSafeBuffer(), &fileStat ) && fileStat.st_mode&S_IFDIR );
 #endif
 }
 
