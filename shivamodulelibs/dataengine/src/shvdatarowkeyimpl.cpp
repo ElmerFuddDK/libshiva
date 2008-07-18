@@ -207,6 +207,8 @@ const SHVDataRowKey& Key = *key;
 				This[i].Desc == Key[i].Desc;
 		}
 	}
+	else
+		retVal = SHVBool::False;
 	return retVal;
 }
 
