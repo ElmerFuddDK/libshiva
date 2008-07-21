@@ -42,6 +42,10 @@
 # define TPM_RIGHTBUTTON 0
 #endif
 
+#ifndef MF_DISABLED
+# define MF_DISABLED 0
+#endif
+
 ///\todo Implement control container menu support in windows CE
 #if defined(__SHIVA_POCKETPC)
 # include <aygshell.h>

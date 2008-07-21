@@ -265,6 +265,7 @@ DEP_CPP_SHVCO=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvformbase.h"\
 	"..\..\..\include\gui\shvformimplementer.h"\
@@ -273,6 +274,8 @@ DEP_CPP_SHVCO=\
 	"..\..\..\include\gui\utils\shvbitmap.h"\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -823,6 +826,7 @@ DEP_CPP_SHVCONTR=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvform.h"\
 	"..\..\..\include\gui\shvformbase.h"\
@@ -832,6 +836,8 @@ DEP_CPP_SHVCONTR=\
 	"..\..\..\include\gui\utils\shvbitmap.h"\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -1463,6 +1469,173 @@ NODEP_CPP_SHVCONTROLL=\
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\gui\shvcontrollistview.cpp
+
+!IF  "$(CFG)" == "shivaguiwin32 - Win32 (WCE ARM) Release"
+
+DEP_CPP_SHVCONTROLLI=\
+	"..\..\..\include\databinder\shvdatabinder.h"\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\gui\shvcontrol.h"\
+	"..\..\..\include\gui\shvcontrolimplementer.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
+	"..\..\..\include\gui\shvmenu.h"\
+	"..\..\..\include\gui\utils\shvbitmap.h"\
+	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
+	"..\..\..\include\gui\utils\shvfont.h"\
+	"..\..\..\include\gui\utils\shvpen.h"\
+	"..\..\..\include\gui\utils\shvpoint.h"\
+	"..\..\..\include\gui\utils\shvrect.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\..\gui\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "shivaguiwin32 - Win32 (WCE ARM) Debug"
+
+DEP_CPP_SHVCONTROLLI=\
+	"..\..\..\include\databinder\shvdatabinder.h"\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\gui\shvcontrol.h"\
+	"..\..\..\include\gui\shvcontrolimplementer.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
+	"..\..\..\include\gui\shvmenu.h"\
+	"..\..\..\include\gui\utils\shvbitmap.h"\
+	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
+	"..\..\..\include\gui\utils\shvfont.h"\
+	"..\..\..\include\gui\utils\shvpen.h"\
+	"..\..\..\include\gui\utils\shvpoint.h"\
+	"..\..\..\include\gui\utils\shvrect.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\..\gui\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "shivaguiwin32 - Win32 (WCE x86) Release"
+
+DEP_CPP_SHVCONTROLLI=\
+	"..\..\..\include\databinder\shvdatabinder.h"\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\gui\shvcontrol.h"\
+	"..\..\..\include\gui\shvcontrolimplementer.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
+	"..\..\..\include\gui\shvmenu.h"\
+	"..\..\..\include\gui\utils\shvbitmap.h"\
+	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
+	"..\..\..\include\gui\utils\shvfont.h"\
+	"..\..\..\include\gui\utils\shvpen.h"\
+	"..\..\..\include\gui\utils\shvpoint.h"\
+	"..\..\..\include\gui\utils\shvrect.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\..\gui\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "shivaguiwin32 - Win32 (WCE x86) Debug"
+
+DEP_CPP_SHVCONTROLLI=\
+	"..\..\..\include\databinder\shvdatabinder.h"\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\gui\shvcontrol.h"\
+	"..\..\..\include\gui\shvcontrolimplementer.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
+	"..\..\..\include\gui\shvmenu.h"\
+	"..\..\..\include\gui\utils\shvbitmap.h"\
+	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
+	"..\..\..\include\gui\utils\shvfont.h"\
+	"..\..\..\include\gui\utils\shvpen.h"\
+	"..\..\..\include\gui\utils\shvpoint.h"\
+	"..\..\..\include\gui\utils\shvrect.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\..\gui\stdafx.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\gui\shvcontroltab.cpp
 
 !IF  "$(CFG)" == "shivaguiwin32 - Win32 (WCE ARM) Release"
@@ -1527,6 +1700,7 @@ DEP_CPP_SHVCONTROLT=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvformbase.h"\
 	"..\..\..\include\gui\shvformimplementer.h"\
@@ -1535,6 +1709,8 @@ DEP_CPP_SHVCONTROLT=\
 	"..\..\..\include\gui\utils\shvbitmap.h"\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -1734,6 +1910,7 @@ DEP_CPP_SHVFO=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvformbase.h"\
 	"..\..\..\include\gui\shvformimplementer.h"\
@@ -1742,6 +1919,8 @@ DEP_CPP_SHVFO=\
 	"..\..\..\include\gui\utils\shvbitmap.h"\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -1995,6 +2174,7 @@ DEP_CPP_SHVGU=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvform.h"\
 	"..\..\..\include\gui\shvformbase.h"\
@@ -2004,6 +2184,8 @@ DEP_CPP_SHVGU=\
 	"..\..\..\include\gui\utils\shvbitmap.h"\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -2267,6 +2449,7 @@ DEP_CPP_SHVME=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvform.h"\
 	"..\..\..\include\gui\shvformbase.h"\
@@ -2276,6 +2459,8 @@ DEP_CPP_SHVME=\
 	"..\..\..\include\gui\utils\shvbitmap.h"\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -2537,6 +2722,7 @@ DEP_CPP_SHVCOL=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvformbase.h"\
 	"..\..\..\include\gui\shvformimplementer.h"\
@@ -2545,6 +2731,8 @@ DEP_CPP_SHVCOL=\
 	"..\..\..\include\gui\utils\shvbitmap.h"\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -2786,6 +2974,7 @@ DEP_CPP_SHVRE=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvformbase.h"\
 	"..\..\..\include\gui\shvformimplementer.h"\
@@ -2794,6 +2983,8 @@ DEP_CPP_SHVRE=\
 	"..\..\..\include\gui\utils\shvbitmap.h"\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -3320,6 +3511,7 @@ DEP_CPP_SHVDR=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvform.h"\
 	"..\..\..\include\gui\shvformbase.h"\
@@ -3330,6 +3522,7 @@ DEP_CPP_SHVDR=\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
 	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -3628,6 +3821,7 @@ DEP_CPP_SHVFON=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvform.h"\
 	"..\..\..\include\gui\shvformbase.h"\
@@ -3637,6 +3831,8 @@ DEP_CPP_SHVFON=\
 	"..\..\..\include\gui\utils\shvbitmap.h"\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -4199,6 +4395,7 @@ DEP_CPP_SHVCONTROLI=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvform.h"\
 	"..\..\..\include\gui\shvformbase.h"\
@@ -4208,6 +4405,8 @@ DEP_CPP_SHVCONTROLI=\
 	"..\..\..\include\gui\utils\shvbitmap.h"\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -4500,6 +4699,7 @@ DEP_CPP_SHVCONTROLIM=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvform.h"\
 	"..\..\..\include\gui\shvformbase.h"\
@@ -4509,6 +4709,8 @@ DEP_CPP_SHVCONTROLIM=\
 	"..\..\..\include\gui\utils\shvbitmap.h"\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -4826,6 +5028,7 @@ DEP_CPP_SHVCONTROLIMP=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvform.h"\
 	"..\..\..\include\gui\shvformbase.h"\
@@ -4836,6 +5039,7 @@ DEP_CPP_SHVCONTROLIMP=\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
 	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -5165,6 +5369,7 @@ DEP_CPP_SHVCONTROLIMPL=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvform.h"\
 	"..\..\..\include\gui\shvformbase.h"\
@@ -5174,6 +5379,8 @@ DEP_CPP_SHVCONTROLIMPL=\
 	"..\..\..\include\gui\utils\shvbitmap.h"\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -5488,6 +5695,7 @@ DEP_CPP_SHVCONTROLIMPLE=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvform.h"\
 	"..\..\..\include\gui\shvformbase.h"\
@@ -5498,6 +5706,7 @@ DEP_CPP_SHVCONTROLIMPLE=\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
 	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -5827,6 +6036,7 @@ DEP_CPP_SHVCONTROLIMPLEM=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvform.h"\
 	"..\..\..\include\gui\shvformbase.h"\
@@ -5836,6 +6046,8 @@ DEP_CPP_SHVCONTROLIMPLEM=\
 	"..\..\..\include\gui\utils\shvbitmap.h"\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -6132,6 +6344,7 @@ DEP_CPP_SHVCONTROLIMPLEME=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvform.h"\
 	"..\..\..\include\gui\shvformbase.h"\
@@ -6142,6 +6355,7 @@ DEP_CPP_SHVCONTROLIMPLEME=\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
 	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -6348,11 +6562,350 @@ NODEP_CPP_SHVCONTROLIMPLEME=\
 # End Source File
 # Begin Source File
 
-SOURCE=..\gui\shvcontrolimplementermainwindowwin32.cpp
+SOURCE=..\gui\shvcontrolimplementerlistviewwin32.cpp
 
 !IF  "$(CFG)" == "shivaguiwin32 - Win32 (WCE ARM) Release"
 
 DEP_CPP_SHVCONTROLIMPLEMEN=\
+	"..\..\..\include\databinder\shvdatabinder.h"\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventdata.h"\
+	"..\..\..\include\framework\shveventemitter.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriber.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shveventsubscriptionlist.h"\
+	"..\..\..\include\framework\shveventtargetdynamic.h"\
+	"..\..\..\include\framework\shvmodule.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\gui\shvcontrol.h"\
+	"..\..\..\include\gui\shvcontrolbutton.h"\
+	"..\..\..\include\gui\shvcontrolcombobox.h"\
+	"..\..\..\include\gui\shvcontrolcontainer.h"\
+	"..\..\..\include\gui\shvcontrolcreatorbase.h"\
+	"..\..\..\include\gui\shvcontroldatetime.h"\
+	"..\..\..\include\gui\shvcontroledit.h"\
+	"..\..\..\include\gui\shvcontrolimplementer.h"\
+	"..\..\..\include\gui\shvcontrollabel.h"\
+	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
+	"..\..\..\include\gui\shvcontroltab.h"\
+	"..\..\..\include\gui\shvform.h"\
+	"..\..\..\include\gui\shvformbase.h"\
+	"..\..\..\include\gui\shvformimplementer.h"\
+	"..\..\..\include\gui\shvguimanager.h"\
+	"..\..\..\include\gui\shvmenu.h"\
+	"..\..\..\include\gui\utils\shvbitmap.h"\
+	"..\..\..\include\gui\utils\shvbrush.h"\
+	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
+	"..\..\..\include\gui\utils\shvfont.h"\
+	"..\..\..\include\gui\utils\shvpen.h"\
+	"..\..\..\include\gui\utils\shvpoint.h"\
+	"..\..\..\include\gui\utils\shvrect.h"\
+	"..\..\..\include\gui\utils\shvregion.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvdynarraybase.h"\
+	"..\..\..\include\utils\shvhashtable.h"\
+	"..\..\..\include\utils\shvhashtablebase.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvlist.h"\
+	"..\..\..\include\utils\shvlistbase.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\..\..\include\utils\shvtime.h"\
+	"..\..\..\include\utils\shvvector.h"\
+	"..\..\..\include\utils\shvvectorbase.h"\
+	"..\..\gui\shvguimanagerimpl.h"\
+	"..\..\gui\shvmessagebox.h"\
+	"..\gui\shvcontrolimplementerlistviewwin32.h"\
+	"..\gui\shvcontrolimplementerwin32.h"\
+	"..\gui\shvcontrolimplementerwin32base.h"\
+	"..\gui\shvguimanagerwin32.h"\
+	"..\gui\shvwin32.h"\
+	"..\gui\utils\shvbrushwin32.h"\
+	"..\gui\utils\shvcolorwin32.h"\
+	"..\gui\utils\shvdrawwin32.h"\
+	"..\gui\utils\shvfontwin32.h"\
+	"..\gui\utils\shvpenwin32.h"\
+	
+NODEP_CPP_SHVCONTROLIMPLEMEN=\
+	"..\gui\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "shivaguiwin32 - Win32 (WCE ARM) Debug"
+
+DEP_CPP_SHVCONTROLIMPLEMEN=\
+	"..\..\..\include\databinder\shvdatabinder.h"\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventdata.h"\
+	"..\..\..\include\framework\shveventemitter.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriber.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shveventsubscriptionlist.h"\
+	"..\..\..\include\framework\shveventtargetdynamic.h"\
+	"..\..\..\include\framework\shvmodule.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\gui\shvcontrol.h"\
+	"..\..\..\include\gui\shvcontrolbutton.h"\
+	"..\..\..\include\gui\shvcontrolcombobox.h"\
+	"..\..\..\include\gui\shvcontrolcontainer.h"\
+	"..\..\..\include\gui\shvcontrolcreatorbase.h"\
+	"..\..\..\include\gui\shvcontroldatetime.h"\
+	"..\..\..\include\gui\shvcontroledit.h"\
+	"..\..\..\include\gui\shvcontrolimplementer.h"\
+	"..\..\..\include\gui\shvcontrollabel.h"\
+	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
+	"..\..\..\include\gui\shvcontroltab.h"\
+	"..\..\..\include\gui\shvform.h"\
+	"..\..\..\include\gui\shvformbase.h"\
+	"..\..\..\include\gui\shvformimplementer.h"\
+	"..\..\..\include\gui\shvguimanager.h"\
+	"..\..\..\include\gui\shvmenu.h"\
+	"..\..\..\include\gui\utils\shvbitmap.h"\
+	"..\..\..\include\gui\utils\shvbrush.h"\
+	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
+	"..\..\..\include\gui\utils\shvfont.h"\
+	"..\..\..\include\gui\utils\shvpen.h"\
+	"..\..\..\include\gui\utils\shvpoint.h"\
+	"..\..\..\include\gui\utils\shvrect.h"\
+	"..\..\..\include\gui\utils\shvregion.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvdynarraybase.h"\
+	"..\..\..\include\utils\shvhashtable.h"\
+	"..\..\..\include\utils\shvhashtablebase.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvlist.h"\
+	"..\..\..\include\utils\shvlistbase.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\..\..\include\utils\shvtime.h"\
+	"..\..\..\include\utils\shvvector.h"\
+	"..\..\..\include\utils\shvvectorbase.h"\
+	"..\..\gui\shvguimanagerimpl.h"\
+	"..\..\gui\shvmessagebox.h"\
+	"..\gui\shvcontrolimplementerlistviewwin32.h"\
+	"..\gui\shvcontrolimplementerwin32.h"\
+	"..\gui\shvcontrolimplementerwin32base.h"\
+	"..\gui\shvguimanagerwin32.h"\
+	"..\gui\shvwin32.h"\
+	"..\gui\utils\shvbrushwin32.h"\
+	"..\gui\utils\shvcolorwin32.h"\
+	"..\gui\utils\shvdrawwin32.h"\
+	"..\gui\utils\shvfontwin32.h"\
+	"..\gui\utils\shvpenwin32.h"\
+	
+NODEP_CPP_SHVCONTROLIMPLEMEN=\
+	"..\gui\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "shivaguiwin32 - Win32 (WCE x86) Release"
+
+DEP_CPP_SHVCONTROLIMPLEMEN=\
+	"..\..\..\include\databinder\shvdatabinder.h"\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventdata.h"\
+	"..\..\..\include\framework\shveventemitter.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriber.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shveventsubscriptionlist.h"\
+	"..\..\..\include\framework\shveventtargetdynamic.h"\
+	"..\..\..\include\framework\shvmodule.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\gui\shvcontrol.h"\
+	"..\..\..\include\gui\shvcontrolbutton.h"\
+	"..\..\..\include\gui\shvcontrolcombobox.h"\
+	"..\..\..\include\gui\shvcontrolcontainer.h"\
+	"..\..\..\include\gui\shvcontrolcreatorbase.h"\
+	"..\..\..\include\gui\shvcontroldatetime.h"\
+	"..\..\..\include\gui\shvcontroledit.h"\
+	"..\..\..\include\gui\shvcontrolimplementer.h"\
+	"..\..\..\include\gui\shvcontrollabel.h"\
+	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
+	"..\..\..\include\gui\shvcontroltab.h"\
+	"..\..\..\include\gui\shvform.h"\
+	"..\..\..\include\gui\shvformbase.h"\
+	"..\..\..\include\gui\shvformimplementer.h"\
+	"..\..\..\include\gui\shvguimanager.h"\
+	"..\..\..\include\gui\shvmenu.h"\
+	"..\..\..\include\gui\utils\shvbitmap.h"\
+	"..\..\..\include\gui\utils\shvbrush.h"\
+	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
+	"..\..\..\include\gui\utils\shvfont.h"\
+	"..\..\..\include\gui\utils\shvpen.h"\
+	"..\..\..\include\gui\utils\shvpoint.h"\
+	"..\..\..\include\gui\utils\shvrect.h"\
+	"..\..\..\include\gui\utils\shvregion.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvdynarraybase.h"\
+	"..\..\..\include\utils\shvhashtable.h"\
+	"..\..\..\include\utils\shvhashtablebase.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvlist.h"\
+	"..\..\..\include\utils\shvlistbase.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\..\..\include\utils\shvtime.h"\
+	"..\..\..\include\utils\shvvector.h"\
+	"..\..\..\include\utils\shvvectorbase.h"\
+	"..\..\gui\shvguimanagerimpl.h"\
+	"..\..\gui\shvmessagebox.h"\
+	"..\gui\shvcontrolimplementerlistviewwin32.h"\
+	"..\gui\shvcontrolimplementerwin32.h"\
+	"..\gui\shvcontrolimplementerwin32base.h"\
+	"..\gui\shvguimanagerwin32.h"\
+	"..\gui\shvwin32.h"\
+	"..\gui\utils\shvbrushwin32.h"\
+	"..\gui\utils\shvcolorwin32.h"\
+	"..\gui\utils\shvdrawwin32.h"\
+	"..\gui\utils\shvfontwin32.h"\
+	"..\gui\utils\shvpenwin32.h"\
+	
+NODEP_CPP_SHVCONTROLIMPLEMEN=\
+	"..\gui\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "shivaguiwin32 - Win32 (WCE x86) Debug"
+
+DEP_CPP_SHVCONTROLIMPLEMEN=\
+	"..\..\..\include\databinder\shvdatabinder.h"\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventdata.h"\
+	"..\..\..\include\framework\shveventemitter.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriber.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shveventsubscriptionlist.h"\
+	"..\..\..\include\framework\shveventtargetdynamic.h"\
+	"..\..\..\include\framework\shvmodule.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\gui\shvcontrol.h"\
+	"..\..\..\include\gui\shvcontrolbutton.h"\
+	"..\..\..\include\gui\shvcontrolcombobox.h"\
+	"..\..\..\include\gui\shvcontrolcontainer.h"\
+	"..\..\..\include\gui\shvcontrolcreatorbase.h"\
+	"..\..\..\include\gui\shvcontroldatetime.h"\
+	"..\..\..\include\gui\shvcontroledit.h"\
+	"..\..\..\include\gui\shvcontrolimplementer.h"\
+	"..\..\..\include\gui\shvcontrollabel.h"\
+	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
+	"..\..\..\include\gui\shvcontroltab.h"\
+	"..\..\..\include\gui\shvform.h"\
+	"..\..\..\include\gui\shvformbase.h"\
+	"..\..\..\include\gui\shvformimplementer.h"\
+	"..\..\..\include\gui\shvguimanager.h"\
+	"..\..\..\include\gui\shvmenu.h"\
+	"..\..\..\include\gui\utils\shvbitmap.h"\
+	"..\..\..\include\gui\utils\shvbrush.h"\
+	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
+	"..\..\..\include\gui\utils\shvfont.h"\
+	"..\..\..\include\gui\utils\shvpen.h"\
+	"..\..\..\include\gui\utils\shvpoint.h"\
+	"..\..\..\include\gui\utils\shvrect.h"\
+	"..\..\..\include\gui\utils\shvregion.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvdynarraybase.h"\
+	"..\..\..\include\utils\shvhashtable.h"\
+	"..\..\..\include\utils\shvhashtablebase.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvlist.h"\
+	"..\..\..\include\utils\shvlistbase.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\..\..\include\utils\shvtime.h"\
+	"..\..\..\include\utils\shvvector.h"\
+	"..\..\..\include\utils\shvvectorbase.h"\
+	"..\..\gui\shvguimanagerimpl.h"\
+	"..\..\gui\shvmessagebox.h"\
+	"..\gui\shvcontrolimplementerlistviewwin32.h"\
+	"..\gui\shvcontrolimplementerwin32.h"\
+	"..\gui\shvcontrolimplementerwin32base.h"\
+	"..\gui\shvguimanagerwin32.h"\
+	"..\gui\shvwin32.h"\
+	"..\gui\utils\shvbrushwin32.h"\
+	"..\gui\utils\shvcolorwin32.h"\
+	"..\gui\utils\shvdrawwin32.h"\
+	"..\gui\utils\shvfontwin32.h"\
+	"..\gui\utils\shvpenwin32.h"\
+	
+NODEP_CPP_SHVCONTROLIMPLEMEN=\
+	"..\gui\stdafx.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\gui\shvcontrolimplementermainwindowwin32.cpp
+
+!IF  "$(CFG)" == "shivaguiwin32 - Win32 (WCE ARM) Release"
+
+DEP_CPP_SHVCONTROLIMPLEMENT=\
 	"..\..\..\include\framework\shvconfig.h"\
 	"..\..\..\include\framework\shvevent.h"\
 	"..\..\..\include\framework\shveventemitter.h"\
@@ -6432,7 +6985,7 @@ DEP_CPP_SHVCONTROLIMPLEMEN=\
 	"..\gui\utils\shvfontwin32.h"\
 	"..\gui\utils\shvpenwin32.h"\
 	
-NODEP_CPP_SHVCONTROLIMPLEMEN=\
+NODEP_CPP_SHVCONTROLIMPLEMENT=\
 	"..\..\..\include\gui\shvcontroldata.h"\
 	"..\gui\stdafx.h"\
 	".\ipapi.h"\
@@ -6441,7 +6994,7 @@ NODEP_CPP_SHVCONTROLIMPLEMEN=\
 
 !ELSEIF  "$(CFG)" == "shivaguiwin32 - Win32 (WCE ARM) Debug"
 
-DEP_CPP_SHVCONTROLIMPLEMEN=\
+DEP_CPP_SHVCONTROLIMPLEMENT=\
 	"..\..\..\include\databinder\shvdatabinder.h"\
 	"..\..\..\include\framework\shvconfig.h"\
 	"..\..\..\include\framework\shvevent.h"\
@@ -6470,6 +7023,7 @@ DEP_CPP_SHVCONTROLIMPLEMEN=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvform.h"\
 	"..\..\..\include\gui\shvformbase.h"\
@@ -6480,6 +7034,7 @@ DEP_CPP_SHVCONTROLIMPLEMEN=\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
 	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -6527,13 +7082,13 @@ DEP_CPP_SHVCONTROLIMPLEMEN=\
 	{$(INCLUDE)}"aygshell.h"\
 	{$(INCLUDE)}"sipapi.h"\
 	
-NODEP_CPP_SHVCONTROLIMPLEMEN=\
+NODEP_CPP_SHVCONTROLIMPLEMENT=\
 	"..\gui\stdafx.h"\
 	
 
 !ELSEIF  "$(CFG)" == "shivaguiwin32 - Win32 (WCE x86) Release"
 
-DEP_CPP_SHVCONTROLIMPLEMEN=\
+DEP_CPP_SHVCONTROLIMPLEMENT=\
 	"..\..\..\include\framework\shvconfig.h"\
 	"..\..\..\include\framework\shvevent.h"\
 	"..\..\..\include\framework\shveventemitter.h"\
@@ -6613,14 +7168,14 @@ DEP_CPP_SHVCONTROLIMPLEMEN=\
 	"..\gui\utils\shvfontwin32.h"\
 	"..\gui\utils\shvpenwin32.h"\
 	
-NODEP_CPP_SHVCONTROLIMPLEMEN=\
+NODEP_CPP_SHVCONTROLIMPLEMENT=\
 	"..\..\..\include\gui\shvcontroldata.h"\
 	"..\gui\stdafx.h"\
 	
 
 !ELSEIF  "$(CFG)" == "shivaguiwin32 - Win32 (WCE x86) Debug"
 
-DEP_CPP_SHVCONTROLIMPLEMEN=\
+DEP_CPP_SHVCONTROLIMPLEMENT=\
 	"..\..\..\include\framework\shvconfig.h"\
 	"..\..\..\include\framework\shvevent.h"\
 	"..\..\..\include\framework\shveventemitter.h"\
@@ -6700,7 +7255,7 @@ DEP_CPP_SHVCONTROLIMPLEMEN=\
 	"..\gui\utils\shvfontwin32.h"\
 	"..\gui\utils\shvpenwin32.h"\
 	
-NODEP_CPP_SHVCONTROLIMPLEMEN=\
+NODEP_CPP_SHVCONTROLIMPLEMENT=\
 	"..\..\..\include\gui\shvcontroldata.h"\
 	"..\gui\stdafx.h"\
 	
@@ -6714,7 +7269,7 @@ SOURCE=..\gui\shvcontrolimplementertabwin32.cpp
 
 !IF  "$(CFG)" == "shivaguiwin32 - Win32 (WCE ARM) Release"
 
-DEP_CPP_SHVCONTROLIMPLEMENT=\
+DEP_CPP_SHVCONTROLIMPLEMENTE=\
 	"..\..\..\include\framework\shvconfig.h"\
 	"..\..\..\include\framework\shvevent.h"\
 	"..\..\..\include\framework\shveventemitter.h"\
@@ -6785,14 +7340,14 @@ DEP_CPP_SHVCONTROLIMPLEMENT=\
 	"..\gui\utils\shvfontwin32.h"\
 	"..\gui\utils\shvpenwin32.h"\
 	
-NODEP_CPP_SHVCONTROLIMPLEMENT=\
+NODEP_CPP_SHVCONTROLIMPLEMENTE=\
 	"..\..\..\include\gui\shvcontroldata.h"\
 	"..\gui\stdafx.h"\
 	
 
 !ELSEIF  "$(CFG)" == "shivaguiwin32 - Win32 (WCE ARM) Debug"
 
-DEP_CPP_SHVCONTROLIMPLEMENT=\
+DEP_CPP_SHVCONTROLIMPLEMENTE=\
 	"..\..\..\include\databinder\shvdatabinder.h"\
 	"..\..\..\include\framework\shvconfig.h"\
 	"..\..\..\include\framework\shvevent.h"\
@@ -6815,6 +7370,7 @@ DEP_CPP_SHVCONTROLIMPLEMENT=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvform.h"\
 	"..\..\..\include\gui\shvformbase.h"\
@@ -6825,6 +7381,7 @@ DEP_CPP_SHVCONTROLIMPLEMENT=\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
 	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -6867,13 +7424,13 @@ DEP_CPP_SHVCONTROLIMPLEMENT=\
 	"..\gui\utils\shvfontwin32.h"\
 	"..\gui\utils\shvpenwin32.h"\
 	
-NODEP_CPP_SHVCONTROLIMPLEMENT=\
+NODEP_CPP_SHVCONTROLIMPLEMENTE=\
 	"..\gui\stdafx.h"\
 	
 
 !ELSEIF  "$(CFG)" == "shivaguiwin32 - Win32 (WCE x86) Release"
 
-DEP_CPP_SHVCONTROLIMPLEMENT=\
+DEP_CPP_SHVCONTROLIMPLEMENTE=\
 	"..\..\..\include\framework\shvconfig.h"\
 	"..\..\..\include\framework\shvevent.h"\
 	"..\..\..\include\framework\shveventemitter.h"\
@@ -6944,14 +7501,14 @@ DEP_CPP_SHVCONTROLIMPLEMENT=\
 	"..\gui\utils\shvfontwin32.h"\
 	"..\gui\utils\shvpenwin32.h"\
 	
-NODEP_CPP_SHVCONTROLIMPLEMENT=\
+NODEP_CPP_SHVCONTROLIMPLEMENTE=\
 	"..\..\..\include\gui\shvcontroldata.h"\
 	"..\gui\stdafx.h"\
 	
 
 !ELSEIF  "$(CFG)" == "shivaguiwin32 - Win32 (WCE x86) Debug"
 
-DEP_CPP_SHVCONTROLIMPLEMENT=\
+DEP_CPP_SHVCONTROLIMPLEMENTE=\
 	"..\..\..\include\framework\shvconfig.h"\
 	"..\..\..\include\framework\shvevent.h"\
 	"..\..\..\include\framework\shveventemitter.h"\
@@ -7022,7 +7579,7 @@ DEP_CPP_SHVCONTROLIMPLEMENT=\
 	"..\gui\utils\shvfontwin32.h"\
 	"..\gui\utils\shvpenwin32.h"\
 	
-NODEP_CPP_SHVCONTROLIMPLEMENT=\
+NODEP_CPP_SHVCONTROLIMPLEMENTE=\
 	"..\..\..\include\gui\shvcontroldata.h"\
 	"..\gui\stdafx.h"\
 	
@@ -7036,7 +7593,7 @@ SOURCE=..\gui\shvcontrolimplementerwin32base.cpp
 
 !IF  "$(CFG)" == "shivaguiwin32 - Win32 (WCE ARM) Release"
 
-DEP_CPP_SHVCONTROLIMPLEMENTE=\
+DEP_CPP_SHVCONTROLIMPLEMENTER=\
 	"..\..\..\include\framework\shvconfig.h"\
 	"..\..\..\include\framework\shvevent.h"\
 	"..\..\..\include\framework\shveventemitter.h"\
@@ -7104,14 +7661,14 @@ DEP_CPP_SHVCONTROLIMPLEMENTE=\
 	"..\gui\utils\shvfontwin32.h"\
 	"..\gui\utils\shvpenwin32.h"\
 	
-NODEP_CPP_SHVCONTROLIMPLEMENTE=\
+NODEP_CPP_SHVCONTROLIMPLEMENTER=\
 	"..\..\..\include\gui\shvcontroldata.h"\
 	"..\gui\stdafx.h"\
 	
 
 !ELSEIF  "$(CFG)" == "shivaguiwin32 - Win32 (WCE ARM) Debug"
 
-DEP_CPP_SHVCONTROLIMPLEMENTE=\
+DEP_CPP_SHVCONTROLIMPLEMENTER=\
 	"..\..\..\include\databinder\shvdatabinder.h"\
 	"..\..\..\include\framework\shvconfig.h"\
 	"..\..\..\include\framework\shvevent.h"\
@@ -7134,6 +7691,7 @@ DEP_CPP_SHVCONTROLIMPLEMENTE=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvform.h"\
 	"..\..\..\include\gui\shvformbase.h"\
@@ -7144,6 +7702,7 @@ DEP_CPP_SHVCONTROLIMPLEMENTE=\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
 	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -7183,13 +7742,13 @@ DEP_CPP_SHVCONTROLIMPLEMENTE=\
 	"..\gui\utils\shvfontwin32.h"\
 	"..\gui\utils\shvpenwin32.h"\
 	
-NODEP_CPP_SHVCONTROLIMPLEMENTE=\
+NODEP_CPP_SHVCONTROLIMPLEMENTER=\
 	"..\gui\stdafx.h"\
 	
 
 !ELSEIF  "$(CFG)" == "shivaguiwin32 - Win32 (WCE x86) Release"
 
-DEP_CPP_SHVCONTROLIMPLEMENTE=\
+DEP_CPP_SHVCONTROLIMPLEMENTER=\
 	"..\..\..\include\framework\shvconfig.h"\
 	"..\..\..\include\framework\shvevent.h"\
 	"..\..\..\include\framework\shveventemitter.h"\
@@ -7257,14 +7816,14 @@ DEP_CPP_SHVCONTROLIMPLEMENTE=\
 	"..\gui\utils\shvfontwin32.h"\
 	"..\gui\utils\shvpenwin32.h"\
 	
-NODEP_CPP_SHVCONTROLIMPLEMENTE=\
+NODEP_CPP_SHVCONTROLIMPLEMENTER=\
 	"..\..\..\include\gui\shvcontroldata.h"\
 	"..\gui\stdafx.h"\
 	
 
 !ELSEIF  "$(CFG)" == "shivaguiwin32 - Win32 (WCE x86) Debug"
 
-DEP_CPP_SHVCONTROLIMPLEMENTE=\
+DEP_CPP_SHVCONTROLIMPLEMENTER=\
 	"..\..\..\include\framework\shvconfig.h"\
 	"..\..\..\include\framework\shvevent.h"\
 	"..\..\..\include\framework\shveventemitter.h"\
@@ -7332,7 +7891,7 @@ DEP_CPP_SHVCONTROLIMPLEMENTE=\
 	"..\gui\utils\shvfontwin32.h"\
 	"..\gui\utils\shvpenwin32.h"\
 	
-NODEP_CPP_SHVCONTROLIMPLEMENTE=\
+NODEP_CPP_SHVCONTROLIMPLEMENTER=\
 	"..\..\..\include\gui\shvcontroldata.h"\
 	"..\gui\stdafx.h"\
 	
@@ -7419,39 +7978,22 @@ DEP_CPP_SHVCONTROLW=\
 	"..\..\..\include\databinder\shvdatabinder.h"\
 	"..\..\..\include\framework\shvconfig.h"\
 	"..\..\..\include\framework\shvevent.h"\
-	"..\..\..\include\framework\shveventemitter.h"\
 	"..\..\..\include\framework\shveventstring.h"\
-	"..\..\..\include\framework\shveventsubscriber.h"\
 	"..\..\..\include\framework\shveventsubscriberbase.h"\
-	"..\..\..\include\framework\shveventsubscriptionlist.h"\
-	"..\..\..\include\framework\shveventtargetdynamic.h"\
-	"..\..\..\include\framework\shvmodule.h"\
 	"..\..\..\include\framework\shvmodulebase.h"\
 	"..\..\..\include\framework\shvmodulelist.h"\
 	"..\..\..\include\gui\shvcontrol.h"\
-	"..\..\..\include\gui\shvcontrolbutton.h"\
-	"..\..\..\include\gui\shvcontrolcombobox.h"\
-	"..\..\..\include\gui\shvcontrolcontainer.h"\
-	"..\..\..\include\gui\shvcontrolcreatorbase.h"\
-	"..\..\..\include\gui\shvcontroldatetime.h"\
-	"..\..\..\include\gui\shvcontroledit.h"\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
-	"..\..\..\include\gui\shvcontrollabel.h"\
-	"..\..\..\include\gui\shvcontrollayout.h"\
-	"..\..\..\include\gui\shvcontroltab.h"\
-	"..\..\..\include\gui\shvformbase.h"\
-	"..\..\..\include\gui\shvformimplementer.h"\
-	"..\..\..\include\gui\shvguimanager.h"\
 	"..\..\..\include\gui\shvmenu.h"\
 	"..\..\..\include\gui\utils\shvbitmap.h"\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
 	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
 	"..\..\..\include\gui\utils\shvrect.h"\
-	"..\..\..\include\gui\utils\shvregion.h"\
 	"..\..\..\include\platforms\linux\platformspc.h"\
 	"..\..\..\include\platforms\symbian\platformspc.h"\
 	"..\..\..\include\platforms\win32\platformspc.h"\
@@ -7461,17 +8003,12 @@ DEP_CPP_SHVCONTROLW=\
 	"..\..\..\include\threadutils\shvthreadbase.h"\
 	"..\..\..\include\utils\shvassert.h"\
 	"..\..\..\include\utils\shvhashvalue.h"\
-	"..\..\..\include\utils\shvlist.h"\
-	"..\..\..\include\utils\shvlistbase.h"\
 	"..\..\..\include\utils\shvptrcontainer.h"\
 	"..\..\..\include\utils\shvrefobject.h"\
 	"..\..\..\include\utils\shvstring.h"\
 	"..\..\..\include\utils\shvstring16.h"\
 	"..\..\..\include\utils\shvstring16c.h"\
 	"..\..\..\include\utils\shvstringc.h"\
-	"..\..\..\include\utils\shvtime.h"\
-	"..\..\..\include\utils\shvvector.h"\
-	"..\..\..\include\utils\shvvectorbase.h"\
 	"..\gui\shvcontrolimplementerwin32.h"\
 	"..\gui\shvcontrolimplementerwin32base.h"\
 	"..\gui\shvcontrolwrapperwin32.h"\
@@ -7750,6 +8287,7 @@ DEP_CPP_SHVGUI=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvform.h"\
 	"..\..\..\include\gui\shvformbase.h"\
@@ -7761,6 +8299,7 @@ DEP_CPP_SHVGUI=\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
 	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -7802,6 +8341,7 @@ DEP_CPP_SHVGUI=\
 	"..\gui\shvcontrolimplementerdialogwin32.h"\
 	"..\gui\shvcontrolimplementereditwin32.h"\
 	"..\gui\shvcontrolimplementerlabelwin32.h"\
+	"..\gui\shvcontrolimplementerlistviewwin32.h"\
 	"..\gui\shvcontrolimplementertabwin32.h"\
 	"..\gui\shvcontrolimplementerwin32.h"\
 	"..\gui\shvcontrolimplementerwin32base.h"\
@@ -8126,6 +8666,7 @@ DEP_CPP_SHVMA=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvform.h"\
 	"..\..\..\include\gui\shvformbase.h"\
@@ -8135,6 +8676,8 @@ DEP_CPP_SHVMA=\
 	"..\..\..\include\gui\utils\shvbitmap.h"\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -8174,6 +8717,7 @@ DEP_CPP_SHVMA=\
 	"..\gui\shvcontrolimplementerwin32base.h"\
 	"..\gui\shvguimanagerwin32.h"\
 	"..\gui\shvmainthreadeventdispatcherwin32.h"\
+	"..\gui\shvmenuwin32.h"\
 	"..\gui\shvwin32.h"\
 	"..\gui\utils\shvfontwin32.h"\
 	{$(INCLUDE)}"aygshell.h"\
@@ -8452,6 +8996,7 @@ DEP_CPP_SHVMEN=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvform.h"\
 	"..\..\..\include\gui\shvformbase.h"\
@@ -8461,6 +9006,8 @@ DEP_CPP_SHVMEN=\
 	"..\..\..\include\gui\utils\shvbitmap.h"\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -8496,6 +9043,8 @@ DEP_CPP_SHVMEN=\
 	"..\gui\shvmenuwin32.h"\
 	"..\gui\shvwin32.h"\
 	"..\gui\utils\shvfontwin32.h"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
 	
 NODEP_CPP_SHVMEN=\
 	"..\gui\stdafx.h"\
@@ -8745,6 +9294,7 @@ DEP_CPP_SHVWI=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvform.h"\
 	"..\..\..\include\gui\shvformbase.h"\
@@ -8754,6 +9304,8 @@ DEP_CPP_SHVWI=\
 	"..\..\..\include\gui\utils\shvbitmap.h"\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -9051,6 +9603,7 @@ DEP_CPP_SHIVA=\
 	"..\..\..\include\gui\shvcontrolimplementer.h"\
 	"..\..\..\include\gui\shvcontrollabel.h"\
 	"..\..\..\include\gui\shvcontrollayout.h"\
+	"..\..\..\include\gui\shvcontrollistview.h"\
 	"..\..\..\include\gui\shvcontroltab.h"\
 	"..\..\..\include\gui\shvform.h"\
 	"..\..\..\include\gui\shvformbase.h"\
@@ -9060,6 +9613,8 @@ DEP_CPP_SHIVA=\
 	"..\..\..\include\gui\utils\shvbitmap.h"\
 	"..\..\..\include\gui\utils\shvbrush.h"\
 	"..\..\..\include\gui\utils\shvcolor.h"\
+	"..\..\..\include\gui\utils\shvdraw.h"\
+	"..\..\..\include\gui\utils\shvdraweventdata.h"\
 	"..\..\..\include\gui\utils\shvfont.h"\
 	"..\..\..\include\gui\utils\shvpen.h"\
 	"..\..\..\include\gui\utils\shvpoint.h"\
@@ -9334,6 +9889,10 @@ SOURCE=..\..\..\include\gui\shvcontrollayout.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\..\include\gui\shvcontrollistview.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\..\include\gui\shvcontroltab.h
 # End Source File
 # Begin Source File
@@ -9455,6 +10014,10 @@ SOURCE=..\gui\shvcontrolimplementereditwin32.h
 # Begin Source File
 
 SOURCE=..\gui\shvcontrolimplementerlabelwin32.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\gui\shvcontrolimplementerlistviewwin32.h
 # End Source File
 # Begin Source File
 
