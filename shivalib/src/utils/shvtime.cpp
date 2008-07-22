@@ -252,6 +252,13 @@ SHVBool retVal(dateStr.GetLength() > 19 ? (int)SHVBool::True : (int)ErrInvalidSt
 		SetMinute( dateStr.Mid(14,2).ToLong() );
 		SetSecond( dateStr.Mid(17,2).ToLong() );
 
+
+		if (GetYear() < 1900 || GetMonth() < 1 || GetMonth() > 12 || GetDay() < 1 || GetDay() > 31 ||
+			GetHour() < 0 || GetHour() > 23 || GetMinute() < 0 || GetMinute() > 59 || GetSecond() < 0 || GetSecond() > 59)
+		{
+			SetNull();
+		}
+
 		if (IsNull())
 			retVal.SetError(ErrInvalidString);
 	}
@@ -430,7 +437,8 @@ SHVTime now;
 int SHVTime::MonthToDays(int month)
 {
 static const int month_to_days[12] = {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
-	return month_to_days[month-1];
+	SHVASSERT(month >= 1 && month <= 12);
+	return month_to_days[month >= 1 && month <= 12 ? month-1 : 0];
 }
 
 /*************************************
@@ -531,27 +539,43 @@ time_t retVal = ::timegm(t);
 
 struct tm* SHVTime::LocalTime_r(const time_t *timep, struct tm *result)
 {
+struct tm* retVal = result;
 #ifdef __SHIVA_WINCE
 time_t t = *timep;
-	GmTime_r(timep,result);
-	SetDstAndWeekday(result,&t);
-	GmTime_r(&t,result);
+	if (t >= 0)
+	{
+		GmTime_r(timep,result);
+		SetDstAndWeekday(result,&t);
+		GmTime_r(&t,result);
+	}
+	else
+	{
+		retVal = NULL;
+	}
 #elif defined(__SHIVA_EPOC)
 	///TODO: Implement a proper localtime conversion for symbian, since it only knows utc
-	*result = *localtime(timep);
+	retVal = localtime(timep);
+	if (retVal)
+		*result = *retVal;
 #elif defined(__SHIVA_LINUX)
-	result = localtime_r(timep,result);
+	retVal = localtime_r(timep,result);
 #else
-	*result = *localtime(timep);
+	retVal = localtime(timep);
+	if (retVal)
+		*result = *retVal;
 #endif
-	return result;
+	return retVal;
 }
 
 struct tm* SHVTime::GmTime_r(const time_t *timep, struct tm *result)
 {
+struct tm* retVal = result;
 #if defined(__SHIVA_WINCE) || defined(__SHIVA_EPOC)
 time_t t = *timep;
 short year;
+
+	if (t < 0)
+		return NULL;
 
 	result->tm_sec  = t%60;	t/=60;
 	result->tm_min  = t%60;	t/=60;
@@ -566,7 +590,7 @@ short year;
 	t -= (year +300) / 400;
 	t%=365;
 
-	for (result->tm_mon=0; t>DaysInMonth(result->tm_mon+1,result->tm_year+1900);)
+	for (result->tm_mon=0; t>0 && t>DaysInMonth(result->tm_mon+1,result->tm_year+1900);)
 		t-=DaysInMonth(++result->tm_mon,result->tm_year+1900);
 
 	result->tm_mday = t+1;
@@ -578,11 +602,13 @@ short year;
 # endif
 
 #elif defined(__SHIVA_LINUX)
-	result = gmtime_r(timep,result);
+	retVal = gmtime_r(timep,result);
 #else
-	*result = *gmtime(timep);
+	retVal = gmtime(timep);
+	if (retVal)
+		*result = *retVal;
 #endif
-	return result;
+	return retVal;
 }
 
 time_t SHVTime::MkTime(struct tm *t)
