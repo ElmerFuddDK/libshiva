@@ -210,10 +210,10 @@ SHVRect rect(GetRect(owner));
 SHVMenu* SHVControlImplementerDialogWin32::CreateMenu(SHVControlContainer* owner, SHVEventSubscriberBase* subscriber)
 {
 #ifdef __SHIVA_POCKETPC
-SHVMenuWin32* retVal = NULL;
+SHVMenuContainerPocketPC* retVal = NULL;
 	if (!CmdWnd.IsNull())
 	{
-		retVal = new SHVMenuWin32((SHVGUIManagerWin32*)owner->GetManager(),SHVMenu::TypeControlContainer,subscriber,owner);
+		retVal = new SHVMenuContainerPocketPC((SHVGUIManagerWin32*)owner->GetManager(),subscriber,owner);
 		CmdWnd->InitializeMenu(retVal);
 	}
 	return retVal;

@@ -71,11 +71,6 @@ SHVMenuWin32::SHVMenuWin32(SHVGUIManagerWin32* manager, SHVMenu::Types type, SHV
 {
 	hMenuTopLevel = NULL;
 	hMenu = NULL;
-
-#ifdef __SHIVA_POCKETPC
-	CmdBar = NULL;
-	TopLevelNeedSeparator = false;
-#endif
 }
 
 /*************************************
@@ -100,6 +95,32 @@ SHVMenu::Types SHVMenuWin32::GetType()
 }
 
 /*************************************
+ * GetContainerMode
+ *************************************/
+SHVMenu::ContainerModes SHVMenuWin32::GetContainerMode()
+{
+	if (Type != SHVMenu::TypeControlContainer)
+		return SHVMenu::ContainerInvalid;
+#ifdef __SHIVA_POCKETPC
+	return SHVMenu::ContainerCompact;
+#else
+	return SHVMenu::ContainerNormal;
+#endif
+}
+
+/*************************************
+ * GetCompactButtonCount
+ *************************************/
+SHVInt SHVMenuWin32::GetCompactButtonCount()
+{
+#ifdef __SHIVA_POCKETPC
+	return 2;
+#else
+	return SHVInt();
+#endif
+}
+
+/*************************************
  * AddStringItem
  *************************************/
 void SHVMenuWin32::AddStringItem(SHVInt id, const SHVStringC name, int flags)
@@ -110,9 +131,6 @@ void SHVMenuWin32::AddStringItem(SHVInt id, const SHVStringC name, int flags)
 	int disabledflag = ( (flags&FlagDisabled) ? MF_DISABLED|MF_GRAYED : 0);
 	int cmdID = Manager->CreateCommandID(hMenuTopLevel,id);
 		::AppendMenu(hMenu,MF_STRING|disabledflag,cmdID,name.GetSafeBuffer());
-#ifdef __SHIVA_POCKETPC
-		TopLevelNeedSeparator = (Type == TypeControlContainer);
-#endif
 	}
 }
 
@@ -124,9 +142,6 @@ void SHVMenuWin32::AddSeparator()
 	EnsureMenuCreated();
 	if (hMenu)
 		::AppendMenu(hMenu,MF_SEPARATOR,0,_T(""));
-#ifdef __SHIVA_POCKETPC
-	TopLevelNeedSeparator = false;
-#endif
 }
 
 /*************************************
@@ -134,30 +149,12 @@ void SHVMenuWin32::AddSeparator()
  *************************************/
 SHVMenu* SHVMenuWin32::AddSubMenu(const SHVStringC name)
 {
-	// a hack that makes the first sub menu the main menu
-#ifdef __SHIVA_POCKETPC
-	if (!hMenu && Type == TypeControlContainer)
-	{
-		EnsureMenuCreated();
-		TopLevelMenuName = name;
-		return this;
-	}
-	else if (hMenu && TopLevelNeedSeparator)
-	{
-		AddSeparator();
-		TopLevelNeedSeparator = false;
-	}
-#endif
-
 	EnsureMenuCreated();
 	if (hMenu)
 	{
 	SHVMenuWin32* retVal = new SHVMenuWin32(Manager,SHVMenu::TypeSub, NULL, Parent);
 		retVal->hMenu = ::CreatePopupMenu();
 		retVal->hMenuTopLevel = hMenuTopLevel;
-#ifdef __SHIVA_POCKETPC
-		retVal->CmdBar = CmdBar;
-#endif
 		::AppendMenu(hMenu,MF_POPUP,(UINT_PTR)retVal->hMenu,name.GetSafeBuffer());
 		return retVal;
 	}
@@ -222,15 +219,7 @@ int flags;
 		case TypeControlContainer:
 #ifdef __SHIVA_POCKETPC
 			SHVUNUSED_PARAM(oldMenu);
-			if (!CmdBar || !CmdBar->hCmdWnd)
-			{
-				Manager->RemoveCommandIDs(hMenu);
-				Manager->MenuMap.Remove(hMenu); // will destroy us
-			}
-			else
-			{
-				CmdBar->SetMenu(hParent, hMenu, TopLevelMenuName);
-			}
+			SHVASSERT(false); // should never occur
 #else
 			oldMenu = ::GetMenu(hParent);
 			if (oldMenu)
@@ -250,16 +239,6 @@ int flags;
 			return;
 		}
 	}
-#ifdef __SHIVA_POCKETPC
-	else if (Type == TypeControlContainer && hMenu && hParent && Manager->MenuMap.Find(hMenu))
-	{
-	int cmd = ::TrackPopupMenu(hMenu,TPM_LEFTBUTTON|TPM_RIGHTBUTTON|TPM_LEFTALIGN|TPM_BOTTOMALIGN|TPM_RETURNCMD,offset.x,offset.y,0,hParent,NULL);
-		if (!cmd)
-			EmitEvent(SHVInt());
-		else
-			::PostMessage(Win32::GetHandle(Manager->GetMainWindow()),WM_COMMAND,cmd,NULL);
-	}
-#endif
 }
 
 /*************************************
@@ -304,6 +283,167 @@ void SHVMenuWin32::EnsureMenuCreated()
 
 #ifdef __SHIVA_POCKETPC
 //=========================================================================================================
+// SHVMenuContainerPocketPC
+//=========================================================================================================
+
+/*************************************
+ * Constructor
+ *************************************/
+SHVMenuContainerPocketPC::SHVMenuContainerPocketPC(SHVGUIManagerWin32* manager, SHVEventSubscriberBase* subscriber, SHVControl* parent)
+	: SHVMenuWin32(manager,SHVMenu::TypeControlContainer,subscriber,parent)
+{
+	CmdBar = NULL;
+	Button1Enabled = Button2Enabled = true;
+}
+
+/*************************************
+ * Destructor
+ *************************************/
+SHVMenuContainerPocketPC::~SHVMenuContainerPocketPC()
+{
+	if (!Menu1.IsNull())
+	{
+		Manager->RemoveCommandIDs(Menu1->hMenu);
+		Menu1 = NULL;
+	}
+	if (!Menu2.IsNull())
+	{
+		Manager->RemoveCommandIDs(Menu2->hMenu);
+		Menu2 = NULL;
+	}
+}
+
+/*************************************
+ * AddStringItem
+ *************************************/
+void SHVMenuContainerPocketPC::AddStringItem(SHVInt id, const SHVStringC name, int flags)
+{
+	if (Button1MenuName.IsNull())
+	{
+		Menu1 = NULL;
+		Button1MenuName = name;
+		Button1Enabled = !(flags&FlagDisabled);
+		Button1ID = id;
+	}
+	else if (Button2MenuName.IsNull())
+	{
+		Menu2 = NULL;
+		Button2MenuName = name;
+		Button2Enabled = !(flags&FlagDisabled);
+		Button2ID = id;
+	}
+	else
+	{
+		SHVASSERT(false); // oh dear, no more buttons! - we'll never get grandfathers sweater done
+	}
+}
+
+/*************************************
+ * AddSeparator
+ *************************************/
+void SHVMenuContainerPocketPC::AddSeparator()
+{
+	// ho humm
+}
+
+/*************************************
+ * AddSubMenu
+ *************************************/
+SHVMenu* SHVMenuContainerPocketPC::AddSubMenu(const SHVStringC name)
+{
+SHVMenu* retVal;
+	if (Button1MenuName.IsNull())
+	{
+		retVal = Menu1 = new SHVMenuWin32(this->Manager,SHVMenu::TypeControlContainer,Subscriber,Parent);
+		Button1MenuName = name;
+		Button1Enabled = true;
+		Button1ID.SetToNull();
+	}
+	else if (Button2MenuName.IsNull())
+	{
+		retVal = Menu2 = new SHVMenuWin32(this->Manager,SHVMenu::TypeControlContainer,Subscriber,Parent);
+		Button2MenuName = name;
+		Button2Enabled = true;
+		Button2ID.SetToNull();
+	}
+	else if (!Menu1.IsNull())
+	{
+		retVal = Menu1->AddSubMenu(name);
+	}
+	else if (!Menu2.IsNull())
+	{
+		retVal = Menu2->AddSubMenu(name);
+	}
+	else
+	{
+		SHVASSERT(false); // nothing to put the menu on ... shame oh shame
+		retVal = NULL;
+	}
+
+	return retVal;
+}
+
+/*************************************
+ * Show
+ *************************************/
+void SHVMenuContainerPocketPC::Show(PopupTypes type, SHVPoint offset)
+{
+HWND hParent = Win32::GetHandle(Parent);
+HMENU oldMenu;
+	if (hParent)
+	{
+		SHVUNUSED_PARAM(oldMenu);
+		if (CmdBar && CmdBar->hCmdWnd)
+		{
+			if (!Menu1.IsNull())
+				Manager->MenuMap[Menu1->hMenu] = Menu1;
+			if (!Menu2.IsNull())
+				Manager->MenuMap[Menu2->hMenu] = Menu2;
+			CmdBar->SetMenu(hParent, this);
+		}
+	}
+}
+
+/*************************************
+ * PerformButton
+ *************************************/
+void SHVMenuContainerPocketPC::PerformButton(int num, SHVPoint offset)
+{
+SHVMenuWin32* menu = NULL;
+SHVInt cmdID;
+
+	if (num == 0)
+	{
+		if (!Menu1.IsNull())
+			menu = Menu1;
+		else
+			cmdID = Button1ID;
+	}
+	else if (num == 1)
+	{
+		if (!Menu2.IsNull())
+			menu = Menu2;
+		else
+			cmdID = Button2ID;
+	}
+
+	if (menu)
+	{
+	HWND hParent = Win32::GetHandle(Parent);
+	int cmd = ::TrackPopupMenu(menu->hMenu,TPM_LEFTBUTTON|TPM_RIGHTBUTTON|(num == 0 ? TPM_LEFTALIGN : TPM_RIGHTALIGN)|TPM_BOTTOMALIGN|TPM_RETURNCMD,offset.x,offset.y,0,hParent,NULL);
+		if (!cmd)
+			EmitEvent(SHVInt());
+		else
+			::PostMessage(Win32::GetHandle(Manager->GetMainWindow()),WM_COMMAND,cmd,NULL);
+	}
+	else
+	{
+		EmitEvent(cmdID);
+	}
+}
+
+
+//=========================================================================================================
 // SHVMenuCommandBarPocketPC
 //=========================================================================================================
 
@@ -314,8 +454,6 @@ SHVMenuCommandBarPocketPC::SHVMenuCommandBarPocketPC(HWND parent, HINSTANCE hins
 	: hInstance(hinstance), Manager(manager)
 {
 SHMENUBARINFO mbi;
-
-	hMenu = NULL;
 
 	memset(&mbi, 0, sizeof(SHMENUBARINFO));
 	mbi.cbSize     = sizeof(SHMENUBARINFO);
@@ -339,29 +477,29 @@ SHVMenuCommandBarPocketPC::~SHVMenuCommandBarPocketPC()
 	if (hCmdWnd)
 		CommandBar_Destroy(hCmdWnd);
 
-	SetMenu(NULL, NULL, NULL);
+	SetMenu(NULL, NULL);
 }
 
 
 /*************************************
  * InitializeMenu
  *************************************/
-void SHVMenuCommandBarPocketPC::InitializeMenu(SHVMenuWin32* menu)
+void SHVMenuCommandBarPocketPC::InitializeMenu(SHVMenuContainerPocketPC* menu)
 {
-	if (menu && menu->Type == SHVMenu::TypeControlContainer)
+	if (menu && menu->GetType() == SHVMenu::TypeControlContainer)
 		menu->CmdBar = this;
 }
 
 /*************************************
  * Show
  *************************************/
-bool SHVMenuCommandBarPocketPC::SetMenu(HWND parent, HMENU hmenu, const SHVStringC menuName) // returns true if the menu needs to be shown
+void SHVMenuCommandBarPocketPC::SetMenu(HWND parent, SHVMenuContainerPocketPC* menu)
 {
 
-	if (hMenu && hMenu == hmenu)
-		return true;
+	if (menu && Menu == menu)
+		return;
 
-	if (hMenu)
+	if (!Menu.IsNull())
 	{
 	SHMENUBARINFO mbi;
 
@@ -381,14 +519,12 @@ bool SHVMenuCommandBarPocketPC::SetMenu(HWND parent, HMENU hmenu, const SHVStrin
 
 
 		// Remove the old menu stuff, thus destroying it
-		Manager->RemoveCommandIDs(hMenu);
-		Manager->MenuMap.Remove(hMenu);
-		hMenu = NULL; // rely on the SHVMenuWin32 destructor to delete it
+		Menu = NULL; // rely on the SHVMenuContainerPocketPC destructor to delete everything
 	}
 
-	hMenu = hmenu;
+	Menu = menu;
 
-	if (hMenu)
+	if (!Menu.IsNull())
 	{
 	TBBUTTON tbButton;
 
@@ -396,25 +532,23 @@ bool SHVMenuCommandBarPocketPC::SetMenu(HWND parent, HMENU hmenu, const SHVStrin
 
 		memset(&tbButton, 0, sizeof(TBBUTTON));
 		tbButton.iBitmap   = I_IMAGENONE;
-		tbButton.fsState   = TBSTATE_ENABLED;
+		tbButton.fsState   = (!Menu->Button1MenuName.IsNull() && Menu->Button1Enabled ? TBSTATE_ENABLED : 0);
 		tbButton.fsStyle   = TBSTYLE_BUTTON|TBSTYLE_AUTOSIZE;
 		tbButton.dwData    = 0;
 		tbButton.idCommand = 0;
-		tbButton.iString   = ::SendMessage(hCmdWnd, TB_ADDSTRING,NULL,(LPARAM)menuName.GetSafeBuffer());
+		tbButton.iString   = ::SendMessage(hCmdWnd, TB_ADDSTRING,NULL,(LPARAM)Menu->Button1MenuName.GetSafeBuffer());
 		::SendMessage(hCmdWnd,TB_INSERTBUTTON,::SendMessage(hCmdWnd,TB_BUTTONCOUNT,0,0),(LPARAM)&tbButton);
 
 		memset(&tbButton, 0, sizeof(TBBUTTON));
 		tbButton.iBitmap   = I_IMAGENONE;
-		tbButton.fsState   = TBSTATE_ENABLED;
+		tbButton.fsState   = (!Menu->Button2MenuName.IsNull() && Menu->Button2Enabled ? TBSTATE_ENABLED : 0);
 		tbButton.fsStyle   = TBSTYLE_BUTTON|TBSTYLE_AUTOSIZE;
 		tbButton.dwData    = 0;
 		tbButton.idCommand = 1;
-		tbButton.iString   = ::SendMessage(hCmdWnd, TB_ADDSTRING,NULL,(LPARAM)_T("Close")); ///\todo Add some way to obtain a better close button text
+		tbButton.iString   = ::SendMessage(hCmdWnd, TB_ADDSTRING,NULL,(LPARAM)Menu->Button2MenuName.GetSafeBuffer());
 		::SendMessage(hCmdWnd,TB_INSERTBUTTON,::SendMessage(hCmdWnd,TB_BUTTONCOUNT,0,0),(LPARAM)&tbButton);
 
 	}
-
-	return false;
 }
 
 /*************************************
@@ -422,20 +556,21 @@ bool SHVMenuCommandBarPocketPC::SetMenu(HWND parent, HMENU hmenu, const SHVStrin
  *************************************/
 bool SHVMenuCommandBarPocketPC::OnCommandMsg(HWND hWnd, WPARAM wParam, LPARAM lParam) // returns true if it thinks this message is for this command bar
 {
-	if (!HIWORD(wParam))
+HWND hParent;
+
+	if (!lParam)
+		return false;
+
+	hParent = ::GetParent((HWND)lParam); // the parent to the control sending the command message is one of our buttons
+
+	if (!HIWORD(wParam) && hParent == hCmdWnd)
 	{
-		if (LOWORD(wParam) == 0)
+	int butID = LOWORD(wParam);
+		if (!Menu.IsNull() && (butID == 0 || butID == 1))
 		{
-			if (hMenu && Manager->MenuMap.Find(hMenu))
-			{
-			RECT rect;
-				::GetWindowRect(hCmdWnd,&rect);
-				Manager->MenuMap[hMenu]->Show(SHVMenu::PopupDefault,SHVPoint(rect.left,rect.top));
-			}
-		}
-		else if (LOWORD(wParam) == 1)
-		{
-			::PostMessage(hWnd,WM_CLOSE,0,0);
+		RECT rect;
+			::GetWindowRect(hCmdWnd,&rect);
+			Menu->PerformButton(butID,SHVPoint(butID == 0 ? rect.left : rect.right,rect.top));
 		}
 		return true;
 	}

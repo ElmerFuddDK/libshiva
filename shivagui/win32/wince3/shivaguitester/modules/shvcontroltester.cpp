@@ -109,6 +109,8 @@ SHVFontRef ownerDrawFont = GUIManager->GetFont(SHVGUIManager::CfgFontNormal)->Cr
 	GUIManager->GetMainWindow()->ResizeControls();
 
 	SHVMenuRef menu = GUIManager->GetMainWindow()->CreateMenu(new SHVEventSubscriber(this,&Modules));
+	if (menu->GetContainerMode() == SHVMenu::ContainerCompact)
+		menu->AddStringItem(__MENU_CLOSE,_T("Close"));
 	SHVMenuRef menu2 = menu->AddSubMenu(_T("Test"));
 	menu2->AddStringItem(__MENU_MSGBOXES,_T("Look at all those msgs"));
 	menu2->AddSeparator();
@@ -172,6 +174,9 @@ void SHVControlTester::OnEvent(SHVEvent* event)
 						dialog->Create();
 						TestDialog->InitializeForm();
 					}*/
+				case __MENU_CLOSE:
+					Modules.CloseApp();
+					break;
 					break;
 				}
 			}

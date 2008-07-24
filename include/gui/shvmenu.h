@@ -18,6 +18,10 @@
  * types.\n
  * Adding items and separators directly to a control container menu will not
  * work on all platforms.\n
+ * A menu of type control container can be in 2 modes depending on platform.
+ * In compact mode the menu is limited to a series of buttons, and once the
+ * buttons are filled up it will fall back to adding the submenus to the first
+ * button menu, if possible.\n
  *\note On some platforms a popup menu is modal.
  */
 
@@ -40,6 +44,12 @@ public:
 		PopupCenterWindow
 	};
 
+	enum ContainerModes {
+		ContainerInvalid = -1, // not a container type menu
+		ContainerNormal,       // normal PC style menus
+		ContainerCompact       // compact style PDA/phone menus (typically 2 buttons)
+	};
+
 	enum Flags {
 		FlagNone = 0,
 		FlagDisabled  = 1,
@@ -49,6 +59,12 @@ public:
 
 	// Obtain type
 	virtual Types GetType() = 0;
+
+
+	// Container mode stuff
+	virtual ContainerModes GetContainerMode() = 0;
+	virtual SHVInt GetCompactButtonCount() = 0;
+	
 	
 	// Manipulation items
 	virtual void AddStringItem(SHVInt id, const SHVStringC name, int flags = FlagDefault) = 0;

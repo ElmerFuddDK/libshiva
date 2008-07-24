@@ -14,6 +14,7 @@
 #ifdef __SHIVA_POCKETPC
 ///\cond INTERNAL
 class SHVMenuCommandBarPocketPC;
+class SHVMenuContainerPocketPC;
 ///\endcond
 #endif
 
@@ -35,6 +36,12 @@ public:
 	// Obtain type
 	virtual Types GetType();
 	
+
+	// Container mode stuff
+	virtual ContainerModes GetContainerMode();
+	virtual SHVInt GetCompactButtonCount();
+
+
 	// Manipulation items
 	virtual void AddStringItem(SHVInt id, const SHVStringC name, int flags = FlagDefault);
 	virtual void AddSeparator();
@@ -49,14 +56,8 @@ public:
 
 private:
 	///\cond INTERNAL
+friend class SHVMenuContainerPocketPC;
 	void EnsureMenuCreated();
-
-#ifdef __SHIVA_POCKETPC
-friend class SHVMenuCommandBarPocketPC;
-	SHVMenuCommandBarPocketPC* CmdBar;
-	SHVString TopLevelMenuName;
-	bool TopLevelNeedSeparator;
-#endif
 
 	HMENU hMenuTopLevel;
 	HMENU hMenu;
@@ -66,10 +67,51 @@ friend class SHVMenuCommandBarPocketPC;
 	SHVControl* Parent;
 	///\endcond
 };
+typedef SHVRefObjectContainer<SHVMenuWin32> SHVMenuWin32Ref;
+
 
 
 #ifdef __SHIVA_POCKETPC
 ///\cond INTERNAL
+
+//-=========================================================================================================
+/// SHVMenuContainerPocketPC
+/**
+ */
+
+class SHVMenuContainerPocketPC : public SHVMenuWin32
+{
+public:
+
+
+	SHVMenuContainerPocketPC(SHVGUIManagerWin32* manager, SHVEventSubscriberBase* subscriber, SHVControl* parent);
+	virtual ~SHVMenuContainerPocketPC();
+
+	// Manipulation items
+	virtual void AddStringItem(SHVInt id, const SHVStringC name, int flags = FlagDefault);
+	virtual void AddSeparator();
+	virtual SHVMenu* AddSubMenu(const SHVStringC name);
+
+	// Make the menu "visible"
+	virtual void Show(PopupTypes type = PopupDefault, SHVPoint offset = SHVPoint());
+
+	void PerformButton(int num, SHVPoint offset);
+
+private:
+friend class SHVMenuCommandBarPocketPC;
+
+	SHVMenuCommandBarPocketPC* CmdBar;
+
+	SHVMenuWin32Ref Menu1, Menu2;
+	//bool TopLevelNeedSeparator;
+
+	SHVString Button1MenuName, Button2MenuName;
+	SHVInt Button1ID, Button2ID;
+	bool Button1Enabled, Button2Enabled;
+};
+typedef SHVRefObjectContainer<SHVMenuContainerPocketPC> SHVMenuContainerPocketPCRef;
+
+
 
 //-=========================================================================================================
 /// SHVMenuCommandBarPocketPC
@@ -85,15 +127,15 @@ public:
 	~SHVMenuCommandBarPocketPC();
 
 
-	void InitializeMenu(SHVMenuWin32* menu);
-	bool SetMenu(HWND parent, HMENU hmenu, const SHVStringC menuName); // returns true if the menu needs to be shown
+	void InitializeMenu(SHVMenuContainerPocketPC* menu);
+	void SetMenu(HWND parent, SHVMenuContainerPocketPC* menu); // returns true if the menu needs to be shown
 	bool OnCommandMsg(HWND hWnd, WPARAM wParam, LPARAM lParam); // returns true if it thinks this message is for this command bar
 
 
 	HWND hCmdWnd;
 
 protected:
-	HMENU hMenu;
+	SHVMenuContainerPocketPCRef Menu;
 	HINSTANCE hInstance;
 	SHVGUIManagerWin32* Manager;
 };
