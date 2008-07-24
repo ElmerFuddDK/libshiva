@@ -41,6 +41,7 @@ public:
 	inline SHVControlContainer* AddPage(const SHVStringC name, size_t atIndex = SIZE_T_MAX);
 	inline SHVControlContainer* GetPage(size_t index);
 	inline void RemovePage(size_t index);
+	inline void RemovePageByContainer(SHVControlContainer* container);
 	inline void Clear();
 
 	inline size_t GetSelectedPage();
@@ -85,6 +86,7 @@ public:
 	virtual SHVControlContainer* AddPage(SHVControlTab* owner, const SHVStringC name, size_t atIndex = SIZE_T_MAX) = 0;
 	virtual SHVControlContainer* GetPage(SHVControlTab* owner, size_t index) = 0;
 	virtual void RemovePage(SHVControlTab* owner, size_t index) = 0;
+	virtual void RemovePageByContainer(SHVControlTab* owner, SHVControlContainer* container) = 0;
 	virtual void Clear(SHVControlTab* owner) = 0;
 
 	virtual size_t GetSelectedPage(SHVControlTab* owner) = 0;
@@ -141,6 +143,14 @@ SHVControlContainer* SHVControlTab::GetPage(size_t index)
 void SHVControlTab::RemovePage(size_t index)
 {
 	GetImplementor()->RemovePage(this,index);
+}
+
+/*************************************
+ * RemovePageByContainer
+ *************************************/
+void SHVControlTab::RemovePageByContainer(SHVControlContainer* container)
+{
+	GetImplementor()->RemovePageByContainer(this,container);
 }
 
 /*************************************

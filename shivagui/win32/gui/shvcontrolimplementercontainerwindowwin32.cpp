@@ -87,6 +87,22 @@ SHVBool SHVControlImplementerContainerWindowWin32::Create(SHVControl* owner, SHV
 }
 
 /*************************************
+ * Destroy
+ *************************************/
+SHVBool SHVControlImplementerContainerWindowWin32::Destroy(SHVControl* owner)
+{
+	if (IsCreated() && GetSubType(owner) == SHVControlContainer::SubTypeTabPage)
+	{
+	HWND tabHandle = ::GetParent(GetHandle());
+	SHVBool retVal(SHVControlImplementerWin32<SHVControlImplementerContainerCustomDraw>::Destroy(owner));
+		SHVControlImplementerTabWin32::RemovePageByHandle(tabHandle,(SHVControlContainer*)owner);
+		return retVal;
+	}
+	
+	return SHVControlImplementerWin32<SHVControlImplementerContainerCustomDraw>::Destroy(owner);
+}
+
+/*************************************
  * GetRegionRect
  *************************************/
 SHVRect SHVControlImplementerContainerWindowWin32::GetRegionRect()

@@ -166,6 +166,23 @@ size_t count = Pages.CalculateCount();
 }
 
 /*************************************
+ * RemovePageByContainer
+ *************************************/
+void SHVControlImplementerTabWin32::RemovePageByContainer(SHVControlTab* owner, SHVControlContainer* container)
+{
+size_t pageCount = Pages.CalculateCount();
+
+	for (size_t i=0; container && i<pageCount; i++)
+	{
+		if (Pages[i]->Container == container)
+		{
+			RemovePage(owner,i);
+			container = NULL;
+		}
+	}
+}
+
+/*************************************
  * Clear
  *************************************/
 void SHVControlImplementerTabWin32::Clear(SHVControlTab* owner)
@@ -234,6 +251,18 @@ SHVStringBuffer SHVControlImplementerTabWin32::GetPageName(SHVControlTab* owner,
 size_t SHVControlImplementerTabWin32::GetPageCount(SHVControlTab* owner)
 {
 	return Pages.CalculateCount();
+}
+
+/*************************************
+ * RemovePageByHandle
+ *************************************/
+void SHVControlImplementerTabWin32::RemovePageByHandle(HWND tabHandle, SHVControlContainer* container)
+{
+SHVControlTab* owner = (SHVControlTab*)GetWindowLongPtr(tabHandle,GWLP_USERDATA);
+SHVControlImplementerTabWin32* self = (owner ? (SHVControlImplementerTabWin32*)owner->GetImplementor() : NULL);
+
+	if (self && self->IsCreated())
+		self->RemovePageByContainer(owner,container);
 }
 
 ///\cond INTERNAL

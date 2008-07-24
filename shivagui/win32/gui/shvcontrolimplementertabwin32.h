@@ -39,6 +39,7 @@ public:
 	virtual SHVControlContainer* AddPage(SHVControlTab* owner, const SHVStringC name, size_t atIndex = SIZE_T_MAX);
 	virtual SHVControlContainer* GetPage(SHVControlTab* owner, size_t index);
 	virtual void RemovePage(SHVControlTab* owner, size_t index);
+	virtual void RemovePageByContainer(SHVControlTab* owner, SHVControlContainer* container);
 	virtual void Clear(SHVControlTab* owner);
 
 	virtual size_t GetSelectedPage(SHVControlTab* owner);
@@ -51,6 +52,8 @@ public:
 
 	virtual size_t GetPageCount(SHVControlTab* owner);
 
+
+	static void RemovePageByHandle(HWND tabHandle, SHVControlContainer* container);
 
 private:
 friend class SHVControlImplementerContainerWindowWin32;

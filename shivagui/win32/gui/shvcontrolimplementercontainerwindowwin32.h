@@ -29,6 +29,7 @@ public:
 	virtual int GetSubType(SHVControl* owner);
 
 	virtual SHVBool Create(SHVControl* owner, SHVControlImplementer* parent, int flags);
+	virtual SHVBool Destroy(SHVControl* owner);
 
 
 	// From SHVControlImplementerContainer
