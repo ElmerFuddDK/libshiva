@@ -536,7 +536,7 @@ void SHVMenuCommandBarPocketPC::SetMenu(HWND parent, SHVMenuContainerPocketPC* m
 		tbButton.fsStyle   = TBSTYLE_BUTTON|TBSTYLE_AUTOSIZE;
 		tbButton.dwData    = 0;
 		tbButton.idCommand = 0;
-		tbButton.iString   = ::SendMessage(hCmdWnd, TB_ADDSTRING,NULL,(LPARAM)Menu->Button1MenuName.GetSafeBuffer());
+		tbButton.iString   = ::SendMessage(hCmdWnd, TB_ADDSTRING,NULL,(LPARAM)(Menu->Button1MenuName.IsEmpty() ? _T(" ") : Menu->Button1MenuName.GetSafeBuffer()));
 		::SendMessage(hCmdWnd,TB_INSERTBUTTON,::SendMessage(hCmdWnd,TB_BUTTONCOUNT,0,0),(LPARAM)&tbButton);
 
 		memset(&tbButton, 0, sizeof(TBBUTTON));
@@ -545,7 +545,7 @@ void SHVMenuCommandBarPocketPC::SetMenu(HWND parent, SHVMenuContainerPocketPC* m
 		tbButton.fsStyle   = TBSTYLE_BUTTON|TBSTYLE_AUTOSIZE;
 		tbButton.dwData    = 0;
 		tbButton.idCommand = 1;
-		tbButton.iString   = ::SendMessage(hCmdWnd, TB_ADDSTRING,NULL,(LPARAM)Menu->Button2MenuName.GetSafeBuffer());
+		tbButton.iString   = ::SendMessage(hCmdWnd, TB_ADDSTRING,NULL,(LPARAM)(Menu->Button2MenuName.IsEmpty() ? _T(" ") : Menu->Button2MenuName.GetSafeBuffer()));
 		::SendMessage(hCmdWnd,TB_INSERTBUTTON,::SendMessage(hCmdWnd,TB_BUTTONCOUNT,0,0),(LPARAM)&tbButton);
 
 	}
