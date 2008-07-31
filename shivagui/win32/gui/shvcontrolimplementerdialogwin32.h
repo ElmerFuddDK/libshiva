@@ -73,6 +73,7 @@ private:
 	SHVPoint MinSize;
 	SHVPoint DecorationsSize;
 	SHVColorRef Color;
+	HWND FocusWnd;
 #ifdef __SHIVA_POCKETPC
 	SHVMenuCommandBarPocketPCPtr CmdWnd;
 	SHACTIVATEINFO s_sai;

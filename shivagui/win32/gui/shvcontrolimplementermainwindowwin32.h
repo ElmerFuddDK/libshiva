@@ -70,6 +70,7 @@ private:
 	HINSTANCE hInstance;
 	SHVMainThreadEventDispatcherWin32* Dispatcher;
 	SHVColorRef Color;
+	HWND FocusWnd;
 #ifdef __SHIVA_POCKETPC
 	SHVMenuCommandBarPocketPCPtr CmdWnd;
 	SHACTIVATEINFO s_sai;

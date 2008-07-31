@@ -59,6 +59,8 @@ SHVControlImplementerMainWindowWin32::SHVControlImplementerMainWindowWin32(HINST
 	hInstance = hinstance;
 	Dispatcher = dispatcher;
 
+	FocusWnd = NULL;
+
 	Color = SHVColorWin32::FromSysColor(COLOR_3DFACE);
 }
 
@@ -378,8 +380,35 @@ SHVControlContainerRef refToSelf;
 		// Notify shell of our activate message
 		if (self)
 			SHHandleWMActivate(hWnd, wParam, lParam, &self->s_sai, FALSE);
+#else
+		if (self)
+		{
+			switch (LOWORD(wParam))
+			{
+			case WA_CLICKACTIVE:
+			case WA_ACTIVE:
+				if (!self->FocusWnd || !::IsWindow(self->FocusWnd) || !(GetWindowLong(self->FocusWnd,GWL_STYLE)&WS_TABSTOP))
+					self->FocusWnd = ::GetNextDlgTabItem(hWnd,hWnd,FALSE);
+				if (self->FocusWnd)
+					::SetFocus(self->FocusWnd);
+				break;
+			case WA_INACTIVE:
+				if (::GetFocus())
+					self->FocusWnd = ::GetFocus();
+				break;
+			}
+		}
 #endif
      	break;
+	case WM_SETFOCUS:
+		if (self)
+		{
+			if (!self->FocusWnd || !::IsWindow(self->FocusWnd) || !(GetWindowLong(self->FocusWnd,GWL_STYLE)&WS_TABSTOP))
+				self->FocusWnd = ::GetNextDlgTabItem(hWnd,hWnd,FALSE);
+			if (self->FocusWnd)
+				::SetFocus(self->FocusWnd);
+		}
+		break;
 	case WM_SETTINGCHANGE:
 #ifdef __SHIVA_POCKETPC
 		if (self)

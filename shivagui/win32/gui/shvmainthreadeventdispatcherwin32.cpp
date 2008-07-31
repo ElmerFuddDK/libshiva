@@ -166,7 +166,7 @@ BOOL msgRetVal;
 				{
 
 					// find top level wnd
-					for (wnd=msg.hwnd;wnd;wnd = ::GetParent(wnd))
+					for (wnd=msg.hwnd;wnd && ::GetWindowLong(wnd,GWL_STYLE);wnd = ::GetParent(wnd))
 						topwnd = wnd;
 
 					wnd = ::GetNextDlgTabItem(topwnd,msg.hwnd,(GetKeyState(VK_SHIFT) & 0x8000 ? TRUE : FALSE));
