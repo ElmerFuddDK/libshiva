@@ -53,7 +53,7 @@ SHVBool SHVControlImplementerTabWin32::Create(SHVControl* owner, SHVControlImple
 {
 	if (!IsCreated() && parent && parent->IsCreated())
 	{
-		SetHandle(CreateWindowEx(WS_EX_NOPARENTNOTIFY,WC_TABCONTROL, _T(""), WS_CHILD|WS_TABSTOP|Win32::MapFlags(flags)|TCS_TABS|TCS_SINGLELINE,
+		SetHandle(CreateWindowEx(WS_EX_NOPARENTNOTIFY|WS_EX_CONTROLPARENT,WC_TABCONTROL, _T(""), WS_CHILD|WS_TABSTOP|Win32::MapFlags(flags)|TCS_TABS|TCS_SINGLELINE,
 			0, 0, 0, 0, Win32::GetHandle(parent), NULL, Win32::GetInstance(owner), NULL));
 
 		if (IsCreated())

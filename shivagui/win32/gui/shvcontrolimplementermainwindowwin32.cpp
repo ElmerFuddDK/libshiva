@@ -387,7 +387,7 @@ SHVControlContainerRef refToSelf;
 			{
 			case WA_CLICKACTIVE:
 			case WA_ACTIVE:
-				if (!self->FocusWnd || !::IsWindow(self->FocusWnd) || !(GetWindowLong(self->FocusWnd,GWL_STYLE)&WS_TABSTOP))
+				if (!self->FocusWnd || !::IsWindow(self->FocusWnd) || !::IsChild(hWnd,self->FocusWnd) || !(::GetWindowLong(self->FocusWnd,GWL_STYLE)&WS_TABSTOP))
 					self->FocusWnd = ::GetNextDlgTabItem(hWnd,hWnd,FALSE);
 				if (self->FocusWnd)
 					::SetFocus(self->FocusWnd);
@@ -403,7 +403,7 @@ SHVControlContainerRef refToSelf;
 	case WM_SETFOCUS:
 		if (self)
 		{
-			if (!self->FocusWnd || !::IsWindow(self->FocusWnd) || !(GetWindowLong(self->FocusWnd,GWL_STYLE)&WS_TABSTOP))
+			if (!self->FocusWnd || !::IsWindow(self->FocusWnd) || !::IsChild(hWnd,self->FocusWnd) || !(::GetWindowLong(self->FocusWnd,GWL_STYLE)&WS_TABSTOP))
 				self->FocusWnd = ::GetNextDlgTabItem(hWnd,hWnd,FALSE);
 			if (self->FocusWnd)
 				::SetFocus(self->FocusWnd);
