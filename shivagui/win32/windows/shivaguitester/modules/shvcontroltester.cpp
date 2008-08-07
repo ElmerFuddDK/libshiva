@@ -41,6 +41,8 @@
 #define __MENU_MSGBOXES  1
 #define __MENU_STUFF     2
 #define __MENU_DIALOGTST 3
+#define __MENU_WAITCURSORSHOW 4
+#define __MENU_WAITCURSORHIDE 5
 
 
 //=========================================================================================================
@@ -119,6 +121,9 @@ SHVFontRef ownerDrawFont = GUIManager->GetFont(SHVGUIManager::CfgFontNormal)->Cr
 	menu2->AddStringItem(__MENU_STUFF,_T("More stuff"));
 	menu2->AddStringItem(__MENU_DIALOGTST,_T("Dialog test"));
 	menu2->AddStringItem(__MENU_DIALOGTST,_T("Disabled item"), SHVMenu::FlagDisabled);
+	menu2->AddSeparator();
+	menu2->AddStringItem(__MENU_WAITCURSORSHOW,_T("Show wait cursor"));
+	menu2->AddStringItem(__MENU_WAITCURSORHIDE,_T("Hide wait cursor"));
 	menu->Show();
 
 	SHVModule::PostRegister();
@@ -167,6 +172,12 @@ void SHVControlTester::OnEvent(SHVEvent* event)
 						dialog->Create();
 						TestDialog->InitializeForm();
 					}
+					break;
+				case __MENU_WAITCURSORSHOW:
+					GUIManager->WaitCursorShow();
+					break;
+				case __MENU_WAITCURSORHIDE:
+					GUIManager->WaitCursorHide();
 					break;
 				}
 			}

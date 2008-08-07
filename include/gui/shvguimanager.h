@@ -122,6 +122,10 @@ public:
 	virtual SHVBool ControlEventSubscribe(SHVInt controlEvent, SHVControl* control, SHVEventSubscriberBase* subscriber) = 0;
 	virtual void ClearControlEvents(SHVControl* control) = 0;
 
+	// Wait cursor functions
+	inline void WaitCursorShow();
+	inline void WaitCursorHide();
+
 
 	virtual SHVModuleList& GetModuleList() = 0;
 	virtual SHVConfig& GetConfig() = 0;
@@ -282,6 +286,22 @@ SHVFont* SHVGUIManager::GetFont(int cfgID)
 SHVColor* SHVGUIManager::GetTransparentColor()
 {
 	return (SHVColor*)GetConfig().FindRef(SHVGUIManager::CfgColorTransparent).ToRef();
+}
+
+/*************************************
+ * WaitCursorShow
+ *************************************/
+void SHVGUIManager::WaitCursorShow()
+{
+	Modules.EmitEvent(new SHVEventString(NULL,__EVENT_GLOBAL_WAITCURSORSHOW));
+}
+
+/*************************************
+ * WaitCursorHide
+ *************************************/
+void SHVGUIManager::WaitCursorHide()
+{
+	Modules.EmitEvent(new SHVEventString(NULL,__EVENT_GLOBAL_WAITCURSORHIDE));
 }
 
 #endif

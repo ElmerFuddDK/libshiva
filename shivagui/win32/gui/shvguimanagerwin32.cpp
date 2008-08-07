@@ -129,6 +129,8 @@ HINSTANCE hInstance = (HINSTANCE)GetConfig().FindPtr(CfgInstanceHandle).ToPtr();
 
 	// Set standard transparency color
 	GetConfig().SetRef(CfgColorTransparent,CreateColor(0xFF,0x00,0xFF));
+
+	WaitCursor = 0;
 }
 
 /*************************************
@@ -136,6 +138,9 @@ HINSTANCE hInstance = (HINSTANCE)GetConfig().FindPtr(CfgInstanceHandle).ToPtr();
  *************************************/
 SHVBool SHVGUIManagerWin32::Register()
 {
+	Modules.EventSubscribe(__EVENT_GLOBAL_WAITCURSORSHOW,new SHVEventSubscriber(this,&Modules,true));
+	Modules.EventSubscribe(__EVENT_GLOBAL_WAITCURSORHIDE,new SHVEventSubscriber(this,&Modules));
+
 	return SHVGUIManagerImpl::Register();
 }
 
@@ -328,6 +333,49 @@ HWND hWnd = message->hwnd;
 		EmitEvent(new SHVEventData<MSG*>(message,this,EventPreTranslateMessage));
 
 	return retVal;
+}
+
+/*************************************
+ * OnEvent
+ *************************************/
+void SHVGUIManagerWin32::OnEvent(SHVEvent* event)
+{
+	if (SHVEventString::Equals(event,__EVENT_GLOBAL_WAITCURSORSHOW))
+	{
+		if (WaitCursor++ == 0)
+		{
+		POINT point;
+			if (::GetCursorPos(&point))
+			{
+			HWND wnd = ::WindowFromPoint(point);
+				if (wnd && (HINSTANCE)GetWindowLongPtr(wnd,GWL_HINSTANCE) == Win32::GetInstance(GetMainWindow()))
+				{
+					::SendMessage(wnd,WM_SETCURSOR,(WPARAM)wnd,MAKEWORD(0,1));
+				}
+			}
+		}
+	}
+	else if (SHVEventString::Equals(event,__EVENT_GLOBAL_WAITCURSORHIDE))
+	{
+		SHVASSERT(WaitCursor > 0);
+		if (WaitCursor > 0)
+		{
+		
+			WaitCursor--;
+			if (WaitCursor == 0)
+			{
+			POINT point;
+				if (::GetCursorPos(&point))
+				{
+				HWND wnd = ::WindowFromPoint(point);
+					if (wnd && (HINSTANCE)GetWindowLongPtr(wnd,GWL_HINSTANCE) == Win32::GetInstance(GetMainWindow()))
+					{
+						::SendMessage(wnd,WM_SETCURSOR,(WPARAM)wnd,MAKEWORD(0,1));
+					}
+				}
+			}
+		}
+	}
 }
 
 /*************************************

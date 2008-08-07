@@ -15,6 +15,9 @@
 #define __EVENT_GLOBAL_DEBUGMSG              "DebugMSG" ///< Emit this to send debug messages
 #define __EVENT_GLOBAL_LOGMSG                "LogMSG"   ///< Emit this to log messages
 
+#define __EVENT_GLOBAL_WAITCURSORSHOW        "WaitCursorShow" ///< Emit this to set a wait cursor
+#define __EVENT_GLOBAL_WAITCURSORHIDE        "WaitCursorHide" ///< Emit this to remove the wait cursor
+
 
 class SHVModuleListIterator;
 class SHVEventQueueList;

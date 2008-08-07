@@ -59,6 +59,8 @@ public:
 	// PreTranslateMessage
 	virtual bool PreTranslateMessage(MSG* message);
 
+	inline bool WaitCursorMode();
+
 
 protected:
 friend class SHVMenuWin32;
@@ -67,6 +69,7 @@ friend class SHVMenuCommandBarPocketPC;
 friend class SHVMenuContainerPocketPC;
 #endif
 
+	virtual void OnEvent(SHVEvent* event);
 	virtual void EmitControlEvent(SHVControl* control, SHVInt controlEvent);
 
 	///\cond INTERNAL
@@ -96,7 +99,21 @@ friend class SHVMenuContainerPocketPC;
 	typedef SHVList<ControlEvent> SHVListControlEvent;
 	typedef SHVListIterator<ControlEvent> SHVListIteratorControlEvent;
 	SHVHashTable<SHVControl*,SHVListControlEvent> ControlEventMap;
+
+	int WaitCursor;
 	///\endcond
 };
+
+
+
+// ============================================= implementation ============================================= //
+
+/*************************************
+ * WaitCursorMode
+ *************************************/
+bool SHVGUIManagerWin32::WaitCursorMode()
+{
+	return WaitCursor > 0;
+}
 
 #endif

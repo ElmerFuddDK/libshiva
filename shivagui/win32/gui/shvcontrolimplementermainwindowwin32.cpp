@@ -340,6 +340,18 @@ SHVControlContainerRef refToSelf;
 		}
 		break;
 
+	case WM_SETCURSOR:
+		if (owner && ((SHVGUIManagerWin32*)owner->GetManager())->WaitCursorMode())
+		{
+			::SetCursor(::LoadCursor(NULL,IDC_WAIT));
+			retVal = TRUE;
+		}
+		else
+		{
+			retVal = DefWindowProc(hWnd, message, wParam, lParam);
+		}
+		break;
+
 	// normal message types
 	case WM_SHV_DISPATCHMESSAGES:
 		self->Dispatcher->DispatchEvents();
