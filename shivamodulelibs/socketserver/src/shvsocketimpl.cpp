@@ -244,7 +244,7 @@ SHVBool retVal(SHVSocket::ErrInvalidOperation);
 	SocketServer->SocketServerLock.Lock();
 	if (State == SHVSocket::StateConnected)
 	{
-		if (::send(Socket,buf.GetBufferConst(),(int)buf.GetSize(),MSG_DONTWAIT|MSG_NOSIGNAL) <= 0)
+		if (::send(Socket,buf.GetBufferConst(),(int)buf.GetSize(),MSG_NOSIGNAL) <= 0)
 		{
 			Close();
 			retVal = SetError(SHVSocket::ErrGeneric);
