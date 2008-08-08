@@ -238,6 +238,10 @@ UINT message;
 		message = WM_DESTROY;
 		retVal = ( control->GetType() == SHVControl::TypeContainer );
 		break;
+	case CtrlEventContainerRectChanged:
+		message = 0;
+		retVal = ( control->GetType() == SHVControl::TypeContainer );
+		break;
 	default:
 		retVal = SHVBool::False;
 		break;
@@ -255,6 +259,10 @@ UINT message;
 		{
 			list->AddTail(ControlEvent(subscriber,controlEvent,message));
 		}
+	}
+	else if (subscriber)
+	{
+		subscriber->ValidateRefCount();
 	}
 
 

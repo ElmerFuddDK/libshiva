@@ -60,6 +60,7 @@ SHVControlImplementerMainWindowWin32::SHVControlImplementerMainWindowWin32(HINST
 	Dispatcher = dispatcher;
 
 	FocusWnd = NULL;
+	IgnoreResize = false;
 
 	Color = SHVColorWin32::FromSysColor(COLOR_3DFACE);
 }
@@ -143,6 +144,16 @@ SHVBool retVal(parent == NULL && !IsCreated());
 	}
 
 	return retVal;
+}
+
+/*************************************
+ * SetRect
+ *************************************/
+void SHVControlImplementerMainWindowWin32::SetRect(SHVControl* owner, const SHVRect& rect)
+{
+	IgnoreResize = true;
+	SHVControlImplementerWin32<SHVControlImplementerContainer>::SetRect(owner, rect);
+	IgnoreResize = false;
 }
 
 /*************************************
@@ -495,6 +506,15 @@ SHVControlContainerRef refToSelf;
 		{
 			owner->ResizeControls();
 		}
+		break;
+	case WM_WINDOWPOSCHANGED:
+		if (owner && owner->GetModuleList().IsRegistered())
+		{
+		WINDOWPOS* wpos = (WINDOWPOS*)lParam;
+			if (!self->IgnoreResize && !(wpos->flags&SWP_FRAMECHANGED) && (!(wpos->flags&SWP_NOMOVE) || !(wpos->flags&SWP_NOSIZE)))
+				self->EmitControlEvent(owner,SHVGUIManager::CtrlEventContainerRectChanged);
+		}
+		retVal = DefWindowProc(hWnd, message, wParam, lParam);
 		break;
 	default:
 		retVal = DefWindowProc(hWnd, message, wParam, lParam);

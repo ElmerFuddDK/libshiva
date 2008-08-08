@@ -169,6 +169,7 @@ void SHVControlTester::OnEvent(SHVEvent* event)
 					SHVControlContainer* dialog;
 						TestDialog = new SHVFormTabTest(GUIManager,dialog = GUIManager->NewDialog());
 						GUIManager->ControlEventSubscribe(SHVGUIManager::CtrlEventContainerDestroy,dialog, new SHVEventSubscriber(this,&Modules));
+						GUIManager->ControlEventSubscribe(SHVGUIManager::CtrlEventContainerRectChanged,dialog, new SHVEventSubscriber(this));
 						dialog->Create();
 						TestDialog->InitializeForm();
 					}
@@ -216,6 +217,12 @@ void SHVControlTester::OnEvent(SHVEvent* event)
 		SHVControlContainer* ctrl = (SHVControlContainer*)event->GetObject();
 			GUIManager->ShowMessageBox(SHVStringC::Format(_T("The dialog has been destroyed")),_T("GUI"),SHVGUIManager::MsgBoxOKCancel);
 			TestDialog = NULL;
+		}
+		else if (SHVEvent::Equals(event,SHVGUIManager::EventControl,SHVGUIManager::CtrlEventContainerRectChanged))
+		{
+		SHVControlContainer* ctrl = (SHVControlContainer*)event->GetObject();
+		SHVRect rect(ctrl->GetRect());
+			SHVTRACE(_T("Rect Changed to %d,%d %d,%d\n"), rect.GetLeft(),rect.GetTop(), rect.GetRight(),rect.GetBottom());
 		}
 	}
 }

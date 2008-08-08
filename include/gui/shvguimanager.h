@@ -65,7 +65,8 @@ public:
 	};
 
 	enum AdditionalControlEvents {
-		CtrlEventContainerDestroy
+		CtrlEventContainerDestroy,
+		CtrlEventContainerRectChanged
 	};
 
 

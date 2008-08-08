@@ -38,6 +38,7 @@ public:
 	virtual int GetSubType(SHVControl* owner);
 
 	virtual SHVBool Create(SHVControl* owner, SHVControlImplementer* parent, int flags);
+	virtual void SetRect(SHVControl* owner, const SHVRect& rect);
 
 	// from SHVControlImplementer
 	virtual SHVBool SetFlag(SHVControl* owner, int flag, bool enable);
@@ -74,6 +75,7 @@ private:
 	SHVPoint DecorationsSize;
 	SHVColorRef Color;
 	HWND FocusWnd;
+	bool IgnoreResize;
 #ifdef __SHIVA_POCKETPC
 	SHVMenuCommandBarPocketPCPtr CmdWnd;
 	SHACTIVATEINFO s_sai;
