@@ -165,11 +165,11 @@ SHVRegionRef rgn = GetManager()->CreateRegion(container);
 	rgn->Move(Label)->Top()->Left();
 	rgn->Move(EditBox)->Top()->CtrlMaxWidth(200)->FillHorizontal(Label)->ClipTop();
 	rgn->Move(lblLongDate)->Top()->Left();
-	rgn->Move(dtLongDate)->Top()->LeftOf(lblLongDate)->ClipTop();
+	rgn->Move(dtLongDate)->Top()->RightOf(lblLongDate)->ClipTop();
 	rgn->Move(lblShortDate)->Top()->Left();
-	rgn->Move(dtShortDate)->Top()->LeftOf(lblShortDate)->ClipTop();
+	rgn->Move(dtShortDate)->Top()->RightOf(lblShortDate)->ClipTop();
 	rgn->Move(lblTime)->Top()->Left();
-	rgn->Move(dtTime)->Top()->LeftOf(lblTime)->ClipTop();
+	rgn->Move(dtTime)->Top()->RightOf(lblTime)->ClipTop();
 
 	rgn->Move(Button)->Bottom()->Right()->ClipBottom();
 

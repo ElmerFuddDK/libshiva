@@ -110,23 +110,23 @@ public:
 
 
 	// placement methods
-	virtual SHVRegionAction* Top(int topMargin = -1) = 0;
-	virtual SHVRegionAction* Bottom(int topMargin = -1) = 0;
-	virtual SHVRegionAction* Left(int leftMargin = -1) = 0;
-	virtual SHVRegionAction* Right(int leftMargin = -1) = 0;
+	virtual SHVRegionAction* Top(int vmargin = -1) = 0;
+	virtual SHVRegionAction* Bottom(int vmargin = -1) = 0;
+	virtual SHVRegionAction* Left(int hmargin = -1) = 0;
+	virtual SHVRegionAction* Right(int hmargin = -1) = 0;
 
-	virtual SHVRegionAction* ClipTop(int extraMargin = 0) = 0;
-	virtual SHVRegionAction* ClipBottom(int extraMargin = 0) = 0;
-	virtual SHVRegionAction* ClipLeft(int extraMargin = 0) = 0;
-	virtual SHVRegionAction* ClipRight(int extraMargin = 0) = 0;
+	virtual SHVRegionAction* ClipTop(int vmargin = 0) = 0;
+	virtual SHVRegionAction* ClipBottom(int vmargin = 0) = 0;
+	virtual SHVRegionAction* ClipLeft(int hmargin = 0) = 0;
+	virtual SHVRegionAction* ClipRight(int hmargin = 0) = 0;
 
-	virtual SHVRegionAction* LeftOf(SHVControl* left = NULL, int leftMargin = -1) = 0;
-	virtual SHVRegionAction* RightOf(SHVControl* right = NULL, int rightMargin = -1) = 0;
+	virtual SHVRegionAction* LeftOf(SHVControl* ctrl = NULL, int hmargin = -1) = 0;
+	virtual SHVRegionAction* RightOf(SHVControl* ctrl = NULL, int hmargin = -1) = 0;
 
 	virtual SHVRegionAction* FillPercent(int x = -1, int y = -1, int width = -1, int height = -1, SHVRect margins = SHVRect(-1,-1,-1,-1)) = 0;
 
-	virtual SHVRegionAction* AlignHorizontal(SHVControl* left = NULL, SHVControl* right = NULL, int alignment = SHVRegion::AlignLeft, int margin = -1) = 0;
-	virtual SHVRegionAction* FillHorizontal(SHVControl* left = NULL, SHVControl* right = NULL, int margin = -1) = 0;
+	virtual SHVRegionAction* AlignHorizontal(SHVControl* left = NULL, SHVControl* right = NULL, int alignment = SHVRegion::AlignLeft, int hmargin = -1) = 0;
+	virtual SHVRegionAction* FillHorizontal(SHVControl* left = NULL, SHVControl* right = NULL, int hmargin = -1) = 0;
 
 
 	// desctructor

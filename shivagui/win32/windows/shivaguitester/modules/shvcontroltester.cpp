@@ -239,7 +239,7 @@ void SHVControlTester::OnResizeControls(SHVControlContainer* container, SHVContr
 SHVRegionRef rgn = GUIManager->CreateRegion(container);
 
 	rgn->Move(Label)->Top()->Left(100)->ClipTop();
-	rgn->Move(EditBox)->FillHorizontal(Label,NULL)->LeftOf(Label)->ClipTop();
+	rgn->Move(EditBox)->FillHorizontal(Label,NULL)->RightOf(Label)->ClipTop();
 
 	rgn->Move(Button)->Bottom()->AlignHorizontal(NULL,NULL,SHVRegion::AlignHCenter)->ClipBottom(4);
 

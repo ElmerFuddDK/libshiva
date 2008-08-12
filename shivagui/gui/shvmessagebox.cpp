@@ -115,7 +115,7 @@ void SHVMessageBox::InitializeForm()
 		rgn->Move(OK)->CtrlWidth(40)->And(Cancel)->CtrlWidth(40);
 
 		// Move OK and Cancel
-		rgn->Move(OK)->RightOf(Cancel,0)->And(Cancel)
+		rgn->Move(OK)->LeftOf(Cancel,0)->And(Cancel)
 			->Bottom()->AlignHorizontal(NULL,NULL,SHVRegion::AlignHCenter)->ClipBottom();
 
 		rgn->Move(TextBox)->FillPercent(0,0,100,100);
