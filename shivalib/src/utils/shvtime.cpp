@@ -70,10 +70,10 @@ bool SHVTime::IsLocalTime() const
 /*************************************
  * SetlocalTime
  *************************************/
-void SHVTime::SetLocalTime(bool local, bool convert)
+SHVTime& SHVTime::SetLocalTime(bool local, bool convert)
 {
 	if (LocalTime == local)
-		return;
+		return *this;
 
 	if (convert)
 	{
@@ -92,6 +92,8 @@ void SHVTime::SetLocalTime(bool local, bool convert)
 	}
 
 	LocalTime = local;
+
+	return *this;
 }
 
 /*************************************

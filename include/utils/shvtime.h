@@ -51,7 +51,7 @@ public:
 
 	// properties
 	bool IsLocalTime() const;
-	void SetLocalTime(bool local, bool convert = true);
+	SHVTime& SetLocalTime(bool local, bool convert = true);
 	bool IsNull() const;
 	void SetNull();
 
