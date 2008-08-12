@@ -160,7 +160,7 @@ long rc;
 				cols += ", ";
 				joinCond += " and ";
 			}
-			switch (Struct[i]->GetDataType())
+			switch (Struct[colIdx]->GetDataType())
 			{
 				case SHVDataVariant::TypeInt:
 					type = __SQLITE_TYPE_INT;
@@ -175,20 +175,20 @@ long rc;
 					type = __SQLITE_TYPE_DOUBLE;
 					break;
 				case SHVDataVariant::TypeString:
-					type.Format("%s(%d)", __SQLITE_TYPE_STRING, Struct[i]->GetDataLength());
+					type.Format("%s(%d)", __SQLITE_TYPE_STRING, Struct[colIdx]->GetDataLength());
 					break;
 				case SHVDataVariant::TypeTime:
 					type = __SQLITE_TYPE_DATETIME;
 			}
-			col.Format("%s %s", Struct[i]->GetColumnName().GetSafeBuffer(), type.GetSafeBuffer());
+			col.Format("%s %s", Struct[colIdx]->GetColumnName().GetSafeBuffer(), type.GetSafeBuffer());
 			colDefs += col;
 			col.Format("memdb.%s.%s = %s.%s", 
 				IndexTableName.GetSafeBuffer(),
-				Struct[i]->GetColumnName().GetSafeBuffer(),
+				Struct[colIdx]->GetColumnName().GetSafeBuffer(),
 				Alias.GetSafeBuffer(),
-				Struct[i]->GetColumnName().GetSafeBuffer());
+				Struct[colIdx]->GetColumnName().GetSafeBuffer());
 			joinCond += col;
-			cols += Struct[i]->GetColumnName().GetSafeBuffer();
+			cols += Struct[colIdx]->GetColumnName().GetSafeBuffer();
 		}
 		queryUTF8.Format("create table memdb.%s(idx integer primary key autoincrement, %s)", 
 			IndexTableName.GetSafeBuffer(), 
@@ -276,6 +276,8 @@ SHVSQLiteStatementRef statement;
 		statement = SQLite->ExecuteUTF8(retVal, sql, rest);	
 		if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 			retVal = SHVBool::True;
+		else
+			SHVTRACE(_T("SHVDataRowListCIndexed::InternalRowChanged failed with %s\n"), GetDataSession()->GetErrorMessage().GetSafeBuffer());
 		if (retVal)
 		{
 			sql.Format("select max(idx) from memdb.%s", IndexTableName.GetSafeBuffer());
