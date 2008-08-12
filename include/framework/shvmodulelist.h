@@ -45,6 +45,7 @@ public:
 	enum Events {
 		EventPreRegister,		///< is emitted before the register round
 		EventEndRegister,		///< is emitted after registering modules
+		EventEndPostRegister,	///< is emitted after post registering modules
 		EventPreUnregister,		///< is emitted during PreUnregister
 		EventClosing			///< is emitted when closing - use this to delay shutdown
 	};
