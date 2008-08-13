@@ -65,6 +65,7 @@ SHVBool SHVControlImplementerDateTimeWin32::Create(SHVControl* owner, SHVControl
 	{
 	int styles;
 	int lfuwidth;
+	bool resetTime = false;
 
 		switch (SubType)
 		{
@@ -73,10 +74,12 @@ SHVBool SHVControlImplementerDateTimeWin32::Create(SHVControl* owner, SHVControl
 		case SHVControlDateTime::SubTypeLongDate:
 			styles = DTS_LONGDATEFORMAT;
 			lfuwidth = 140;
+			resetTime = true;
 			break;
 		case SHVControlDateTime::SubTypeShortDate:
 			styles = DTS_SHORTDATEFORMAT;
 			lfuwidth = 90;
+			resetTime = true;
 			break;
 		case SHVControlDateTime::SubTypeTime:
 			styles = DTS_TIMEFORMAT;
@@ -92,6 +95,16 @@ SHVBool SHVControlImplementerDateTimeWin32::Create(SHVControl* owner, SHVControl
 		if (IsCreated())
 		{
 		SHVFontRef font;
+
+			if (resetTime)
+			{
+			SHVTime t(GetTime((SHVControlDateTime*)owner));
+				t.SetHour(0);
+				t.SetMinute(0);
+				t.SetSecond(0);
+				SetTime((SHVControlDateTime*)owner,t);
+			}
+ 
 			OrigProc = (WNDPROC)GetWindowLongPtr(GetHandle(),GWLP_WNDPROC);
 			SetWindowLongPtr(GetHandle(),GWLP_USERDATA,(LONG_PTR)owner);
 			SetWindowLongPtr(GetHandle(),GWLP_WNDPROC,(LONG_PTR)&SHVControlImplementerDateTimeWin32::WndProc);
@@ -102,7 +115,7 @@ SHVBool SHVControlImplementerDateTimeWin32::Create(SHVControl* owner, SHVControl
 
 			if (!font.IsNull())
 			{
-				owner->SetRect(SHVRect(0,0,font->LFUToWidth(lfuwidth),font->LFUToHeight(14)));
+				owner->SetRect(SHVRect(0,0,font->LFUToWidth(lfuwidth),font->LFUToHeight(15)));
 			}
 		}
 

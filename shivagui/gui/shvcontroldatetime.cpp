@@ -80,3 +80,31 @@ SHVBool SHVControlDateTime::SetData(SHVDataBinder* data)
 
 	return SHVBool::False;
 }
+
+/*************************************
+ * GetCombinedTime
+ *************************************/
+SHVTime SHVControlDateTime::GetCombinedTime(SHVControlDateTime* otherCtrl)
+{
+SHVTime retVal(GetTime());
+SHVTime other(otherCtrl->GetTime());
+
+	SHVASSERT(otherCtrl->GetImplementor()->GetSubType(otherCtrl) != GetImplementor()->GetSubType(this));
+
+	switch (otherCtrl->GetImplementor()->GetSubType(otherCtrl))
+	{
+	case SHVControlDateTime::SubTypeLongDate:
+	case SHVControlDateTime::SubTypeShortDate:
+		retVal.SetYear(other.GetYear());
+		retVal.SetMonth(other.GetMonth());
+		retVal.SetDay(other.GetDay());
+		break;
+	case SHVControlDateTime::SubTypeTime:
+		retVal.SetHour(other.GetHour());
+		retVal.SetMinute(other.GetMinute());
+		retVal.SetSecond(other.GetSecond());
+		break;
+	}
+
+	return retVal;
+}

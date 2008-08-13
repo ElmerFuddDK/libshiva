@@ -40,6 +40,8 @@ public:
 	virtual SHVBool GetData(SHVDataBinder* data);
 	virtual SHVBool SetData(SHVDataBinder* data);
 
+	virtual SHVTime GetCombinedTime(SHVControlDateTime* otherCtrl);
+
 	inline SHVTime GetTime();
 	inline SHVControlDateTime* SetTime(const SHVTime& time);
 
