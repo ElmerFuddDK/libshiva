@@ -138,6 +138,9 @@ void SHVFormTabTestPage::OnEvent(SHVEvent* event)
 				GetContainer()->SetTitle(GetContainer()->GetTitle()+SHVStringC(_T("*")));
 			GetContainer()->ResizeControls();
 
+			SHVTRACE(_T("DateTime from short date is : %s\n"), dtShortDate->GetTime().ToDateString().GetSafeBuffer());
+			SHVTRACE(_T("DateTime combined from short date/time is : %s\n"), dtShortDate->GetCombinedTime(dtTime).ToDateString().GetSafeBuffer());
+
 			dtLongDate->SetTime(dtShortDate->GetTime());
 
 			if (!lvData->GetSelected().IsNull())
