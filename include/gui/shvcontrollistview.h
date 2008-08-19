@@ -29,7 +29,7 @@ public:
 	enum Events {
 		EventDrawItem = EventSubClass,
 		EventSelectedChanged,
-		EventContextMenu
+		EventShowContextMenu
 	};
 
 
@@ -64,8 +64,8 @@ public:
 	virtual void SubscribeSelectedChanged(SHVEventSubscriberBase* subscriber);
 
 	// Perform context menu event
-	virtual void PerformContextMenu();
-	virtual void SubscribeContextMenu(SHVEventSubscriberBase* subscriber);
+	virtual void PerformShowContextMenu();
+	virtual void SubscribeShowContextMenu(SHVEventSubscriberBase* subscriber);
 
 
 	// obtain pointer to the implementor
@@ -80,7 +80,7 @@ private:
 
 	///\cond INTERNAL
 	SHVEventSubscriberBaseRef SelectedChanged;
-	SHVEventSubscriberBaseRef ContextMenu;
+	SHVEventSubscriberBaseRef ShowContextMenu;
 	///\endcond
 };
 typedef SHVRefObjectContainer<SHVControlListView> SHVControlListViewRef;

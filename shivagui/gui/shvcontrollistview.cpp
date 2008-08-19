@@ -90,20 +90,20 @@ void SHVControlListView::SubscribeSelectedChanged(SHVEventSubscriberBase* subscr
 }
 
 /*************************************
- * PerformContextMenu
+ * PerformShowContextMenu
  *************************************/
-void SHVControlListView::PerformContextMenu()
+void SHVControlListView::PerformShowContextMenu()
 {
-	if (!ContextMenu.IsNull())
+	if (!ShowContextMenu.IsNull())
 	{
-		ContextMenu->EmitNow(GetModuleList(),new SHVEvent(NULL,EventContextMenu,GetSelected(),this));
+		ShowContextMenu->EmitNow(GetModuleList(),new SHVEvent(NULL,EventShowContextMenu,GetSelected(),this));
 	}
 }
 
 /*************************************
- * SubscribeContextMenu
+ * SubscribeShowContextMenu
  *************************************/
-void SHVControlListView::SubscribeContextMenu(SHVEventSubscriberBase* subscriber)
+void SHVControlListView::SubscribeShowContextMenu(SHVEventSubscriberBase* subscriber)
 {
-	ContextMenu = subscriber;
+	ShowContextMenu = subscriber;
 }
