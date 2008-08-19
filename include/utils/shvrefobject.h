@@ -291,11 +291,11 @@ void SHVRefObjectContainer<T>::Clear() { if (Obj && RefValid) { Obj->DestroyRef(
  */
 template <class T>
 const SHVRefObjectContainer<T>& SHVRefObjectContainer<T>::operator =(const SHVRefObjectContainer<T> &r)
-	{ if (Obj && RefValid) Obj->DestroyRef(); Obj = ( !r.IsNull() ? (T *) r->CreateRef() : NULL ); RefValid = true; return *this; }
+	{ if (r.Obj == Obj) return *this; if (Obj && RefValid) Obj->DestroyRef(); Obj = ( !r.IsNull() ? (T *) r->CreateRef() : NULL ); RefValid = true; return *this; }
 /// Assigns the refcounted object to the container
 template <class T>
 SHVRefObjectContainer<T>& SHVRefObjectContainer<T>::operator =(T* obj)
-	{ if (Obj && RefValid) Obj->DestroyRef(); Obj = ( obj ? (T *) obj->CreateRef() : NULL); RefValid = true; return *this; }
+	{ if (obj == Obj) return *this; if (Obj && RefValid) Obj->DestroyRef(); Obj = ( obj ? (T *) obj->CreateRef() : NULL); RefValid = true; return *this; }
 
 
 
