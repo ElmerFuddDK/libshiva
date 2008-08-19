@@ -37,6 +37,10 @@
 
 #include <commctrl.h>
 
+#ifndef WM_CONTEXTMENU
+# define WM_CONTEXTMENU 0x007B
+#endif
+
 
 //=========================================================================================================
 // SHVControlImplementerListViewWin32 - listview implementation
@@ -282,6 +286,10 @@ LRESULT retVal = 0;
 				if (oldSelected != self->SelectedIndex)
 					owner->PerformSelectedChanged();
 			}
+			//else if (nmhdr->code == NM_RCLICK)
+			//{
+			//	owner->PerformContextMenu();
+			//}
 		}
 		retVal = CallWindowProc(self->OrigProc,hWnd, message, wParam, lParam);
 		break;
@@ -328,6 +336,12 @@ LRESULT retVal = 0;
 				break;
 			}
 		}
+		else
+			retVal = CallWindowProc(self->OrigProc,hWnd, message, wParam, lParam);
+		break;
+	case WM_CONTEXTMENU:
+		if (owner)
+			owner->PerformContextMenu();
 		// else continue
 	default:
 		retVal = CallWindowProc(self->OrigProc,hWnd, message, wParam, lParam);

@@ -91,6 +91,7 @@ SHVMenuRef toplevelmenu, menu;
 	lvData->AddItem(_T("Stuff3"))->SetItemText(_T("Note"),3,1);
 
 	lvData->SubscribeSelectedChanged(new SHVEventSubscriber(this));
+	lvData->SubscribeContextMenu(new SHVEventSubscriber(this));
 
 	GetContainer()->ResizeControls();
 
@@ -149,8 +150,26 @@ void SHVFormTabTestPage::OnEvent(SHVEvent* event)
 	}
 	else if (event->GetCaller() == NULL && event->GetObject() == lvData)
 	{
-		if (!event->GetSubID().IsNull())
-			EditBox->SetText(lvData->GetItemText(event->GetSubID(),2));
+		if (SHVEvent::Equals(event,SHVControlListView::EventSelectedChanged))
+		{
+			if (!event->GetSubID().IsNull())
+				EditBox->SetText(lvData->GetItemText(event->GetSubID(),2));
+		}
+		else if (SHVEvent::Equals(event,SHVControlListView::EventContextMenu))
+		{
+			SHVTRACE(_T("A\n"));
+			if (!event->GetSubID().IsNull())
+			{
+			SHVMenuRef menu = lvData->CreatePopupMenu(new SHVEventSubscriber(this));
+				menu->AddStringItem(1,_T("All Ur base"));
+				menu->AddStringItem(2,_T("R belong 2 us!"));
+				menu->Show();
+			}
+		}
+		else if (SHVEvent::Equals(event,SHVControl::EventMenu))
+		{
+			SHVTRACE(_T("ListView context menu item result = %d\n"), (int)event->GetSubID());
+		}
 	}
 }
 
