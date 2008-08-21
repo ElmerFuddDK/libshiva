@@ -171,7 +171,10 @@ bool SHVDataRowListSQLite::GetNonAcceptedEnabled() const
 void SHVDataRowListSQLite::EnableCacheChanges(bool enable)
 {
 	if (enable && ChangeCache.IsNull())
-		ChangeCache = new SHVDataRowChangeCacheImpl();
+	{
+		if (ChangeCache.IsNull())
+			ChangeCache = new SHVDataRowChangeCacheImpl();
+	}
 	else
 		ChangeCache = NULL;
 }
