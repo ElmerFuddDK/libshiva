@@ -54,7 +54,7 @@ SHVBool SHVDataRowListSQLite::StartEdit()
 {
 SHVBool retVal;
 	if (!ChangeCache.IsNull())
-		ChangeCache.Clear();
+		ChangeCache->Clear();
 	SavePosition = RowList->GetPosition();
 	Reset();
 	retVal = GetDataSession()->StartEdit();
