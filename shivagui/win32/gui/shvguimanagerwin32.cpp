@@ -57,6 +57,10 @@
 
 #define __CMDOFFSET 100
 
+#ifndef GWL_HINSTANCE
+# define GWL_HINSTANCE -6
+#endif
+
 
 //=========================================================================================================
 // SHVGUIManagerWin32 - Module for registering control types, and instantiating them
