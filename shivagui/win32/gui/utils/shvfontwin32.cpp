@@ -83,7 +83,7 @@ SHVFont* SHVFontWin32::CreateCopy(int sizePercentage, int styles)
 SHVFontWin32* retVal = NULL;
 LOGFONT lf;
 
-	if  (::GetObject(Font, sizeof(LOGFONT), &lf) != 0)
+	if  (::GDIGetObject(Font, sizeof(LOGFONT), &lf) != 0)
 	{
 		if (sizePercentage != 100)
 		{
@@ -111,7 +111,7 @@ int SHVFontWin32::GetHeight()
 int retVal = -1;
 LOGFONT lf;
 
-	if  (::GetObject(Font, sizeof(LOGFONT), &lf) != 0)
+	if  (::GDIGetObject(Font, sizeof(LOGFONT), &lf) != 0)
 	{
 	HDC hDC = ::GetDC(NULL);
 
@@ -177,7 +177,7 @@ SHVStringBuffer SHVFontWin32::GetName()
 {
 SHVString retVal;
 LOGFONT lf;
-	if  (::GetObject(Font, sizeof(LOGFONT), &lf) != 0)
+	if  (::GDIGetObject(Font, sizeof(LOGFONT), &lf) != 0)
 	{
 		retVal = lf.lfFaceName;
 	}

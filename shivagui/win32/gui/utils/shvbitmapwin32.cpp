@@ -49,7 +49,7 @@ SHVBitmapWin32::SHVBitmapWin32(HINSTANCE hInstance, int resID) : SHVBitmap()
 	if (IsCreated())
 	{
 	BITMAP bmInfo;
-		::GetObject(hBitmap, sizeof(BITMAP), &bmInfo);
+		::GDIGetObject(hBitmap, sizeof(BITMAP), &bmInfo);
 		Width = bmInfo.bmWidth;
 		Height = bmInfo.bmHeight;
 	}
