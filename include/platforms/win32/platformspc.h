@@ -32,3 +32,12 @@
 #else
 # define SHVAPI __declspec(dllimport)
 #endif
+
+#ifdef GetObject
+# undef GetObject
+# ifdef UNICODE
+#  define GDIGetObject   GetObjectW
+# else
+#  define GDIGetObject   GetObjectA
+# endif
+#endif
