@@ -155,11 +155,12 @@ long rc;
 		{
 			if (!first)
 			{
-				first = false;
 				colDefs += ", ";
 				cols += ", ";
 				joinCond += " and ";
 			}
+			else
+				first = false;
 			switch (Struct[colIdx]->GetDataType())
 			{
 				case SHVDataVariant::TypeInt:
@@ -190,50 +191,50 @@ long rc;
 			joinCond += col;
 			cols += Struct[colIdx]->GetColumnName().GetSafeBuffer();
 		}
-		queryUTF8.Format("create table memdb.%s(idx integer primary key autoincrement, %s)", 
-			IndexTableName.GetSafeBuffer(), 
-			cols.GetSafeBuffer());
-		statement = SQLite->ExecuteUTF8(Ok, queryUTF8, rest);
-		if (Ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
-			Ok = SHVBool::True;
-		queryUTF8.Format("create index memdb.%s_index on %s(%s)",
-			IndexTableName.GetSafeBuffer(),
-			IndexTableName.GetSafeBuffer(),
-			cols.GetSafeBuffer());
-		statement = SQLite->ExecuteUTF8(Ok, queryUTF8, rest);
-		if (Ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
-			Ok = SHVBool::True;
-		if (Ok)
-		{
-			GetDataSession()->GetFactory()->GetDataEngine().BuildKeySQL(Struct.GetIndex(SortIndex), condition8, orderby8, Alias.GetSafeBuffer(), reverse);
-			queryUTF8.Format("insert into memdb.%s(%s) select %s from %s %s %s order by %s", 
-				IndexTableName.GetSafeBuffer(), cols.GetSafeBuffer(), 
-				cols.GetSafeBuffer(), 
-				Alias.GetSafeBuffer(),
-				(condition.IsNull() || condition == _T("") ? "" : "where"),
-				condition.ToStrUTF8().GetSafeBuffer(),
-				orderby8.GetSafeBuffer()
-			);
-			statement = SQLite->ExecuteUTF8(Ok, queryUTF8, rest);
-			if (Ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
-				Ok = SHVBool::True;
-			queryUTF8.Format("select count(*) from memdb.%s", IndexTableName.GetSafeBuffer());
-			statement = SQLite->ExecuteUTF8(Ok, queryUTF8, rest);
-			if (Ok.GetError() == SHVSQLiteWrapper::SQLite_ROW)
-				Ok = SHVBool::True;			
-			statement->GetLong(rc, 0);
-			RowCount = rc;
-		}
-		if (Ok)
-		{
-			queryUTF8.Format("select %s.*,idx from %s join memdb.%s on %s where %s and (@idx is null or idx >= @idx) order by idx",
-				Alias.GetSafeBuffer(),
-				Alias.GetSafeBuffer(),
-				IndexTableName.GetSafeBuffer(),
-				joinCond.GetSafeBuffer(),
-				condition8.GetSafeBuffer());
-		}		
 	}
+	queryUTF8.Format("create table memdb.%s(idx integer primary key autoincrement, %s)", 
+		IndexTableName.GetSafeBuffer(), 
+		cols.GetSafeBuffer());
+	statement = SQLite->ExecuteUTF8(Ok, queryUTF8, rest);
+	if (Ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+		Ok = SHVBool::True;
+	queryUTF8.Format("create index memdb.%s_index on %s(%s)",
+		IndexTableName.GetSafeBuffer(),
+		IndexTableName.GetSafeBuffer(),
+		cols.GetSafeBuffer());
+	statement = SQLite->ExecuteUTF8(Ok, queryUTF8, rest);
+	if (Ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+		Ok = SHVBool::True;
+	if (Ok)
+	{
+		GetDataSession()->GetFactory()->GetDataEngine().BuildKeySQL(Struct.GetIndex(SortIndex), condition8, orderby8, Alias.GetSafeBuffer(), reverse);
+		queryUTF8.Format("insert into memdb.%s(%s) select %s from %s %s %s order by %s", 
+			IndexTableName.GetSafeBuffer(), cols.GetSafeBuffer(), 
+			cols.GetSafeBuffer(), 
+			Alias.GetSafeBuffer(),
+			(condition.IsNull() || condition == _T("") ? "" : "where"),
+			condition.ToStrUTF8().GetSafeBuffer(),
+			orderby8.GetSafeBuffer()
+		);
+		statement = SQLite->ExecuteUTF8(Ok, queryUTF8, rest);
+		if (Ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+			Ok = SHVBool::True;
+		queryUTF8.Format("select count(*) from memdb.%s", IndexTableName.GetSafeBuffer());
+		statement = SQLite->ExecuteUTF8(Ok, queryUTF8, rest);
+		if (Ok.GetError() == SHVSQLiteWrapper::SQLite_ROW)
+			Ok = SHVBool::True;			
+		statement->GetLong(rc, 0);
+		RowCount = rc;
+	}
+	if (Ok)
+	{
+		queryUTF8.Format("select %s.*,idx from %s join memdb.%s on %s where %s and (@idx is null or idx >= @idx) order by idx",
+			Alias.GetSafeBuffer(),
+			Alias.GetSafeBuffer(),
+			IndexTableName.GetSafeBuffer(),
+			joinCond.GetSafeBuffer(),
+			condition8.GetSafeBuffer());
+	}		
 	return queryUTF8.ReleaseBuffer();	
 }
 
@@ -256,7 +257,7 @@ SHVSQLiteStatementRef statement;
 	const SHVDataRowKey& Key = *key.AsConst();
 		for (size_t i = 0; i < Key.Count(); i++)
 		{
-			if (i)
+			if (!vals.IsEmpty())
 			{
 				vals += ", ";
 				cols += ", ";
