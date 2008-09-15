@@ -432,16 +432,16 @@ const SHVDataRowKey& Key = *key;
 		if (table.IsNull() || table == "")
 		{
 			if (Key[i].Desc != reverse)
-				colCondition.Format("(@%s is null or %s <= @%s)", Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer());
+				colCondition.Format("(@%s is null or \"%s\" <= @%s)", Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer());
 			else
-				colCondition.Format("(@%s is null or %s >= @%s)", Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer());
+				colCondition.Format("(@%s is null or \"%s\" >= @%s)", Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer());
 		}
 		else
 		{
 			if (Key[i].Desc != reverse)
-				colCondition.Format("(@%s is null or %s.%s <= @%s)", Key[i].Key.GetSafeBuffer(), table.GetSafeBuffer(), Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer());
+				colCondition.Format("(@%s is null or \"%s.%s\" <= @%s)", Key[i].Key.GetSafeBuffer(), table.GetSafeBuffer(), Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer());
 			else
-				colCondition.Format("(@%s is null or %s.%s >= @%s)", Key[i].Key.GetSafeBuffer(), table.GetSafeBuffer(), Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer());
+				colCondition.Format("(@%s is null or \"%s.%s\" >= @%s)", Key[i].Key.GetSafeBuffer(), table.GetSafeBuffer(), Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer());
 		}
 		
 		if (!i)
@@ -606,7 +606,7 @@ SHVBool ok;
 			case SHVDataVariant::TypeTime:
 				type = __SQLITE_TYPE_DATETIME;
 		}
-		col.Format("%s %s", (*dataStruct)[i]->GetColumnName().GetSafeBuffer(), type.GetSafeBuffer());
+		col.Format("\"%s\" %s", (*dataStruct)[i]->GetColumnName().GetSafeBuffer(), type.GetSafeBuffer());
 		cols += col;
 	}
 	if (dataStruct->GetIsMultiInstance())
@@ -615,7 +615,7 @@ SHVBool ok;
 	{
 		if (!pkey.IsEmpty())
 			pkey += ", ";
-		pkey += (*dataStruct->GetPrimaryIndex())[i].Key.ToStrUTF8();
+		pkey += "\"" + (*dataStruct->GetPrimaryIndex())[i].Key.ToStrUTF8() + "\"";
 	}
 	query.Format("create table %s(%s,primary key (%s), unique(%s))", dataStruct->GetTableName().GetSafeBuffer(), cols.GetSafeBuffer(), pkey.GetSafeBuffer(), pkey.GetSafeBuffer());
 	
@@ -637,7 +637,7 @@ SHVBool ok;
 	{
 		if (i)
 			selectcols += ",";
-		selectcols += (*dataStruct)[i]->GetColumnName().GetSafeBuffer();
+		selectcols += SHVStringUTF8C("\"") + (*dataStruct)[i]->GetColumnName().GetSafeBuffer() + SHVStringUTF8C("\"");
 	}
 	id = GetAliasID(sqlite, viewName, true);
 	if (id != -1)
@@ -673,7 +673,7 @@ size_t tokPos = 0;
 		{
 			if (!keys.IsEmpty())
 				keys += ", ";
-			keys += Key[k].Key.GetSafeBuffer();
+			keys += SHVStringUTF8C("\"") + Key[k].Key.GetSafeBuffer() + SHVStringUTF8C("\"");
 			if (Key[k].Desc)
 				keys += " desc";
 		}
@@ -921,7 +921,6 @@ bool more;
 	if (--InTransaction == 0)
 	{
 		sqlite->ExecuteUTF8(ok, "END TRANSACTION", rest);
-		
 		if (ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 		{
 			ok = SHVBool::True;
