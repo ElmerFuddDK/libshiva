@@ -250,7 +250,10 @@ void SHVDataSessionSQLite::SubscribeDataChange(SHVEventSubscriberBase* sub)
  *************************************/
 void* SHVDataSessionSQLite::GetProvider()
 {
-	return SQLite;
+	if (CheckConnection())
+		return SQLite;
+	else
+		return NULL;
 }
 
 /*************************************
@@ -293,7 +296,7 @@ const SHVDataStructC& st = *row->GetStruct();
 	{
 		if (c)
 			cols += ", ";
-		cols += SHVStringUTF8C::Format("%s = %s", st[c]->GetColumnName().GetSafeBuffer(), row->AsDBString(c).ToStrUTF8().GetSafeBuffer());
+		cols += SHVStringUTF8C::Format("\"%s\" = %s", st[c]->GetColumnName().GetSafeBuffer(), row->AsDBString(c).ToStrUTF8().GetSafeBuffer());
 	}
 	sql.Format("update or fail %s set %s where %s",
 		row->GetStruct()->GetTableName().GetSafeBuffer(),
@@ -334,7 +337,7 @@ const SHVDataStructC& st = *row->GetStruct();
 			cols += ", ";
 			vals += ", ";
 		}
-		cols += st[c]->GetColumnName().GetSafeBuffer();
+		cols += SHVStringUTF8C("\"") + st[c]->GetColumnName().GetSafeBuffer() + SHVStringUTF8C("\"");
 		vals += row->AsDBString(c).ToStrUTF8();
 	}
 	sql.Format("insert or fail into %s (%s) values(%s)",
@@ -394,7 +397,7 @@ SHVSQLiteStatementRef statement;
 		const SHVDataStructColumnC& col = *(*row->GetStruct())[colIdx];
 			if (!retVal.IsEmpty())
 				retVal += " and ";
-			keycond.Format("%s = %s", Key[k].Key.GetSafeBuffer(), row->OriginalValue(Key[k].Key)->AsDBString().ToStrUTF8().GetSafeBuffer());
+			keycond.Format("\"%s\" = %s", Key[k].Key.GetSafeBuffer(), row->OriginalValue(Key[k].Key)->AsDBString().ToStrUTF8().GetSafeBuffer());
 			retVal += keycond;
 		}
 	}
