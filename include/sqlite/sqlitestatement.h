@@ -42,9 +42,9 @@ public:
 
 	// GetColumnCount
 	virtual int GetColumnCount() const = 0;
-	virtual int GetParameterCount() const = 0;
 
 	// SetParameter
+	virtual void ClearAllParameters() = 0;
 	virtual SHVBool SetParameterLongUTF8(const SHVStringUTF8C& name, long val) = 0;
 	inline SHVBool SetParameterLong(const SHVStringC& name, long val);
 

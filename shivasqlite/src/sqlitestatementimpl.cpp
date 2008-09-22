@@ -244,12 +244,15 @@ int SHVSQLiteStatementImpl::GetColumnCount() const
 }
 
 /*************************************
- * GetParameterCount
+ * ClearAllParameters
  *************************************/
-int SHVSQLiteStatementImpl::GetParameterCount() const
+void SHVSQLiteStatementImpl::ClearAllParameters()
 {
+int cnt;
 	SHVTHREADCHECK(OwnerThread);
-	return sqlite3_bind_parameter_count(Statement);
+	cnt = sqlite3_bind_parameter_count(Statement);
+	for (int i = 0; i < cnt;cnt++)
+		sqlite3_bind_null(Statement, i);
 }
 
 /*************************************

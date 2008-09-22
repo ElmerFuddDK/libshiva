@@ -32,8 +32,8 @@ public:
 	virtual SHVBool GetColumnType16(SHVString16& colType, int columnIdx) const;
 
 	virtual int GetColumnCount() const;
-	virtual int GetParameterCount() const;
 
+	virtual void ClearAllParameters();
 	virtual SHVBool SetParameterLongUTF8(const SHVStringUTF8C& name, long val);
 	virtual SHVBool SetParameterInt64UTF8(const SHVStringUTF8C& name, SHVInt64Val val);
 	virtual SHVBool SetParameterDoubleUTF8(const SHVStringUTF8C& name, double val);
