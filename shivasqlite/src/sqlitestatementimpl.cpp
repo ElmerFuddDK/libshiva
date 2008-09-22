@@ -244,6 +244,15 @@ int SHVSQLiteStatementImpl::GetColumnCount() const
 }
 
 /*************************************
+ * GetParameterCount
+ *************************************/
+int SHVSQLiteStatementImpl::GetParameterCount() const
+{
+	SHVTHREADCHECK(OwnerThread);
+	return sqlite3_bind_parameter_count(Statement);
+}
+
+/*************************************
  * SetParameterLongUTF8
  *************************************/
 SHVBool SHVSQLiteStatementImpl::SetParameterLongUTF8(const SHVStringUTF8C& name, long val)
