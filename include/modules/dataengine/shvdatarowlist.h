@@ -28,6 +28,8 @@ public:
 	virtual bool GetNonAcceptedEnabled() const = 0;
 	virtual void EnableCacheChanges(bool enable) = 0;
 	virtual bool GetCacheChangesEnabled() const = 0;
+	virtual void EnableFullRowCache(bool enable) = 0;
+	virtual bool GetFullRowCache() = 0;
 	virtual const SHVDataRowChangeCache* GetChangeCache() const = 0;
 
 // from SHVDataRowListC
