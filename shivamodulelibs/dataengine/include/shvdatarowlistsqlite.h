@@ -37,6 +37,8 @@ public:
 	virtual bool GetNonAcceptedEnabled() const;
 	virtual void EnableCacheChanges(bool enable);
 	virtual bool GetCacheChangesEnabled() const;
+	virtual void EnableFullRowCache(bool enable);
+	virtual bool GetFullRowCache();
 	virtual const SHVDataRowChangeCache* GetChangeCache() const;
 
 	// from SHVDataRowListC
@@ -80,6 +82,7 @@ private:
 	int InsertedRows;
 	bool EventsEnabled;
 	bool NonAcceptedEnabled;
+	bool FullRowCache;
 	SHVDataRowKeyRef SavePosition;
 	SHVDataRowChangeCacheImplPtr ChangeCache;
 };

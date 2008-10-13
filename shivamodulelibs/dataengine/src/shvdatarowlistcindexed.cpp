@@ -194,7 +194,7 @@ long rc;
 	}
 	queryUTF8.Format("create table memdb.%s(idx integer primary key autoincrement, %s)", 
 		IndexTableName.GetSafeBuffer(), 
-		cols.GetSafeBuffer());
+		colDefs.GetSafeBuffer());
 	statement = SQLite->ExecuteUTF8(Ok, queryUTF8, rest);
 	if (Ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 		Ok = SHVBool::True;
@@ -236,6 +236,13 @@ long rc;
 			condition8.GetSafeBuffer());
 	}		
 	return queryUTF8.ReleaseBuffer();	
+}
+
+/*************************************
+ * InitializeFind
+ *************************************/
+void SHVDataRowListCIndexed::InitializeFind()
+{
 }
 
 /*************************************

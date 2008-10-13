@@ -188,6 +188,22 @@ bool SHVDataRowListSQLite::GetCacheChangesEnabled() const
 }
 
 /*************************************
+ * GetCacheChangesEnabled
+ *************************************/
+void SHVDataRowListSQLite::EnableFullRowCache(bool enable)
+{
+	FullRowCache = enable;
+}
+
+/*************************************
+ * GetCacheChangesEnabled
+ *************************************/
+bool SHVDataRowListSQLite::GetFullRowCache()
+{
+	return FullRowCache;
+}
+
+/*************************************
  * GetChangeCache
  *************************************/
 const SHVDataRowChangeCache* SHVDataRowListSQLite::GetChangeCache() const
@@ -380,7 +396,7 @@ SHVListPos pos =  PendingRows.Find(rrow);
 		if (retVal)
 		{
 			if (!ChangeCache.IsNull())
-				ChangeCache->AddItem(row);
+				ChangeCache->AddItem(row, FullRowCache);
 			RowChanged(rrow);
 			retVal = UpdateRow(row);
 			if (retVal)
@@ -401,7 +417,8 @@ SHVListPos pos =  PendingRows.Find(rrow);
 				if (rrow->GetRowState() == SHVDataRow::RowStateDeleted)
 					AdjustRowCount(-1);
 				RowChanged(rrow);
-				((SHVDataRowImpl*) row)->Owner = NULL;
+				if (ChangeCache.IsNull() || !FullRowCache)
+					((SHVDataRowImpl*) row)->Owner = NULL;
 			}
 		}
 	}

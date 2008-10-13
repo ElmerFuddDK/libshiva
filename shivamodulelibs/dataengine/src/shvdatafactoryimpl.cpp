@@ -439,9 +439,9 @@ const SHVDataRowKey& Key = *key;
 		else
 		{
 			if (Key[i].Desc != reverse)
-				colCondition.Format("(@%s is null or \"%s.%s\" <= @%s)", Key[i].Key.GetSafeBuffer(), table.GetSafeBuffer(), Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer());
+				colCondition.Format("(@%s is null or %s.\"%s\" <= @%s)", Key[i].Key.GetSafeBuffer(), table.GetSafeBuffer(), Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer());
 			else
-				colCondition.Format("(@%s is null or \"%s.%s\" >= @%s)", Key[i].Key.GetSafeBuffer(), table.GetSafeBuffer(), Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer());
+				colCondition.Format("(@%s is null or %s.\"%s\" >= @%s)", Key[i].Key.GetSafeBuffer(), table.GetSafeBuffer(), Key[i].Key.GetSafeBuffer(), Key[i].Key.GetSafeBuffer());
 		}
 		
 		if (!i)

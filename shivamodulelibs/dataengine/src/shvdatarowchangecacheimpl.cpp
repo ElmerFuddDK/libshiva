@@ -32,7 +32,8 @@
 
 #include "../../../include/platformspc.h"
 #include "../include/shvdatarowchangecacheimpl.h"
-
+#include "../include/shvdatarowkeyimpl.h"
+#include "../include/shvdatarowimpl.h"
 
 /*************************************
  * Constructors
@@ -48,7 +49,7 @@ SHVDataRowChangeCacheImpl::~SHVDataRowChangeCacheImpl()
 /*************************************
  * AddItem
  *************************************/
-void SHVDataRowChangeCacheImpl::AddItem(const SHVDataRowC* row)
+void SHVDataRowChangeCacheImpl::AddItem(SHVDataRow* row, bool keepRow)
 {
 bool found = false;
 int rowState;
@@ -71,7 +72,14 @@ int rowState;
 		found = row->MatchKey(ChangedItems[i]->Key);
 	}
 	if (!found)
-		ChangedItems.Add(new CacheItem(row->GetKey(), rowState));
+	{
+	SHVDataRowKeyRef key;
+		key = row->GetKey();
+		if (keepRow)		
+			ChangedItems.Add(new CacheItem(key, rowState, row));
+		else
+			ChangedItems.Add(new CacheItem(key, rowState, NULL));
+	}
 }
 
 /*************************************
@@ -106,11 +114,19 @@ const size_t SHVDataRowChangeCacheImpl::GetRowCount() const
 }
 
 /*************************************
- * SHVDataRowKey
+ * GetKey
  *************************************/
 const SHVDataRowKey* SHVDataRowChangeCacheImpl::GetKey(size_t rowNo) const
 {
 	return ChangedItems[rowNo]->Key.AsConst();
+}
+
+/*************************************
+ * GetRow
+ *************************************/
+const SHVDataRowC* SHVDataRowChangeCacheImpl::GetRow(size_t rowNo) const
+{
+	return ChangedItems[rowNo]->Row.AsConst();
 }
 
 /*************************************

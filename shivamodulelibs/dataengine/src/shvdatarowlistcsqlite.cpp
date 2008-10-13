@@ -60,6 +60,7 @@ SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
 		st->AddIndex((SHVDataRowKey*) sortKey);
 	SortIndex = 0;	
 	Eof = !Ok;
+	Bof = true;
 }
 
 SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias, const SHVStringC& condition, size_t index): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(-1), Alias(alias), HasShareLock(false)
@@ -81,6 +82,7 @@ SHVStringUTF8 sql;
 	if (Ok)
 		Statement = SQLite->PrepareUTF8(Ok, sql, rest);
 	Eof = !Ok;
+	Bof = true;
 }
 
 SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, const SHVString8C& alias, size_t index): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(-1), Alias(alias)
@@ -96,6 +98,7 @@ SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, SHVSQLiteS
 	SortIndex = index;
 	Statement = statement;
 	Eof = !Ok;
+	Bof = true;
 }
 
 /*************************************
@@ -104,7 +107,7 @@ SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, SHVSQLiteS
 const SHVDataRowC* SHVDataRowListCSQLite::GetCurrentRow() const
 {
 	SHVASSERT(IsOk());
-	if (!Eof)
+	if (!Eof && !Bof)
 	{
 		return CurrentRow.AsConst();
 	}
@@ -168,6 +171,8 @@ SHVDataRowC* retVal = NULL;
 			NextRow();
 		}
 		Reset();
+		Statement->ClearAllParameters();
+		Reset();
 		for (size_t i = key->Count(); i;)
 		{
 		SHVStringUTF8 keyParm;
@@ -197,6 +202,7 @@ SHVDataRowC* retVal = NULL;
 			else
 				Statement->SetParameterNullUTF8(keyParm);
 		}
+		InitializeFind();
 		if (NextRow())
 			retVal = CurrentRow;
 	}
@@ -242,6 +248,7 @@ SHVBool retVal = IsOk();
 		if (CurrentRow.IsNull())
 			CurrentRow = new SHVDataRowCSQLite(this);
 		retVal = Statement->NextResult();
+		Bof = false;
 		Eof = retVal.GetError() != SHVSQLiteWrapper::SQLite_ROW;
 		if (StructCache->GetColumnCount() == 0 && !Eof)
 		{
@@ -316,6 +323,7 @@ SHVBool retVal = IsOk();
 	if (retVal)
 	{
 		Eof = SHVBool::False;
+		Bof = true;
 		retVal = Statement->Reset();
 		if (GetStruct()->IndexCount())
 		{
@@ -395,6 +403,13 @@ SHVString8 orderby8;
 			orderby8.GetSafeBuffer());
 	}
 	return queryUTF8.ReleaseBuffer();
+}
+
+/*************************************
+ * InitializeFind
+ *************************************/
+void SHVDataRowListCSQLite::InitializeFind()
+{
 }
 
 /*************************************

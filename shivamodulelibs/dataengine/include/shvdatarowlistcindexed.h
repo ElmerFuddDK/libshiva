@@ -24,6 +24,7 @@ protected:
 
 	// from SHVDataRowListSQLite
 	virtual SHVStringBufferUTF8 BuildQuery(const SHVStringC& condition, bool reverse);
+	virtual void InitializeFind();
 	virtual SHVBool InternalRowChanged(SHVDataRow* row);
 
 private:

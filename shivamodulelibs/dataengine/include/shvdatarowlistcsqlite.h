@@ -44,6 +44,7 @@ protected:
 	~SHVDataRowListCSQLite();
 
 	virtual SHVStringBufferUTF8 BuildQuery(const SHVStringC& condition, bool reverse);
+	virtual void InitializeFind();
 	
 	// from SHVDataRowListC
 	virtual void AdjustRowCount(int delta);
@@ -62,7 +63,8 @@ private:
 protected:
 	size_t SortIndex;
 	SHVSQLiteStatementRef Statement;
-	SHVBool Eof;
+	bool Eof;
+	bool Bof;
 	SHVBool Ok;
 	int RowCount;
 	SHVString8 Alias;

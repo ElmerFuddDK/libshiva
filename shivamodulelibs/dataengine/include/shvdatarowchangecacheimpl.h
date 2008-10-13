@@ -12,18 +12,20 @@ public:
 	struct CacheItem
 	{
 	public:
-		inline CacheItem(SHVDataRowKey* key, int rowState);
+		inline CacheItem(SHVDataRowKey* key, int rowState, SHVDataRow* row);
 		SHVDataRowKeyRef Key;
+		SHVDataRowRef Row;
 		int RowState;
 	};
 
 	SHVDataRowChangeCacheImpl();
 	virtual ~SHVDataRowChangeCacheImpl();
-	void AddItem(const SHVDataRowC* row);
+	void AddItem(SHVDataRow* row, bool keepRow);
 	void RemoveItem(const SHVDataRowC* row);
 	void Clear();
 	virtual const size_t GetRowCount() const;
 	virtual const SHVDataRowKey* GetKey(size_t rowNo) const;
+	virtual const SHVDataRowC* GetRow(size_t rowNo) const;
 	virtual const int GetRowState(size_t rowNo) const;
 private:
 	SHVDynArray<CacheItem> ChangedItems;
@@ -35,8 +37,8 @@ typedef SHVPtrContainer<SHVDataRowChangeCacheImpl> SHVDataRowChangeCacheImplPtr;
 /*************************************
  * CacheItem::Constructor
  *************************************/
-SHVDataRowChangeCacheImpl::CacheItem::CacheItem(SHVDataRowKey* key, int rowState):
-	Key(key), RowState(rowState)
+SHVDataRowChangeCacheImpl::CacheItem::CacheItem(SHVDataRowKey* key, int rowState, SHVDataRow* row):
+	Key(key), RowState(rowState), Row(row)
 {
 }
 
