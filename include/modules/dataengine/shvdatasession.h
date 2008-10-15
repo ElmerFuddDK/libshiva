@@ -52,7 +52,7 @@ friend class SHVDataRowList;
 friend class SHVDataFactory;
 
 	virtual ~SHVDataSession() {}
-	virtual SHVBool UpdateRow(SHVDataRow* row) = 0;
+	virtual SHVBool UpdateRow(SHVDataRow* row, bool replaceIfDuplicate) = 0;
 	virtual SHVBool IsValid() const = 0;
 	virtual void SchemaChanged() = 0;
 

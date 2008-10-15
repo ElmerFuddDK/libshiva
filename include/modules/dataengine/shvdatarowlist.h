@@ -30,6 +30,8 @@ public:
 	virtual bool GetCacheChangesEnabled() const = 0;
 	virtual void EnableFullRowCache(bool enable) = 0;
 	virtual bool GetFullRowCache() = 0;
+	virtual void EnableReplaceIfDuplicate(bool enable) = 0;
+	virtual bool GetReplaceIfDuplicate() = 0;
 	virtual const SHVDataRowChangeCache* GetChangeCache() const = 0;
 
 // from SHVDataRowListC
@@ -64,7 +66,7 @@ friend class SHVDataRow;
 	virtual SHVBool InternalRowChanged(SHVDataRow* row) = 0;
 
 // inlines
-	inline SHVBool UpdateRow(SHVDataRow* row);
+	inline SHVBool UpdateRow(SHVDataRow* row, bool replaceIfDuplicate);
 	inline void RowChanged(SHVDataRow* row);
 	inline void InternalAcceptChanges(SHVDataRow* row);
 	inline void InternalRejectChanges(SHVDataRow* row);
@@ -83,9 +85,9 @@ typedef SHVRefObjectContainer<SHVDataRowList> SHVDataRowListRef;
 /*************************************
  * UpdateRow
  *************************************/
-SHVBool SHVDataRowList::UpdateRow(SHVDataRow* row)
+SHVBool SHVDataRowList::UpdateRow(SHVDataRow* row, bool replaceIfDuplicate)
 { 
-	return GetDataSession()->UpdateRow(row); 
+	return GetDataSession()->UpdateRow(row, replaceIfDuplicate);
 }
 
 /*************************************
