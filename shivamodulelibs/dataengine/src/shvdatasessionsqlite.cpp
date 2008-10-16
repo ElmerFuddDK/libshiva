@@ -314,7 +314,7 @@ const SHVDataStructC& st = *row->GetStruct();
 /*************************************
  * DoInsertRow
  *************************************/
-SHVBool SHVDataSessionSQLite::DoInsertRow(SHVDataRow* row)
+SHVBool SHVDataSessionSQLite::DoInsertRow(SHVDataRow* row, bool replaceIfDuplicate)
 {
 SHVBool retVal;
 SHVStringUTF8 val;
@@ -340,10 +340,20 @@ const SHVDataStructC& st = *row->GetStruct();
 		cols += SHVStringUTF8C("\"") + st[c]->GetColumnName().GetSafeBuffer() + SHVStringUTF8C("\"");
 		vals += row->AsDBString(c).ToStrUTF8();
 	}
-	sql.Format("insert or fail into %s (%s) values(%s)",
-		row->GetStruct()->GetTableName().GetSafeBuffer(),
-		cols.GetSafeBuffer(),
-		vals.GetSafeBuffer());
+	if (replaceIfDuplicate)
+	{
+		sql.Format("insert or fail into %s (%s) values(%s)",
+			row->GetStruct()->GetTableName().GetSafeBuffer(),
+			cols.GetSafeBuffer(),
+			vals.GetSafeBuffer());
+	}
+	else
+	{
+		sql.Format("insert or replace into %s (%s) values(%s)",
+			row->GetStruct()->GetTableName().GetSafeBuffer(),
+			cols.GetSafeBuffer(),
+			vals.GetSafeBuffer());
+	}
 	statement = SQLite->ExecuteUTF8(retVal, sql, rest);
 	if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 	{
@@ -434,7 +444,7 @@ SHVDataRow* found = NULL;
 /*************************************
  * UpdateRow
  *************************************/
-SHVBool SHVDataSessionSQLite::UpdateRow(SHVDataRow* row)
+SHVBool SHVDataSessionSQLite::UpdateRow(SHVDataRow* row, bool replaceIfDuplicate)
 {
 SHVBool retVal;
 
@@ -445,7 +455,7 @@ SHVBool retVal;
 		retVal = DoUpdateRow(row);
 		break;
 	case SHVDataRow::RowStateAdding:
-		retVal = DoInsertRow(row);
+		retVal = DoInsertRow(row, replaceIfDuplicate);
 		break;
 	case SHVDataRow::RowStateDeleting:
 		retVal = DoDeleteRow(row);

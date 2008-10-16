@@ -31,7 +31,7 @@ protected:
 	virtual ~SHVDataSessionSQLite();
 	
 	virtual SHVBool DoUpdateRow(SHVDataRow* row);
-	virtual SHVBool DoInsertRow(SHVDataRow* row);
+	virtual SHVBool DoInsertRow(SHVDataRow* row, bool replaceIfDuplicate);
 	virtual SHVBool DoDeleteRow(SHVDataRow* row);
 	virtual SHVStringUTF8 WhereSQL(SHVDataRow* row);
 
@@ -39,7 +39,7 @@ protected:
 	SHVDataRow* Find(const SHVDataRowVector& vector, const SHVDataRowKey* key, size_t& idx) const;
 
 	// from SHVDataSession
-	virtual SHVBool UpdateRow(SHVDataRow* row);
+	virtual SHVBool UpdateRow(SHVDataRow* row, bool replaceIfDuplicate);
 	virtual SHVBool IsValid() const;
 	virtual void SchemaChanged();
 	virtual SHVBool CheckConnection();

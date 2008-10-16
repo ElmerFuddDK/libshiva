@@ -39,7 +39,7 @@
 /*************************************
  * Constructor
  *************************************/
-SHVDataRowListSQLite::SHVDataRowListSQLite(SHVDataSession* dataSession, SHVDataRowListC *rowList): NonAcceptedEnabled(false), EventsEnabled(false)
+SHVDataRowListSQLite::SHVDataRowListSQLite(SHVDataSession* dataSession, SHVDataRowListC *rowList): NonAcceptedEnabled(false), EventsEnabled(false), ReplaceIfDuplicate(false)
 {
 	RowList = rowList;
 	DataSession = dataSession;
@@ -201,6 +201,22 @@ void SHVDataRowListSQLite::EnableFullRowCache(bool enable)
 bool SHVDataRowListSQLite::GetFullRowCache()
 {
 	return FullRowCache;
+}
+
+/*************************************
+ * EnableReplaceIfDuplicate
+ *************************************/
+void SHVDataRowListSQLite::EnableReplaceIfDuplicate(bool enable)
+{
+	ReplaceIfDuplicate = enable;
+}
+
+/*************************************
+ * GetReplaceIfDuplicate
+ *************************************/
+bool SHVDataRowListSQLite::GetReplaceIfDuplicate()
+{
+	return ReplaceIfDuplicate;
 }
 
 /*************************************
@@ -398,7 +414,7 @@ SHVListPos pos =  PendingRows.Find(rrow);
 			if (!ChangeCache.IsNull())
 				ChangeCache->AddItem(row, FullRowCache);
 			RowChanged(rrow);
-			retVal = UpdateRow(row);
+			retVal = UpdateRow(row, ReplaceIfDuplicate);
 			if (retVal)
 			{
 				if (pos)

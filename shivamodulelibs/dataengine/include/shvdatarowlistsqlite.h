@@ -39,6 +39,8 @@ public:
 	virtual bool GetCacheChangesEnabled() const;
 	virtual void EnableFullRowCache(bool enable);
 	virtual bool GetFullRowCache();
+	virtual void EnableReplaceIfDuplicate(bool enable);
+	virtual bool GetReplaceIfDuplicate();
 	virtual const SHVDataRowChangeCache* GetChangeCache() const;
 
 	// from SHVDataRowListC
@@ -83,6 +85,7 @@ private:
 	bool EventsEnabled;
 	bool NonAcceptedEnabled;
 	bool FullRowCache;
+	bool ReplaceIfDuplicate;
 	SHVDataRowKeyRef SavePosition;
 	SHVDataRowChangeCacheImplPtr ChangeCache;
 };

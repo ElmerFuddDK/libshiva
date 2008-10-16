@@ -257,7 +257,11 @@ SHVSQLiteWrapperRef SQLite = (useSession ? (SHVSQLiteWrapper*) useSession->GetPr
 	{
 	SHVDataStruct* dataStruct = GetInternalStruct((SHVDataStructC* )Schema[found]);		
 		for (retVal = 0; retVal < dataStruct->IndexCount() && !Exists; retVal++)
+		{
 			Exists = dataStruct->GetIndex(retVal)->KeyDefEquals(IndexKey);
+			if (Exists)
+				break;
+		}
 		if (!Exists)
 		{
 			retVal = dataStruct->AddIndex(IndexKey);
