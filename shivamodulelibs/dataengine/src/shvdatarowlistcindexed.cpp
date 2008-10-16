@@ -70,7 +70,7 @@ SHVBool retVal = IsOk();
 	if (retVal)
 	{
 	const SHVDataRowKey& key = *GetStruct()->GetIndex(SortIndex);
-		Eof = SHVBool::False;
+		Eof = false;
 		retVal = Statement->Reset();
 		for (size_t i = 0; i < key.Count(); i++)
 		{

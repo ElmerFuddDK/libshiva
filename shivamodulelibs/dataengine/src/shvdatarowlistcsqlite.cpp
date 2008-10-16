@@ -322,7 +322,7 @@ SHVBool retVal = IsOk();
 	SHVASSERT(retVal);
 	if (retVal)
 	{
-		Eof = SHVBool::False;
+		Eof = false;
 		Bof = true;
 		retVal = Statement->Reset();
 		if (GetStruct()->IndexCount())
