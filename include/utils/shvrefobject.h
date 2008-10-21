@@ -126,7 +126,6 @@ public:
 private:
 	///\cond INTERNAL
 	T* Obj;
-	bool RefValid;
 	///\endcond
 };
 typedef SHVRefObjectContainer<SHVRefObject> SHVObjectRef;
@@ -209,13 +208,13 @@ T& SHVRefObjectTemplate<T>::Object() { return Obj; }
  * Constructors
  *************************************/
 template <class T>
-SHVRefObjectContainer<T>::SHVRefObjectContainer() : RefValid(true) { Obj = NULL; }
+SHVRefObjectContainer<T>::SHVRefObjectContainer() { Obj = NULL; }
 template <class T>
-SHVRefObjectContainer<T>::SHVRefObjectContainer(T *obj)  : RefValid(true) { Obj = ( obj ? (T *) obj->CreateRef() : NULL );  }
+SHVRefObjectContainer<T>::SHVRefObjectContainer(T *obj)  { Obj = ( obj ? (T *) obj->CreateRef() : NULL );  }
 template <class T>
-SHVRefObjectContainer<T>::SHVRefObjectContainer(const SHVRefObjectContainer<T> &r) : RefValid(true) { Obj = (!r.IsNull() ? (T *) r->CreateRef() : (T *)NULL); }
+SHVRefObjectContainer<T>::SHVRefObjectContainer(const SHVRefObjectContainer<T> &r) { Obj = (!r.IsNull() ? (T *) r->CreateRef() : (T *)NULL); }
 template <class T>
-SHVRefObjectContainer<T>::~SHVRefObjectContainer() { if (Obj && RefValid) Obj->DestroyRef(); }
+SHVRefObjectContainer<T>::~SHVRefObjectContainer() { if (Obj) Obj->DestroyRef(); }
 
 
 /*************************************
@@ -280,22 +279,22 @@ const T* SHVRefObjectContainer<T>::AsConst() const { return (const T*)Obj; }
  *************************************/
 /// Deletes the referenced object, setting the pointer to NULL
 template <class T>
-void SHVRefObjectContainer<T>::Clear() { if (Obj && RefValid) { Obj->DestroyRef(); } Obj = NULL; }
+void SHVRefObjectContainer<T>::Clear() { if (Obj) { Obj->DestroyRef(); } Obj = NULL; }
 
 /*************************************
  * assignment operator
  *************************************/
-/// Will clear the pointer in the container assigned from
+/// Assigns an object to the container
 /**
  \see ReleaseReference
  */
 template <class T>
 const SHVRefObjectContainer<T>& SHVRefObjectContainer<T>::operator =(const SHVRefObjectContainer<T> &r)
-	{ if (r.Obj == Obj) return *this; if (Obj && RefValid) Obj->DestroyRef(); Obj = ( !r.IsNull() ? (T *) r->CreateRef() : NULL ); RefValid = true; return *this; }
+	{ if (r.Obj == Obj) return *this; if (Obj) Obj->DestroyRef(); Obj = ( !r.IsNull() ? (T *) r->CreateRef() : NULL ); return *this; }
 /// Assigns the refcounted object to the container
 template <class T>
 SHVRefObjectContainer<T>& SHVRefObjectContainer<T>::operator =(T* obj)
-	{ if (obj == Obj) return *this; if (Obj && RefValid) Obj->DestroyRef(); Obj = ( obj ? (T *) obj->CreateRef() : NULL); RefValid = true; return *this; }
+	{ if (obj == Obj) return *this; if (Obj) Obj->DestroyRef(); Obj = ( obj ? (T *) obj->CreateRef() : NULL); return *this; }
 
 
 
@@ -322,5 +321,5 @@ SHVIntRef i = new SHVIntObj;
 \endcode
  */
 template <class T>
-T* SHVRefObjectContainer<T>::ReleaseReference() { if (Obj && RefValid) Obj->ReleaseRef(); RefValid = false; return Obj; }
+T* SHVRefObjectContainer<T>::ReleaseReference() { T* retVal = Obj; if (Obj) Obj->ReleaseRef(); Obj = NULL; return retVal; }
 #endif
