@@ -50,7 +50,6 @@ SHVSQLiteWrapperImpl::SHVSQLiteWrapperImpl(void)
  *************************************/
 SHVSQLiteWrapperImpl::~SHVSQLiteWrapperImpl(void)
 {
-	SHVTHREADCHECK(OwnerThread);
 	if (Sqlite)
 	{
 		sqlite3_close(Sqlite);
