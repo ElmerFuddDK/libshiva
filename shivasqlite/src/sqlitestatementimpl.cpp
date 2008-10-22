@@ -251,7 +251,7 @@ void SHVSQLiteStatementImpl::ClearAllParameters()
 int cnt;
 	SHVTHREADCHECK(OwnerThread);
 	cnt = sqlite3_bind_parameter_count(Statement);
-	for (int i = 0; i < cnt;cnt++)
+	for (int i = 0; i < cnt;i++)
 		sqlite3_bind_null(Statement, i);
 }
 
