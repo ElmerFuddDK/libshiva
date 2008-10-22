@@ -775,7 +775,7 @@ SessionLock.LockShared();
 SHVListIterator<SHVDataSession*> Iter(ActiveSessions);
 	while(Iter.MoveNext())
 	{
-		if (sqlite != Iter.Get()->GetProvider())
+		if (sqlite != Iter.Get()->GetProvider(false))
 			SHVDataFactory::SchemaChanged(Iter.Get());
 	}
 	SessionLock.Unlock();

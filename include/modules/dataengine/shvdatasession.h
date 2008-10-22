@@ -37,7 +37,7 @@ public:
 	inline SHVBool IsEditting() const;
 
 	virtual void SubscribeDataChange(SHVEventSubscriberBase* sub) = 0;
-	virtual void* GetProvider() = 0;
+	virtual void* GetProvider(bool checkConnection = true) = 0;
 	virtual SHVDataFactory* GetFactory() const = 0;
 	virtual SHVStringBuffer GetErrorMessage() const = 0;
 

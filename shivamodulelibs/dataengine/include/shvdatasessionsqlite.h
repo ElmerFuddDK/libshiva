@@ -23,7 +23,7 @@ public:
 	virtual SHVBool ExecuteNonQuery(const SHVStringC& sql);
 
 	virtual void SubscribeDataChange(SHVEventSubscriberBase* sub);
-	virtual void* GetProvider();
+	virtual void* GetProvider(bool checkConnection = true);
 	virtual SHVDataFactory* GetFactory() const;
 	virtual SHVStringBuffer GetErrorMessage() const;
 

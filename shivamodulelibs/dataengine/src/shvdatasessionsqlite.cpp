@@ -248,9 +248,9 @@ void SHVDataSessionSQLite::SubscribeDataChange(SHVEventSubscriberBase* sub)
 /*************************************
  * GetProvider
  *************************************/
-void* SHVDataSessionSQLite::GetProvider()
+void* SHVDataSessionSQLite::GetProvider(bool checkConnection)
 {
-	if (CheckConnection())
+	if (!checkConnection || CheckConnection())
 		return SQLite;
 	else
 		return NULL;
