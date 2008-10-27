@@ -153,6 +153,13 @@ int SHVDataRowListCSQLite::GetAliasID() const
  *************************************/
 int SHVDataRowListCSQLite::GetRowCount() const
 {
+	if (RowCount == -1)
+	{
+	SHVDataRowListCSQLite* self = (SHVDataRowListCSQLite*)this;
+		self->RowCount = 0;
+		while (self->Statement->NextResult().GetError() == SHVSQLiteWrapper::SQLite_ROW) self->RowCount++;
+		self->Reset();
+	}
 	return RowCount;
 }
 
@@ -166,10 +173,7 @@ SHVDataRowC* retVal = NULL;
 	SHVASSERT(IsOk());
 	if (IsOk())
 	{
-		if (RowCount < 0)
-		{
-			NextRow();
-		}
+		GetRowCount();
 		Reset();
 		Statement->ClearAllParameters();
 		Reset();
@@ -238,12 +242,7 @@ SHVBool retVal = IsOk();
 	SHVASSERT(retVal);
 	if (retVal)
 	{
-		if (RowCount < 0)
-		{
-			RowCount = 0;
-			while (Statement->NextResult().GetError() == SHVSQLiteWrapper::SQLite_ROW) RowCount++;
-			Reset();
-		}
+		GetRowCount();
 		LockShared();
 		if (CurrentRow.IsNull())
 			CurrentRow = new SHVDataRowCSQLite(this);
