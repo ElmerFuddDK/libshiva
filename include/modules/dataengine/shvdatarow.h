@@ -48,6 +48,8 @@ public:
 	virtual SHVBool HasChanges() = 0;
 
 	// from SHVDataRowC
+
+	/* -- Not implemented here as it hides the inlines on SHVDataRowC
 	virtual SHVStringBuffer AsString(size_t colIdx) const = 0;
 	virtual SHVStringBuffer AsDBString(size_t colIdx) const = 0;
 	virtual SHVInt AsInt(size_t colIdx) const = 0;
@@ -56,6 +58,7 @@ public:
 	virtual SHVTime AsTime(size_t colIdx) const = 0;
 	virtual SHVBool AsBool(size_t colIdx) const = 0;
 	virtual SHVBool IsNull(size_t colIdx) const = 0;
+	*/
 
 	virtual size_t ColumnIndex(const SHVString8C& colName) const = 0;
 
