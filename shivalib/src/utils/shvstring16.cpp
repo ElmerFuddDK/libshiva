@@ -52,9 +52,7 @@
 # include <stdlib.h>
 #endif
 
-#ifndef __SHIVA_WIN32
-# include <math.h>
-#endif
+#include <math.h>
 
 
 // ========================================================================================================
@@ -123,7 +121,6 @@ SHVWChar firstVal = *str;
 }
 double SHVString16C::StrToDouble(const SHVWChar* str, SHVWChar** ptr)
 {
-#if defined(__SHIVA_LINUX) || defined(__SHIVA_EPOC)
 double retVal = 0;
 SHVWChar firstVal = *str;
 SHVWChar* cPtr;
@@ -161,27 +158,10 @@ long i;
 	if (**ptr == 'e' || **ptr == 'E')
 	{
 		(*ptr)++;
-		retVal *= exp10( (double)StrToL(*ptr,ptr,10) );
-// 		for (i=StrToL(*ptr,ptr,10);i;)
-// 		{
-// 			if (i<0)
-// 			{
-// 				retVal /= 10.0;
-// 				i++;
-// 			}
-// 			else
-// 			{
-// 				retVal *= 10.0;
-// 				i--;
-// 			}
-// 		}
+		retVal *= pow(10, (double)StrToL(*ptr,ptr,10) );
 	}
 
 	return retVal;
-#else
-	return (str ? wcstod((const wchar_t*)str,(wchar_t**)ptr) : NULL);
-#endif
-
 }
 size_t SHVString16C::StrLen(const SHVWChar* str)
 {
@@ -359,8 +339,11 @@ SHVString16 str;
 SHVStringBuffer16 SHVString16C::DoubleToString(double val)
 {
 static const SHVWChar nChar[] = { '%', 'g', '\0' };
+static const SHVWChar comma[] = { ',', '\0' };
+static const SHVWChar dot[] = { '.', '\0' };
 SHVString16 str;
 	str.Format(nChar, val);
+	str.Replace(comma, dot);
 	return str.ReleaseBuffer();
 }
 

@@ -58,6 +58,8 @@
 # include <stdlib.h>
 #endif
 
+#include <math.h>
+
 // ========================================================================================================
 //  convenience functions for easy portability
 // ========================================================================================================
@@ -83,7 +85,47 @@ SHVInt64Val retVal = (str ? ::_atoi64(str) : 0);
 }
 double SHVString8C::StrToDouble(const SHVChar* str, SHVChar** ptr)
 {
-	return (str ? ::strtod(str,ptr) : 0);
+double retVal = 0;
+SHVChar firstVal = *str;
+SHVChar* cPtr;
+long i;
+
+	if (firstVal == '-' || firstVal == '+')
+		str++;
+
+	for(*ptr = (SHVChar*)str; str && *ptr != '\0'; (*ptr)++)
+	{
+		if (**ptr < '0' || **ptr > '9')
+			break;
+	}
+	
+	i=1;
+	for(cPtr = (*ptr); cPtr != str; cPtr--, i*=10)
+	{
+		retVal += (*(cPtr-1) - '0')*i;
+	}
+
+	if (firstVal == '-')
+		retVal *= -1;
+
+	if (**ptr == '.')
+	{
+		double dec = 0.1;
+		for((*ptr)++;**ptr;(*ptr)++,dec/=10)
+		{
+			if (**ptr < '0' || **ptr > '9')
+				break;
+			retVal += ((**ptr) - '0')*dec;
+		}
+	}
+
+	if (**ptr == 'e' || **ptr == 'E')
+	{
+		(*ptr)++;
+		retVal *= pow(10, (double)StrToL(*ptr,ptr,10) );
+	}
+
+	return retVal;
 }
 size_t SHVString8C::StrLen(const SHVChar* str)
 {
@@ -224,8 +266,11 @@ SHVString8 str;
 SHVStringBuffer8 SHVString8C::DoubleToString(double val)
 {
 static const SHVChar nChar[] = { '%', 'g', '\0' };
+static const SHVChar comma[] = { ',', '\0' };
+static const SHVChar dot[] = { '.', '\0' };
 SHVString8 str;
 	str.Format(nChar, val);
+	str.Replace(comma, dot);
 	return str.ReleaseBuffer();
 }
 

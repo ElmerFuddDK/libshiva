@@ -252,8 +252,11 @@ SHVStringUTF8 str;
 SHVStringBufferUTF8 SHVStringUTF8C::DoubleToString(double val)
 {
 static const SHVChar nChar[] = { '%', 'g', '\0' };
+static const SHVChar comma[] = { ',', '\0' };
+static const SHVChar dot[] = { '.', '\0' };
 SHVStringUTF8 str;
 	str.Format(nChar, val);
+	str.Replace(comma, dot);
 	return str.ReleaseBuffer();
 }
 
