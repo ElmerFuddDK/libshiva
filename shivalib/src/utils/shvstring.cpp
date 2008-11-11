@@ -87,8 +87,12 @@ double SHVString8C::StrToDouble(const SHVChar* str, SHVChar** ptr)
 {
 double retVal = 0;
 SHVChar firstVal = *str;
+SHVChar* dummyPtr;
 SHVChar* cPtr;
 long i;
+
+	if (!ptr)
+		ptr = &dummyPtr;
 
 	if (firstVal == '-' || firstVal == '+')
 		str++;

@@ -123,8 +123,12 @@ double SHVString16C::StrToDouble(const SHVWChar* str, SHVWChar** ptr)
 {
 double retVal = 0;
 SHVWChar firstVal = *str;
+SHVWChar* dummyPtr;
 SHVWChar* cPtr;
 long i;
+
+	if (!ptr)
+		ptr = &dummyPtr;
 
 	if (firstVal == '-' || firstVal == '+')
 		str++;
