@@ -85,7 +85,7 @@ friend class SHVDataRowListSQLite;
 	RowValues* ColumnData;
 	SHVDataRowList* Owner;
 	int RowState;
-	int OrgRowState;
+	bool changed;
 };
 typedef SHVRefObjectContainer<SHVDataRowImpl> SHVDataRowImplRef;
 
@@ -95,6 +95,7 @@ typedef SHVRefObjectContainer<SHVDataRowImpl> SHVDataRowImplRef;
  *************************************/
 void SHVDataRowImpl::SetChanged()
 {
+	changed = true;
 	if (RowState != SHVDataRow::RowStateAdding)
 		RowState = SHVDataRow::RowStateChanging;
 }
