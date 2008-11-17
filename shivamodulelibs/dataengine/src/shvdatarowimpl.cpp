@@ -39,7 +39,7 @@
 /*************************************
  * Constructors
  *************************************/
-SHVDataRowImpl::SHVDataRowImpl(const SHVDataRowC* copyrow, SHVDataRowList* owner)
+SHVDataRowImpl::SHVDataRowImpl(const SHVDataRowC* copyrow, SHVDataRowList* owner): changed(false)
 {
 SHVDataStructCRef st = (SHVDataStructC*) owner->GetStruct();
 ColumnData = new RowValues[st->GetColumnCount()];
@@ -77,7 +77,7 @@ ColumnData = new RowValues[st->GetColumnCount()];
 	RowState = SHVDataRow::RowStateUnchanged;
 }
 
-SHVDataRowImpl::SHVDataRowImpl(SHVDataRowList* owner)
+SHVDataRowImpl::SHVDataRowImpl(SHVDataRowList* owner): changed(false)
 {
 SHVDataStructCRef st = (SHVDataStructC*) owner->GetStruct();
 ColumnData = new RowValues[st->GetColumnCount()];
@@ -263,16 +263,7 @@ SHVBool retVal(RowValid());
  *************************************/
 SHVBool SHVDataRowImpl::HasChanges()
 {
-SHVDataStructCRef st = (SHVDataStructC *) Owner->GetStruct();
-bool hasChanges = false;
-	for (size_t i = 0; i < st->GetColumnCount() && !hasChanges; i++)
-	{
-		hasChanges = ColumnData[i].OrgValue.GetDataType() != SHVDataVariant::TypeUndefined;
-	}
-	if (!hasChanges && RowState != SHVDataRow::RowStateAdding)
-		RowState = SHVDataRow::RowStateUnchanged;
-
-	return hasChanges;
+	return changed;
 }
 
 /*************************************
