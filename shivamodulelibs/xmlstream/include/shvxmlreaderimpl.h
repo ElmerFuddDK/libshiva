@@ -3,6 +3,7 @@
 
 #include "../../../include/modules/xmlstream/shvxmlreader.h"
 #include "../src/expat/expat.h"
+#include "../../../include/utils/shvbufferstream.h"
 
 //-=========================================================================================================
 /// SHVXmlReaderImpl class - Implementation of an simple xml parser
@@ -61,7 +62,8 @@ private:
 	SHVXmlReaderCallbackBase* ValueCallback;
 	SHVXmlReader::ParserEncoding Encoding;
 	size_t BufferSize;
-	SHVString ValueCol;
+	SHVBufferStreamRef ValueCol;
+	size_t ValuePos;
 //  Expat specific data
 	const XML_Char **Attributes;
 	const XML_Char *Value;
