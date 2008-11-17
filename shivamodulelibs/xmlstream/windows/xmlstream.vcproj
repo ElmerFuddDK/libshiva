@@ -414,6 +414,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\include\utils\shvbufferstream.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\include\utils\shvstreamin.h"
 					>
 				</File>

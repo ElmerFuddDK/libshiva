@@ -492,15 +492,15 @@ size_t len;
 			case '"':
 				Streamout.WriteString16(quot);
 				break;
-			case 9:
-			case 10:
-			case 13:
-				Streamout.WriteString16(andhash);
-				Streamout.WriteString16(SHVString16::LongToString(text.GetBufferConst()[strpos]).GetBufferConst());
-				Streamout.WriteChar16(';');
-				break;
 			default:
-				Streamout.WriteChar16(text.GetBufferConst()[strpos]);
+				if (text.GetBufferConst()[strpos] < 32)
+				{
+					Streamout.WriteString16(andhash);
+					Streamout.WriteString16(SHVString16::LongToString(text.GetBufferConst()[strpos]).GetBufferConst());
+					Streamout.WriteChar16(';');
+				}
+				else
+					Streamout.WriteChar16(text.GetBufferConst()[strpos]);
 			}
 		}
 		break;
@@ -534,15 +534,15 @@ size_t len;
 			case '"':
 			    Streamout.WriteString8("&quot;");
 			    break;
-			case 9:
-			case 10:
-			case 13:
-				Streamout.WriteString8("&#");
-				Streamout.WriteString8(SHVStringUTF8::LongToString(text.GetBufferConst()[strpos]).GetBufferConst());
-				Streamout.WriteChar8(';');
-				break;
 			default:
-				Streamout.WriteChar8(text.GetBufferConst()[strpos]);
+				if (text.GetBufferConst()[strpos] < 32)
+				{
+					Streamout.WriteString8("&#");
+					Streamout.WriteString8(SHVStringUTF8::LongToString(text.GetBufferConst()[strpos]).GetBufferConst());
+					Streamout.WriteChar8(';');
+				}
+				else
+					Streamout.WriteChar8(text.GetBufferConst()[strpos]);
 			}
 		}
 		break;
@@ -587,15 +587,15 @@ size_t len;
 			case '"':
 			    Streamout.WriteString8("&quot;");
 			    break;
-			case 9:
-			case 10:
-			case 13:
-				Streamout.WriteString8("&#");
-				Streamout.WriteString8(SHVStringUTF8::LongToString(text.GetBufferConst()[strpos]).GetBufferConst());
-				Streamout.WriteChar8(';');
-				break;
 			default:
-				Streamout.WriteChar8(text.GetBufferConst()[strpos]);
+				if (text.GetBufferConst()[strpos] < 32)
+				{
+					Streamout.WriteString8("&#");
+					Streamout.WriteString8(SHVStringUTF8::LongToString(text.GetBufferConst()[strpos]).GetBufferConst());
+					Streamout.WriteChar8(';');
+				}
+				else
+					Streamout.WriteChar8(text.GetBufferConst()[strpos]);
 			}
 		}
 		break;
