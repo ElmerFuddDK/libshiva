@@ -156,7 +156,7 @@ int SHVRefObject::GetRefCount() { return References; }
  * CreateRef
  *************************************/
 /// Creates a reference, and returns the pointer
-SHVRefObject* SHVRefObject::CreateRef() { References++; return this; }
+SHVRefObject* SHVRefObject::CreateRef() { SHVASSERT(!DeleteInProgress); References++; return this; }
 
 /*************************************
  * ReleaseRef
