@@ -50,7 +50,6 @@ SHVSQLiteStatementImpl::SHVSQLiteStatementImpl(sqlite3_stmt* statement, SHVSQLit
 
 SHVSQLiteStatementImpl::~SHVSQLiteStatementImpl()
 {
-	SHVTHREADCHECK(OwnerThread);
 	if (Statement)
 		sqlite3_finalize(Statement);
 }
