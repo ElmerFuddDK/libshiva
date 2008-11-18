@@ -147,6 +147,7 @@ size_t p = 0;
 	return str.ReleaseBuffer();
 #else
 SHVString8 str;
+size_t p = 0;
 	if (!ValueCol.IsNull())
 		ValueCol->ReadString8(str, ValueCol->GetSize() /sizeof(SHVTChar), p);
 	return str.ToStr16();
@@ -208,6 +209,7 @@ size_t p = 0;
 	return str.ToStr8();
 #else
 SHVString8 str;
+size_t p = 0;
 	if (!ValueCol.IsNull())
 		ValueCol->ReadString8(str, ValueCol->GetSize() /sizeof(SHVTChar), p);
 	return str.ReleaseBuffer();
