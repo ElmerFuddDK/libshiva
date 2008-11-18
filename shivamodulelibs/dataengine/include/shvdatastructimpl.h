@@ -72,6 +72,7 @@ public:
 	virtual const SHVDataRowKey* GetPrimaryIndex() const;
 	virtual void SetPrimaryIndex(const SHVDataRowKey* key);
 	virtual const SHVDataRowKey* GetIndex(size_t IdxID) const;
+	virtual size_t FindIndex(const SHVDataRowKey* key) const;
 	virtual const size_t IndexCount() const;
 	virtual SHVDataRowKey* CreateIndexKey() const;
 	virtual size_t AddIndex(SHVDataRowKey* index);

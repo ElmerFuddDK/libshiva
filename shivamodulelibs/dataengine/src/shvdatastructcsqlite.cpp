@@ -161,6 +161,14 @@ const SHVDataRowKey* SHVDataStructCSQLite::GetIndex(size_t IdxID) const
 }
 
 /*************************************
+ * FindIndex
+ *************************************/
+size_t SHVDataStructCSQLite::FindIndex(const SHVDataRowKey* key) const
+{
+	return Struct->FindIndex(key);
+}
+
+/*************************************
  * IndexCount
  *************************************/
 const size_t SHVDataStructCSQLite::IndexCount() const

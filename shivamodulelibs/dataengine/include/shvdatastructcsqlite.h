@@ -31,6 +31,7 @@ public:
 	virtual size_t GetColumnCount() const;
 	virtual const SHVDataRowKey* GetPrimaryIndex() const;
 	virtual const SHVDataRowKey* GetIndex(size_t IdxID) const;
+	virtual size_t FindIndex(const SHVDataRowKey* key) const;
 	virtual const size_t IndexCount() const;
 	virtual SHVBool IsEqual(const SHVDataStructC* dataStruct) const;
 	virtual SHVBool IsIndexesEqual(const SHVDataStructC* dataStruct) const;

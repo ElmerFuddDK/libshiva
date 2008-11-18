@@ -364,6 +364,22 @@ const SHVDataRowKey* SHVDataStructImpl::GetIndex(size_t IdxID) const
 }
 
 /*************************************
+ * FindIndex
+ *************************************/
+size_t SHVDataStructImpl::FindIndex(const SHVDataRowKey* key) const
+{
+bool Exists = false;
+size_t retVal;
+	for (retVal = 0; retVal < IndexCount() && !Exists; retVal++)
+	{
+		Exists = GetIndex(retVal)->KeyDefEquals(key);
+		if (Exists)
+			break;
+	}
+	return Exists ? retVal : SIZE_T_MAX;
+}
+
+/*************************************
  * IndexCount
  *************************************/
 const size_t SHVDataStructImpl::IndexCount() const
