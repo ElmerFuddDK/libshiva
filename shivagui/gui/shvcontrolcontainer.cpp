@@ -114,7 +114,6 @@ SHVBool SHVControlContainer::Close()
 {
 SHVBool retVal;
 SHVGUIManagerImpl* manager = (SHVGUIManagerImpl*)GetManager();
-SHVControlContainerRef self = this; // ensure the validity of this object throughout this function
 
 	SHVASSERT(GetImplementor()->GetSubType(this) == SHVControlContainer::SubTypeMainWindow || 
 		GetImplementor()->GetSubType(this) == SHVControlContainer::SubTypeTabPage || 
