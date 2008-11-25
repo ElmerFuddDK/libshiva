@@ -342,14 +342,14 @@ const SHVDataStructC& st = *row->GetStruct();
 	}
 	if (replaceIfDuplicate)
 	{
-		sql.Format("insert or fail into %s (%s) values(%s)",
+		sql.Format("insert or replace into %s (%s) values(%s)",
 			row->GetStruct()->GetTableName().GetSafeBuffer(),
 			cols.GetSafeBuffer(),
 			vals.GetSafeBuffer());
 	}
 	else
 	{
-		sql.Format("insert or replace into %s (%s) values(%s)",
+		sql.Format("insert or fail into %s (%s) values(%s)",
 			row->GetStruct()->GetTableName().GetSafeBuffer(),
 			cols.GetSafeBuffer(),
 			vals.GetSafeBuffer());
