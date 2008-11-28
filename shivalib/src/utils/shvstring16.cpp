@@ -290,7 +290,7 @@ SHVWChar* charBuf = Buffer;
 }
 
 /*************************************
- * ToIn64
+ * ToInt64
  *************************************/
 SHVInt64Val SHVString16C::ToInt64(SHVWChar** endChar) const
 {
@@ -303,7 +303,7 @@ SHVWChar* charBuf = Buffer;
 }
 
 /*************************************
- * ToIn64
+ * ToDouble
  *************************************/
 double SHVString16C::ToDouble(SHVWChar** endChar) const
 {
