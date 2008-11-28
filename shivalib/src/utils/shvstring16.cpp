@@ -162,7 +162,7 @@ long i;
 	if (**ptr == 'e' || **ptr == 'E')
 	{
 		(*ptr)++;
-		retVal *= pow(10, (double)StrToL(*ptr,ptr,10) );
+		retVal *= pow(10.0, (double)StrToL(*ptr,ptr,10) );
 	}
 
 	return retVal;
