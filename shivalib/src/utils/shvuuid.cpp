@@ -152,7 +152,6 @@ SHVUUID::ID SHVUUID::FromString8(const SHVString8C uuid)
 {
 SHVUUID::ID retVal(Null());
 uuid_t* id = (uuid_t*)&retVal.Bytes;
-int mode=0;
 size_t count = uuid.GetLength();
 bool ok = ( count == 36);
 const SHVChar* str = uuid.GetSafeBuffer();
@@ -208,6 +207,7 @@ SHVUUID::ID SHVUUID::FromString16(const SHVString16C uuid)
 	return FromString8(uuid.ToStr8()); // lazy mans solution
 }
 
+///\cond INTERNAL
 /*************************************
  * CharToInt
  *************************************/
@@ -224,6 +224,7 @@ int SHVUUID::CharToInt(bool& ok, const char ch)
 
 	return 0;
 }
+///\endcond
 
 
 //=========================================================================================================
