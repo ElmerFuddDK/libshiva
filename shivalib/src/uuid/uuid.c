@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #ifndef _WIN32_WCE
 # include <time.h>
-# ifndef _WINDOWS_
+# if !defined(_WINDOWS_) && !defined(_WINDOWS)
 #  include <arpa/inet.h>
 # endif
 #else
