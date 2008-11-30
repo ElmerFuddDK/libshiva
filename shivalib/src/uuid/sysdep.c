@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include "sysdep.h"
 #include "globals.h"
+#include <string.h>
+
 
 /* system dependent call to get IEEE node ID.
    This sample implementation generates a random node ID. */
@@ -134,6 +136,8 @@ void get_random_info(char seed[16])
 
 #else
 
+#include <unistd.h>
+
 void get_system_time(uuid_time_t *uuid_time)
 {
     struct timeval tp;
@@ -143,8 +147,8 @@ void get_system_time(uuid_time_t *uuid_time)
     /* Offset between UUID formatted times and Unix formatted times.
        UUID UTC base time is October 15, 1582.
        Unix base time is January 1, 1970.*/
-    *uuid_time = ((unsigned64)tp.tv_sec * 10000000)
-        + ((unsigned64)tp.tv_usec * 10)
+    *uuid_time = ((unsigned64_t)tp.tv_sec * 10000000)
+        + ((unsigned64_t)tp.tv_usec * 10)
         + I64(0x01B21DD213814000);
 }
 
@@ -162,8 +166,8 @@ void get_random_info(char seed[16])
     sysinfo(&r.s);
     gettimeofday(&r.t, (struct timezone *)0);
     gethostname(r.hostname, 256);
-    MD5Update(&c, &r, sizeof r);
-    MD5Final(seed, &c);
+	MD5Update(&c, (unsigned char*)&r, sizeof r);
+	MD5Final((unsigned char*)seed, &c);
 }
 
 #endif

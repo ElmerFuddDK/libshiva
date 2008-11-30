@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #ifndef _WIN32_WCE
 # include <time.h>
+# ifndef _WINDOWS_
+#  include <arpa/inet.h>
+# endif
 #else
 # include <winsock.h>
 #endif
@@ -177,6 +180,8 @@ void uuid_create_md5_from_name(void* globals, uuid_t *uuid, uuid_t nsid, void *n
     MD5_CTX c;
     unsigned char hash[16];
     uuid_t net_nsid;
+
+    (void) globals; // unused parameter
 
     /* put name space ID in network byte order so it hashes the same
        no matter what endian machine we're on */
