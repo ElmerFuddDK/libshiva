@@ -128,11 +128,6 @@ typedef SHVRefObjectContainer<SHVSocket> SHVSocketRef;
  \brief Returns a buffer with data received, or null if none
  */
 
-// HasPendingReceive
-/** \fn SHVBool SHVSocket::HasPendingReceive()
- \brief Returns true if an assigned receive buffer is pending
- */
-
 
 /*************************************
  * GetState
