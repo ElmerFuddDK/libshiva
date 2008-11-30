@@ -150,7 +150,7 @@ double foo()
 double SHVMath::Eval(const SHVStringC str)
 {
 SHVString err;
-const SHVTChar* cstr(str.GetSafeBuffer());
+const SHVTChar* cstr = str.GetSafeBuffer();
 	return shvmath_doeval(cstr,0,err);
 }
 
@@ -166,7 +166,7 @@ const SHVTChar* cstr(str.GetSafeBuffer());
  */
 double SHVMath::Eval(const SHVStringC str, SHVString& err)
 {
-const SHVTChar* cstr(str.GetSafeBuffer());
+const SHVTChar* cstr = str.GetSafeBuffer();
 	err = NULL;
 	return shvmath_doeval(cstr,0,err);
 }
@@ -222,7 +222,7 @@ double SHVMath::EvalListErr(const SHVStringC formatStr, SHVString& err, ...)
 void shvmath_trim(const SHVTChar*& str)
 {
 static const SHVTChar charTrimStr[] = {' ','\t','\0'};
-SHVString8C trimStr(charTrimStr);
+SHVStringC trimStr(charTrimStr);
 	
 	while (*str != '\0')
 	{
@@ -257,7 +257,7 @@ SHVStringBuffer shvmath_gettoken(const SHVTChar*& str)
 {
 const SHVTChar* start;
 static const SHVTChar charStopStr[] = {' ','(',')','+','-','*','/','^','\t','\r','\n','\0'};
-SHVString8C stopStr(charStopStr);
+SHVStringC stopStr(charStopStr);
 	
 	shvmath_trim(str);
 	start = str;
