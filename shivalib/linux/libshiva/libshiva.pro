@@ -68,7 +68,10 @@ HEADERS += ../../../include/platformspc.h \
            ../../../include/frameworkimpl/shvmodulelistimpl.h \
            ../../../include/frameworkimpl/shvmoduleloaderimpl.h \
            ../../../include/frameworkimpl/shvtimerimpl.h  \
-           ../../../include/frameworkimpl/shvmainthreadeventdispatcherconsole.h
+           ../../../include/frameworkimpl/shvmainthreadeventdispatcherconsole.h \
+           ../../../include/utils/shvmath.h \
+           ../../../include/utils/shvuuid.h \
+           ../../../include/utils/shvmd5sum.h
 SOURCES += ../../src/framework/shvevent.cpp \
            ../../src/framework/shveventemitter.cpp \
            ../../src/framework/shveventqueuelist.cpp \
@@ -110,15 +113,23 @@ SOURCES += ../../src/framework/shvevent.cpp \
            ../../src/utils/shvhashtablebase.cpp \
            ../../src/utils/shvlistbase.cpp  \
            ../../src/frameworkimpl/shvmainthreadeventdispatcherconsole.cpp \
- ../../src/utils/shvbufferstream.cpp \
- ../../src/utils/shvstreambufferin.cpp \
- ../../src/utils/shvstreambufferout.cpp
-LIBS += -lrt \
-        -lunicode 
+           ../../src/utils/shvbufferstream.cpp \
+           ../../src/utils/shvstreambufferin.cpp \
+           ../../src/utils/shvstreambufferout.cpp \
+           ../../src/utils/shvmath.cpp \
+           ../../src/uuid/sysdep.c \
+           ../../src/uuid/uuid.c \
+           ../../src/utils/shvuuid.cpp \
+           ../../src/md5/md5.c \
+           ../../src/utils/shvmd5sum.cpp
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
-DEFINES = __SHVSTRING_INCLUDE_UNICODE 
+DEFINES = __SHVSTRING_INCLUDE_UNICODE
 TARGET = shiva 
 CONFIG = debug \
          warn_on \
          dll 
 TEMPLATE = lib 
+LIBS += -lm \
+  -lrt \
+  -lunicode
+
