@@ -27,7 +27,7 @@ public:
 
 	// defines
 	enum { Infinite = -1 };
-	enum { InvalidThreadID = -1 };  ///<\todo investigate invalid thread ID on various platforms
+	enum { InvalidThreadID = SIZE_T_MAX };  ///<\todo investigate invalid thread ID on various platforms
 
 
 	SHVMutexBase();
