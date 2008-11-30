@@ -343,6 +343,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\utils\shvmath.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\utils\shvmd5sum.cpp"
 					>
 				</File>
@@ -685,6 +689,10 @@
 					</File>
 					<File
 						RelativePath="..\..\include\utils\shvlistbase.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\utils\shvmath.h"
 						>
 					</File>
 					<File

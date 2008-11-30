@@ -4334,6 +4334,89 @@ DEP_CPP_SHVLI=\
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\utils\shvmath.cpp
+
+!IF  "$(CFG)" == "libshiva - Win32 (WCE ARM) Release"
+
+DEP_CPP_SHVMAT=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvmath.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\src\utils\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE ARM) Debug"
+
+DEP_CPP_SHVMAT=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvmath.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\src\utils\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE x86) Release"
+
+DEP_CPP_SHVMAT=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvmath.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\src\utils\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE x86) Debug"
+
+DEP_CPP_SHVMAT=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvmath.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\src\utils\stdafx.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\utils\shvmd5sum.cpp
 
 !IF  "$(CFG)" == "libshiva - Win32 (WCE ARM) Release"
@@ -5676,6 +5759,10 @@ SOURCE=..\..\include\utils\shvlist.h
 # Begin Source File
 
 SOURCE=..\..\include\utils\shvlistbase.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\utils\shvmath.h
 # End Source File
 # Begin Source File
 
