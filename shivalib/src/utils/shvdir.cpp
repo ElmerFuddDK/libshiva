@@ -37,6 +37,9 @@
 # define wremove _wremove
 # define wfopen _wfopen
 # include <shellapi.h>
+# ifndef INVALID_FILE_ATTRIBUTES
+#  define INVALID_FILE_ATTRIBUTES ((DWORD)-1)
+# endif
 #else
 # include <sys/types.h>
 # include <sys/stat.h>
