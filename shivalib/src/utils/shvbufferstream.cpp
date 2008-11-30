@@ -37,7 +37,7 @@
 /*************************************
  * Constructor
  *************************************/
-SHVBufferStream::SHVBufferStream(size_t chunkSize): ChunkSize(chunkSize), TotalBufferSize(0)
+SHVBufferStream::SHVBufferStream(size_t chunkSize): TotalBufferSize(0), ChunkSize(chunkSize)
 {
 }
 
@@ -115,6 +115,11 @@ size_t inBufPos = 0;
 SHVBool SHVBufferStream::SetBufferSize(size_t newSize, size_t toCopyFromOld)
 {
 size_t neededBuffers = (newSize / ChunkSize) + (newSize % ChunkSize ? 1 : 0);
+
+	// toCopyFromOld is not supported in BufferStream at this time
+	SHVUNUSED_PARAM(toCopyFromOld);
+	SHVASSERT(toCopyFromOld == 0);
+
 	while (neededBuffers < Buffers.GetCount())
 	{
 		Buffers.Remove(Buffers.GetCount() - 1);
