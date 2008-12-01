@@ -252,6 +252,82 @@ public:
 	}
 };
 
+// =============================================== Unit test ========================================
+class UnitTest: public TestIt
+{
+public:
+	inline UnitTest(SHVDataEngine* dataEngine, SHVTestResult* result, const SHVStringC& testName):
+		TestIt(dataEngine, result, testName) 
+		{
+		}
+	virtual SHVBool PerformTest();
+};
+
+SHVBool UnitTest::PerformTest()
+{
+SHVDataStructRef unitTable = DataEngine->CreateStruct();
+SHVDataRowKeyRef key;
+SHVDataSessionRef DataSession;
+	DataSession = DataEngine->CreateSession();
+	DataSession->StartEdit();
+
+	unitTable->SetTableName("unittest");
+	unitTable->Add("key", SHVDataVariant::TypeInt);
+	unitTable->Add("fstring", SHVDataVariant::TypeString);
+	unitTable->Add("fbool", SHVDataVariant::TypeBool);
+	unitTable->Add("fint", SHVDataVariant::TypeInt);
+	unitTable->Add("fint64", SHVDataVariant::TypeInt64);
+	unitTable->Add("fdouble", SHVDataVariant::TypeDouble);
+	unitTable->Add("ftime", SHVDataVariant::TypeTime);
+	unitTable->SetIsMultiInstance(true);
+	key = DataEngine->CreateKey();
+	key->AddKey("key", false);
+	unitTable->SetPrimaryIndex(key);
+	if (DataEngine->RegisterTable(unitTable, DataSession) && 
+		DataEngine->RegisterAlias("unittest", "unittest1", true, DataSession))
+	{
+	SHVDataRowListRef rows = DataSession->GetRows("unittest1", _T(""), 0);
+	SHVDataRowListRef copied;
+	SHVDataRowRef r;
+	SHVTime t;
+		t.SetNow();
+		r = rows->AddRow();
+		r->SetInt(0, 1);
+		r->SetString(1, _T("test 1"));
+		r->SetBool(2, SHVBool::True);
+		r->SetInt(3, 1);
+		r->SetInt64(4, 0x0000100000000001);
+		r->SetDouble(5, 0.15);
+		r->SetTime(6, t);
+		r->AcceptChanges();
+
+		t.AddSeconds(10);
+		r = rows->AddRow();
+		r->SetInt(0, 2);
+		r->SetString(1, _T("test 2"));
+		r->SetBool(2, SHVBool::True);
+		r->SetInt(3, 2);
+		r->SetInt64(4, 0x0000100000000002);
+		r->SetDouble(5, 0.30);
+		r->SetTime(6, t);
+		r->AcceptChanges();
+
+		copied = DataSession->CopyAlias("unittest1", "unittest2");
+		DumpData(Result, rows);
+		DumpData(Result, copied);
+		rows = NULL;
+		copied = NULL;
+		DataEngine->UnregisterAlias("unittest1");
+		DataEngine->UnregisterAlias("unittest2");
+		DataSession->Commit();
+		return SHVBool::True;
+	}
+	else
+		DataSession->Rollback();
+	return SHVBool::False;
+}
+
+
 // ==================================================== Test ========================================
 
 class TestShareEx: public TestThread
@@ -494,6 +570,7 @@ void SHVDataEngineTest::PerformTest(SHVTestResult* result)
 SHVBool ok;
 SHVDataStructRef Struct = DataEngine->CreateStruct();
 SHVDataRowKeyRef Key;
+/*
 TestThreadServer testServer(DataEngine, result, _T("TestSharedExclusiveLocks"));
 TestShareEx ex1(_T("T1"), 10);
 TestShareEx ex2(_T("T2"), 10);
@@ -545,6 +622,9 @@ TestNotMultiInstance tm2(_T("T7"), 10, 100);
 	testServer.AddTest(tm2);
 
 	*result = testServer.PerformTest();
+*/
+UnitTest t(DataEngine, result, _T("Unit test"));
+	t.PerformTest();
 }
 
 
