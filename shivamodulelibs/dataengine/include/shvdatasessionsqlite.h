@@ -20,6 +20,7 @@ public:
 	virtual SHVDataRowListC* Query(const SHVStringC& query, const SHVDataRowKey* sortKey);
 	virtual SHVDataRowListC* QueryTable(const SHVString8C& tableName, const SHVStringC& condition, size_t index);
 	virtual SHVDataRowListC* QueryTableIndexed(const SHVString8C& tableName, const SHVStringC& condition, size_t index);
+	virtual SHVDataRowList* CopyAlias(const SHVString8C& sourceAlias, const SHVString8C& destAlias);
 	virtual SHVBool ExecuteNonQuery(const SHVStringC& sql);
 
 	virtual void SubscribeDataChange(SHVEventSubscriberBase* sub);

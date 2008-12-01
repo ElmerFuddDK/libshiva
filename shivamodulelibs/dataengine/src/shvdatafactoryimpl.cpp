@@ -219,7 +219,7 @@ int id = -1;
 				{
 					if (id != -1)
 					{
-						SQLite->ExecuteUTF8(retVal, SHVStringUTF8C::Format("delete from %s where shv_alias=%d", found->GetTableName().GetSafeBuffer(), id), rest);
+						SQLite->ExecuteUTF8(retVal, SHVStringUTF8C::Format("delete from %s where shv_alias=%d", found->GetTableName().GetSafeBuffer(), id), rest)->ValidateRefCount();
 						if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 							retVal = SHVBool::True;
 					}

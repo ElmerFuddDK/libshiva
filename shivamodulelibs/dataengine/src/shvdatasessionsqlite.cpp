@@ -203,6 +203,54 @@ SHVDataRowListC* retVal;
 	}
 	return retVal;
 }
+/*************************************
+ * QueryTableIndexed
+ *************************************/
+SHVDataRowList* SHVDataSessionSQLite::CopyAlias(const SHVString8C& sourceAlias, const SHVString8C& destAlias)
+{
+	if (StartEdit())
+	{
+	const SHVDataStructC* sourceStruct = Factory->FindStruct(sourceAlias);
+	int sourceAliasID;
+	int destAliasID;
+	SHVBool retVal = SHVBool::True;
+	SHVStringSQLite rest("");
+	SHVSQLiteStatementRef statement;
+
+		if (sourceStruct)
+		{
+			if (!Factory->FindStruct(destAlias))
+			{
+				retVal = Factory->RegisterAlias(sourceStruct->GetTableName(), destAlias, true, this);
+			}
+		}
+		else
+			retVal = SHVBool::False;
+		if (!retVal)
+		{
+			Rollback();
+			return NULL;
+		}
+		sourceAliasID = GetAliasID(sourceAlias);
+		destAliasID = GetAliasID(destAlias);
+		SQLite->ExecuteUTF8(retVal, SHVStringUTF8C::Format("delete from %s where shv_alias=%d", sourceStruct->GetTableName().GetSafeBuffer(), destAliasID), rest)->ValidateRefCount();
+		if (retVal.GetError() != SHVSQLiteWrapper::SQLite_DONE)
+		{
+			Rollback();
+			return NULL;
+		}
+		SQLite->ExecuteUTF8(retVal, SHVStringUTF8C::Format("insert into %s select %d, * from %s", sourceStruct->GetTableName().GetSafeBuffer(), destAliasID, sourceAlias.GetSafeBuffer()), rest)->ValidateRefCount();
+		if (retVal.GetError() != SHVSQLiteWrapper::SQLite_DONE)
+		{
+			Rollback();
+			return NULL;
+		}
+		Commit();
+	}
+	else
+		return NULL;
+	return this->GetRows(destAlias, _T(""), 0);
+}
 
 /*************************************
  * ExecuteNonQuery
