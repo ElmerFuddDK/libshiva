@@ -61,4 +61,7 @@ Compile "gtk gui"      "./shivagui/gtk/linux/guitester.pro"
 Compile "mysql"        "./shivamysql/linux/linux.pro"
 Compile "socketserver" "./shivamodulelibs/socketserver/linux/socketserver.pro"
 Compile "xmlstream"    "./shivamodulelibs/xmlstream/linux/xmlstream.pro"
+Compile "shivasqlite"  "./shivasqlite/linux/shivasqlite/shivasqlite.pro"
+Compile "dataengine"   "./shivamodulelibs/dataengine/linux/dataengine.pro"
+
 #Compile ""
