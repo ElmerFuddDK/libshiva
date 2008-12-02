@@ -1,13 +1,19 @@
-#include "Shiva/include/platformspc.h"
-#include "Shiva/include/shvversion.h"
-#include "Shiva/include/utils/shvdll.h"
 
-#include "Shiva/include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
-#include "Shiva/include/framework/shvmodulefactory.h"
+#include "../../../include/platformspc.h"
+#include "../../../include/shvversion.h"
+#include "../../../include/utils/shvdll.h"
 
+#include "../../../include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
+#include "../../../include/framework/shvmodulefactory.h"
+#include "../../../include/sqlite/sqlitestatement.h"
+#include "../../../include/sqlite/sqlitewrapper.h"
+#include "../../../include/sqlite/shvstringsqlite.h"
 
 class SHVTest : public SHVModule
 {
+private:
+	SHVSQLiteWrapperRef Connection;
+	SHVDll SqliteDLL;
 public:
 
 	SHVTest(SHVModuleList& modules) : SHVModule(modules,"Test")
@@ -21,14 +27,20 @@ public:
 		Modules.EventSubscribe(SHVModuleList::EventEndRegister, new SHVEventSubscriber(this));
 		Modules.EventSubscribe(SHVModuleList::EventClosing, new SHVEventSubscriber(this));
 		Modules.EventSubscribe(__EVENT_GLOBAL_STDIN, new SHVEventSubscriber(this));
-	
+		if (!SqliteDLL.Load(SqliteDLL.CreateLibFileName(_T("shivasqlite"))))
+		{
+			Modules.AddStartupError(_T("Could not load shivasqlite"));
+			return false;
+		}
+		Connection = (SHVSQLiteWrapper*) SqliteDLL.CreateObjectInt(&Modules, SHVDll::ClassTypeUser);
+		Connection->Open(_T("test.sqlite"));
 		return SHVModule::Register();
 	}
 
 	void PostRegister()
 	{
 	}
-
+	
 	void OnEvent(SHVEvent* event)
 	{
 		if (SHVEvent::Equals(event,SHVModuleList::EventEndRegister))
@@ -45,23 +57,43 @@ public:
 			}
 			else
 			{
-				printf("Unknown command\n");
+			SHVBool ok;
+			SHVStringSQLite rest("");
+			SHVSQLiteStatementRef statement = Connection->PrepareUTF8(ok, str.GetSafeBuffer(), rest);
+				if (statement.IsNull() || (ok.GetError() != SHVSQLiteWrapper::SQLite_OK && ok.GetError() != SHVSQLiteWrapper::SQLite_ROW))
+					printf("Not good\n");
+				else
+				{
+					printf("Good\n");
+					while (statement->NextResult().GetError() == SHVSQLiteWrapper::SQLite_ROW)
+					{
+						printf("Row: ");
+						for (int i = 0; i < statement->GetColumnCount(); i++)
+						{
+						SHVStringSQLite name("");
+						SHVStringSQLite val("");
+						int len;
+							statement->GetColumnNameUTF8(name, i);
+							statement->GetStringUTF8(val, len, i);
+							printf("%s = %s ", name.GetSafeBuffer(), val.GetSafeBuffer());
+						}
+						printf("\n");
+					}
+				}
 			}
 		}
 	}
 
-	void Unregister()
+	virtual void Unregister()
 	{
+		Connection = NULL;
 		printf("In unregister\n");
 		SHVModule::Unregister();
 	}
 };
 
-
 int main(int argc, char *argv[])
 {
-SHVDll sedtemplatesedlib;
-	
 	SHVUNUSED_PARAM(argc);
 	SHVUNUSED_PARAM(argv);
 
@@ -69,18 +101,10 @@ SHVDll sedtemplatesedlib;
 	{
 		fprintf(stderr,"WRONG SHIVA VERSION\n");
 	}
-	else if (!sedtemplatesedlib.Load(sedtemplatesedlib.CreateLibFileName(_T("SEDTemplateSED"))))
-	{
-		fprintf(stderr,"Could not load SEDTemplateSED\n");
-	}
 	else
 	{
 	SHVMainThreadEventQueue mainqueue(new SHVMainThreadEventDispatcherConsole());
-	SHVModuleFactory* factory = (SHVModuleFactory*)sedtemplatesedlib.CreateObjectInt(&mainqueue.GetModuleList(),SHVDll::ClassTypeModuleFactory);
-
 		mainqueue.GetModuleList().AddModule(new SHVTest(mainqueue.GetModuleList()));
-		factory->ResolveModules(__MODULESYMBOL_DEFAULTS);
-
 		return mainqueue.Run().GetError();
 	}
 	
