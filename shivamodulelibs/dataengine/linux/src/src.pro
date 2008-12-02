@@ -3,14 +3,19 @@
 # Subdir relative project main directory: ./src
 # Target is an application:  ../bin/sedtemplatesed
 
-LIBS += -L../../../../../Libraries/shiva/shivalib/linux/libshiva \
-        -ldl \
-        -lshiva 
 INCLUDEPATH += ../../ 
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
-DEFINES = __SHVSTRING_INCLUDE_UNICODE 
-TARGET = ../bin/sedtemplatesed 
+DEFINES = __SHVSTRING_INCLUDE_UNICODE
 CONFIG += release \
           warn_on 
 TEMPLATE = app 
-SOURCES += sedtemplatesed.cpp 
+SOURCES += dataengine.cpp
+
+LIBS += -L../../../../shivalib/linux/libshiva/ \
+  -ldl \
+  -lshiva
+
+TARGET = tester
+
+DESTDIR = ../bin
+

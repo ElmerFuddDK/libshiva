@@ -1,7 +1,7 @@
 #ifndef __SHIVA_MODULEFACTORY_H
 #define __SHIVA_MODULEFACTORY_H
 
-#include "Shiva/include/framework/shvmodulefactory.h"
+#include "../../../../include/framework/shvmodulefactory.h"
 
 
 //-=========================================================================================================

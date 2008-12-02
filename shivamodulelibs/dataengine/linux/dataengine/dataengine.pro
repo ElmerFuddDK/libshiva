@@ -3,16 +3,60 @@
 # Subdir relative project main directory: ./dataengine
 # Target is a library:  
 
-LIBS += -L../../../../../Libraries/shiva/shivalib/linux/libshiva \
-        -lshiva \
-        -ldl 
 INCLUDEPATH += ../../ 
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
-DEFINES = __SHVSTRING_INCLUDE_UNICODE 
+DEFINES = __SHVSTRING_INCLUDE_UNICODE
 CONFIG = debug \
          warn_on \
          dll 
 TEMPLATE = lib 
-HEADERS += shvdataenginefactory.h 
+HEADERS += ../../../../include/modules/dataengine/shvdataengine.h \
+ ../../../../include/modules/dataengine/shvdatafactory.h \
+ ../../../../include/modules/dataengine/shvdatarowc.h \
+ ../../../../include/modules/dataengine/shvdatarowchangecache.h \
+ ../../../../include/modules/dataengine/shvdatarow.h \
+ ../../../../include/modules/dataengine/shvdatarowkey.h \
+ ../../../../include/modules/dataengine/shvdatarowlistc.h \
+ ../../../../include/modules/dataengine/shvdatarowlist.h \
+ ../../../../include/modules/dataengine/shvdatasession.h \
+ ../../../../include/modules/dataengine/shvdatastructc.h \
+ ../../../../include/modules/dataengine/shvdatastruct.h \
+ ../../../../include/modules/dataengine/shvdatavariant.h \
+ ../../include/shvdataenginefactory.h \
+ ../../include/shvdataengineimpl.h \
+ ../../include/shvdatafactoryimpl.h \
+ ../../include/shvdatarowchangecacheimpl.h \
+ ../../include/shvdatarowcsqlite.h \
+ ../../include/shvdatarowimpl.h \
+ ../../include/shvdatarowkeyimpl.h \
+ ../../include/shvdatarowlistcindexed.h \
+ ../../include/shvdatarowlistcsqlite.h \
+ ../../include/shvdatarowlistsqlite.h \
+ ../../include/shvdatasessionsqlite.h \
+ ../../include/shvdatastructcsqlite.h \
+ ../../include/shvdatastructimpl.h \
+ ../../include/shvdatavariantimpl.h
 SOURCES += dataengine.cpp \
-           shvdataenginefactory.cpp 
+           ../../src/shvdataenginefactory.cpp \
+ ../../src/shvdataengineimpl.cpp \
+ ../../src/shvdatafactoryimpl.cpp \
+ ../../src/shvdatarowchangecacheimpl.cpp \
+ ../../src/shvdatarowcsqlite.cpp \
+ ../../src/shvdatarowimpl.cpp \
+ ../../src/shvdatarowkeyimpl.cpp \
+ ../../src/shvdatarowlistcindexed.cpp \
+ ../../src/shvdatarowlistcsqlite.cpp \
+ ../../src/shvdatarowlistsqlite.cpp \
+ ../../src/shvdatasessionsqlite.cpp \
+ ../../src/shvdatastructcsqlite.cpp \
+ ../../src/shvdatastructimpl.cpp \
+ ../../src/shvdatavariantimpl.cpp
+
+LIBS += -L../../../../shivalib/linux/libshiva/ \
+  -lshiva \
+  -ldl
+TARGET = dataengine
+
+
+DESTDIR = ../bin
+

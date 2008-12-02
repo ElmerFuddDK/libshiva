@@ -2,11 +2,11 @@
 //
 
 #include "stdafx.h"
-#include "Shiva/include/platformspc.h"
-#include "Shiva/include/utils/shvdll.h"
-#include "Shiva/include/framework/shvmodulelist.h"
+#include "../../../../include/platformspc.h"
+#include "../../../../include/utils/shvdll.h"
+#include "../../../../include/framework/shvmodulelist.h"
 
-#include "shvdataenginefactory.h"
+#include "../../include/shvdataenginefactory.h"
 
 extern "C"
 {
@@ -16,7 +16,7 @@ void* CreateObjectInt(SHVModuleList* list, int id)
 	switch (id)
 	{
 	case SHVDll::ClassTypeModuleFactory:
-		return new SHVModuleFactorydataengine(*list);
+		return new SHVModuleFactoryDataEngine(*list);
 	default:
 		return NULL;
 	}

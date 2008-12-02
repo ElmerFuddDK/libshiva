@@ -1,13 +1,19 @@
-#include "Shiva/include/platformspc.h"
-#include "Shiva/include/shvversion.h"
-#include "Shiva/include/utils/shvdll.h"
+#include "../../../../include/platformspc.h"
+#include "../../../../include/shvversion.h"
+#include "../../../../include/utils/shvdll.h"
 
-#include "Shiva/include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
-#include "Shiva/include/framework/shvmodulefactory.h"
+#include "../../../../include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
+#include "../../../../include/framework/shvmodulefactory.h"
+#include "../../../../include/modules/dataengine/shvdataengine.h"
+#include "../../../../include/modules/dataengine/shvdatastruct.h"
+#include "../../../../include/modules/dataengine/shvdatarowlist.h"
 
 
 class SHVTest : public SHVModule
 {
+private:
+	SHVDataEngine* DataEngine;
+	SHVDataSessionRef DataSession;
 public:
 
 	SHVTest(SHVModuleList& modules) : SHVModule(modules,"Test")
@@ -21,7 +27,10 @@ public:
 		Modules.EventSubscribe(SHVModuleList::EventEndRegister, new SHVEventSubscriber(this));
 		Modules.EventSubscribe(SHVModuleList::EventClosing, new SHVEventSubscriber(this));
 		Modules.EventSubscribe(__EVENT_GLOBAL_STDIN, new SHVEventSubscriber(this));
-	
+		
+		if (!SHVModuleResolver<SHVDataEngine>(Modules,DataEngine,"DataEngine"))
+			return false;
+		DataSession = DataEngine->CreateSession();
 		return SHVModule::Register();
 	}
 
@@ -44,7 +53,70 @@ public:
 				Modules.CloseApp();
 			}
 			else
+			if (str == SHVString8C("/create"))
 			{
+			SHVDataStructRef table = DataEngine->CreateStruct();
+			SHVDataRowKeyRef key = DataEngine->CreateKey();
+				table->Add("key", SHVDataVariant::TypeInt);
+				table->Add("col1", SHVDataVariant::TypeString);
+				table->Add("col2", SHVDataVariant::TypeString);
+				table->SetTableName("testtable");
+				key->AddKey("key", false);
+				table->SetPrimaryIndex(key);
+				table->SetIsMultiInstance(false);
+				DataEngine->RegisterTable(table);
+			}
+			else
+			if (str == SHVString8C("/insert"))
+			{			
+			SHVDataRowListRef rowList = DataSession->GetRows("testtable", _T(""), 0);
+			SHVDataRowRef row;
+				if (rowList.IsNull())
+				{
+					printf("Damn did not work\n");
+				}
+				else
+				{
+					rowList->EnableReplaceIfDuplicate(true);
+					rowList->StartEdit();
+					row = rowList->AddRow();
+					row->SetInt(0, 1);
+					row->SetString(1, "1-1");
+					row->SetString(2, "1-2");
+					row->AcceptChanges();
+					row = rowList->AddRow();
+					row->SetInt(0, 2);
+					row->SetString(1, "2-1");
+					row->SetString(2, "2-2");
+					row->AcceptChanges();
+					row = rowList->AddRow();
+					row->SetInt(0, 3);
+					row->SetString(1, "3-1");
+					row->SetString(2, "3-2");
+					row->AcceptChanges();
+					rowList->EndEdit();
+				}
+			}
+			else
+			if (str == SHVString8C("/select"))
+			{
+			SHVDataRowListCRef rows = DataSession->GetRows("testtable", _T(""), 0);
+				if (rows.IsNull())
+				{
+					printf("Verdamnt\n");
+				}
+				else
+				{
+					while (rows->NextRow())
+					{
+						printf("%d %s %s\r\n", 	(int) rows->GetCurrentRow()->AsInt(0), 
+												rows->GetCurrentRow()->AsString(1).ToStr8().GetSafeBuffer(),
+												rows->GetCurrentRow()->AsString(2).ToStr8().GetSafeBuffer());						
+					}
+				}
+			}
+			else
+			{				
 				printf("Unknown command\n");
 			}
 		}
@@ -53,6 +125,7 @@ public:
 	void Unregister()
 	{
 		printf("In unregister\n");
+		DataSession = NULL;
 		SHVModule::Unregister();
 	}
 };
