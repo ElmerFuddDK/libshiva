@@ -66,11 +66,11 @@ SHVInt SHVDataRowCSQLite::AsInt(size_t colIdx) const
 {
 const SHVSQLiteStatement* Statement = (const SHVSQLiteStatement*) Select->GetRowProvider();
 SHVInt retVal;
-long val;
+int val;
 	if (!IsNull(colIdx))
 	{
-		Statement->GetLong(val, (int) colIdx);
-		retVal = SHVInt(val);
+		Statement->GetInt(val, (int) colIdx);
+		retVal = val;
 	}		
 	return retVal;
 }
@@ -131,10 +131,10 @@ SHVBool SHVDataRowCSQLite::AsBool(size_t colIdx) const
 {
 const SHVSQLiteStatement* Statement = (const SHVSQLiteStatement*) Select->GetRowProvider();
 SHVBool retVal;
-long val;
+int val;
 	if (!IsNull(colIdx))
 	{
-		Statement->GetLong(val, (int) colIdx);
+		Statement->GetInt(val, (int) colIdx);
 		retVal = val != 0;
 	}		
 	return retVal;

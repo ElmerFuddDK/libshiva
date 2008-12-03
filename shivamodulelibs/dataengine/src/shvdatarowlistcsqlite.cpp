@@ -184,13 +184,13 @@ SHVDataRowC* retVal = NULL;
 			if (k[i].Value && !k[i].Value->IsNull())
 			{
 				if (k[i].Value->GetDataType() == SHVDataVariant::TypeInt)
-					Statement->SetParameterLongUTF8(keyParm, k[i].Value->AsInt());
+					Statement->SetParameterIntUTF8(keyParm, k[i].Value->AsInt());
 				else
 				if (k[i].Value->GetDataType() == SHVDataVariant::TypeInt64)
 					Statement->SetParameterInt64UTF8(keyParm, k[i].Value->AsInt64());
 				else
 				if (k[i].Value->GetDataType() == SHVDataVariant::TypeBool)
-					Statement->SetParameterLongUTF8(keyParm, k[i].Value->AsInt());
+					Statement->SetParameterIntUTF8(keyParm, k[i].Value->AsInt());
 				else
 				if (k[i].Value->GetDataType() == SHVDataVariant::TypeDouble)
 					Statement->SetParameterDoubleUTF8(keyParm, k[i].Value->AsDouble());
