@@ -132,7 +132,7 @@ SHVDataStructRef newStruct = GetInternalStruct((SHVDataStructC*) dataStruct);
 		InternalBeginTransaction(SQLite);
 		if (drop)
 		{
-			sql.Format("drop table %s", dataStruct->GetTableName());
+			sql.Format("drop table %s", dataStruct->GetTableName().GetSafeBuffer());
 			statement = SQLite->ExecuteUTF8(retVal, sql, rest);
 			retVal = SHVBool(retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE);
 		}
@@ -684,12 +684,12 @@ size_t tokPos = 0;
 		tableName.Tokenize(".", tokPos);
 		tableNameNoDB = tableName.Tokenize(".", tokPos);
 		if (!tableNameNoDB.GetLength())
-			tableNameNoDB = tableName;
+			tableNameNoDB = tableName; 
 		sql.Format("create index %s%05d on %s(%s)",
 			tableName.GetSafeBuffer(),
 			index,
 			tableNameNoDB.GetSafeBuffer(),
-			keys);
+			keys.GetSafeBuffer());
 		statement = sqlite->ExecuteUTF8(retVal, sql, rest);
 		retVal = SHVBool(retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE);
 	}
