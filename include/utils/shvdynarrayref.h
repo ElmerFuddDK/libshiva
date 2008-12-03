@@ -146,7 +146,7 @@ bool SHVDynArrayRef<T>::InsertAt(size_t index, T* item)
 bool retVal = (T*)SHVDynArrayBase::InsertAt(index,item);
 
 	if (retVal)
-		T->CreateRef();
+		item->CreateRef();
 
 	return retVal;
 }
