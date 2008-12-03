@@ -23,7 +23,7 @@
 #define LOCK
 #define UNLOCK
 
-typedef unsigned long   unsigned32;
+typedef unsigned int    unsigned32;
 typedef unsigned short  unsigned16;
 typedef unsigned char   unsigned8;
 typedef unsigned char   byte;

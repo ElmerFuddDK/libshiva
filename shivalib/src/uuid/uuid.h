@@ -1,14 +1,25 @@
 #include "copyrt.h"
 #undef uuid_t
-typedef struct {
+
+#ifdef __GNUC__
+typedef struct  __attribute__((packed)) {
     unsigned32  time_low;
-    unsigned16  time_mid;
-    unsigned16  time_hi_and_version;
+    unsigned16 	time_mid;
+    unsigned16 	time_hi_and_version;
     unsigned8   clock_seq_hi_and_reserved;
     unsigned8   clock_seq_low;
     byte        node[6];
 } uuid_t;
-
+#else
+typedef struct {
+    unsigned32  time_low;
+    unsigned16 	time_mid;
+    unsigned16 	time_hi_and_version;
+    unsigned8   clock_seq_hi_and_reserved;
+    unsigned8   clock_seq_low;
+    byte        node[6];
+} uuid_t;
+#endif
 
 void* init_globals();
 
