@@ -554,7 +554,7 @@ unicode_iconv_t conv = unicode_iconv_open("UTF-8",SHVStringC_Get8BitCharSet());
 				}
 			}
 #else
-			iBuf = (char*)str;
+			iBuf = (char*)buffer;
 			oBuf = (char*)(str ? str : utf8Str);
 			iLeft  = 1;
 			oLeft  = 4;
