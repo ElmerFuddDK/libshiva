@@ -34,7 +34,7 @@ public:
 	virtual SHVDataBinder* GetSubData(int entityIndex) = 0;
 	virtual SHVDataBinder* GetSubData(SHVStringC entityName) = 0;
 
-	virtual SHVBool PerformAction(SHVChar* actionID) = 0;
+	virtual SHVBool PerformAction(const SHVChar* actionID) = 0;
 
 };
 typedef SHVRefObjectContainer<SHVDataBinder> SHVDataBinderRef;
