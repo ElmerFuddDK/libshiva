@@ -57,6 +57,8 @@ SHVMd5Sum::SHVMd5Sum()
  *************************************/
 SHVMd5Sum::~SHVMd5Sum()
 {
+ 	if (Md5Context)
+		::free(Md5Context);
 }
 
 /*************************************
