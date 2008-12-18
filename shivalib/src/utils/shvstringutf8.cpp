@@ -93,7 +93,7 @@ size_t SHVStringUTF8C::SizeOfChars(const char* str, size_t chars)
 {
 const char* offset = str;
 
-	for(;*str && chars;offset++)
+	for(;*offset && chars;offset++)
 	{
 		if ( ((*offset)&0xC0) != 0xC0 )
 			chars--;
