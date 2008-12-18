@@ -45,7 +45,7 @@
 /*************************************
  * Constructor
  *************************************/
-SHVDataFactoryImpl::SHVDataFactoryImpl(SHVDataEngine& engine, const SHVStringC& database): DataEngine(engine), Database(database), InTransaction(0)
+SHVDataFactoryImpl::SHVDataFactoryImpl(SHVDataEngine& engine, const SHVStringC& database): DataEngine(engine), Database(database), InTransaction(0), SchemaHasChanged(false)
 {
 }
 
