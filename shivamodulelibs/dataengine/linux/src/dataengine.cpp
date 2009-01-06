@@ -60,6 +60,7 @@ public:
 				table->Add("key", SHVDataVariant::TypeInt);
 				table->Add("col1", SHVDataVariant::TypeString);
 				table->Add("col2", SHVDataVariant::TypeString);
+				table->Add("unicode", SHVDataVariant::TypeString);
 				table->SetTableName("testtable");
 				key->AddKey("key", false);
 				table->SetPrimaryIndex(key);
@@ -83,16 +84,19 @@ public:
 					row->SetInt(0, 1);
 					row->SetString(1, "1-1");
 					row->SetString(2, "1-2");
+					row->SetString(3, "æøå");
 					row->AcceptChanges();
 					row = rowList->AddRow();
 					row->SetInt(0, 2);
 					row->SetString(1, "2-1");
 					row->SetString(2, "2-2");
+					row->SetString(3, SHVStringC("æøå").ToStr16().ToStrUTF8().GetBufferConst());
 					row->AcceptChanges();
 					row = rowList->AddRow();
 					row->SetInt(0, 3);
 					row->SetString(1, "3-1");
 					row->SetString(2, "3-2");
+					row->SetString(3, "æøå");
 					row->AcceptChanges();
 					rowList->EndEdit();
 				}
@@ -109,9 +113,10 @@ public:
 				{
 					while (rows->NextRow())
 					{
-						printf("%d %s %s\r\n", 	(int) rows->GetCurrentRow()->AsInt(0), 
-												rows->GetCurrentRow()->AsString(1).ToStr8().GetSafeBuffer(),
-												rows->GetCurrentRow()->AsString(2).ToStr8().GetSafeBuffer());						
+						printf("%d %s %s %s\r\n", 	(int) rows->GetCurrentRow()->AsInt(0), 
+												rows->GetCurrentRow()->AsString(1).GetSafeBuffer(),
+												rows->GetCurrentRow()->AsString(2).GetSafeBuffer(),
+							  					rows->GetCurrentRow()->AsString(3).GetSafeBuffer());
 					}
 				}
 			}
