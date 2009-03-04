@@ -47,7 +47,7 @@
 /*************************************
  * Constructor
  *************************************/
-SHVModuleListImpl::SHVModuleListImpl(SHVMainThreadEventQueue& defaultQueue)
+SHVModuleListImpl::SHVModuleListImpl(SHVMainEventQueue& defaultQueue)
 	: DefaultEventQueue(defaultQueue)
 {
 	State = StateInitializing;
@@ -382,7 +382,7 @@ bool locked = Lock.Lock();
 			}
 			else
 			{
-			SHVEventRef event = new SHVEvent( &DefaultEventQueue, SHVMainThreadEventQueue::EventInternalStop, StartupErrors.GetCount() ? 0 : 1 );
+			SHVEventRef event = new SHVEvent( &DefaultEventQueue, SHVMainEventQueue::EventInternalStop, StartupErrors.GetCount() ? 0 : 1 );
 			int locks;
 				State = StateInitialized;
 				Events.Clear();

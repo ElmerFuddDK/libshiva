@@ -1,7 +1,7 @@
 #ifndef __SHIVA_FRAMEWORK_SHVMAINTHREADEVENTQUEUE_H
 #define __SHIVA_FRAMEWORK_SHVMAINTHREADEVENTQUEUE_H
 
-#include "../framework/shveventqueuelist.h"
+#include "shvmaineventqueue.h"
 #include "shvmodulelistimpl.h"
 
 
@@ -21,7 +21,7 @@ class SHVMainThreadEventDispatcher;
  * Any errors you want to be returned can be set by setting the SHVMainThreadEventQueue::RunReturnVal value.
  */
 
-class SHVAPI SHVMainThreadEventQueue : public SHVEventQueue, public SHVEventTarget
+class SHVAPI SHVMainThreadEventQueue : public SHVMainEventQueue
 {
 public:
 

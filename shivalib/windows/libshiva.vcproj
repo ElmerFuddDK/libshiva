@@ -888,6 +888,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\include\frameworkimpl\shvmaineventqueue.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\frameworkimpl\shvmainthreadeventdispatchergeneric.h"
 						>
 					</File>

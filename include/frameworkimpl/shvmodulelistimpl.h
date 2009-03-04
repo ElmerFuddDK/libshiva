@@ -4,6 +4,7 @@
 #include "shvconfigimpl.h"
 
 #include "../framework/shvmodulelist.h"
+#include "shvmaineventqueue.h"
 #include "../framework/shveventemitter.h"
 #include "../framework/shvtimer.h"
 
@@ -12,7 +13,6 @@
 
 
 class SHVModuleListIteratorImpl;
-class SHVMainThreadEventQueue;
 
 //-=========================================================================================================
 /// SHVModuleListImpl class - implementation of module list
@@ -26,7 +26,7 @@ public:
 
 
 	// constructor
-	SHVModuleListImpl(SHVMainThreadEventQueue& defaultQueue);
+	SHVModuleListImpl(SHVMainEventQueue& defaultQueue);
 
 
 	// Initialization
@@ -133,7 +133,7 @@ friend class SHVModuleListIteratorImpl;
 	int TagSeed;
 
 	SHVEventSubscriberBaseRef InternalSubscriber;
-	SHVMainThreadEventQueue& DefaultEventQueue;
+	SHVMainEventQueue& DefaultEventQueue;
 	SHVInternalList Modules;
 	SHVEventEmitter Events;
 	SHVConfigImpl Config;
