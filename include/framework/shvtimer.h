@@ -3,6 +3,7 @@
 
 #include "shvmodule.h"
 #include "../utils/shvrefobject.h"
+#include "../utils/shvtime.h"
 
 
 //-=========================================================================================================
@@ -20,12 +21,14 @@ public:
 	enum Modes {
 		ModeStopped = 0,
 		ModeOnce,
-		ModeRecurring
+		ModeRecurring,
+		ModeAbsolute
 	};
 
 
 	// controlling the timer
 	virtual void Set(Modes mode, int interval) = 0;
+	virtual void SetAbsolute(const SHVTime& time) = 0;
 
 
 	// properties

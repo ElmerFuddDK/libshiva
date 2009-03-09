@@ -33,7 +33,7 @@
 
 #include "../../../include/frameworkimpl/shvtimerimpl.h"
 
-
+#define TIMER_MINIMUM_KICK 600L
 
 //=========================================================================================================
 // SHVTimerImpl module - Implementation of the timer module
@@ -133,6 +133,8 @@ SHVBool gotLock(TimerThread.LockEvent()); // lock if the event system is running
 
 	switch (timer->Mode)
 	{
+	case SHVTimerInstance::ModeAbsolute:
+		break;
 	case SHVTimerInstance::ModeOnce:
 	case SHVTimerInstance::ModeRecurring:
 		if (timer->Interval > 0)
@@ -144,6 +146,7 @@ SHVBool gotLock(TimerThread.LockEvent()); // lock if the event system is running
 
 			break;
 		}
+		// continue
 	default:
 		timer->Mode = SHVTimerInstance::ModeStopped;
 		break;
@@ -185,6 +188,15 @@ void SHVTimerInstanceImpl::Set(SHVTimerInstance::Modes mode, int interval)
 }
 
 /*************************************
+ * SetAbsolute
+ *************************************/
+void SHVTimerInstanceImpl::SetAbsolute(const SHVTime& time)
+{
+	AbsoluteTime = time;
+	Mode = SHVTimerInstance::ModeAbsolute;
+}
+
+/*************************************
  * GetMode
  *************************************/
 SHVTimerInstance::Modes SHVTimerInstanceImpl::GetMode()
@@ -208,7 +220,9 @@ int SHVTimerInstanceImpl::GetInterval()
 bool SHVTimerInstanceImpl::PerformPending(long now, bool wrappedAround, long& waitInterval)
 {
 bool retVal = false;
-
+SHVTime timeNow;
+	
+	timeNow.SetNow();
 
 	if (wrappedAround)
 		WrapAround = false;
@@ -231,13 +245,24 @@ bool retVal = false;
 				}
 			}
 			break;
+		case SHVTimerInstance::ModeAbsolute:
+			{
+				if (timeNow < AbsoluteTime)
+				{
+					retVal = false;
+					break;
+				}
+				else
+					retVal = true;
+			}
+			// continue
 		default:
 			Mode = SHVTimerInstance::ModeStopped;
 			break;
 		}
 	}
 
-	waitInterval = CalculateWaitInterval(now);
+	waitInterval = CalculateWaitInterval(now, timeNow);
 
 	return retVal;
 }
@@ -253,7 +278,7 @@ void SHVTimerInstanceImpl::Perform()
 /*************************************
  * CalculateWaitInterval
  *************************************/
-long SHVTimerInstanceImpl::CalculateWaitInterval(long now)
+long SHVTimerInstanceImpl::CalculateWaitInterval(long now, SHVTime& timeNow)
 {
 long retVal;
 
@@ -264,6 +289,13 @@ long retVal;
 		retVal =  TickHit-now;
 		if (retVal < 0)
 			retVal = 0;
+		break;
+	case SHVTimerInstance::ModeAbsolute:
+		retVal = SHVTime::GapInSeconds(timeNow, AbsoluteTime);
+		if (retVal > TIMER_MINIMUM_KICK)
+			retVal = TIMER_MINIMUM_KICK * 1000L;
+		else
+			retVal *= 1000L;
 		break;
 	default:
 		retVal = SHVMutexBase::Infinite;
@@ -300,7 +332,7 @@ void SHVTimerThread::PreEventDispatch()
 	SHVListIterator<SHVTimerInstanceImplRef,SHVTimerInstanceImpl*> pendingItr(pendingPerforms);
 	long now = SHVThreadBase::GetTicksInMilliSecs();
 	bool wrappedAround = (now < LastTick);
-	long timeoutInterval = 600000L; // 10 minutes maximum
+	long timeoutInterval = TIMER_MINIMUM_KICK * 1000L; // 10 minutes maximum
 	long tmpInterval;
 
 		if (LockEvent())
@@ -338,14 +370,16 @@ void SHVTimerThread::ResetTimerThread()
 {
 	if (LockEvent())
 	{
-	long timeoutInterval = 600000L; // 10 minutes maximum
+	long timeoutInterval = TIMER_MINIMUM_KICK * 1000L; // 10 minutes maximum
 	long tmpInterval;
 	long now = SHVThreadBase::GetTicksInMilliSecs();
+	SHVTime timeNow;
 	SHVListIterator<SHVTimerInstanceImplRef,SHVTimerInstanceImpl*> itr(Timer->TimerList);
+		timeNow.SetNow();
 
 		while (itr.MoveNext())
 		{
-			tmpInterval = itr.Get()->CalculateWaitInterval(now);
+			tmpInterval = itr.Get()->CalculateWaitInterval(now, timeNow);
 
 			if (tmpInterval != SHVMutexBase::Infinite && tmpInterval < timeoutInterval)
 				timeoutInterval = tmpInterval;

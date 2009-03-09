@@ -33,10 +33,14 @@
 #include "../../../include/framework/shvmodule.h"
 #include "../../../include/frameworkimpl/shvmainthreadeventdispatchergeneric.h"
 #include "../../../include/shvversion.h"
-
+#include "../../../include/framework/shvtimer.h"
 
 class SHVTest : public SHVModule
 {
+private:
+	SHVTimerInstanceRef TimerInstance;
+	SHVTimer* Timer;
+	
 public:
 
 	SHVTest(SHVModuleList& modules) : SHVModule(modules,"Test")
@@ -46,9 +50,11 @@ public:
 	SHVBool Register()
 	{
 		printf("In register\n");
+				
+		if (!SHVModuleResolver<SHVTimer>(Modules, Timer, _T("Timer")))
+			return SHVBool::False;
 		
 		SHVASSERT(Modules.ResolveModule("Test"));
-		SHVASSERT(Modules.ResolveModule("Timer"));
 		
 		Modules.EventSubscribe(SHVModuleList::EventClosing, new SHVEventSubscriber(this));
 		
@@ -57,16 +63,30 @@ public:
 	
 	void PostRegister()
 	{
+	SHVTime now;
+		now.SetNow();
+		printf(_T("Started: Time now %s\n"), now.ToDateString().GetBufferConst());
+		now.AddSeconds(-5);
 		printf("Application running...\n");
-		printf("Shutting it down\n");
-		Modules.CloseApp();
+		TimerInstance = Timer->CreateTimer(new SHVEventSubscriber(this));
+		TimerInstance->SetAbsolute(now);
 	}
 	
 	void OnEvent(SHVEvent* event)
 	{
-		SHVUNUSED_PARAM(event);
-		printf("Delaying shutdown by 1000 ms\n");
-		Modules.EmitEvent(new SHVEventString(this,__EVENT_GLOBAL_DELAYSHUTDOWN,1000));
+		if (event->GetCaller() == Timer)
+		{
+		SHVTime now;
+			now.SetNow();
+			printf(_T("Stopped: Time now %s\n"), now.ToDateString().GetBufferConst());
+			printf("Shutting it down\n");
+			Modules.CloseApp();
+		}
+		else
+		{
+			printf("Delaying shutdown by 1000 ms\n");
+			Modules.EmitEvent(new SHVEventString(this,__EVENT_GLOBAL_DELAYSHUTDOWN,1000));
+		}
 	}
 
 	void Unregister()
