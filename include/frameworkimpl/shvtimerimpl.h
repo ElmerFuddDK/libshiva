@@ -55,6 +55,7 @@ public:
 
 	// controlling the timer
 	virtual void Set(SHVTimerInstance::Modes mode, int interval);
+	virtual void SetAbsolute(const SHVTime& time);
 
 
 	// properties
@@ -66,6 +67,7 @@ private:
 	SHVTimerImpl* Timer;
 
 	SHVEventSubscriberBaseRef Subscriber;
+	SHVTime AbsoluteTime;
 
 	SHVTimerInstance::Modes Mode;
 	int Interval;
@@ -75,7 +77,7 @@ private:
 
 	bool PerformPending(long now, bool wrappedAround, long& waitInterval);
 	void Perform();
-	long CalculateWaitInterval(long now);
+	long CalculateWaitInterval(long now, SHVTime& timeNow);
 
 	///\endcond
 };
