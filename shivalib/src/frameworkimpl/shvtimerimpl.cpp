@@ -194,6 +194,7 @@ void SHVTimerInstanceImpl::SetAbsolute(const SHVTime& time)
 {
 	AbsoluteTime = time;
 	Mode = SHVTimerInstance::ModeAbsolute;
+	Timer->RecalculateTimer(this);
 }
 
 /*************************************
