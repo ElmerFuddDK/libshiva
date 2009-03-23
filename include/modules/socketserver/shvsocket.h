@@ -64,10 +64,12 @@ public:
 	virtual SHVBool Connect(const SHVStringC ipv4Addr, SHVIPv4Port port) = 0;
 	
 	virtual SHVBool Send(const SHVBufferC& buf) = 0;
+	virtual SHVBool SendTo(const SHVBufferC& buf, SHVIPv4Addr ip, SHVIPv4Port port) = 0;
 
 	virtual SHVBool SetReceiveBufferSize(size_t sz) = 0;
 	virtual size_t GetReceiveBufferSize() = 0;
 	virtual SHVBuffer* PopReceiveBuffer(size_t& bytesRead) = 0;
+	virtual SHVBuffer* PopReceiveBuffer(size_t& bytesRead, SHVIPv4Addr &fromIP, SHVIPv4Port &fromPort) = 0;
 	virtual SHVBool HasReceivedData() = 0;
 
 protected:

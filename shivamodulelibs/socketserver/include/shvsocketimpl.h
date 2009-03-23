@@ -40,10 +40,12 @@ public:
 	virtual SHVBool Connect(const SHVStringC ipv4Addr, SHVIPv4Port port);
 	
 	virtual SHVBool Send(const SHVBufferC& buf);
+	virtual SHVBool SendTo(const SHVBufferC& buf, SHVIPv4Addr ip, SHVIPv4Port port);
 
 	virtual SHVBool SetReceiveBufferSize(size_t sz);
 	virtual size_t GetReceiveBufferSize();
 	virtual SHVBuffer* PopReceiveBuffer(size_t& bytesRead);
+	virtual SHVBuffer* PopReceiveBuffer(size_t& bytesRead, SHVIPv4Addr &fromIP, SHVIPv4Port &fromPort);
 	virtual SHVBool HasReceivedData();
 
 
@@ -70,8 +72,11 @@ friend class SHVSocketServerThread;
 	{
 		SHVBufferRef Buffer;
 		size_t BytesRead;
+		SHVIPv4Addr FromIP;
+		SHVIPv4Port FromPort;
 
-		inline BufferInstance(SHVBuffer* buffer, size_t bytesRead) : Buffer(buffer), BytesRead(bytesRead)  {}
+		inline BufferInstance(SHVBuffer* buffer, size_t bytesRead, SHVIPv4Addr fromIP, SHVIPv4Port fromPort)
+			: Buffer(buffer), BytesRead(bytesRead), FromIP(fromIP), FromPort(fromPort)  {}
 	};
 	
 	SHVList<BufferInstance> ReceiveBuffers;

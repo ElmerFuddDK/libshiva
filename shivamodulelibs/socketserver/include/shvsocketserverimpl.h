@@ -33,6 +33,8 @@ public:
 	virtual SHVSocket* GetSocket(SHVInt tag);
 	
 	virtual SHVIPv4Addr Inetv4Addr(const SHVStringC strIp);
+	virtual SHVStringBuffer Inetv4ToAddr(SHVIPv4Addr ip);
+	virtual SHVIPv4Addr Inetv4ResolveHost(const SHVStringC host);
 
 
 private:

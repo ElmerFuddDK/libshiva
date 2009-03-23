@@ -104,30 +104,29 @@ linger _linger;
 
 	Socket = ::socket( PF_INET, (Type == SHVSocket::TypeTCP ? SOCK_STREAM : SOCK_DGRAM), 0 );
 
-	if (Type == SHVSocket::TypeTCP)
+	if (Socket != InvalidSocket)
 	{
-#if defined __SHIVA_WIN32
-		linger.l_linger = 1;
-		linger.l_onoff  = true;
-	
-		if (Socket != InvalidSocket)
+		if (Type == SHVSocket::TypeTCP)
 		{
-		unsigned long nonblock = 1;
+#if defined __SHIVA_WIN32
+			linger.l_linger = 1;
+			linger.l_onoff  = true;
+	
 			::setsockopt(Socket, SOL_SOCKET, SO_LINGER, (char*)&linger, sizeof(LINGER));
 			noDelay = true;
-			
 			::setsockopt(Socket, IPPROTO_TCP, TCP_NODELAY, (char*)&noDelay, sizeof(BOOL));
-			::ioctlsocket(Socket, FIONBIO, &nonblock);
-		}
 #elif defined __SHIVA_LINUX
-		_linger.l_linger = 1;
-		_linger.l_onoff  = true;
-	
-		if (Socket != InvalidSocket)
-		{
+			_linger.l_linger = 1;
+			_linger.l_onoff  = true;
 			::setsockopt(Socket, SOL_SOCKET, SO_LINGER, (char*)&_linger, sizeof(linger));
-			::fcntl(Socket,F_SETFL,O_NONBLOCK);
+#endif
 		}
+		
+#ifdef __SHIVA_WIN32
+		unsigned long nonblock = 1;
+		::ioctlsocket(Socket, FIONBIO, &nonblock);
+#elif defined __SHIVA_LINUX
+		::fcntl(Socket,F_SETFL,O_NONBLOCK);
 #endif
 	}
 }
@@ -177,7 +176,7 @@ SHVBool SHVSocketImpl::BindAndListen(SHVIPv4Port port)
 SHVBool retVal;
 
 	SocketServer->SocketServerLock.Lock();
-	if (Type == SHVSocket::TypeTCP && State == SHVSocket::StateNone)
+	if (State == SHVSocket::StateNone)
 	{
 #ifdef __SHIVA_WIN32
 	SOCKADDR_IN sockAddr;
@@ -198,26 +197,41 @@ SHVBool retVal;
 		status = ::bind(Socket, (sockaddr*) &sockAddr, sizeof(sockaddr_in));
 #endif
 	
-		if (!status)
+		if (Type == SHVSocket::TypeTCP)
 		{
-			status = ::listen(Socket, 5);
-			
 			if (!status)
 			{
-				State = SHVSocket::StateListening;
+				status = ::listen(Socket, 5);
+				
+				if (!status)
+				{
+					State = SHVSocket::StateListening;
 #ifdef __SHIVA_WINCE
-				StartReadThread();
+					StartReadThread();
 #endif
-				retVal = SHVBool::True;
+					retVal = SHVBool::True;
+				}
+				else
+				{
+					retVal = SetError(SHVSocket::ErrListening);
+				}
 			}
 			else
 			{
-				retVal = SetError(SHVSocket::ErrListening);
+				retVal = SetError(SHVSocket::ErrBinding);
 			}
 		}
 		else
 		{
-			retVal = SetError(SHVSocket::ErrBinding);
+			if (!status)
+			{
+				State = SHVSocket::StateConnected;
+				retVal = SHVBool::True;
+			}
+			else
+			{
+				retVal = SetError(SHVSocket::ErrBinding);
+			}
 		}
 	}
 	else
@@ -242,9 +256,40 @@ SHVBool SHVSocketImpl::Send(const SHVBufferC& buf)
 SHVBool retVal(SHVSocket::ErrInvalidOperation);
 	
 	SocketServer->SocketServerLock.Lock();
-	if (State == SHVSocket::StateConnected)
+	if (Type == TypeTCP && State == SHVSocket::StateConnected)
 	{
 		if (::send(Socket,buf.GetBufferConst(),(int)buf.GetSize(),MSG_NOSIGNAL) <= 0)
+		{
+			Close();
+			retVal = SetError(SHVSocket::ErrGeneric);
+		}
+		else
+		{
+			retVal = SHVSocket::ErrNone;
+		}
+	}
+	SocketServer->SocketServerLock.Unlock();
+	
+	return retVal;
+}
+
+/*************************************
+ * SendTo
+ *************************************/
+SHVBool SHVSocketImpl::SendTo(const SHVBufferC& buf, SHVIPv4Addr ip, SHVIPv4Port port)
+{
+SHVBool retVal(SHVSocket::ErrInvalidOperation);
+	
+	SocketServer->SocketServerLock.Lock();
+	if (Type == TypeUDP && State == SHVSocket::StateConnected)
+	{
+	sockaddr_in host;
+
+		host.sin_family=AF_INET;
+		host.sin_addr.s_addr = ip;
+		host.sin_port = htons(port);
+		
+		if (::sendto(Socket,buf.GetBufferConst(),(int)buf.GetSize(),MSG_NOSIGNAL,(sockaddr*) &host,sizeof(sockaddr_in)) <= 0)
 		{
 			Close();
 			retVal = SetError(SHVSocket::ErrGeneric);
@@ -281,6 +326,12 @@ size_t SHVSocketImpl::GetReceiveBufferSize()
  *************************************/
 SHVBuffer* SHVSocketImpl::PopReceiveBuffer(size_t& bytesRead)
 {
+SHVIPv4Addr fromIP;
+SHVIPv4Port fromPort;
+	return PopReceiveBuffer(bytesRead,fromIP,fromPort);
+}
+SHVBuffer* SHVSocketImpl::PopReceiveBuffer(size_t& bytesRead, SHVIPv4Addr &fromIP, SHVIPv4Port &fromPort)
+{
 SHVBuffer* retVal = NULL;
 
 	SocketServer->SocketServerLock.Lock();
@@ -288,12 +339,16 @@ SHVBuffer* retVal = NULL;
 	{
 		retVal = ReceiveBuffers.GetFirst().Buffer.ReleaseReference();
 		bytesRead = ReceiveBuffers.GetFirst().BytesRead;
+		fromIP = ReceiveBuffers.GetFirst().FromIP;
+		fromPort = ReceiveBuffers.GetFirst().FromPort;
 		
 		ReceiveBuffers.RemoveHead();
 		BytesRead -= bytesRead;
 	}
 	else
 	{
+		fromIP = InvalidIPv4;
+		fromPort = 0;
 		bytesRead = 0;
 	}
 	SocketServer->SocketServerLock.Unlock();
@@ -348,7 +403,7 @@ SHVBool SHVSocketImpl::Connect(SHVIPv4Addr ip, SHVIPv4Port port)
 SHVBool retVal(SHVSocket::ErrInvalidOperation);
 
 	SocketServer->SocketServerLock.Lock();
-	if (State == SHVSocket::StateNone)
+	if (Type == TypeTCP && State == SHVSocket::StateNone)
 	{
 	sockaddr_in host;
 	int result;
@@ -431,6 +486,8 @@ int evCode = SHVSocketServer::EventSockStatus;
 bool doEvent = true;
 int sockerr;
 int sz;
+SHVIPv4Addr fromip = InvalidIPv4;
+SHVIPv4Port fromport = 0;
 
 	// After we got this lock DO NOT PERFORM ANYTHING BLOCKING OR SOMETHING THAT INVOLVES OTHER LOCKS!
 	SocketServer->SocketServerLock.Lock();
@@ -469,11 +526,32 @@ int sz;
 		bufPtr = new SHVBufferPtr();
 		bufPtr->SetBufferSize(BufferSize);
 
+		if (Type == TypeUDP)
+		{
+		sockaddr_in host;
+		
+			host.sin_family=AF_INET;
+			host.sin_addr.s_addr = 0;
+			host.sin_port = 0;
+			
 #ifdef __SHIVA_WIN32
-		sz = ::recv(Socket,(char*)bufPtr->GetBufferAsVoid(),(int)BufferSize,MSG_DONTWAIT);
+		size_t len = sizeof(sockaddr_in);
+			sz = ::recvfrom(Socket,(char*)bufPtr->GetBufferAsVoid(),(int)BufferSize,MSG_DONTWAIT, (sockaddr*) &host, &len);
 #else
-		sz = ::recv(Socket,bufPtr->GetBufferAsVoid(),BufferSize,MSG_DONTWAIT);
+		socklen_t len = sizeof(sockaddr_in);
+			sz = ::recvfrom(Socket,bufPtr->GetBufferAsVoid(),BufferSize,MSG_DONTWAIT, (sockaddr*) &host, &len);
 #endif
+			fromip = host.sin_addr.s_addr;
+			fromport = ntohs(host.sin_port);
+		}
+		else
+		{
+#ifdef __SHIVA_WIN32
+			sz = ::recv(Socket,(char*)bufPtr->GetBufferAsVoid(),(int)BufferSize,MSG_DONTWAIT);
+#else
+			sz = ::recv(Socket,bufPtr->GetBufferAsVoid(),BufferSize,MSG_DONTWAIT);
+#endif
+		}
 		
 		if (sz<=0) // error
 		{
@@ -483,7 +561,7 @@ int sz;
 		}
 		else
 		{
-			ReceiveBuffers.AddTail(BufferInstance(bufPtr,(size_t)sz));
+			ReceiveBuffers.AddTail(BufferInstance(bufPtr,(size_t)sz,fromip,fromport));
 			BytesRead += (size_t)sz;
 			evCode = SHVSocketServer::EventSockDataRead;
 		}

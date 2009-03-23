@@ -39,6 +39,8 @@ public:
 	virtual SHVSocket* GetSocket(SHVInt tag) = 0;
 	
 	virtual SHVIPv4Addr Inetv4Addr(const SHVStringC strIp) = 0;
+	virtual SHVStringBuffer Inetv4ToAddr(SHVIPv4Addr ip) = 0;
+	virtual SHVIPv4Addr Inetv4ResolveHost(const SHVStringC host) = 0;
 
 
 	// Obtain socket from a socket server event

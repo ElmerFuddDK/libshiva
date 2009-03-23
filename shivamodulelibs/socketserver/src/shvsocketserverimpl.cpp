@@ -35,6 +35,8 @@
 #ifndef __SHIVA_WIN32
 # include <arpa/inet.h>
 #endif
+#include <netdb.h>
+
 
 
 //=========================================================================================================
@@ -126,7 +128,44 @@ SHVSocket* retVal = NULL;
  *************************************/
 SHVIPv4Addr SHVSocketServerImpl::Inetv4Addr(const SHVStringC strIp)
 {
-	return (SHVIPv4Addr)::inet_addr(strIp.ToStr8().GetSafeBuffer());
+SHVIPv4Addr retVal = (SHVIPv4Addr)::inet_addr(strIp.ToStr8().GetSafeBuffer());
+
+	if (retVal == INADDR_NONE)
+		retVal = SHVSocket::InvalidIPv4;
+
+	return retVal;
+}
+
+/*************************************
+ * Inetv4ToAddr
+ *************************************/
+SHVStringBuffer SHVSocketServerImpl::Inetv4ToAddr(SHVIPv4Addr ip)
+{
+SHVString retVal;
+in_addr addr = { ip };
+#ifdef UNICODE
+SHVString8 tmpBuf = ::inet_ntoa(addr);
+	retVal = tmpBuf.ToStrT();
+#else
+	retVal = ::inet_ntoa(addr);
+#endif
+	return retVal.ReleaseBuffer();
+}
+
+/*************************************
+ * Inetv4ResolveHost
+ *************************************/
+SHVIPv4Addr SHVSocketServerImpl::Inetv4ResolveHost(const SHVStringC host)
+{
+SHVIPv4Addr retVal = Inetv4Addr(host);
+
+	if (retVal == SHVSocket::InvalidIPv4)
+	{
+	hostent* h = gethostbyname(host.ToStr8().GetSafeBuffer());
+		retVal = ((struct in_addr *)*h->h_addr_list)->s_addr;
+	}
+	
+	return retVal;
 }
 
 ///\cond INTERNAL

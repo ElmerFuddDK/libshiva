@@ -45,6 +45,8 @@ class SHVTest : public SHVModule
 	SHVSocketRef Socket;
 	SHVList<SHVSocketRef,SHVSocket*> ClientSockets;
 	SHVEventSubscriberBaseRef SocketSubscriber;
+	SHVIPv4Addr UdpIP;
+	SHVIPv4Port UdpPort;
 public:
 
 	SHVTest(SHVModuleList& modules) : SHVModule(modules,"Test")
@@ -62,6 +64,9 @@ public:
 		Modules.EventSubscribe(SHVModuleList::EventClosing, new SHVEventSubscriber(this));
 		Modules.EventSubscribe(__EVENT_GLOBAL_STDIN, new SHVEventSubscriber(this));
 		
+		UdpIP = 0;
+		UdpPort = 0;
+
 		return SHVModule::Register();
 	}
 	
@@ -131,12 +136,17 @@ public:
 		{
 		SHVBufferRef buffer;
 		size_t bytesRead;
+		SHVIPv4Addr fromIP;
+		SHVIPv4Port fromPort;
 		SHVSocket* socket = SHVSocketServer::SocketFromEvent(event);
-			for (buffer = socket->PopReceiveBuffer(bytesRead); !buffer.IsNull(); buffer = socket->PopReceiveBuffer(bytesRead))
+			for (buffer = socket->PopReceiveBuffer(bytesRead,fromIP,fromPort); !buffer.IsNull(); buffer = socket->PopReceiveBuffer(bytesRead,fromIP,fromPort))
 			{
 			SHVString str;
 				str.AddChars(buffer->GetBufferConst(),bytesRead);
-				printf("Received : %s\n", str.GetSafeBuffer());
+				if (fromIP)
+					printf("Received from (%s,%d): %s\n", SocketServer->Inetv4ToAddr(fromIP).GetSafeBuffer(), fromPort, str.GetSafeBuffer());
+				else
+					printf("Received : %s\n", str.GetSafeBuffer());
 			}
 		}
 		else if (SHVEvent::Equals(event,SHVSocketServer::EventSockIncomingConn))
@@ -192,11 +202,6 @@ public:
 				SHVIPv4Port port = 0;
 				int space;
 				
-					if (!Socket.IsNull())
-					{
-						Socket->Close();
-						Socket = NULL;
-					}
 					if ( (space = ip.ReverseFind(_T(" "))) > 0)
 					{
 					SHVChar* c;
@@ -204,14 +209,47 @@ public:
 						ip[space] = 0;
 					}
 					
-					Socket = SocketServer->CreateSocket(SocketSubscriber);
-					printf("Attempting connect to \"%s\" port %d\n", ip.GetSafeBuffer(), port);
-					SHVASSERT(Socket->Connect(ip.ToStrT(),port ? port : 1234));
+					if (!Socket.IsNull() && Socket->GetType() == SHVSocket::TypeUDP)
+					{
+						UdpIP = SocketServer->Inetv4ResolveHost(ip);
+						UdpPort = port;
+					}
+					else
+					{
+						if (!Socket.IsNull())
+						{
+							Socket->Close();
+							Socket = NULL;
+						}
+						
+						Socket = SocketServer->CreateSocket(SocketSubscriber);
+						printf("Attempting connect to \"%s\" port %d\n", ip.GetSafeBuffer(), port);
+						SHVASSERT(Socket->Connect(SocketServer->Inetv4ResolveHost(ip.ToStrT()),port ? port : 1234));
+					}
+				}
+				else if (str.Left(5) == SHVString8C("/udp "))
+				{
+				SHVChar* c;
+				SHVIPv4Port port = SHVString8C::StrToL(str.GetSafeBuffer() + 5, &c);
+				
+					UdpIP = 0;
+					UdpPort = 0;
+					
+					if (!Socket.IsNull())
+					{
+						Socket->Close();
+						Socket = NULL;
+					}
+					
+					Socket = SocketServer->CreateSocket(SocketSubscriber,SHVSocket::TypeUDP);
+					printf("Attempting to start UDP at %d\n", port);
+					SHVASSERT(Socket->BindAndListen(port ? port : 1234));
 				}
 				else if (str == SHVString8C("/help"))
 				{
 					printf("Commands available:\n"
 						   " /server <port>         Will start a server at a given port\n"
+						   " /udp <port>            Will start an udp socket\n"
 						   " /connect <ip> <port>   Will connect to an ip/port\n"
 						   " /quit                  Will quit ...\n"
 						   "\n");
@@ -227,7 +265,10 @@ public:
 				
 				if (Socket->GetState() == SHVSocket::StateConnected)
 				{
-					Socket->Send(SHVBufferCPtr((SHVByte*)str.GetSafeBuffer(),str.GetLength()));
+					if (Socket->GetType() == SHVSocket::TypeUDP && UdpIP != 0)
+						Socket->SendTo(SHVBufferCPtr((SHVByte*)str.GetSafeBuffer(),str.GetLength()),UdpIP,UdpPort);
+					else
+						Socket->Send(SHVBufferCPtr((SHVByte*)str.GetSafeBuffer(),str.GetLength()));
 				}
 				else if (Socket->GetState() == SHVSocket::StateListening)
 				{
