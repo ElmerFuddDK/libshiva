@@ -535,7 +535,7 @@ SHVIPv4Port fromport = 0;
 			host.sin_port = 0;
 			
 #ifdef __SHIVA_WIN32
-		size_t len = sizeof(sockaddr_in);
+		int len = sizeof(sockaddr_in);
 			sz = ::recvfrom(Socket,(char*)bufPtr->GetBufferAsVoid(),(int)BufferSize,MSG_DONTWAIT, (sockaddr*) &host, &len);
 #else
 		socklen_t len = sizeof(sockaddr_in);

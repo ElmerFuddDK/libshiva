@@ -34,8 +34,8 @@
 #include "../include/shvsocketserverimpl.h"
 #ifndef __SHIVA_WIN32
 # include <arpa/inet.h>
+# include <netdb.h>
 #endif
-#include <netdb.h>
 
 
 
