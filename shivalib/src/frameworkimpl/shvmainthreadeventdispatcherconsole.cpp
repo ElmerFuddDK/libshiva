@@ -37,8 +37,14 @@
 #include "../../../include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
 #include "../../../include/framework/shveventstdin.h"
 
-#include <unistd.h>
-#include <fcntl.h>
+#ifdef __SHIVA_WIN32
+# include <io.h>
+# define EventInternalSdin -1
+#else
+# include <unistd.h>
+# include <fcntl.h>
+#endif
+#include <string.h>
 
 
 //=========================================================================================================
@@ -50,6 +56,7 @@
  *************************************/
 SHVMainThreadEventDispatcherConsole::SHVMainThreadEventDispatcherConsole()
 {
+#ifndef __SHIVA_WIN32
 	// Initialize pipe signaller for the select statement
 	pipe(PipeSignal);
 
@@ -64,8 +71,9 @@ SHVMainThreadEventDispatcherConsole::SHVMainThreadEventDispatcherConsole()
 		close(PipeSignal[1]);
 		PipeSignal[1] = 0;
 	}
-	
+
 	QueueSignalled = false;
+#endif
 }
 
 /*************************************
@@ -73,10 +81,14 @@ SHVMainThreadEventDispatcherConsole::SHVMainThreadEventDispatcherConsole()
  *************************************/
 SHVMainThreadEventDispatcherConsole::~SHVMainThreadEventDispatcherConsole()
 {
+#ifdef __SHIVA_WIN32
+	SHVASSERT(!StdinThread.IsRunning());
+#else
 	if (PipeSignal[0])
 		close(PipeSignal[0]);
 	if (PipeSignal[1])
 		close(PipeSignal[1]);
+#endif
 }
 
 /*************************************
@@ -84,6 +96,10 @@ SHVMainThreadEventDispatcherConsole::~SHVMainThreadEventDispatcherConsole()
  *************************************/
 void SHVMainThreadEventDispatcherConsole::SetupDefaults(SHVModuleList& modules)
 {
+#ifdef __SHIVA_WIN32
+	selfSubs = new SHVEventSubscriber(this,&modules);
+	ModuleList = &modules;
+#endif
 	modules.GetConfig().Set(SHVModuleList::DefaultCfgAppPath,SHVStringC(_T(".")) + SHVDir::Delimiter());
 	modules.GetConfig().Set(SHVModuleList::DefaultCfgAppName,SHVStringC(_T("")));
 }
@@ -93,6 +109,9 @@ void SHVMainThreadEventDispatcherConsole::SetupDefaults(SHVModuleList& modules)
  *************************************/
 void SHVMainThreadEventDispatcherConsole::SignalDispatcher()
 {
+#ifdef __SHIVA_WIN32
+	Signal.Unlock();
+#else
 	Mutex.Lock();
 	if (Running() && !QueueSignalled)
 	{
@@ -100,6 +119,7 @@ void SHVMainThreadEventDispatcherConsole::SignalDispatcher()
 		write(PipeSignal[1],"1",1);
 	}
 	Mutex.Unlock();
+#endif
 }
 
 /*************************************
@@ -107,8 +127,14 @@ void SHVMainThreadEventDispatcherConsole::SignalDispatcher()
  *************************************/
 SHVBool SHVMainThreadEventDispatcherConsole::InitializeEventLoop()
 {
+#ifdef __SHIVA_WIN32
+	Signal.Lock();
+	StdinThread.Start(this,&SHVMainThreadEventDispatcherConsole::StdinFunc);
+	return StdinThread.IsRunning();
+#else
 	StdinPos = 0;
 	return (PipeSignal[0] && PipeSignal[1] ? SHVBool::True : SHVBool::False);
+#endif
 }
 
 /*************************************
@@ -116,16 +142,22 @@ SHVBool SHVMainThreadEventDispatcherConsole::InitializeEventLoop()
  *************************************/
 void SHVMainThreadEventDispatcherConsole::RunEventLoop()
 {
+#ifndef __SHIVA_WIN32
 fd_set rfds;
 int nextFD, retVal;
+char dummyBuffer[50];
 SHVBufferRef readBuf;
 size_t bufReadPos = 0;
-char dummyBuffer[50];
+#endif
 
 	DispatchEvents();
 
 	while ( Running() )
 	{
+#ifdef __SHIVA_WIN32
+		Signal.Lock();
+		DispatchEvents();
+#else
 		// fill file decriptor list for select
 		FD_ZERO(&rfds);
 		FD_SET(PipeSignal[0], &rfds);
@@ -165,11 +197,12 @@ char dummyBuffer[50];
 			if (bufReadPos == StdinBufSize || readBuf.IsNull())
 			{
 				readBuf = new SHVBufferChunk<StdinBufSize>();
+				::memset(readBuf->GetBuffer(),0,StdinBufSize);
 				bufReadPos = 0;
 				
 				StdinStream.AddBuffer(readBuf);
 			}
-			
+
 			retVal = read(STDIN_FILENO, readBuf->GetBuffer()+bufReadPos, StdinBufSize-bufReadPos);
 			
 			if (retVal <=0)
@@ -183,7 +216,14 @@ char dummyBuffer[50];
 				HandleStdin();
 			}
 		}
+#endif
 	}
+
+#ifdef __SHIVA_WIN32
+	::CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
+	for (int i=10;StdinThread.IsRunning();i+=10)
+		SHVThreadBase::Sleep(i);
+#endif
 }
 
 /*************************************
@@ -213,7 +253,11 @@ SHVString8 str, cmd, data;
 		StdinStream.ReadString8(str,newline - StdinPos,StdinPos);
 		StdinPos = newline + 1;
 		
+#ifdef __SHIVA_WIN32
+		this->selfSubs->EmitNow(*ModuleList,new SHVEvent(this,EventInternalSdin,SHVInt(),new SHVEventStdin(NULL,str.ReleaseBuffer())));
+#else
 		Queue->GetModuleList().EmitEvent(new SHVEventStdin(NULL,str.ReleaseBuffer()));
+#endif
 		
 		StdinStream.Truncate(StdinPos);
 	}
@@ -224,5 +268,55 @@ SHVString8 str, cmd, data;
  *************************************/
 void SHVMainThreadEventDispatcherConsole::OnEvent(SHVEvent* event)
 {
+#ifdef __SHIVA_WIN32
+	if (event->GetCaller() == this && SHVEvent::Equals(event,EventInternalSdin))
+	{
+		Queue->GetModuleList().EmitEvent((SHVEvent*)event->GetObject());
+	}
+#else
 	SHVUNUSED_PARAM(event);
+#endif
 }
+
+#ifdef __SHIVA_WIN32
+///\cond INTERNAL
+/*************************************
+ * OnEvent
+ *************************************/
+void SHVMainThreadEventDispatcherConsole::StdinFunc()
+{
+SHVBufferRef readBuf;
+size_t bufReadPos = 0;
+int retVal;
+
+	StdinPos = 0;
+	while (Running())
+	{
+		if (bufReadPos == StdinBufSize || readBuf.IsNull())
+		{
+			readBuf = new SHVBufferChunk<StdinBufSize+1>();
+			::memset(readBuf->GetBuffer(),0,StdinBufSize);
+			bufReadPos = 0;
+			
+			StdinStream.AddBuffer(readBuf);
+		}
+
+		retVal = _read(0, readBuf->GetBuffer()+bufReadPos, (unsigned int)StdinBufSize-bufReadPos);
+		
+		if (retVal <=0)
+		{
+			if (!Running())
+				continue;
+			printf("Error in main event loop whilst processing stdin\n");
+			break;
+		}
+		else
+		{
+			bufReadPos += retVal;
+			readBuf->GetBuffer()[bufReadPos] = '\0'; // clear any unwanted Xtra newline
+			HandleStdin();
+		}
+	}
+}
+///\endcond
+#endif

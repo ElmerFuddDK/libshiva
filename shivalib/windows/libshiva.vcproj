@@ -423,6 +423,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\framework\shveventstdin.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\framework\shveventstring.cpp"
 					>
 				</File>
@@ -460,6 +464,10 @@
 				>
 				<File
 					RelativePath="..\src\frameworkimpl\shvconfigimpl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\frameworkimpl\shvmainthreadeventdispatcherconsole.cpp"
 					>
 				</File>
 				<File
@@ -792,6 +800,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\include\framework\shveventstdin.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\framework\shveventstring.h"
 						>
 					</File>
@@ -889,6 +901,10 @@
 					</File>
 					<File
 						RelativePath="..\..\include\frameworkimpl\shvmaineventqueue.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\frameworkimpl\shvmainthreadeventdispatcherconsole.h"
 						>
 					</File>
 					<File

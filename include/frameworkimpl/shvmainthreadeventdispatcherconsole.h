@@ -6,6 +6,9 @@
 #include "../utils/shvbuffercstream.h"
 
 #include "../framework/shveventstdin.h"
+#ifdef __SHIVA_WIN32
+#include "../threadutils/shvthread.h"
+#endif
 
 //-=========================================================================================================
 /// SHVMainThreadEventDispatcherConsole class - Dispatcher for console user IO
@@ -14,7 +17,7 @@
  * user IO.
  */
 
-class SHVMainThreadEventDispatcherConsole : public SHVMainThreadEventDispatcher
+class SHVAPI SHVMainThreadEventDispatcherConsole : public SHVMainThreadEventDispatcher
 {
 public:
 
@@ -46,9 +49,17 @@ private:
 	
 	enum { StdinBufSize = 256 };
 	
+#ifdef __SHIVA_WIN32
+	SHVModuleList* ModuleList;
+	SHVMutexBase Signal;
+	SHVEventSubscriberRef selfSubs;
+	SHVThread<SHVMainThreadEventDispatcherConsole> StdinThread;
+	void StdinFunc();
+#else
 	SHVMutex Mutex;
 	bool QueueSignalled;
 	int PipeSignal[2];
+#endif
 	
 	SHVBufferCStream StdinStream;
 	size_t StdinPos;

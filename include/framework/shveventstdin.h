@@ -12,7 +12,7 @@
 /**
  */
 
-class SHVEventStdin : public SHVEventString
+class SHVAPI SHVEventStdin : public SHVEventString
 {
 public:
 
