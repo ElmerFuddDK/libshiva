@@ -46,7 +46,7 @@ friend class SHVSocketImpl;
 	void RemoveFromList(SHVSocketImpl* sock);
 	inline SHVModuleList& GetModules() { return Modules; }
 	
-#ifdef __SHIVA_WINCE
+#ifdef __SHIVASOCKETS_NOSELECTMODE
 	SHVMutexBase ThreadSignal; // for signalling the socket thread
 #endif
 	SHVMutex SocketServerLock; // hit and run lock

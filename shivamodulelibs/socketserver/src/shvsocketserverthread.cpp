@@ -55,13 +55,13 @@
  *************************************/
 SHVSocketServerThread::SHVSocketServerThread(SHVSocketServerImpl* server) : SocketServer(server)
 {
-#ifndef __SHIVA_WINCE
+#ifndef __SHIVASOCKETS_NOSELECTMODE
 	// Initialize pipe signaller for the select statement
 	pipe(PipeSignal);
 #endif
 
 	// disable blocking mode on the pipes - close on failure
-#ifndef __SHIVA_WIN32
+#if !defined(__SHIVA_WIN32) && !defined(__SHIVASOCKETS_NOSELECTMODE)
 	if (fcntl(PipeSignal[0], F_SETFL, O_NONBLOCK) < 0)
 	{
 		close(PipeSignal[0]);
@@ -83,7 +83,7 @@ SHVSocketServerThread::SHVSocketServerThread(SHVSocketServerImpl* server) : Sock
 SHVSocketServerThread::~SHVSocketServerThread()
 {
 	WaitForTermination();
-#ifndef __SHIVA_WINCE
+#ifndef __SHIVASOCKETS_NOSELECTMODE
 	if (PipeSignal[0])
 		close(PipeSignal[0]);
 	if (PipeSignal[1])
@@ -97,7 +97,7 @@ SHVSocketServerThread::~SHVSocketServerThread()
  *************************************/
 SHVBool SHVSocketServerThread::StartThread(SHVModuleList& modules)
 {
-#ifndef __SHIVA_WINCE
+#ifndef __SHIVASOCKETS_NOSELECTMODE
 	// don't start the thread if the pipe isn't created
 	if (!PipeSignal[0] || !PipeSignal[1])
 		return SHVBool::False;
@@ -155,7 +155,7 @@ void SHVSocketServerThread::EnqueueEvent(SHVEvent* event, SHVEventSubscriberBase
 void SHVSocketServerThread::SignalDispatcher()
 {
 	SocketServer->SocketServerLock.Lock();
-#ifdef __SHIVA_WINCE
+#ifdef __SHIVASOCKETS_NOSELECTMODE
 	if (SocketThread.IsRunning() && SocketServer->ThreadSignal.IsLocked())
 		SocketServer->ThreadSignal.Unlock();
 #else
@@ -198,7 +198,7 @@ void SHVSocketServerThread::UnlockEvent()
  *************************************/
 void SHVSocketServerThread::ThreadFunc()
 {
-#ifndef __SHIVA_WINCE
+#ifndef __SHIVASOCKETS_NOSELECTMODE
 fd_set rfds;
 fd_set wfds;
 int nextFD, retVal;
@@ -212,7 +212,7 @@ SHVListIterator<SHVSocketImplRef,SHVSocketImpl*> pendingListItr(pendingList);
 
 	while (!KillSignal)
 	{
-#ifdef __SHIVA_WINCE
+#ifdef __SHIVASOCKETS_NOSELECTMODE
 		SocketServer->ThreadSignal.Lock(); // will block until we get a signal
 #else
 		// fill file decriptor list for select
@@ -273,7 +273,7 @@ SHVListIterator<SHVSocketImplRef,SHVSocketImpl*> pendingListItr(pendingList);
 		for (SocketListItr.Pos() = NULL; SocketListItr.MoveNext();)
 		{
 			// check for activity on socket
-#ifdef __SHIVA_WINCE
+#ifdef __SHIVASOCKETS_NOSELECTMODE
 			if (SocketListItr.Get()->IsPending)
 #else
 			if (FD_ISSET(SocketListItr.Get()->Socket,&rfds) || FD_ISSET(SocketListItr.Get()->Socket,&wfds))
@@ -291,7 +291,7 @@ SHVListIterator<SHVSocketImplRef,SHVSocketImpl*> pendingListItr(pendingList);
 		pendingList.RemoveAll();
 		
 	}
-#ifdef __SHIVA_WINCE
+#ifdef __SHIVASOCKETS_NOSELECTMODE
 	SocketServer->ThreadSignal.Unlock(); // release the signal
 #endif
 }

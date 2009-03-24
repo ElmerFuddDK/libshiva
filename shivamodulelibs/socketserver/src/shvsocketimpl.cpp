@@ -69,7 +69,7 @@ SHVSocketImpl::SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* 
 	
 	BufferSize = DefaultBufferSize;
 
-#ifdef __SHIVA_WINCE
+#ifdef __SHIVASOCKETS_NOSELECTMODE
 	IsPending = false;
 	StartReadThread();
 #endif
@@ -83,7 +83,7 @@ SHVSocketImpl::SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* 
 	
 	BufferSize = DefaultBufferSize;
 	
-#ifdef __SHIVA_WINCE
+#ifdef __SHIVASOCKETS_NOSELECTMODE
 	IsPending = false;
 #endif
 
@@ -148,7 +148,7 @@ SHVSocketImpl::~SHVSocketImpl()
 #endif
 	}
 
-#ifdef __SHIVA_WINCE
+#ifdef __SHIVASOCKETS_NOSELECTMODE
 	Socket = InvalidSocket;
 	while (ReadThread.IsRunning())
 	{
@@ -206,7 +206,7 @@ SHVBool retVal;
 				if (!status)
 				{
 					State = SHVSocket::StateListening;
-#ifdef __SHIVA_WINCE
+#ifdef __SHIVASOCKETS_NOSELECTMODE
 					StartReadThread();
 #endif
 					retVal = SHVBool::True;
@@ -226,6 +226,9 @@ SHVBool retVal;
 			if (!status)
 			{
 				State = SHVSocket::StateConnected;
+#ifdef __SHIVASOCKETS_NOSELECTMODE
+					StartReadThread();
+#endif
 				retVal = SHVBool::True;
 			}
 			else
@@ -429,7 +432,7 @@ SHVBool retVal(SHVSocket::ErrInvalidOperation);
 		{
 			State = SHVSocket::StateConnecting;
 			retVal.SetError(SHVSocket::ErrNone);
-#ifdef __SHIVA_WINCE
+#ifdef __SHIVASOCKETS_NOSELECTMODE
 			StartReadThread();
 #endif
 		}
@@ -583,7 +586,7 @@ SHVIPv4Port fromport = 0;
 		queue->SignalDispatcher();
 	}
 
-#ifdef __SHIVA_WINCE
+#ifdef __SHIVASOCKETS_NOSELECTMODE
 	IsPending = false;
 	ReadThreadSignal.Unlock();
 #endif
@@ -616,7 +619,7 @@ socklen_t len = sizeof(sockerr);
 }
 
 
-#ifdef __SHIVA_WINCE
+#ifdef __SHIVASOCKETS_NOSELECTMODE
 void SHVSocketImpl::StartReadThread()
 {
 	ReadThread.Start(this,&SHVSocketImpl::ReadThreadFunc);
@@ -635,7 +638,7 @@ int nextFD, retVal;
 		FD_ZERO(&wfds);
 		fds = (GetState() == SHVSocket::StateConnecting ? &wfds : &rfds);
 		FD_SET(Socket, fds);
-		nextFD = Socket+1;
+		nextFD = int(Socket)+1;
 
 		retVal = select(nextFD, &rfds, &wfds, NULL, NULL);
 

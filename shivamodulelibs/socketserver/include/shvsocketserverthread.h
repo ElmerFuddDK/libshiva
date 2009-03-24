@@ -49,7 +49,7 @@ private:
 	
 	SHVEventQueueList EventList;
 	
-#ifndef __SHIVA_WINCE
+#ifndef __SHIVASOCKETS_NOSELECTMODE
 	int PipeSignal[2];
 #endif
 };

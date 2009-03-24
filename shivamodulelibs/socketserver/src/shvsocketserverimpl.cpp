@@ -55,6 +55,14 @@ SHVSocketServerImpl::SHVSocketServerImpl(SHVModuleList& modules) : SHVSocketServ
  *************************************/
 SHVBool SHVSocketServerImpl::Register()
 {
+#ifdef __SHIVA_WIN32
+WSADATA wsaData;
+	if (WSAStartup(MAKEWORD( 2, 2 ), &wsaData) != 0)
+	{
+		return Modules.AddStartupError(_T("Failed initializing socket system"));
+	}
+#endif
+
 	if (!SocketServerThread.StartThread(Modules))
 		return Modules.AddStartupError(_T("Failed starting socket server thread"));
 
@@ -73,12 +81,23 @@ void SHVSocketServerImpl::PostRegister()
  *************************************/
 void SHVSocketServerImpl::Unregister()
 {
+SHVList<SHVSocketImplRef,SHVSocketImpl*> tmpSocketList;
+SHVListIterator<SHVSocketImplRef,SHVSocketImpl*> sockItr(SocketList);
 	SocketServerThread.StopThread();
 	
 	// clear the list, since it will contain allocations from other modules
 	SocketServerLock.Lock();
+	while (sockItr.MoveNext())
+		tmpSocketList.AddTail(sockItr.Get());
 	SocketList.RemoveAll();
 	SocketServerLock.Unlock();
+
+	// this will delete the objects, handy when in noselect mode (prevents deadlocks)
+	tmpSocketList.RemoveAll();
+
+#ifdef __SHIVA_WIN32
+	WSACleanup();
+#endif
 }
 
 /*************************************
@@ -142,7 +161,12 @@ SHVIPv4Addr retVal = (SHVIPv4Addr)::inet_addr(strIp.ToStr8().GetSafeBuffer());
 SHVStringBuffer SHVSocketServerImpl::Inetv4ToAddr(SHVIPv4Addr ip)
 {
 SHVString retVal;
+#ifdef __SHIVA_WIN32
+in_addr addr;
+	addr.S_un.S_addr = ip;
+#else
 in_addr addr = { ip };
+#endif
 #ifdef UNICODE
 SHVString8 tmpBuf = ::inet_ntoa(addr);
 	retVal = tmpBuf.ToStrT();

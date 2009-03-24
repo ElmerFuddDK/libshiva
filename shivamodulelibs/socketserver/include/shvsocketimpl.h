@@ -3,14 +3,16 @@
 
 #include "../../../include/modules/socketserver/shvsocketserver.h"
 #ifdef __SHIVA_WIN32
-# ifdef __SHIVA_WINCE
-#  include "../../../include/threadutils/shvthread.h"
-#  include "../../../include/threadutils/shvmutexbase.h"
-# endif
+# define __SHIVASOCKETS_NOSELECTMODE
 # include <winsock.h>
 # define SHVSOCKTYPE SOCKET
 #else
 # define SHVSOCKTYPE int
+#endif
+
+#ifdef __SHIVASOCKETS_NOSELECTMODE
+# include "../../../include/threadutils/shvthread.h"
+# include "../../../include/threadutils/shvmutexbase.h"
 #endif
 
 
@@ -84,21 +86,18 @@ friend class SHVSocketServerThread;
 	size_t BytesRead;
 	bool RecvPending;
 
-#ifdef __SHIVA_WIN32
-	SOCKET Socket;
-# ifdef __SHIVA_WINCE
+#ifdef __SHIVASOCKETS_NOSELECTMODE
 	bool IsPending;
 	SHVThread<SHVSocketImpl> ReadThread;
 	SHVMutexBase ReadThreadSignal;
 
 	void StartReadThread();
 	void ReadThreadFunc();
-# endif
-#elif defined(__SHIVA_EPOC)
-#error NOT IMPLEMENTED
-#else
-	int Socket;
 #endif
+#if defined(__SHIVA_EPOC)
+#error NOT IMPLEMENTED
+#endif
+	SHVSOCKTYPE Socket;
 	///\endcond
 };
 typedef SHVRefObjectContainer<SHVSocketImpl> SHVSocketImplRef;
