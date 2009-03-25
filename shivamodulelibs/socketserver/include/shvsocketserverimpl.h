@@ -19,6 +19,7 @@ public:
 
 	// constructor
 	SHVSocketServerImpl(SHVModuleList& modules);
+	~SHVSocketServerImpl();
 
 
 	// module functions
@@ -46,6 +47,9 @@ friend class SHVSocketImpl;
 	void RemoveFromList(SHVSocketImpl* sock);
 	inline SHVModuleList& GetModules() { return Modules; }
 	
+#ifdef __SHIVA_WIN32
+	bool WSAInitialized;
+#endif
 #ifdef __SHIVASOCKETS_NOSELECTMODE
 	SHVMutexBase ThreadSignal; // for signalling the socket thread
 #endif

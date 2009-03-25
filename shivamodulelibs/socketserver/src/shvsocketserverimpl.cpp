@@ -48,6 +48,21 @@
  *************************************/
 SHVSocketServerImpl::SHVSocketServerImpl(SHVModuleList& modules) : SHVSocketServer(modules), SocketServerThread(this)
 {
+#ifdef __SHIVA_WIN32
+WSADATA wsaData;
+	WSAInitialized =(WSAStartup(MAKEWORD( 2, 2 ), &wsaData) == 0);
+#endif
+}
+
+/*************************************
+ * Destructor
+ *************************************/
+SHVSocketServerImpl::~SHVSocketServerImpl()
+{
+#ifdef __SHIVA_WIN32
+	if (WSAInitialized)
+		WSACleanup();
+#endif
 }
 
 /*************************************
@@ -56,13 +71,11 @@ SHVSocketServerImpl::SHVSocketServerImpl(SHVModuleList& modules) : SHVSocketServ
 SHVBool SHVSocketServerImpl::Register()
 {
 #ifdef __SHIVA_WIN32
-WSADATA wsaData;
-	if (WSAStartup(MAKEWORD( 2, 2 ), &wsaData) != 0)
+	if (!WSAInitialized)
 	{
-		return Modules.AddStartupError(_T("Failed initializing socket system"));
+		Modules.AddStartupError(_T("Failed initializing socket system"));
 	}
 #endif
-
 	if (!SocketServerThread.StartThread(Modules))
 		return Modules.AddStartupError(_T("Failed starting socket server thread"));
 
@@ -94,10 +107,6 @@ SHVListIterator<SHVSocketImplRef,SHVSocketImpl*> sockItr(SocketList);
 
 	// this will delete the objects, handy when in noselect mode (prevents deadlocks)
 	tmpSocketList.RemoveAll();
-
-#ifdef __SHIVA_WIN32
-	WSACleanup();
-#endif
 }
 
 /*************************************
