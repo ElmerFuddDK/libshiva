@@ -94,6 +94,7 @@ public:
 
 
 	// statics
+	static SHVTime FromUnixTime(SHVInt64Val unixTime);
 	static SHVStringBuffer CreateTimeStringNow(int diffInSeconds=0);
 	static int MonthToDays(int month);
 	static int DaysInMonth(int month, int year);

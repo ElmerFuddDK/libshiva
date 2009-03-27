@@ -658,6 +658,17 @@ time_t t2 = SHVTime::TimeGm((tm*)&tTime2.Time, false);
 
 // statics
 /*************************************
+ * FromUnixTime
+ *************************************/
+SHVTime SHVTime::FromUnixTime(SHVInt64Val unixTime)
+{
+time_t utime = (time_t)unixTime;
+SHVTime retVal;
+	GmTime_r(&utime,&retVal.Time);
+	return retVal;
+}
+
+/*************************************
  * CreateTimeStringNow
  *************************************/
 SHVStringBuffer SHVTime::CreateTimeStringNow(int diffInSeconds)
