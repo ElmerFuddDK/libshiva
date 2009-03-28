@@ -121,7 +121,8 @@ SOURCES += ../../src/framework/shvevent.cpp \
            ../../src/uuid/uuid.c \
            ../../src/utils/shvuuid.cpp \
            ../../src/md5/md5.c \
-           ../../src/utils/shvmd5sum.cpp
+           ../../src/utils/shvmd5sum.cpp \
+ ../../src/gui/utils/shvrect.cpp
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
 DEFINES = __SHVSTRING_INCLUDE_UNICODE
 TARGET = shiva 
