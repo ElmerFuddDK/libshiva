@@ -113,7 +113,7 @@ SHVDataStructRef newStruct = GetInternalStruct((SHVDataStructC*) dataStruct);
 		{
 			for (size_t i = orgStruct->IndexCount(); i < dataStruct->IndexCount(); i++)
 			{
-				CreateIndex(SQLite, orgStruct, i);
+				CreateIndex(SQLite, dataStruct, i);
 			}
 		}
 		else
