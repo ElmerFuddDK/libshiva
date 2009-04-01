@@ -431,7 +431,11 @@ SHVXmlReaderImpl* self = (SHVXmlReaderImpl*) userData;
  *************************************/
 SHVStringBuffer16 SHVXmlReaderImpl::XML_Char2String16(const XML_Char *str) const
 {
+#ifdef UNICODE
+	return SHVString(str).ReleaseBuffer();
+#else
 	return SHVStringUTF8(str).ToStr16();
+#endif
 }
 
 /*************************************
@@ -439,7 +443,11 @@ SHVStringBuffer16 SHVXmlReaderImpl::XML_Char2String16(const XML_Char *str) const
  *************************************/
 SHVStringBuffer8 SHVXmlReaderImpl::XML_Char2String8(const XML_Char *str) const
 {
+#ifdef UNICODE
+	return SHVString(str).ToStr8();
+#else
 	return SHVStringUTF8(str).ToStr8();
+#endif
 }
 
 /*************************************
@@ -447,6 +455,10 @@ SHVStringBuffer8 SHVXmlReaderImpl::XML_Char2String8(const XML_Char *str) const
  *************************************/
 SHVStringBufferUTF8 SHVXmlReaderImpl::XML_Char2StringUTF8(const XML_Char *str) const
 {
+#ifdef UNICODE
+	return SHVString(str).ToStrUTF8();
+#else
 	return SHVStringUTF8(str).ReleaseBuffer();
+#endif
 }
 
