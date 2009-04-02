@@ -3,36 +3,60 @@
 # Subdir relative project main directory: ./shivaguigtk
 # Target is a library:  
 
-HEADERS += ../../../include/shvcompoundform.h \
-           ../../../include/shvcontrolbutton.h \
-           ../../../include/shvcontrolcontainer.h \
-           ../../../include/shvcontrolcreatorbase.h \
-           ../../../include/shvcontrolcreator.h \
-           ../../../include/shvcontrolcreatorsubtype.h \
-           ../../../include/shvcontroldata.h \
-           ../../../include/shvcontroledit.h \
-           ../../../include/shvcontrol.h \
-           ../../../include/shvcontrolimplementer.h \
-           ../../../include/shvcontrollabel.h \
-           ../../../include/shvcontrollayout.h \
-           ../../../include/shvformbase.h \
-           ../../../include/shvform.h \
-           ../../../include/shvformimplementer.h \
-           ../../../include/shvguimanager.h \
-           ../../../include/shvmainwnd.h \
-           ../../../include/utils/shvbitmap.h \
-           ../../../include/utils/shvbrush.h \
-           ../../../include/utils/shvcolor.h \
-           ../../../include/utils/shvdraw.h \
-           ../../../include/utils/shvfont.h \
-           ../../../include/utils/shvpen.h \
-           ../../../include/utils/shvpoint.h \
-           ../../../include/utils/shvrect.h \
-           ../../../include/utils/shvregion.h \
-           ../../../gui/shvformimpl.h \
+LIBS += -lgdk-x11-2.0 \
+        -lgtk-x11-2.0 \
+        -ldl \
+        -lshiva 
+QMAKE_LIBDIR = ../../../../shivalib/linux/libshiva
+QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
+DEFINES = __SHVSTRING_INCLUDE_UNICODE, \
+          __SHIVA_GTK
+CONFIG = debug \
+         warn_on \
+         dll 
+TEMPLATE = lib 
+HEADERS += ../../../gui/shvformimpl.h \
            ../../../gui/shvguimanagerimpl.h \
            ../../../gui/shvmessagebox.h \
-           ../../../utilsimpl/shvregionimpl.h 
+           ../../../utilsimpl/shvregionimpl.h \
+           ../../gui/shvmainthreadeventdispatchergtk.h \
+           ../../gui/shvgtk.h \
+           ../../gui/shvguimanagergtk.h \
+           ../../gui/shvcontrolimplementermainwindowgtk.h \
+ ../../../../include/gui/shvcompoundform.h \
+ ../../../../include/gui/shvcontrolbutton.h \
+ ../../../../include/gui/shvcontrolcombobox.h \
+ ../../../../include/gui/shvcontrolcontainer.h \
+ ../../../../include/gui/shvcontrolcreatorbase.h \
+ ../../../../include/gui/shvcontrolcreator.h \
+ ../../../../include/gui/shvcontrolcreatorsubtype.h \
+ ../../../../include/gui/shvcontroldatetime.h \
+ ../../../../include/gui/shvcontroledit.h \
+ ../../../../include/gui/shvcontrol.h \
+ ../../../../include/gui/shvcontrolimplementer.h \
+ ../../../../include/gui/shvcontrollabel.h \
+ ../../../../include/gui/shvcontrollayout.h \
+ ../../../../include/gui/shvcontrollistview.h \
+ ../../../../include/gui/shvcontroltab.h \
+ ../../../../include/gui/shvformbase.h \
+ ../../../../include/gui/shvform.h \
+ ../../../../include/gui/shvformimplementer.h \
+ ../../../../include/gui/shvguimanager.h \
+ ../../../../include/gui/shvmainwnd.h \
+ ../../../../include/gui/shvmenu.h \
+ ../../../../include/gui/shvregisterbitmap.h \
+ ../../../../include/gui/utils/shvbitmap.h \
+ ../../../../include/gui/utils/shvbrush.h \
+ ../../../../include/gui/utils/shvcolor.h \
+ ../../../../include/gui/utils/shvdraweventdata.h \
+ ../../../../include/gui/utils/shvdraw.h \
+ ../../../../include/gui/utils/shvfont.h \
+ ../../../../include/gui/utils/shvpen.h \
+ ../../../../include/gui/utils/shvpoint.h \
+ ../../../../include/gui/utils/shvrect.h \
+ ../../../../include/gui/utils/shvregion.h \
+ ../../gui/utils/shvfontgtk.h \
+ ../../gui/utils/shvcolorgtk.h
 SOURCES += ../../../gui/shvcontrolbutton.cpp \
            ../../../gui/shvcontrolcontainer.cpp \
            ../../../gui/shvcontrol.cpp \
@@ -42,14 +66,21 @@ SOURCES += ../../../gui/shvcontrolbutton.cpp \
            ../../../gui/shvguimanagerimpl.cpp \
            ../../../gui/shvmessagebox.cpp \
            shvguigtk.cpp \
-           ../../../utils/shvrect.cpp \
-           ../../../utilsimpl/shvregionimpl.cpp 
-LIBS += -ldl \
-        -lshiva 
-QMAKE_LIBDIR = ../../../../shivalib/linux/libshiva 
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
-DEFINES = __SHVSTRING_INCLUDE_UNICODE 
-CONFIG = debug \
-         warn_on \
-         dll 
-TEMPLATE = lib 
+           ../../../utilsimpl/shvregionimpl.cpp \
+           ../../gui/shvmainthreadeventdispatchergtk.cpp \
+           ../../gui/shvgtk.cpp \
+           ../../gui/shvguimanagergtk.cpp \
+           ../../gui/shvcontrolimplementermainwindowgtk.cpp \
+ ../../gui/utils/shvfontgtk.cpp \
+ ../../gui/utils/shvcolorgtk.cpp \
+ ../../../utilsimpl/shvcolor.cpp
+INCLUDEPATH += /usr/lib64/gtk-2.0/include \
+  /usr/lib64/glib-2.0/include \
+  /usr/include/atk-1.0 \
+  /usr/include/gtk-2.0 \
+  /usr/include/cairo \
+  /usr/lib/glib-2.0/include \
+  /usr/include/pango-1.0 \
+  /usr/include/glib-2.0 \
+  /usr/lib/gtk-2.0/include
+

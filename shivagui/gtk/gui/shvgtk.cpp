@@ -28,37 +28,28 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#include "../../../../include/platformspc.h"
+#include "../../../include/platformspc.h"
 
-#include "../../../../include/utils/shvdll.h"
-#include "../../../../include/framework/shvmodulelist.h"
+#include "shvgtk.h"
+#include "shvcontrolimplementermainwindowgtk.h"
 
-#include "../../gui/shvmainthreadeventdispatchergtk.h"
+//=========================================================================================================
+// Gtk
+//=========================================================================================================
 
-
-extern "C"
+/*************************************
+ * GetMainWndHandle
+ *************************************/
+GtkWidget* Gtk::GetMainWndHandle(SHVControl* control)
 {
-
-void* CreateObjectInt(SHVModuleList* list, int id)
-{
-	SHVUNUSED_PARAM(list);
-	
-	switch (id)
-	{
-	case SHVDll::ClassTypeMainThreadDispatcher:
- 		return new SHVMainThreadEventDispatcherGtk();
-	case SHVDll::ClassTypeModuleFactory:
-	default:
-		return NULL;
-	}
+	return ((SHVControlImplementerMainWindowGtk*)control->GetManager()->GetMainWindow()->GetImplementor())->GetMainWndHandle();
 }
 
-void* CreateObjectString(SHVModuleList* list, const SHVTChar* classname)
+/*************************************
+ * MapFlags
+ *************************************/
+int Gtk::MapFlags(int shivaflags)
 {
-	SHVUNUSED_PARAM(list);
-	SHVUNUSED_PARAM(classname);
-	
-	return NULL;
-}
-
+int retVal = 0;
+	return retVal;
 }

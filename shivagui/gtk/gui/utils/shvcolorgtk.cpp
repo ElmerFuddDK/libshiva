@@ -30,35 +30,33 @@
 
 #include "../../../../include/platformspc.h"
 
-#include "../../../../include/utils/shvdll.h"
-#include "../../../../include/framework/shvmodulelist.h"
-
-#include "../../gui/shvmainthreadeventdispatchergtk.h"
+#include "shvcolorgtk.h"
 
 
-extern "C"
+//=========================================================================================================
+// SHVColorGtk
+//=========================================================================================================
+
+/*************************************
+ * GetRed
+ *************************************/
+SHVColor::ColorVal SHVColorGtk::GetRed() const
 {
-
-void* CreateObjectInt(SHVModuleList* list, int id)
-{
-	SHVUNUSED_PARAM(list);
-	
-	switch (id)
-	{
-	case SHVDll::ClassTypeMainThreadDispatcher:
- 		return new SHVMainThreadEventDispatcherGtk();
-	case SHVDll::ClassTypeModuleFactory:
-	default:
-		return NULL;
-	}
+	return Color.red/0xFF;
 }
 
-void* CreateObjectString(SHVModuleList* list, const SHVTChar* classname)
+/*************************************
+ * GetGreen
+ *************************************/
+SHVColor::ColorVal SHVColorGtk::GetGreen() const
 {
-	SHVUNUSED_PARAM(list);
-	SHVUNUSED_PARAM(classname);
-	
-	return NULL;
+	return Color.green/0xFF;
 }
 
+/*************************************
+ * GetBlue
+ *************************************/
+SHVColor::ColorVal SHVColorGtk::GetBlue() const
+{
+	return Color.blue/0xFF;
 }

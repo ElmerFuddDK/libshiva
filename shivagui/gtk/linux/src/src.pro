@@ -3,11 +3,9 @@
 # Subdir relative project main directory: ./src
 # Target is an application:  ../bin/guitester
 
-HEADERS += modules/shvcontroltester.h \
-           ../../../include/utils/shvrect.h 
+HEADERS += modules/shvcontroltester.h
 SOURCES += guitester.cpp \
-           modules/shvcontroltester.cpp \
-           ../../../utils/shvrect.cpp 
+           modules/shvcontroltester.cpp
 LIBS += -ldl \
 -lshiva
 QMAKE_LIBDIR = ../../../../shivalib/linux/libshiva
