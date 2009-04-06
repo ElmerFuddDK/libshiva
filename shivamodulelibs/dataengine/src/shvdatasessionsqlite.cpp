@@ -180,6 +180,14 @@ SHVDataRowListC* retVal;
 		{
 			retVal = new SHVDataRowListCSQLite(this, st, tableName, condition, index);
 		}
+		else
+		{
+			retVal = NULL;
+		}
+	}
+	else
+	{
+		retVal = NULL;
 	}
 	return retVal;
 }
