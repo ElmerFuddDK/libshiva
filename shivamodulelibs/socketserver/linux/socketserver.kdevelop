@@ -14,8 +14,8 @@
     <projectname>socketserver</projectname>
     <projectdirectory>.</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <description></description>
-    <defaultencoding></defaultencoding>
+    <description/>
+    <defaultencoding/>
   </general>
   <kdevfileview>
     <groups>
@@ -68,7 +68,7 @@
       <includePaths>.;</includePaths>
     </codecompletion>
     <creategettersetter>
-      <prefixGet></prefixGet>
+      <prefixGet/>
       <prefixSet>set</prefixSet>
       <prefixVariable>m_,_</prefixVariable>
       <parameterName>theValue</parameterName>
@@ -127,10 +127,10 @@
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>true</separatetty>
       <floatingtoolbar>false</floatingtoolbar>
-      <dbgshell></dbgshell>
-      <configGdbScript></configGdbScript>
-      <runShellScript></runShellScript>
-      <runGdbScript></runGdbScript>
+      <dbgshell/>
+      <configGdbScript/>
+      <runShellScript/>
+      <runGdbScript/>
     </general>
     <display>
       <staticmembers>false</staticmembers>
@@ -140,20 +140,20 @@
   </kdevdebugger>
   <kdevtrollproject>
     <run>
-      <mainprogram>/home/le/Projects/Sandkassen/libraries/shiva/shivamodulelibs/socketserver/linux</mainprogram>
-      <programargs></programargs>
+      <mainprogram/>
+      <programargs/>
       <directoryradio>executable</directoryradio>
       <runarguments>
         <socketserver/>
       </runarguments>
       <cwd>
-        <socketserver>/home/le/Projects/Sandkassen/libraries/shiva/shivamodulelibs/socketserver/linux</socketserver>
+        <socketserver>.</socketserver>
       </cwd>
       <debugarguments>
         <socketserver/>
       </debugarguments>
-      <globaldebugarguments></globaldebugarguments>
-      <globalcwd>/home/le/Projects/Sandkassen/libraries/shiva/shivamodulelibs/socketserver/linux</globalcwd>
+      <globaldebugarguments/>
+      <globalcwd>.</globalcwd>
       <useglobalprogram>false</useglobalprogram>
       <terminal>true</terminal>
       <autocompile>false</autocompile>
@@ -171,7 +171,7 @@
       <runmultiplejobs>false</runmultiplejobs>
       <numberofjobs>1</numberofjobs>
       <dontact>false</dontact>
-      <makebin></makebin>
+      <makebin/>
       <prio>0</prio>
       <envvars/>
     </make>
@@ -207,7 +207,7 @@
     <QTDIR/>
     <VERSION>1.0</VERSION>
     <YEAR>2008</YEAR>
-    <dest>/home/le/Projects/Sandkassen/libraries/shiva/shivamodulelibs/socketserver/linux/socketserver</dest>
+    <dest>./socketserver</dest>
   </substmap>
   <kdevcvsservice>
     <recursivewhenupdate>true</recursivewhenupdate>
