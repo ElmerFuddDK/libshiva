@@ -60,6 +60,7 @@ public:
 	// Operations
 	virtual SHVBool BindAndListen(SHVIPv4Port port) = 0;
 	virtual SHVBool Close() = 0;
+	virtual SHVBool ConnectAny(SHVIPv4Port port) = 0;
 	virtual SHVBool Connect(SHVIPv4Addr ip, SHVIPv4Port port) = 0;
 	virtual SHVBool Connect(const SHVStringC ipv4Addr, SHVIPv4Port port) = 0;
 	
@@ -101,6 +102,13 @@ typedef SHVRefObjectContainer<SHVSocket> SHVSocketRef;
  */
 
 // Connect
+/** \fn SHVBool SHVSocket::ConnectAny(SHVIPv4Port port)
+ \brief Connects a UDP socket to all addresses and ports
+ \param port IP port to connect to
+ *
+ * This allows a UDP socket to send to any IP address as well as
+ * Receive data back on a random port.
+ */
 /** \fn SHVBool SHVSocket::Connect(SHVIPv4Addr ip, SHVIPv4Port port)
  \brief Connects a socket
  \param ip IP address to connect to
