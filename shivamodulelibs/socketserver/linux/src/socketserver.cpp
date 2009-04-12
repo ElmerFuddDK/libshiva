@@ -227,6 +227,20 @@ public:
 						SHVASSERT(Socket->Connect(SocketServer->Inetv4ResolveHost(ip.ToStrT()),port ? port : 1234));
 					}
 				}
+				else if (str == SHVString8C("/udp"))
+				{
+					UdpIP = 0;
+					UdpPort = 0;
+					
+					if (!Socket.IsNull())
+					{
+						Socket->Close();
+						Socket = NULL;
+					}
+					
+					Socket = SocketServer->CreateSocket(SocketSubscriber,SHVSocket::TypeUDP);
+					printf("Created a UDP client socket\n");
+				}
 				else if (str.Left(5) == SHVString8C("/udp "))
 				{
 				SHVChar* c;
@@ -263,7 +277,8 @@ public:
 			{
 				str.AddChars("\n",1);
 				
-				if (Socket->GetState() == SHVSocket::StateConnected)
+				if (Socket->GetState() == SHVSocket::StateConnected
+					|| (Socket->GetState() == SHVSocket::StateNone && Socket->GetType() == SHVSocket::TypeUDP))
 				{
 					if (Socket->GetType() == SHVSocket::TypeUDP && UdpIP != 0)
 						Socket->SendTo(SHVBufferCPtr((SHVByte*)str.GetSafeBuffer(),str.GetLength()),UdpIP,UdpPort);

@@ -284,6 +284,8 @@ SHVBool SHVSocketImpl::SendTo(const SHVBufferC& buf, SHVIPv4Addr ip, SHVIPv4Port
 SHVBool retVal(SHVSocket::ErrInvalidOperation);
 	
 	SocketServer->SocketServerLock.Lock();
+	if (Type == TypeUDP && State == SHVSocket::StateNone) // if this is a virgin socket simply set it to connected
+		State = SHVSocket::StateConnected;
 	if (Type == TypeUDP && State == SHVSocket::StateConnected)
 	{
 	sockaddr_in host;
