@@ -213,6 +213,9 @@ public:
 					{
 						UdpIP = SocketServer->Inetv4ResolveHost(ip);
 						UdpPort = port;
+						
+						if (Socket->GetState() == SHVSocket::StateNone) // not connected
+							Socket->ConnectAny(0);
 					}
 					else
 					{
@@ -259,13 +262,38 @@ public:
 					printf("Attempting to start UDP at %d\n", port);
 					SHVASSERT(Socket->BindAndListen(port ? port : 1234));
 				}
+				else if (str.Left(12) == SHVString8C("/udpconnect "))
+				{
+				SHVString8 ip(str.GetSafeBuffer()+12);
+				SHVIPv4Port port = 0;
+				int space;
+				
+					if ( (space = ip.ReverseFind(_T(" "))) > 0)
+					{
+						SHVChar* c;
+						port = SHVString8C::StrToL(ip.GetSafeBuffer() + space, &c);
+						ip[space] = 0;
+					}
+					
+					if (!Socket.IsNull())
+					{
+						Socket->Close();
+						Socket = NULL;
+					}
+					
+					Socket = SocketServer->CreateSocket(SocketSubscriber,SHVSocket::TypeUDP);
+					printf("Attempting connect to \"%s\" port %d\n", ip.GetSafeBuffer(), port);
+					SHVASSERT(Socket->Connect(SocketServer->Inetv4ResolveHost(ip.ToStrT()),port ? port : 1234));
+				}
 				else if (str == SHVString8C("/help"))
 				{
 					printf("Commands available:\n"
-						   " /server <port>         Will start a server at a given port\n"
-						   " /udp <port>            Will start an udp socket\n"
-						   " /connect <ip> <port>   Will connect to an ip/port\n"
-						   " /quit                  Will quit ...\n"
+						   " /server <port>            Will start a server at a given port\n"
+						   " /udp                      Will set udp mode\n"
+						   " /udp <port>               Will start an udp socket - set udp mode\n"
+						   " /connect <ip> <port>      Will connect to an ip/port as udp if in udp mode\n"
+						   " /udpconnect <ip> <port>   Will connect to an ip/port as udp\n"
+						   " /quit                     Will quit ...\n"
 						   "\n");
 				}
 				else

@@ -259,7 +259,7 @@ SHVBool SHVSocketImpl::Send(const SHVBufferC& buf)
 SHVBool retVal(SHVSocket::ErrInvalidOperation);
 	
 	SocketServer->SocketServerLock.Lock();
-	if (Type == TypeTCP && State == SHVSocket::StateConnected)
+	if (State == SHVSocket::StateConnected)
 	{
 		if (::send(Socket,buf.GetBufferConst(),(int)buf.GetSize(),MSG_NOSIGNAL) <= 0)
 		{
@@ -284,9 +284,7 @@ SHVBool SHVSocketImpl::SendTo(const SHVBufferC& buf, SHVIPv4Addr ip, SHVIPv4Port
 SHVBool retVal(SHVSocket::ErrInvalidOperation);
 	
 	SocketServer->SocketServerLock.Lock();
-	if (Type == TypeUDP && State == SHVSocket::StateNone) // if this is a virgin socket simply set it to connected
-		State = SHVSocket::StateConnected;
-	if (Type == TypeUDP && State == SHVSocket::StateConnected)
+	if (Type == TypeUDP && (State == SHVSocket::StateConnected || State == SHVSocket::StateNone))
 	{
 	sockaddr_in host;
 
@@ -403,12 +401,25 @@ SHVBool SHVSocketImpl::Close()
 /*************************************
  * Connect
  *************************************/
+SHVBool SHVSocketImpl::ConnectAny(SHVIPv4Port port)
+{
+SHVBool retVal(SHVSocket::ErrInvalidOperation);
+
+	if (Type == SHVSocket::TypeUDP)
+		retVal = Connect(INADDR_ANY,port);
+
+	return retVal;
+}
+
+/*************************************
+ * Connect
+ *************************************/
 SHVBool SHVSocketImpl::Connect(SHVIPv4Addr ip, SHVIPv4Port port)
 {
 SHVBool retVal(SHVSocket::ErrInvalidOperation);
 
 	SocketServer->SocketServerLock.Lock();
-	if (Type == TypeTCP && State == SHVSocket::StateNone)
+	if (State == SHVSocket::StateNone)
 	{
 	sockaddr_in host;
 	int result;
