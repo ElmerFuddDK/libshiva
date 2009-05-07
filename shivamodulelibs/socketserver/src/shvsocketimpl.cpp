@@ -50,6 +50,8 @@
 # include <errno.h>
 #endif
 
+#define __SHVSOCKET_SENDTIMEOUT 10
+
 
 //=========================================================================================================
 // SHVSocketImpl class - Implementation of sockets interface
@@ -261,7 +263,38 @@ SHVBool retVal(SHVSocket::ErrInvalidOperation);
 	SocketServer->SocketServerLock.Lock();
 	if (State == SHVSocket::StateConnected)
 	{
-		if (::send(Socket,buf.GetBufferConst(),(int)buf.GetSize(),MSG_NOSIGNAL) <= 0)
+	int err = 0;
+
+		for (int i=0; i<__SHVSOCKET_SENDTIMEOUT*10 && err == 0; i++)
+		{
+			err = ::send(Socket,buf.GetBufferConst(),(int)buf.GetSize(),MSG_NOSIGNAL);
+			if (err < 0)
+			{
+#ifdef __SHIVA_WIN32
+				err = WSAGetLastError();
+				if (err == WSAEWOULDBLOCK)
+#else
+				err = errno;
+				if (err == EAGAIN || err == EWOULDBLOCK)
+#endif
+				{
+					SHVThreadBase::Sleep(100);
+					err = 0;
+				}
+				else
+				{
+					err = -1;
+				}
+			}
+			else
+			{
+				SHVASSERT(err == (int)buf.GetSize());
+				err = 0;
+				break;
+			}
+		}
+	
+		if (err)
 		{
 			Close();
 			retVal = SetError(SHVSocket::ErrGeneric);
@@ -287,12 +320,41 @@ SHVBool retVal(SHVSocket::ErrInvalidOperation);
 	if (Type == TypeUDP && (State == SHVSocket::StateConnected || State == SHVSocket::StateNone))
 	{
 	sockaddr_in host;
+	int err = 0;
 
 		host.sin_family=AF_INET;
 		host.sin_addr.s_addr = ip;
 		host.sin_port = htons(port);
 		
-		if (::sendto(Socket,buf.GetBufferConst(),(int)buf.GetSize(),MSG_NOSIGNAL,(sockaddr*) &host,sizeof(sockaddr_in)) <= 0)
+		for (int i=0; i<__SHVSOCKET_SENDTIMEOUT*10 && err == 0; i++)
+		{
+			err = ::sendto(Socket,buf.GetBufferConst(),(int)buf.GetSize(),MSG_NOSIGNAL,(sockaddr*) &host,sizeof(sockaddr_in));
+			if (err < 0)
+			{
+#ifdef __SHIVA_WIN32
+				err = WSAGetLastError();
+				if (err == WSAEWOULDBLOCK)
+#else
+				err = errno;
+				if (err == EAGAIN || err == EWOULDBLOCK)
+#endif
+				{
+					SHVThreadBase::Sleep(100);
+					err = 0;
+				}
+				else
+				{
+					err = -1;
+				}
+			}
+			else
+			{
+				SHVASSERT(err == (int)buf.GetSize());
+				err = 0;
+				break;
+			}
+		}
+		if (err)
 		{
 			Close();
 			retVal = SetError(SHVSocket::ErrGeneric);
