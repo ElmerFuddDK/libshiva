@@ -22,8 +22,14 @@ class SHVAPI SHVEventThread : public SHVEventQueue
 public:
 
 
+	enum Events {
+		EventStateStarting,
+		EventStateStopping
+	};
+
+
 	// constructor
-	SHVEventThread();
+	SHVEventThread(SHVEventSubscriberBase* stateSubscriber = NULL);
 	~SHVEventThread();
 
 
@@ -63,6 +69,7 @@ private:
 	int TimeoutInterval;
 
 	SHVEventQueueList EventList;
+	SHVEventSubscriberBaseRef StateSubscriber;
 
 	void ThreadFunc();
 

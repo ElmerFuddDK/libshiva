@@ -42,7 +42,7 @@
 /*************************************
  * Constructor
  *************************************/
-SHVEventThread::SHVEventThread()
+SHVEventThread::SHVEventThread(SHVEventSubscriberBase* stateSubscriber) : StateSubscriber(stateSubscriber)
 {
 }
 
@@ -179,14 +179,24 @@ void SHVEventThread::SetSignalTimeout(int interval)
  *************************************/
 /// Is called when starting - for inheritance
 void SHVEventThread::ThreadStarting()
-{}
+{
+	if (!StateSubscriber.IsNull())
+	{
+		StateSubscriber->EmitNow(*Modules,new SHVEvent(NULL,EventStateStarting));
+	}
+}
 
 /*************************************
  * ThreadStopping
  *************************************/
 /// Is called when stopping - for inheritance
 void SHVEventThread::ThreadStopping()
-{}
+{
+	if (!StateSubscriber.IsNull())
+	{
+		StateSubscriber->EmitNow(*Modules,new SHVEvent(NULL,EventStateStopping));
+	}
+}
 
 /*************************************
  * PreEventDispatch
