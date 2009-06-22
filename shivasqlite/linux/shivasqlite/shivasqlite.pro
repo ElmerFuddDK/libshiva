@@ -63,7 +63,8 @@ DEFINES += __SHVSTRING_INCLUDE_UNICODE
 
 LIBS += -L../../../shivalib/linux/libshiva \
   -ldl \
-  -lshiva
+  -lshiva \
+  -lpthread
 
 CONFIG -= release \
 qt
