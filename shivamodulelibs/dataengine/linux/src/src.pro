@@ -6,12 +6,12 @@
 INCLUDEPATH += ../../ 
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
 DEFINES = __SHVSTRING_INCLUDE_UNICODE
-CONFIG += release \
+CONFIG += debug \
           warn_on 
 TEMPLATE = app 
 SOURCES += dataengine.cpp
 
-LIBS += -L../../../../shivalib/linux/libshiva/ \
+LIBS = -L../../../../shivalib/linux/libshiva/ \
   -ldl \
   -lshiva
 
