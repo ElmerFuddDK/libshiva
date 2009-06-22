@@ -132,5 +132,7 @@ CONFIG = debug \
 TEMPLATE = lib 
 LIBS += -lm \
   -lrt \
-  -lunicode
+  -lunicode \
+  -ldl \
+  -lpthread
 
