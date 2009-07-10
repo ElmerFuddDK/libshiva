@@ -36,7 +36,7 @@
 
 ///\cond INTERNAL
 #define SHVMATH_PI 3.14159265358979323846
-double shvmath_doeval(const SHVTChar*& str, char level, SHVString& err);
+double shvmath_doeval(const SHVTChar*& str, char level, SHVString& err, SHVHashTableString<double>* map);
 ///\endcond
 
 
@@ -151,7 +151,7 @@ double SHVMath::Eval(const SHVStringC str)
 {
 SHVString err;
 const SHVTChar* cstr = str.GetSafeBuffer();
-	return shvmath_doeval(cstr,0,err);
+	return shvmath_doeval(cstr,0,err,NULL);
 }
 
 /*************************************
@@ -168,7 +168,7 @@ double SHVMath::Eval(const SHVStringC str, SHVString& err)
 {
 const SHVTChar* cstr = str.GetSafeBuffer();
 	err = NULL;
-	return shvmath_doeval(cstr,0,err);
+	return shvmath_doeval(cstr,0,err,NULL);
 }
 
 /*************************************
@@ -213,6 +213,40 @@ double SHVMath::EvalListErr(const SHVStringC formatStr, SHVString& err, ...)
 	
 	return SHVMath::Eval(str,err);
 }
+
+/*************************************
+ * Eval(map)
+ *************************************/
+/// Evaluates a string with a set of mapped values
+/**
+ \param str String to evaluate
+ \param map HashTable with map of symbols to double
+ \return result of evaluation
+ \see Eval
+ */
+double SHVMath::EvalMap(const SHVStringC str, const SHVHashTableString<double>& map)
+{
+const SHVTChar* cstr = str.GetSafeBuffer();
+SHVString err;
+	return shvmath_doeval(cstr,0,err,(SHVHashTableString<double>*)&map);
+}
+
+/*************************************
+ * Eval(map)
+ *************************************/
+/// Evaluates a string with a set of mapped values
+/**
+ \param str String to evaluate
+ \param err String to hold an error - null if none
+ \return result of evaluation
+ \see Eval
+ */
+double SHVMath::EvalMap(const SHVStringC str, const SHVHashTableString<double>& map, SHVString& err)
+{
+const SHVTChar* cstr = str.GetSafeBuffer();
+	return shvmath_doeval(cstr,0,err,(SHVHashTableString<double>*)&map);
+}
+
 
 
 ///\cond INTERNAL
@@ -316,7 +350,7 @@ double shvmath_performfunc(const SHVStringC token, double val, SHVString& err)
 // level : 0 == +-
 // level : 1 == */
 // level : 2 == ^
-double shvmath_getnumber(const SHVTChar*& str, char level, SHVString& err)
+double shvmath_getnumber(const SHVTChar*& str, char level, SHVString& err, SHVHashTableString<double>* map)
 {
 SHVTChar* endp;
 double retVal;
@@ -338,7 +372,7 @@ double retVal;
 	{
 	char tmplevel = 0;
 		str++;
-		retVal = shvmath_doeval(str,tmplevel,err);
+		retVal = shvmath_doeval(str,tmplevel,err,map);
 		
 		if (err.IsNull() && *str != ')')
 			err = _T("Missing paranthesis");
@@ -362,7 +396,7 @@ double retVal;
 		{
 			char tmplevel = 0;
 			str++;
-			retVal = shvmath_performfunc(token,shvmath_doeval(str,tmplevel,err),err);
+			retVal = shvmath_performfunc(token,shvmath_doeval(str,tmplevel,err,map),err);
 			
 			if (err.IsNull() && *str != ')')
 				err = _T("Missing paranthesis");
@@ -374,6 +408,10 @@ double retVal;
 			if (token.Compare(_T("pi")) == 0)
 			{
 				retVal = SHVMATH_PI;
+			}
+			else if (map && map->Find(token))
+			{
+				retVal = (*map)[token];
 			}
 			else
 			{
@@ -398,14 +436,14 @@ double retVal;
 			if (level < 1)
 			{
 				str++;
-				retVal = shvmath_calculate(op,retVal,shvmath_doeval(str,1,err),err);
+				retVal = shvmath_calculate(op,retVal,shvmath_doeval(str,1,err,map),err);
 			}
 			break;
 		case '^':
 			if (level < 2)
 			{
 				str++;
-				retVal = shvmath_calculate(op,retVal,shvmath_doeval(str,2,err),err);
+				retVal = shvmath_calculate(op,retVal,shvmath_doeval(str,2,err,map),err);
 			}
 			break;
 		}
@@ -420,7 +458,7 @@ double retVal;
 // level : 0 == +-
 // level : 1 == */
 // level : 2 == ^
-double shvmath_doeval(const SHVTChar*& str, char level, SHVString& err)
+double shvmath_doeval(const SHVTChar*& str, char level, SHVString& err, SHVHashTableString<double>* map)
 {
 double retVal = 0.0;
 double temp;
@@ -431,7 +469,7 @@ SHVTChar operant = '\0';
 	{
 		if (!gotNumber)
 		{
-			temp = shvmath_getnumber(str,level,err);
+			temp = shvmath_getnumber(str,level,err,map);
 			if (operant != '\0')
 			{
 				// perform operation
