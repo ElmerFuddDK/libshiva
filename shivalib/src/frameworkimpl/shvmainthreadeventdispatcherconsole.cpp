@@ -43,6 +43,7 @@
 #else
 # include <unistd.h>
 # include <fcntl.h>
+# include <errno.h>
 #endif
 #include <string.h>
 
@@ -175,6 +176,8 @@ size_t bufReadPos = 0;
 		}
 		else if (retVal == -1) // ERROR!
 		{
+			if (errno == EINTR) // we got a signal
+				continue;
 			printf("Error in main event loop\n");
 			_exit(-1);
 		}
