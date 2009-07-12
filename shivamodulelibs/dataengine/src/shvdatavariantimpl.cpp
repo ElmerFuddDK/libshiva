@@ -405,7 +405,7 @@ void SHVDataVariantImpl::SetDouble(SHVDouble val)
 			break;
 		case SHVDataVariant::TypeString:
 			Data.stringVal = new SHVString();
-			Data.stringVal->Format(_T("%g"), val);
+			Data.stringVal->Format(_T("%g"), (double)val);
 			break;
 		}
 	}
