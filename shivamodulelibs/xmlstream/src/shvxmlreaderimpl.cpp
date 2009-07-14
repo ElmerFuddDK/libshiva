@@ -307,10 +307,22 @@ SHVBool retVal = SHVBool::True;
 	return retVal;
 }
 
+/*************************************
+ * GetErrorCode
+ *************************************/
 int SHVXmlReaderImpl::GetErrorCode() const
 {
 	return XML_GetErrorCode(Parser);
 }
+
+/*************************************
+ * GetParsedBytes
+ *************************************/
+int SHVXmlReaderImpl::GetParsedBytes() const
+{
+	return (int)XML_GetCurrentByteIndex(Parser);
+}
+
 
 /*************************************
  * SetStartElementCallBack

@@ -40,6 +40,7 @@ public:
 	virtual SHVBool Parse(SHVStreamIn& stream);
 	virtual SHVBool ParseDirect(const char* buffer, int actualLen, bool isFinal);
 	virtual int GetErrorCode() const;
+	virtual int GetParsedBytes() const;
 	virtual void SetStartElementCallBack(SHVXmlReaderCallbackBase* callback);
 	virtual void SetEndElementCallBack(SHVXmlReaderCallbackBase* callback);
 	virtual void SetValueCallback(SHVXmlReaderCallbackBase* callback);
