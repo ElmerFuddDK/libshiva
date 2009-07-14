@@ -301,7 +301,7 @@ SHVBool retVal(SHVSocket::ErrInvalidOperation);
 		}
 		else
 		{
-			retVal = SHVSocket::ErrNone;
+			retVal.SetError(SHVSocket::ErrNone);
 		}
 	}
 	SocketServer->SocketServerLock.Unlock();
@@ -361,7 +361,7 @@ SHVBool retVal(SHVSocket::ErrInvalidOperation);
 		}
 		else
 		{
-			retVal = SHVSocket::ErrNone;
+			retVal.SetError(SHVSocket::ErrNone);
 		}
 	}
 	SocketServer->SocketServerLock.Unlock();
