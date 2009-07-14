@@ -93,10 +93,13 @@ SHVBool SHVMainThreadEventQueue::Run()
 	
 		// Now for the main event! ... loop
 		Dispatcher->RunEventLoop();
+
+		if (!GetModuleList().GetStartupErrors().IsEmpty())
+			RunReturnVal = SHVBool::False;
 	}
 
 	GetModuleList().DestroyModules();
-	
+
 	return RunReturnVal;
 }
 

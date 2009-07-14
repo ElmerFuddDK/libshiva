@@ -68,10 +68,12 @@ SHVBool retVal(false);
 
 	if (State == StateInitializing)
 	{
+		// clean up
+		DestroyModules(); 
+		StartupErrors.RemoveAll();
+
 		State = StateInitialized;
 	}
-
-	DestroyModules(); // cleans up
 
 	return retVal;
 }
@@ -106,12 +108,11 @@ SHVEventSubscriberBaseRef queued = new SHVEventSubscriber(this,this);
  *************************************/
 void SHVModuleListImpl::DestroyModules()
 {
-	if (State == StateInitialized)
+	if (State == StateInitializing)
 	{
 		Config.Clear();
 		UserConfigs.Clear();
 		Modules.RemoveAll();
-		StartupErrors.RemoveAll();
 		ShutdownDelays.RemoveAll();
 	}
 }
@@ -384,14 +385,14 @@ bool locked = Lock.Lock();
 			{
 			SHVEventRef event = new SHVEvent( &DefaultEventQueue, SHVMainEventQueue::EventInternalStop, StartupErrors.GetCount() ? 0 : 1 );
 			int locks;
-				State = StateInitialized;
+				State = StateInitializing;
 				Events.Clear();
 				
 				locks = Lock.UnlockAll();
 				DefaultEventQueue.OnEvent(event);
 				Lock.LockMultiple(locks);
 				
-				if (State == StateInitialized)
+				if (State == StateInitializing)
 					Events.Clear();
 
 			}
