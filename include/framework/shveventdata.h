@@ -101,6 +101,8 @@ public:
 	
 	virtual void* GetData();
 
+	static T& Get(SHVEvent* event);
+
 private:
 	T Data;
 };
@@ -163,6 +165,15 @@ template<class T, class C>
 void* SHVEventStringData<T,C>::GetData()
 {
 	return &Data;
+}
+/*************************************
+  * Get
+ *************************************/
+/// returns a reference to the data embedded data 
+template<class T, class C>
+T& SHVEventStringData<T,C>::Get(SHVEvent* event)
+{ 
+	return ((SHVEventStringData<T,C>*) event)->Data; 
 }
 
 #endif
