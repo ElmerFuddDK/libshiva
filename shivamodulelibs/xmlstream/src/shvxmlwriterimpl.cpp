@@ -84,6 +84,8 @@ SHVListPos p = NULL;
 			delete TagStack.GetAt(p)->Tag.TagUTF8;
 			break;
 		}
+		
+		delete TagStack.GetAt(p);
 	}
 }
 
