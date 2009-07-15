@@ -21,7 +21,8 @@ public:
 	enum ParserEncoding {
 		ParserEncodingUTF8,
 		ParserEncodingUTF16,
-		ParserEncodingNative
+		ParserEncodingNative,
+		ParserEncoding8859_1
 	};
 	virtual ~SHVXmlReader() {}
 	virtual size_t CalculateAttributeCount() const = 0;

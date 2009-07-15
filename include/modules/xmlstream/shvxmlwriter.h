@@ -17,7 +17,8 @@ public:
 	enum WriterEncoding {
 		WriterEncodingUTF8,
 		WriterEncodingUTF16,
-		WriterEncodingNative
+		WriterEncodingNative,
+		WriterEncoding8859_1
 	};
 	virtual ~SHVXmlWriter() {}
 	virtual void WriteStartElement16(SHVStreamOut& Streamout, const SHVString16C& elementName) = 0;

@@ -47,10 +47,13 @@ SHVXmlReaderImpl::SHVXmlReaderImpl(ParserEncoding enc, size_t bufferSize)
 		EncodingExpat = _T("UTF-8");
 		break;
 #ifndef UNICODE
+	// native encoding is 8859-1 for now, when unicode is not defined
 	case ParserEncodingNative:
+#endif
+	case ParserEncoding8859_1:
 		EncodingExpat = _T("ISO-8859-1");
 		break;
-#else
+#ifdef UNICODE
 	// native encoding is UTF16 when unicode is defined
 	case ParserEncodingNative:
 #endif
