@@ -379,6 +379,58 @@ SHVFileBase file;
 /*************************************
  * DeleteFile
  *************************************/
+SHVBool SHVDir::GetModifyTime(const SHVStringC fileName, SHVTime& stamp)
+{
+SHVBool retVal(SHVBool::False);
+#ifdef __SHIVA_WIN32
+HANDLE f;
+	if ((f = CreateFile(fileName.GetSafeBuffer(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL)))
+	{
+	FILETIME aTime;
+
+		stamp = SHVTime();
+
+		if (::GetFileTime(f,NULL,NULL,&aTime))
+		{
+		SYSTEMTIME sysTime;
+			FileTimeToSystemTime(&aTime,&sysTime);
+			stamp.SetYear(sysTime.wYear);
+			stamp.SetMonth(sysTime.wMonth);
+			stamp.SetDay(sysTime.wDay);
+			stamp.SetHour(sysTime.wHour);
+			stamp.SetMinute(sysTime.wMinute);
+			stamp.SetSecond(sysTime.wSecond);
+			retVal.SetError(SHVBool::True);
+		}
+
+		CloseHandle(f);
+	}
+#elif defined(UNICODE)
+struct stat fileStat;
+	if (!wstat( fileName.GetSafeBuffer(), &fileStat ))
+	{
+		retVal.SetError(SHVBool::True);
+		stamp = SHVTime::FromUnixTime(fileStat.st_atime);
+	}
+#else
+struct stat fileStat;
+	if (!stat( fileName.GetSafeBuffer(), &fileStat ))
+	{
+		retVal.SetError(SHVBool::True);
+		stamp = SHVTime::FromUnixTime(fileStat.st_atime);
+	}
+#endif
+	else
+	{
+		stamp = SHVTime();
+	}
+
+	return retVal;
+}
+
+/*************************************
+ * DeleteFile
+ *************************************/
 SHVBool SHVDir::DeleteFile(const SHVStringC fileName)
 {
 SHVBool retVal;
