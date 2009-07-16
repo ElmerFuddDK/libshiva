@@ -4,6 +4,7 @@
 #include "shvstring.h"
 #include "shvlist.h"
 #include "shvfilebase.h"
+#include "shvtime.h"
 
 
 typedef SHVList<SHVString,const SHVStringC> SHVFileList;
@@ -46,6 +47,7 @@ public:
 
 	// Operations involving a file
 	static SHVFilePos GetSize(const SHVStringC fileName);
+	static SHVBool GetModifyTime(const SHVStringC fileName, SHVTime& stamp);
 	static SHVBool DeleteFile(const SHVStringC fileName);
 	static bool FileExist(const SHVStringC fileName);
 	static bool DirExist(const SHVStringC fileName);
