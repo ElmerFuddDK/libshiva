@@ -26,8 +26,8 @@ CFG=libshiva - Win32 (WCE ARM) Debug
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
-# PROP Scc_ProjName ""
-# PROP Scc_LocalPath ""
+# PROP Scc_ProjName "libshiva"
+# PROP Scc_LocalPath "..\.."
 # PROP ATL_Project 2
 
 !IF  "$(CFG)" == "libshiva - Win32 (WCE ARM) Release"
@@ -1633,6 +1633,7 @@ DEP_CPP_SHVCO=\
 	"..\..\include\utils\shvstringc.h"\
 	"..\..\include\utils\shvstringutf8.h"\
 	"..\..\include\utils\shvstringutf8c.h"\
+	"..\..\include\utils\shvtime.h"\
 	"..\..\include\utils\shvvectorbase.h"\
 	"..\src\frameworkimpl\stdafx.h"\
 	
@@ -1764,6 +1765,7 @@ DEP_CPP_SHVMA=\
 	"..\..\include\framework\shvmodulelist.h"\
 	"..\..\include\framework\shvtimer.h"\
 	"..\..\include\frameworkimpl\shvconfigimpl.h"\
+	"..\..\include\frameworkimpl\shvmaineventqueue.h"\
 	"..\..\include\frameworkimpl\shvmainthreadeventdispatchergeneric.h"\
 	"..\..\include\frameworkimpl\shvmainthreadeventqueue.h"\
 	"..\..\include\frameworkimpl\shvmodulelistimpl.h"\
@@ -1791,6 +1793,7 @@ DEP_CPP_SHVMA=\
 	"..\..\include\utils\shvstring16.h"\
 	"..\..\include\utils\shvstring16c.h"\
 	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvtime.h"\
 	"..\..\include\utils\shvvectorbase.h"\
 	"..\src\frameworkimpl\stdafx.h"\
 	
@@ -1967,6 +1970,7 @@ DEP_CPP_SHVMAI=\
 	"..\..\include\framework\shvmodulelist.h"\
 	"..\..\include\framework\shvtimer.h"\
 	"..\..\include\frameworkimpl\shvconfigimpl.h"\
+	"..\..\include\frameworkimpl\shvmaineventqueue.h"\
 	"..\..\include\frameworkimpl\shvmainthreadeventqueue.h"\
 	"..\..\include\frameworkimpl\shvmodulelistimpl.h"\
 	"..\..\include\platforms\linux\platformspc.h"\
@@ -1991,6 +1995,7 @@ DEP_CPP_SHVMAI=\
 	"..\..\include\utils\shvstring16.h"\
 	"..\..\include\utils\shvstring16c.h"\
 	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvtime.h"\
 	"..\..\include\utils\shvvectorbase.h"\
 	"..\src\frameworkimpl\stdafx.h"\
 	
@@ -2158,6 +2163,7 @@ DEP_CPP_SHVMODU=\
 	"..\..\include\framework\shvmodulelist.h"\
 	"..\..\include\framework\shvtimer.h"\
 	"..\..\include\frameworkimpl\shvconfigimpl.h"\
+	"..\..\include\frameworkimpl\shvmaineventqueue.h"\
 	"..\..\include\frameworkimpl\shvmainthreadeventqueue.h"\
 	"..\..\include\frameworkimpl\shvmodulelistimpl.h"\
 	"..\..\include\frameworkimpl\shvtimerimpl.h"\
@@ -2184,6 +2190,7 @@ DEP_CPP_SHVMODU=\
 	"..\..\include\utils\shvstring16.h"\
 	"..\..\include\utils\shvstring16c.h"\
 	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvtime.h"\
 	"..\..\include\utils\shvvectorbase.h"\
 	"..\src\frameworkimpl\stdafx.h"\
 	
@@ -2381,6 +2388,7 @@ DEP_CPP_SHVMODUL=\
 	"..\..\include\utils\shvstring16.h"\
 	"..\..\include\utils\shvstring16c.h"\
 	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvtime.h"\
 	"..\..\include\utils\shvvectorbase.h"\
 	"..\src\frameworkimpl\stdafx.h"\
 	
@@ -2568,6 +2576,7 @@ DEP_CPP_SHVTI=\
 	"..\..\include\utils\shvstring16.h"\
 	"..\..\include\utils\shvstring16c.h"\
 	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvtime.h"\
 	"..\src\frameworkimpl\stdafx.h"\
 	
 # ADD CPP /Yu"stdafx.h"
@@ -3006,6 +3015,109 @@ DEP_CPP_SHVMUT=\
 	"..\src\threadutils\stdafx.h"\
 	
 # ADD CPP /Yu"stdafx.h"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\threadutils\shvreadwritelock.cpp
+
+!IF  "$(CFG)" == "libshiva - Win32 (WCE ARM) Release"
+
+DEP_CPP_SHVREA=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\threadutils\shvmutexbase.h"\
+	"..\..\include\threadutils\shvreadwritelock.h"\
+	"..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvlist.h"\
+	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvptrcontainer.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\src\threadutils\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE ARM) Debug"
+
+DEP_CPP_SHVREA=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\threadutils\shvmutexbase.h"\
+	"..\..\include\threadutils\shvreadwritelock.h"\
+	"..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvlist.h"\
+	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvptrcontainer.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\src\threadutils\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE x86) Release"
+
+DEP_CPP_SHVREA=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\threadutils\shvmutexbase.h"\
+	"..\..\include\threadutils\shvreadwritelock.h"\
+	"..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvlist.h"\
+	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvptrcontainer.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\src\threadutils\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE x86) Debug"
+
+DEP_CPP_SHVREA=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\threadutils\shvmutexbase.h"\
+	"..\..\include\threadutils\shvreadwritelock.h"\
+	"..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvlist.h"\
+	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvptrcontainer.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\src\threadutils\stdafx.h"\
+	
 
 !ENDIF 
 
@@ -3624,6 +3736,7 @@ DEP_CPP_SHVDI=\
 	"..\..\include\utils\shvstring16.h"\
 	"..\..\include\utils\shvstring16c.h"\
 	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvtime.h"\
 	"..\src\utils\stdafx.h"\
 	
 # ADD CPP /Yu"stdafx.h"
@@ -3819,6 +3932,7 @@ DEP_CPP_SHVDLL=\
 	"..\..\include\utils\shvstring16.h"\
 	"..\..\include\utils\shvstring16c.h"\
 	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvtime.h"\
 	"..\src\utils\stdafx.h"\
 	
 # ADD CPP /Yu"stdafx.h"
@@ -4087,6 +4201,7 @@ DEP_CPP_SHVFIL=\
 	"..\..\include\utils\shvstring16.h"\
 	"..\..\include\utils\shvstring16c.h"\
 	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvtime.h"\
 	"..\src\utils\stdafx.h"\
 	
 # ADD CPP /Yu"stdafx.h"
@@ -4346,12 +4461,16 @@ DEP_CPP_SHVMAT=\
 	"..\..\include\platformspc.h"\
 	"..\..\include\shvtypes.h"\
 	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvdynarraybase.h"\
+	"..\..\include\utils\shvhashtable.h"\
+	"..\..\include\utils\shvhashtablebase.h"\
 	"..\..\include\utils\shvhashvalue.h"\
 	"..\..\include\utils\shvmath.h"\
 	"..\..\include\utils\shvstring.h"\
 	"..\..\include\utils\shvstring16.h"\
 	"..\..\include\utils\shvstring16c.h"\
 	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvvectorbase.h"\
 	"..\src\utils\stdafx.h"\
 	
 
