@@ -50,6 +50,7 @@
 #ifdef __SHIVA_LINUX
 # include <wchar.h>
 # include <stdlib.h>
+# include "../../../include/utils/shvstringutf8.h" // for Format .. horrible hack
 #endif
 
 #include <math.h>
@@ -1098,10 +1099,82 @@ SHVVA_LIST args;
 void SHVString16::FormatList(const SHVWChar* s, SHVVA_LIST args)
 {
 #ifdef __SHIVA_LINUX
-	SHVUNUSED_PARAM(s);
-	SHVUNUSED_PARAM(args);
-
-	BUFFER_DESTROY(Buffer); // Doesn't work on this platform yet
+static const SHVWChar pcnt[] = { '%', '\0' };
+SHVString16C str(s);
+SHVList<SHVString16, const SHVString16C> chunks;
+SHVListIterator<SHVString16, const SHVString16C> chunkItr(chunks);
+size_t chunklen = 0;
+long oldpos = 0;
+long pos = 0;
+	
+	for (pos=str.Find(pcnt,pos);pos>=0;pos=str.Find(pcnt,pos))
+	{
+		// copy preceding text
+		if (pos>oldpos)
+		{
+			chunks.AddTail(SHVString16C(NULL));
+			chunks.GetLast().AddChars(s+oldpos,(size_t)(pos-oldpos));
+			chunklen += (size_t)(pos-oldpos);
+		}
+		
+		chunks.AddTail(SHVString16C(NULL));
+		pos++; // jump over %
+		// check for exception
+		if (s[pos] == '%')
+		{
+			chunks.GetLast().AddChars(s+pos,1);
+			chunklen += 1;
+			pos++;
+		}
+		else
+		{
+		long newpos = pos;
+		SHVStringUTF8 fStr, tmpStr;
+		bool isString = false;
+		bool running = true;
+			for (;running && s[newpos];newpos++)
+			{
+				switch (s[newpos]) {
+				case 's':
+					isString = true;
+				case 'd': case 'i': case 'o': case 'u': case 'x': case 'X':
+				case 'e': case 'E': case 'f': case 'F': case 'g': case 'G': case 'a':
+				case 'A': case 'c': case 'p': case 'n': case 'm':
+					running = false;
+					break;
+					// panicky exit point ...
+				case '%': // Actually it would be ok to just scan for '%' chars, if it wasn't for 's'
+					SHVASSERT(false);
+					newpos--;
+					running = false;
+					break;
+				}
+			}
+			fStr = str.Mid((size_t)pos-1,(size_t)(newpos-pos+1)).ToStrUTF8();
+			if (isString)
+				tmpStr.Format(fStr.GetSafeBuffer(),SHVString16C(SHVVA_ARG(args,const SHVWChar*)).ToStrUTF8().GetSafeBuffer());
+			else
+				tmpStr.FormatList(fStr.GetSafeBuffer(),args);
+			chunks.GetLast() = tmpStr.ToStr16();
+			pos = newpos;
+		}
+		
+		oldpos = pos;
+	}
+	
+	if (oldpos<=(pos=str.GetLength()))
+	{
+		chunks.AddTail(SHVString16C(NULL));
+		chunks.GetLast().AddChars(s+oldpos,(size_t)(pos-oldpos+1));
+		chunklen += (size_t)(pos-oldpos);
+	}
+	
+	AllocBuffer(chunklen+1);
+	Buffer[0] = '\0';
+	while (chunkItr.MoveNext())
+	{
+		AddChars(chunkItr.Get().GetSafeBuffer(), chunkItr.Get().GetLength());
+	}
 #elif defined(__SHIVA_EPOC)
 size_t newSize = CalcFormatBufferSize(s,args);
 
