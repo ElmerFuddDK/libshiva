@@ -1051,37 +1051,48 @@ size_t searchlen = search.GetLength();
 
 	if (hits.GetCount())
 	{
-	SHVWChar* oldbuf = Buffer;
-	size_t len = GetLength();
 	size_t repllen = repl.GetLength();
-	size_t newlen;
 	size_t pos;
 	SHVListIterator<size_t> hititr(hits);
-
-		Buffer = NULL;
-
-		newlen = (len-hits.GetCount()*searchlen) + // whats left of the old string
-				 hits.GetCount()*repllen;
-
-		BufferLen = newlen + 1;
-		BUFFER_ALLOC( Buffer, BufferLen );
-		Buffer[0] = '\0';
-		pos = 0;
 		
-		while (hititr.MoveNext())
+		if (repllen == searchlen)
 		{
-			// copy whatever is between last position and new
-			AddChars(oldbuf+pos, hititr.Get()-pos);
-			pos=hititr.Get()+searchlen;
-
-			// insert replace string
-			if (repllen>0) StrCat(Buffer,repl.GetBufferConst());
-			
+			while (hititr.MoveNext())
+			{
+				::memcpy(Buffer+hititr.Get(),repl.GetSafeBuffer(),searchlen*sizeof(SHVWChar));
+			}
 		}
-		AddChars(oldbuf+pos, len-pos);
+		else
+		{
+		size_t len = GetLength();
+		SHVWChar* oldbuf = Buffer;
+		size_t newlen;
 
-		BUFFER_DESTROY(oldbuf);
-		BUFFER_SETDESTROYFUNC;
+			Buffer = NULL;
+	
+			newlen = (len-hits.GetCount()*searchlen) + // whats left of the old string
+					hits.GetCount()*repllen;
+	
+			BufferLen = newlen + 1;
+			BUFFER_ALLOC( Buffer, BufferLen );
+			Buffer[0] = '\0';
+			pos = 0;
+			
+			while (hititr.MoveNext())
+			{
+				// copy whatever is between last position and new
+				AddChars(oldbuf+pos, hititr.Get()-pos);
+				pos=hititr.Get()+searchlen;
+	
+				// insert replace string
+				if (repllen>0) StrCat(Buffer,repl.GetBufferConst());
+				
+			}
+			AddChars(oldbuf+pos, len-pos);
+	
+			BUFFER_DESTROY(oldbuf);
+			BUFFER_SETDESTROYFUNC;
+		}
 	}
 
 }
