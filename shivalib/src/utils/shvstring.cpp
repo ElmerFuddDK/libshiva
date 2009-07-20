@@ -109,9 +109,6 @@ long i;
 		retVal += (*(cPtr-1) - '0')*i;
 	}
 
-	if (firstVal == '-')
-		retVal *= -1;
-
 	if (**ptr == '.')
 	{
 		double dec = 0.1;
@@ -128,6 +125,9 @@ long i;
 		(*ptr)++;
 		retVal *= pow(10.0, (double)StrToL(*ptr,ptr,10) );
 	}
+
+	if (firstVal == '-')
+		retVal *= -1.0;
 
 	return retVal;
 }
