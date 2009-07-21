@@ -41,6 +41,36 @@ function EchoError()
 	echo "$1"
 }
 
+function ConvertToRelease()
+{
+	while read l
+	do
+		test "`echo \"$l\" | awk '{print $1}'`" == "CONFIG" \
+			&& echo $l | sed 's|debug||' \
+			|| echo $l
+	done < "$1"
+}
+
+function SetReleaseMode()
+{
+	find ./ -name "*.pro" | while read fname
+	do
+		test -e "$fname.bck" && rm -f "$fname.bck"
+		mv "$fname" "$fname.bck"
+		ConvertToRelease "$fname.bck" >"$fname"
+	done
+}
+
+function UnsetReleaseMode()
+{
+	find ./ -name "*.pro.bck" | while read fname
+	do
+		origname=$(echo -e "$fname" | sed 's|.bck$||')
+		test -e "$origname" && rm -f "$origname"
+		mv "$fname" "$origname"
+	done
+}
+
 # Usage : Compile "qmake file"
 function Compile()
 {
@@ -49,7 +79,9 @@ function Compile()
 	echo "Building $1"
 	
 	cd "`dirname \"$2\"`"
+	test -n "$ReleaseMode" && SetReleaseMode
 	qmake "`basename \"$2\"`" &>/dev/null && make clean &>/dev/null && make &>/dev/null || EchoError "  Error building $2"
+	test -n "$ReleaseMode" && UnsetReleaseMode
 	
 	cd "$OldDir"
 }
