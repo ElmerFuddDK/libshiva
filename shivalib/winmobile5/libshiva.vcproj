@@ -373,6 +373,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\src\utils\shvmathtokenhashmap.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\src\utils\shvmd5sum.cpp"
 						>
 					</File>
@@ -744,6 +748,14 @@
 					</File>
 					<File
 						RelativePath="..\..\include\utils\shvmath.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\utils\shvmathtokenhashmap.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\utils\shvmathtokenmap.h"
 						>
 					</File>
 					<File

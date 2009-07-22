@@ -4461,16 +4461,13 @@ DEP_CPP_SHVMAT=\
 	"..\..\include\platformspc.h"\
 	"..\..\include\shvtypes.h"\
 	"..\..\include\utils\shvassert.h"\
-	"..\..\include\utils\shvdynarraybase.h"\
-	"..\..\include\utils\shvhashtable.h"\
-	"..\..\include\utils\shvhashtablebase.h"\
 	"..\..\include\utils\shvhashvalue.h"\
 	"..\..\include\utils\shvmath.h"\
+	"..\..\include\utils\shvmathtokenmap.h"\
 	"..\..\include\utils\shvstring.h"\
 	"..\..\include\utils\shvstring16.h"\
 	"..\..\include\utils\shvstring16c.h"\
 	"..\..\include\utils\shvstringc.h"\
-	"..\..\include\utils\shvvectorbase.h"\
 	"..\src\utils\stdafx.h"\
 	
 
@@ -4528,6 +4525,113 @@ DEP_CPP_SHVMAT=\
 	"..\..\include\utils\shvstring16.h"\
 	"..\..\include\utils\shvstring16c.h"\
 	"..\..\include\utils\shvstringc.h"\
+	"..\src\utils\stdafx.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\utils\shvmathtokenhashmap.cpp
+
+!IF  "$(CFG)" == "libshiva - Win32 (WCE ARM) Release"
+
+DEP_CPP_SHVMATH=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvdynarraybase.h"\
+	"..\..\include\utils\shvhashtable.h"\
+	"..\..\include\utils\shvhashtablebase.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvmath.h"\
+	"..\..\include\utils\shvmathtokenhashmap.h"\
+	"..\..\include\utils\shvmathtokenmap.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvvectorbase.h"\
+	"..\src\utils\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE ARM) Debug"
+
+DEP_CPP_SHVMATH=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvdynarraybase.h"\
+	"..\..\include\utils\shvhashtable.h"\
+	"..\..\include\utils\shvhashtablebase.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvmath.h"\
+	"..\..\include\utils\shvmathtokenhashmap.h"\
+	"..\..\include\utils\shvmathtokenmap.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvvectorbase.h"\
+	"..\src\utils\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE x86) Release"
+
+DEP_CPP_SHVMATH=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvdynarraybase.h"\
+	"..\..\include\utils\shvhashtable.h"\
+	"..\..\include\utils\shvhashtablebase.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvmath.h"\
+	"..\..\include\utils\shvmathtokenhashmap.h"\
+	"..\..\include\utils\shvmathtokenmap.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvvectorbase.h"\
+	"..\src\utils\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE x86) Debug"
+
+DEP_CPP_SHVMATH=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvdynarraybase.h"\
+	"..\..\include\utils\shvhashtable.h"\
+	"..\..\include\utils\shvhashtablebase.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvmath.h"\
+	"..\..\include\utils\shvmathtokenhashmap.h"\
+	"..\..\include\utils\shvmathtokenmap.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvvectorbase.h"\
 	"..\src\utils\stdafx.h"\
 	
 
@@ -4981,6 +5085,8 @@ DEP_CPP_SHVSTRIN=\
 	"..\..\include\utils\shvstring16.h"\
 	"..\..\include\utils\shvstring16c.h"\
 	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvstringutf8.h"\
+	"..\..\include\utils\shvstringutf8c.h"\
 	"..\src\utils\stdafx.h"\
 	
 # ADD CPP /Yu"stdafx.h"
@@ -5882,6 +5988,14 @@ SOURCE=..\..\include\utils\shvlistbase.h
 # Begin Source File
 
 SOURCE=..\..\include\utils\shvmath.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\utils\shvmathtokenhashmap.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\utils\shvmathtokenmap.h
 # End Source File
 # Begin Source File
 
