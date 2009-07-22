@@ -2,7 +2,7 @@
 #define __SHIVA_UTILS_MATH_H
 
 #include "shvstring.h"
-#include "shvhashtable.h"
+#include "shvmathtokenmap.h"
 #include <math.h>
 
 //-=========================================================================================================
@@ -34,8 +34,8 @@ public:
 	static double SHVAPI Eval(const SHVStringC str, SHVString& err);
 	static double SHVAPI EvalList(const SHVStringC formatStr, ...);
 	static double SHVAPI EvalListErr(const SHVStringC formatStr, SHVString& err, ...);
-	static double SHVAPI EvalMap(const SHVStringC str, const SHVHashTableString<double>& map);
-	static double SHVAPI EvalMap(const SHVStringC str, const SHVHashTableString<double>& map, SHVString& err);
+	static double SHVAPI EvalMap(const SHVStringC str, SHVMathTokenMap& map);
+	static double SHVAPI EvalMap(const SHVStringC str, SHVMathTokenMap& map, SHVString& err);
 };
 
 #endif

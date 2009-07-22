@@ -36,7 +36,7 @@
 
 ///\cond INTERNAL
 #define SHVMATH_PI 3.14159265358979323846
-double shvmath_doeval(const SHVTChar*& str, char level, SHVString& err, SHVHashTableString<double>* map);
+double shvmath_doeval(const SHVTChar*& str, char level, SHVString& err, SHVMathTokenMap* map);
 ///\endcond
 
 
@@ -220,15 +220,15 @@ double SHVMath::EvalListErr(const SHVStringC formatStr, SHVString& err, ...)
 /// Evaluates a string with a set of mapped values
 /**
  \param str String to evaluate
- \param map HashTable with map of symbols to double
+ \param map Mapping class for symbols to double
  \return result of evaluation
  \see Eval
  */
-double SHVMath::EvalMap(const SHVStringC str, const SHVHashTableString<double>& map)
+double SHVMath::EvalMap(const SHVStringC str, SHVMathTokenMap& map)
 {
 const SHVTChar* cstr = str.GetSafeBuffer();
 SHVString err;
-	return shvmath_doeval(cstr,0,err,(SHVHashTableString<double>*)&map);
+	return shvmath_doeval(cstr,0,err,&map);
 }
 
 /*************************************
@@ -237,14 +237,15 @@ SHVString err;
 /// Evaluates a string with a set of mapped values
 /**
  \param str String to evaluate
+ \param map Mapping class for symbols to double
  \param err String to hold an error - null if none
  \return result of evaluation
  \see Eval
  */
-double SHVMath::EvalMap(const SHVStringC str, const SHVHashTableString<double>& map, SHVString& err)
+double SHVMath::EvalMap(const SHVStringC str, SHVMathTokenMap& map, SHVString& err)
 {
 const SHVTChar* cstr = str.GetSafeBuffer();
-	return shvmath_doeval(cstr,0,err,(SHVHashTableString<double>*)&map);
+	return shvmath_doeval(cstr,0,err,&map);
 }
 
 
@@ -350,7 +351,7 @@ double shvmath_performfunc(const SHVStringC token, double val, SHVString& err)
 // level : 0 == +-
 // level : 1 == */
 // level : 2 == ^
-double shvmath_getnumber(const SHVTChar*& str, char level, SHVString& err, SHVHashTableString<double>* map)
+double shvmath_getnumber(const SHVTChar*& str, char level, SHVString& err, SHVMathTokenMap* map)
 {
 SHVTChar* endp;
 double retVal;
@@ -409,11 +410,7 @@ double retVal;
 			{
 				retVal = SHVMATH_PI;
 			}
-			else if (map && map->Find(token))
-			{
-				retVal = (*map)[token];
-			}
-			else
+			else if (!map || !map->LookupValue(token,retVal))
 			{
 				err.Format(_T("Invalid constant %s"), token.GetSafeBuffer());
 			}
@@ -458,7 +455,7 @@ double retVal;
 // level : 0 == +-
 // level : 1 == */
 // level : 2 == ^
-double shvmath_doeval(const SHVTChar*& str, char level, SHVString& err, SHVHashTableString<double>* map)
+double shvmath_doeval(const SHVTChar*& str, char level, SHVString& err, SHVMathTokenMap* map)
 {
 double retVal = 0.0;
 double temp;
