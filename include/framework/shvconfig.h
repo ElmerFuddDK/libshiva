@@ -4,6 +4,7 @@
 #include "../shvtypes.h"
 #include "../utils/shvstring.h"
 #include "../utils/shvrefobject.h"
+#include "../utils/shvmathtokenmap.h"
 
 
 //-=========================================================================================================
@@ -40,7 +41,7 @@ protected:
  * This class is a container for static vars in a module list.
  */
 
-class SHVAPI SHVConfig
+class SHVAPI SHVConfig : public SHVMathTokenMap
 {
 public:
 
@@ -100,6 +101,10 @@ public:
 	virtual SHVConfigNode& SetPtr(const SHVInt& enumerator, void* val) = 0;
 	virtual SHVConfigNode& SetRef(const SHVInt& enumerator, SHVRefObject* val) = 0;
 	virtual void Remove(const SHVInt& enumerator) = 0;
+
+
+	// From SHVMathTokenMap
+	virtual bool LookupValue(const SHVStringC token, double& result) = 0;
 
 
 protected:

@@ -82,6 +82,10 @@ public:
 	virtual void Remove(const SHVInt& enumerator);
 
 
+	// From SHVMathTokenMap
+	virtual bool LookupValue(const SHVStringC token, double& result);
+
+
 	void Clear();
 
 private:

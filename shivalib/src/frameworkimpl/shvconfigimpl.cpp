@@ -36,6 +36,7 @@
 #include "../../../include/utils/shvstringutf8.h"
 #include "../../../include/utils/shvfile.h"
 #include "../../../include/utils/shvdir.h"
+#include "../../../include/utils/shvmath.h"
 
 
 
@@ -207,6 +208,26 @@ SHVConfigNodeImplRef* retVal = new SHVConfigNodeImplRef(val);
 void SHVConfigImpl::Remove(const SHVStringC& name)
 {
 	StringEntries.Remove(name);
+}
+
+/*************************************
+ * LookupValue
+ *************************************/
+bool SHVConfigImpl::LookupValue(const SHVStringC token, double& result)
+{
+bool retVal = false;
+	
+	if (Contains(token))
+	{
+	SHVDouble val(Find(token).ToDouble());
+		if (!val.IsNull())
+		{
+			retVal = true;
+			result = val;
+		}
+	}
+	
+	return retVal;
 }
 
 /*************************************
@@ -505,7 +526,21 @@ SHVConfigNodeImplRef::SHVConfigNodeImplRef(SHVRefObject* val) : SHVConfigNodeImp
  * ToInt*
  *************************************/
 SHVInt SHVConfigNodeImplInt::ToInt()	{ return Value; }
-SHVInt SHVConfigNodeImplString::ToInt()	{ return ( !Value.IsNull() ? SHVInt(Value.ToLong()) : SHVInt() ); }
+SHVInt SHVConfigNodeImplString::ToInt()
+{
+SHVTChar* endp = NULL;
+SHVInt retVal(!Value.IsNull() ? SHVInt(Value.ToLong(&endp)) : SHVInt());
+	if (endp != NULL && *endp)
+	{
+	SHVString err;
+	double eval = SHVMath::Eval(Value,err);
+		if (err.IsNull())
+			retVal = (int)eval;
+		else
+			SHVASSERT(false); // failed converting the value completely
+	}
+	return retVal;
+}
 SHVInt SHVConfigNodeImplPointer::ToInt(){ return ( Value != NULL ? SHVInt(*(int*)&Value) : SHVInt() ); }
 SHVInt SHVConfigNodeImplRef::ToInt()	{ return ( !Value.IsNull() ? 1 : 0 ); }
 
@@ -513,7 +548,21 @@ SHVInt SHVConfigNodeImplRef::ToInt()	{ return ( !Value.IsNull() ? 1 : 0 ); }
  * ToDouble
  *************************************/
 SHVDouble SHVConfigNodeImplInt::ToDouble()	{ return (double)Value; }
-SHVDouble SHVConfigNodeImplString::ToDouble()	{ return ( !Value.IsNull() ? SHVDouble((double)Value.ToLong()) : SHVDouble() ); }
+SHVDouble SHVConfigNodeImplString::ToDouble()
+{
+SHVTChar* endp = NULL;
+SHVDouble retVal(!Value.IsNull() ? SHVDouble(Value.ToDouble(&endp)) : SHVDouble());
+	if (endp != NULL && *endp)
+	{
+	SHVString err;
+	double eval = SHVMath::Eval(Value,err);
+		if (err.IsNull())
+			retVal = eval;
+		else
+			SHVASSERT(false); // failed converting the value completely
+	}
+	return retVal;
+}
 SHVDouble SHVConfigNodeImplPointer::ToDouble()	{ return ( Value != NULL ? SHVDouble((double)*(int*)&Value) : SHVDouble() ); }
 SHVDouble SHVConfigNodeImplRef::ToDouble()	{ return ( !Value.IsNull() ? 1.0 : 0.0 ); }
 
