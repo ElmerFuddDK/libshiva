@@ -263,7 +263,7 @@ SHVFile file;
 
 					intValue = strValue.ToLong(&endch);
 
-					if (strValue == "null")
+					if (strValue == "null" || strValue.IsEmpty())
 					{
 						Set(name.ToStrT(),SHVInt());
 					}
