@@ -721,7 +721,8 @@ size_t oldlen = SHVString8C::StrLen(Buffer);
  *************************************/
 void SHVStringUTF8::MakeUpper()
 {
-	for (size_t i=0; i<BufferLen; i++)
+size_t len=GetLength();
+	for (size_t i=0; i<len; i++)
 	{
 		if ( Buffer[i] >= 'a' && Buffer[i] <= 'z' )
 			Buffer[i] -= 'a'-'A';
@@ -733,7 +734,8 @@ void SHVStringUTF8::MakeUpper()
  *************************************/
 void SHVStringUTF8::MakeLower()
 {
-	for (size_t i=0; i<BufferLen; i++)
+size_t len=GetLength();
+	for (size_t i=0; i<len; i++)
 	{
 		if ( Buffer[i] >= 'A' && Buffer[i] <= 'Z' )
 			Buffer[i] += 'a'-'A';
@@ -849,6 +851,7 @@ SHVStringUTF8& SHVStringUTF8::operator=(const SHVStringUTF8C& str)
 		BUFFER_SETDESTROYFUNC;
 		if (BufferLen) ::memcpy(Buffer,str.GetBufferConst(),BufferLen*sizeof(SHVChar));
 		Buffer[BufferLen] = '\0';
+		BufferLen++;
 	}
 	return *this;
 }
@@ -858,7 +861,7 @@ SHVStringUTF8& SHVStringUTF8::operator=(const SHVStringBufferUTF8& str)
 
 	BUFFER_MOVE(((SHVStringBufferUTF8*)&str)->Buffer,((SHVStringBufferUTF8*)&str)->DestroyFunc);
 	
-	BufferLen = SHVString8C::StrLen(Buffer) + 1; // we assume the buffer has the length og the string, + the '\0' termination
+	BufferLen = (Buffer ? SHVString8C::StrLen(Buffer) + 1 : 0); // we assume the buffer has the length og the string, + the '\0' termination
 	return *this;
 }
 SHVStringUTF8& SHVStringUTF8::operator+=(const SHVStringUTF8C& str)

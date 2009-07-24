@@ -967,7 +967,8 @@ size_t oldlen = GetLength();
  *************************************/
 void SHVString16::MakeUpper()
 {
-	for (size_t i=0; i<BufferLen; i++)
+size_t len=GetLength();
+	for (size_t i=0; i<len; i++)
 	{
 		if ( Buffer[i] >= 'a' && Buffer[i] <= 'z' )
 			Buffer[i] -= 'a'-'A';
@@ -979,7 +980,8 @@ void SHVString16::MakeUpper()
  *************************************/
 void SHVString16::MakeLower()
 {
-	for (size_t i=0; i<BufferLen; i++)
+size_t len=GetLength();
+	for (size_t i=0; i<len; i++)
 	{
 		if ( Buffer[i] >= 'A' && Buffer[i] <= 'Z' )
 			Buffer[i] += 'a'-'A';
@@ -1247,6 +1249,7 @@ SHVString16& SHVString16::operator=(const SHVString16C& str)
 		BUFFER_SETDESTROYFUNC;
 		if (BufferLen) ::memcpy(Buffer,str.GetBufferConst(),BufferLen*sizeof(SHVWChar));
 		Buffer[BufferLen] = '\0';
+		BufferLen++;
 	}
 	return *this;
 }
@@ -1256,7 +1259,7 @@ SHVString16& SHVString16::operator=(const SHVStringBuffer16& str)
 
 	BUFFER_MOVE(((SHVStringBuffer16*)&str)->Buffer,((SHVStringBuffer16*)&str)->DestroyFunc);
 	
-	BufferLen = GetLength() + 1; // we assume the buffer has the length og the string, + the '\0' termination
+	BufferLen = (Buffer ? GetLength() + 1 : 0); // we assume the buffer has the length og the string, + the '\0' termination
 	return *this;
 }
 SHVString16& SHVString16::operator+=(const SHVString16C& str)
