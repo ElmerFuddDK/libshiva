@@ -124,12 +124,12 @@ bool retVal = modules.LockEvent();
 			}
 		}
 
+		modules.UnlockEvent();
+
+
 		// signal event queues
 		while (queueItr.MoveNext())
 			queueItr.Get()->SignalDispatcher();
-
-
-		modules.UnlockEvent();
 	}
 
 	return retVal;
