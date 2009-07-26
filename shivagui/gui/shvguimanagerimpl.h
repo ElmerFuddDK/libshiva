@@ -67,12 +67,12 @@ friend class SHVControlContainer;
 friend class SHVMessageBox;
 
 	///\cond INTERNAL
-	typedef struct ControlPair {
+	struct ControlPair {
 		int Type;
 		int SubType;
 		
 		inline ControlPair(int type, int subType) : Type(type), SubType(subType)  {}
-		inline operator size_t() const { return Type+(SubType<<4); }
+		inline operator SHVHashValue() const { return Type+(SubType<<4); }
 		inline bool operator==(const ControlPair& p) const { return p.Type == Type && p.SubType == SubType; }
 	};
 	
