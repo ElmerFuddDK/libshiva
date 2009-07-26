@@ -19,7 +19,7 @@ public:
 
 
 	// Constructors
-	SHVFontGtk(PangoFontDescription* font, bool owner);
+	SHVFontGtk(PangoFontDescription* font, PangoContext* context, bool owner);
 	virtual ~SHVFontGtk();
 
 
@@ -33,13 +33,14 @@ public:
 	virtual SHVStringBuffer GetName();
 
 	inline PangoFontDescription* GetFont();
-	static SHVFontGtk* CopyFrom(PangoFontDescription* font);
+	static SHVFontGtk* CopyFrom(PangoFontDescription* font, PangoContext* context);
 
 
 private:
 	///\cond INTERNAL
 	PangoFontDescription* Font;
 	GdkFont* DrawFont;
+	PangoContext* Context;
 	int Height;
 	int CellHeight;
 	int ApproximateWidth;

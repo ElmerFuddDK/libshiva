@@ -166,7 +166,8 @@ SHVFont* SHVControlImplementerMainWindowGtk::GetFont(SHVControl* owner)
 {
 GtkStyle* style = gtk_widget_get_style(Handle);
 
-	return new SHVFontGtk(style->font_desc,false);
+	// We can use the context from the main window since it will always exist during the programs lifetime
+	return new SHVFontGtk(style->font_desc,gtk_widget_get_pango_context(Handle),false);
 }
 
 /*************************************

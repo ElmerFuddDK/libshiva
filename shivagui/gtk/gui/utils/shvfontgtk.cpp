@@ -34,6 +34,8 @@
 #include "shvfontgtk.h"
 #include "../shvgtk.h"
 
+#include <pango/pango-font.h>
+
 
 //=========================================================================================================
 // SHVFontGtk
@@ -42,7 +44,8 @@
 /*************************************
  * Constructors
  *************************************/
-SHVFontGtk::SHVFontGtk(PangoFontDescription* font, bool owner) : Font(font)
+SHVFontGtk::SHVFontGtk(PangoFontDescription* font, PangoContext* context, bool owner)
+		: Font(font), Context(context)
 {
 	SHVASSERT(Font);
 	if (Font && !owner)
@@ -86,7 +89,7 @@ PangoFontDescription* font = pango_font_description_copy(Font);
 			//pango_font_description_set_underlinethickness(font, ( styles & SHVFont::StyleUnderline ? 1 : 0 ));
 		}
 
-		retVal = new SHVFontGtk(font,true);
+		retVal = new SHVFontGtk(font,Context,true);
 	}
 
 	return retVal;
@@ -98,7 +101,14 @@ PangoFontDescription* font = pango_font_description_copy(Font);
 int SHVFontGtk::GetHeight()
 {
 	if (Height == -1 && Font)
-		Height = PANGO_PIXELS(pango_font_description_get_size(Font));
+	{
+		SHVASSERT(pango_font_description_get_set_fields(Font)&PANGO_FONT_MASK_SIZE);
+		Height = pango_font_description_get_size(Font);
+		if (!pango_font_description_get_size_is_absolute(Font))
+		{
+			Height = PANGO_PIXELS(Height);
+		}
+	}
 	return Height;
 }
 
@@ -109,14 +119,16 @@ int SHVFontGtk::GetCellHeight()
 {
 	if (CellHeight == -1 && Font)
 	{
-		if (InitDrawFont())
-		{
-		gint lbearing, rbearing, width, ascent, descent;
+	PangoFontMetrics* metrics = pango_context_get_metrics(Context,Font,NULL);
 		
-			descent = 0;
-			gdk_string_extents(DrawFont, "q",&lbearing,&rbearing,&width,&ascent,&descent);
-			
-			CellHeight = GetHeight() + descent;
+		if (metrics)
+		{
+			CellHeight = pango_font_metrics_get_ascent(metrics) + pango_font_metrics_get_descent(metrics);
+			if (!pango_font_description_get_size_is_absolute(Font))
+			{
+				CellHeight = PANGO_PIXELS(CellHeight);
+			}
+			pango_font_metrics_unref(metrics);
 		}
 	}
 	return CellHeight;
@@ -133,14 +145,20 @@ int SHVFontGtk::GetApproximateWidth()
 }
 
 /*************************************
- * GetWidth
+ * CalculateTextWidth
  *************************************/
 int SHVFontGtk::CalculateTextWidth(const SHVStringC text)
 {
 int retVal = 0;
-	if (InitDrawFont())
+PangoLayout* layout = pango_layout_new(Context);
+	
+	if (layout)
 	{
-		retVal = gdk_string_width(DrawFont,text.ToStrUTF8().GetSafeBuffer());
+	int height;
+		pango_layout_set_font_description(layout,Font);
+		pango_layout_set_text(layout,text.ToStrUTF8().GetSafeBuffer(),-1);
+		pango_layout_get_pixel_size(layout,&retVal,&height);
+		g_object_unref(layout);
 	}
 	
 	return retVal;
@@ -161,14 +179,14 @@ SHVString retVal;
 }
 
 /*************************************
- * GetName
+ * CopyFrom
  *************************************/
-SHVFontGtk* SHVFontGtk::CopyFrom(PangoFontDescription* font)
+SHVFontGtk* SHVFontGtk::CopyFrom(PangoFontDescription* font, PangoContext* context)
 {
 	if (font)
 		font = pango_font_description_copy(font);
 
-	return (font ? new SHVFontGtk(font,true) : NULL);
+	return (font ? new SHVFontGtk(font,context,true) : NULL);
 }
 
 ///\cond INTERNAL
