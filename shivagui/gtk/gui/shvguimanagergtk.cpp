@@ -110,7 +110,7 @@ void SHVGUIManagerGtk::Unregister()
  *************************************/
 SHVFont* SHVGUIManagerGtk::CreateFont(const SHVStringC name, int height, int styles)
 {
-	return NULL; //new SHVFontGtk(name,height,styles);
+	return SHVFontGtk::CreateFromName(Gtk::GetHandle(GetMainWindow()),name,height,styles);
 }
 
 /*************************************

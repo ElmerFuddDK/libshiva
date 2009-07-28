@@ -34,6 +34,7 @@ public:
 
 	inline PangoFontDescription* GetFont();
 	static SHVFontGtk* CopyFrom(PangoFontDescription* font, PangoContext* context);
+	static SHVFontGtk* CreateFromName(GtkWidget* mainWnd, const SHVStringC name, int height, int styles);
 
 
 private:

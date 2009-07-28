@@ -86,6 +86,7 @@ PangoFontDescription* font = pango_font_description_copy(Font);
 		{
 			pango_font_description_set_weight(font, ( styles & SHVFont::StyleBold ? PANGO_WEIGHT_BOLD : PANGO_WEIGHT_NORMAL ));
 			pango_font_description_set_style(font, ( styles & SHVFont::StyleItalic ? PANGO_STYLE_ITALIC : PANGO_STYLE_NORMAL ));
+			SHVASSERT( !(styles & SHVFont::StyleUnderline) ); // we do not support underline yet!
 			//pango_font_description_set_underlinethickness(font, ( styles & SHVFont::StyleUnderline ? 1 : 0 ));
 		}
 
@@ -187,6 +188,32 @@ SHVFontGtk* SHVFontGtk::CopyFrom(PangoFontDescription* font, PangoContext* conte
 		font = pango_font_description_copy(font);
 
 	return (font ? new SHVFontGtk(font,context,true) : NULL);
+}
+
+/*************************************
+ * CopyFrom
+ *************************************/
+SHVFontGtk* SHVFontGtk::CreateFromName(GtkWidget* mainWnd, const SHVStringC name, int height, int styles)
+{
+SHVFontGtk* retVal = NULL;
+PangoFontDescription* desc;
+SHVString8 styleStr;
+	
+	if (styles&SHVFont::StyleBold)
+		styleStr += "Bold ";
+	if (styles&SHVFont::StyleItalic)
+		styleStr += "Italic ";
+	SHVASSERT( !(styles & SHVFont::StyleUnderline) ); // we do not support underline yet!
+	
+	if (styleStr.IsEmpty())
+		styleStr = "Normal ";
+	
+	desc = pango_font_description_from_string(SHVString8C::Format("%s,%s%d", name.GetSafeBuffer(), styleStr.GetSafeBuffer(), height).GetSafeBuffer());
+	
+	// We can use the context from the main window since it will always exist during the programs lifetime
+	retVal = new SHVFontGtk(desc,gtk_widget_get_pango_context(mainWnd),true);
+	
+	return retVal;
 }
 
 ///\cond INTERNAL
