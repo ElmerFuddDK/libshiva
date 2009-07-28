@@ -39,7 +39,7 @@
 
 //#include "shvcontrolimplementercontainerwindowgtk.h"
 //#include "shvcontrolimplementerdialoggtk.h"
-//#include "shvcontrolimplementerlabelgtk.h"
+#include "shvcontrolimplementerlabelgtk.h"
 //#include "shvcontrolimplementereditgtk.h"
 //#include "shvcontrolimplementerbuttongtk.h"
 #include "../../../include/gui/shvcontrolcreator.h"
@@ -58,32 +58,32 @@
  *************************************/
 SHVGUIManagerGtk::SHVGUIManagerGtk(SHVModuleList& modules) : SHVGUIManagerImpl(modules)
 {
-/*
-	// Register controls
-	RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeDefault,
-		new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerContainerWindowGtk,SHVControlContainer::SubTypeDefault>());
-	RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeCustomDraw,
-		new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerContainerWindowGtk,SHVControlContainer::SubTypeCustomDraw>());
 
-	RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeModalDialog,
-		new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerDialogGtk,SHVControlContainer::SubTypeModalDialog>());
-	RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeDialog,
-		new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerDialogGtk,SHVControlContainer::SubTypeDialog>());
+	// Register controls
+	//RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeDefault,
+	//	new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerContainerWindowGtk,SHVControlContainer::SubTypeDefault>());
+	//RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeCustomDraw,
+	//	new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerContainerWindowGtk,SHVControlContainer::SubTypeCustomDraw>());
+
+	//RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeModalDialog,
+	//	new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerDialogGtk,SHVControlContainer::SubTypeModalDialog>());
+	//RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeDialog,
+	//	new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerDialogGtk,SHVControlContainer::SubTypeDialog>());
 
 	RegisterFactory(SHVControl::TypeLabel,SHVControlLabel::SubTypeDefault,
 		new SHVControlCreatorSubType<SHVControlLabel,SHVControlImplementerLabelGtk,SHVControlLabel::SubTypeDefault>());
 	RegisterFactory(SHVControl::TypeLabel,SHVControlLabel::SubTypeCustomDraw,
 		new SHVControlCreatorSubType<SHVControlLabel,SHVControlImplementerLabelGtk,SHVControlLabel::SubTypeCustomDraw>());
 
-	RegisterFactory(SHVControl::TypeEdit,SHVControlEdit::SubTypeSingleLine,
-		new SHVControlCreatorSubType<SHVControlEdit,SHVControlImplementerEditGtk,SHVControlEdit::SubTypeSingleLine>());
-	RegisterFactory(SHVControl::TypeEdit,SHVControlEdit::SubTypeMultiLine,
-		new SHVControlCreatorSubType<SHVControlEdit,SHVControlImplementerEditGtk,SHVControlEdit::SubTypeMultiLine>());
+	//RegisterFactory(SHVControl::TypeEdit,SHVControlEdit::SubTypeSingleLine,
+	//	new SHVControlCreatorSubType<SHVControlEdit,SHVControlImplementerEditGtk,SHVControlEdit::SubTypeSingleLine>());
+	//RegisterFactory(SHVControl::TypeEdit,SHVControlEdit::SubTypeMultiLine,
+	//	new SHVControlCreatorSubType<SHVControlEdit,SHVControlImplementerEditGtk,SHVControlEdit::SubTypeMultiLine>());
 
-	RegisterFactory(SHVControl::TypeButton,SHVControlButton::SubTypeDefault,
-		new SHVControlCreator<SHVControlButton,SHVControlImplementerButtonGtk>());
+	//RegisterFactory(SHVControl::TypeButton,SHVControlButton::SubTypeDefault,
+	//	new SHVControlCreator<SHVControlButton,SHVControlImplementerButtonGtk>());
 
-*/
+
 
 	// Set standard transparency color
 	GetConfig().SetRef(CfgColorTransparent,CreateColor(0xFF,0x00,0xFF));

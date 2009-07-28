@@ -44,12 +44,3 @@ GtkWidget* Gtk::GetMainWndHandle(SHVControl* control)
 {
 	return ((SHVControlImplementerMainWindowGtk*)control->GetManager()->GetMainWindow()->GetImplementor())->GetMainWndHandle();
 }
-
-/*************************************
- * MapFlags
- *************************************/
-int Gtk::MapFlags(int shivaflags)
-{
-int retVal = 0;
-	return retVal;
-}

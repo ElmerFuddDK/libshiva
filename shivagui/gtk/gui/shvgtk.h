@@ -20,8 +20,6 @@ public:
 
 	inline static SHVConfig& GetGUIConfig(SHVControl* control);
 
-	static int MapFlags(int shivaflags);
-
 //	inline static SHVDrawGtk* CreateDraw(SHVControl* control);
 };
 

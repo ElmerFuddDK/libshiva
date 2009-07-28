@@ -1,8 +1,9 @@
-#ifndef __SHIVA_WIN32GUI_SHVCONTROLIMPLEMENTERMAINWINDOW_H
-#define __SHIVA_WIN32GUI_SHVCONTROLIMPLEMENTERMAINWINDOW_H
+#ifndef __SHIVA_GTKGUI_SHVCONTROLIMPLEMENTERMAINWINDOW_H
+#define __SHIVA_GTKGUI_SHVCONTROLIMPLEMENTERMAINWINDOW_H
 
 
 #include "../../../include/gui/shvcontrolcontainer.h"
+#include "utils/shvfontgtk.h"
 
 #ifndef __SHIVA_GTK
 # error This code only works for gtk
@@ -73,11 +74,13 @@ private:
 	
 	GtkWidget* MainWindow;
 	GtkWidget* Handle;
+	bool Visible;
 	
 	SHVRect SizedRect;
 	
 	SHVMainThreadEventDispatcherGtk* Dispatcher;
 	SHVColorRef Color;
+	SHVFontGtkRef Font;
 	///\endcond
 };
 

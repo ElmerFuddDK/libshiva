@@ -51,6 +51,7 @@ SHVControlImplementerMainWindowGtk::SHVControlImplementerMainWindowGtk(SHVMainTh
 	Dispatcher = dispatcher;
 	Handle = NULL;
 	MainWindow = NULL;
+	Visible = false;
 }
 
 /*************************************
@@ -81,6 +82,7 @@ SHVBool retVal(!IsCreated() && parent == NULL);
 		MainWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	
 		gtk_window_set_default_size (GTK_WINDOW (MainWindow), 300, 240);
+		gtk_window_set_resizable (GTK_WINDOW (MainWindow), false);
 		
 		Handle = gtk_fixed_new();
 		gtk_widget_set_size_request (Handle, 0, 0);
@@ -146,9 +148,19 @@ void SHVControlImplementerMainWindowGtk::SetRect(SHVControl* owner, const SHVRec
  *************************************/
 SHVBool SHVControlImplementerMainWindowGtk::SetFlag(SHVControl* owner, int flag, bool enable)
 {
-	if (flag&SHVControl::FlagVisible)
-		gtk_widget_show_all(MainWindow);
-	return SHVBool::False;
+SHVBool retVal(IsCreated());
+
+	if (retVal && (flag & SHVControl::FlagVisible))
+	{
+		if (enable && !Visible)
+		{
+			Visible = true;
+			gtk_widget_show(Handle);
+			gtk_widget_show_now(MainWindow);
+		}
+	}
+
+	return retVal;
 }
 
 /*************************************
@@ -156,7 +168,14 @@ SHVBool SHVControlImplementerMainWindowGtk::SetFlag(SHVControl* owner, int flag,
  *************************************/
 bool SHVControlImplementerMainWindowGtk::GetFlag(SHVControl* owner, int flag)
 {
-	return false;
+bool retVal(IsCreated());
+
+	if (retVal && (flag & SHVControl::FlagVisible))
+	{
+		retVal = Visible;
+	}
+
+	return retVal;
 }
 
 /*************************************
@@ -164,10 +183,14 @@ bool SHVControlImplementerMainWindowGtk::GetFlag(SHVControl* owner, int flag)
  *************************************/
 SHVFont* SHVControlImplementerMainWindowGtk::GetFont(SHVControl* owner)
 {
-GtkStyle* style = gtk_widget_get_style(Handle);
+	if (Font.IsNull())
+	{
+	GtkStyle* style = gtk_widget_get_style(Handle);
 
-	// We can use the context from the main window since it will always exist during the programs lifetime
-	return new SHVFontGtk(style->font_desc,gtk_widget_get_pango_context(Handle),false);
+		// We can use the context from the main window since it will always exist during the programs lifetime
+		Font = new SHVFontGtk(style->font_desc,gtk_widget_get_pango_context(Handle),false);
+	}
+	return Font;
 }
 
 /*************************************
@@ -177,7 +200,8 @@ SHVBool SHVControlImplementerMainWindowGtk::SetFont(SHVControl* owner, SHVFont* 
 {
 	if (IsCreated())
 	{
-		gtk_widget_modify_font(Handle,((SHVFontGtk*)font)->GetFont());
+		Font = (SHVFontGtk*)font;
+		gtk_widget_modify_font(Handle,Font->GetFont());
 	}
 	font->ValidateRefCount();
 	return IsCreated();
@@ -208,7 +232,7 @@ SHVRect rect;
 	if (IsCreated())
 	{
 	int width,height;
-		gtk_window_get_size(GTK_WINDOW(Handle),&width,&height);
+		gtk_window_get_size(GTK_WINDOW(MainWindow),&width,&height);
 		rect.SetWidth(width);
 		rect.SetHeight(height);
 	}
@@ -300,7 +324,7 @@ gint w,h;
  *************************************/
 void SHVControlImplementerMainWindowGtk::SetResizable(bool resizable)
 {
-//	SHVControlImplementerWin32Base::SetResizable(resizable);
+	gtk_window_set_resizable (GTK_WINDOW (MainWindow), resizable);
 }
 
 ///\cond INTERNAL
