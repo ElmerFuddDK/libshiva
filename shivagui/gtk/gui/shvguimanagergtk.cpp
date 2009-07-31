@@ -34,7 +34,7 @@
 
 #include "shvguimanagergtk.h"
 #include "shvgtk.h"
-//#include "utils/shvdrawgtk.h"
+#include "utils/shvpengtk.h"
 #include "utils/shvcolorgtk.h"
 
 //#include "shvcontrolimplementercontainerwindowgtk.h"
@@ -126,7 +126,7 @@ SHVColor* SHVGUIManagerGtk::CreateColor(SHVColor::ColorVal r, SHVColor::ColorVal
  *************************************/
 SHVPen* SHVGUIManagerGtk::CreatePen(SHVColor* color, int style, int width)
 {
-	return NULL; //new SHVPenGtk((SHVColorGtk*)color,style,width);
+	return new SHVPenGtk((SHVColorGtk*)color,style,width);
 }
 
 /*************************************
