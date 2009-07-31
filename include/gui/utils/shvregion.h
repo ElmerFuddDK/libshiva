@@ -128,6 +128,9 @@ public:
 	virtual SHVRegionAction* AlignHorizontal(SHVControl* left = NULL, SHVControl* right = NULL, int alignment = SHVRegion::AlignLeft, int hmargin = -1) = 0;
 	virtual SHVRegionAction* FillHorizontal(SHVControl* left = NULL, SHVControl* right = NULL, int hmargin = -1) = 0;
 
+	virtual SHVRegionAction* AlignVertical(SHVControl* top = NULL, SHVControl* bottom = NULL, int alignment = SHVRegion::AlignTop, int vmargin = -1) = 0;
+	virtual SHVRegionAction* FillVertical(SHVControl* top = NULL, SHVControl* bottom = NULL, int vmargin = -1) = 0;
+
 
 	// desctructor
 	virtual ~SHVRegionAction() {}
