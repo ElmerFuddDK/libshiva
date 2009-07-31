@@ -52,7 +52,6 @@ SHVFontGtk::SHVFontGtk(PangoFontDescription* font, PangoContext* context, bool o
 		Font = pango_font_description_copy(Font);
 	Height = CellHeight = -1;
 	ApproximateWidth = -1;
-	DrawFont = NULL;
 }
 
 /*************************************
@@ -62,8 +61,6 @@ SHVFontGtk::~SHVFontGtk()
 {
 	if (Font)
 		pango_font_description_free(Font);
-	if (DrawFont)
-		gdk_font_unref(DrawFont);
 }
 
 /*************************************
@@ -215,18 +212,3 @@ SHVString8 styleStr;
 	
 	return retVal;
 }
-
-///\cond INTERNAL
-/*************************************
- * InitDrawFont
- *************************************/
-bool SHVFontGtk::InitDrawFont()
-{
-	if (Font && !DrawFont)
-	{
-		DrawFont = gdk_font_from_description(Font);
-	}
-	
-	return DrawFont != NULL;
-}
-///\endcond

@@ -40,13 +40,10 @@ public:
 private:
 	///\cond INTERNAL
 	PangoFontDescription* Font;
-	GdkFont* DrawFont;
 	PangoContext* Context;
 	int Height;
 	int CellHeight;
 	int ApproximateWidth;
-	
-	bool InitDrawFont();
 	///\endcond
 };
 typedef SHVRefObjectContainer<SHVFontGtk> SHVFontGtkRef;
