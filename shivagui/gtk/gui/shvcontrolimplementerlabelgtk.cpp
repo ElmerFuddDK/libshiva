@@ -33,7 +33,7 @@
 #include "../../../include/utils/shvstringutf8.h"
 
 #include "shvcontrolimplementerlabelgtk.h"
-//#include "utils/shvdrawgtk.h"
+#include "utils/shvdrawgtk.h"
 
 
 //=========================================================================================================
@@ -60,7 +60,8 @@ SHVBool SHVControlImplementerLabelGtk::Create(SHVControl* owner, SHVControlImple
 		
 		if (SubType == SHVControlLabel::SubTypeCustomDraw)
 		{
-			// Add some handler stuff that can do the custom draw thing
+			g_signal_connect (G_OBJECT (GetHandle()), "expose-event",
+							  G_CALLBACK (SHVControlImplementerLabelGtk::expose_event), owner);
 		}
 		owner->SetFont(NULL,true);
 		owner->SetFlag(flags);
@@ -124,3 +125,28 @@ void SHVControlImplementerLabelGtk::SubscribeDraw(SHVEventSubscriberBase* subscr
 {
 	Subscriber = subscriber;
 }
+
+///\cond INTERNAL
+/*************************************
+ * expose_event
+ *************************************/
+gboolean SHVControlImplementerLabelGtk::expose_event(GtkWidget *widget, GdkEvent* event, gpointer user_data)
+{
+SHVControl* owner = (SHVControl*)user_data;
+SHVControlImplementerLabelGtk* self = (SHVControlImplementerLabelGtk*)owner->GetImplementor();
+GdkEventExpose* exposeEvent = (GdkEventExpose*)event;
+SHVDrawGtkRef draw = new SHVDrawGtk(owner->GetManager(),gdk_gc_new(GDK_DRAWABLE (exposeEvent->window)),exposeEvent->window, owner);
+
+	if (!self->Subscriber.IsNull())
+	{
+	SHVControlRef refToSelf = owner; // ensure the validity of the object through this function
+		self->Subscriber->EmitNow(owner->GetModuleList(),new SHVEventData<SHVDrawEventData>(SHVDrawEventData(draw),NULL,SHVControl::EventDraw,NULL,owner));
+	}
+	else
+	{
+		draw->DrawText(self->GetText(),draw->GetClientRect(owner),NULL,SHVDraw::TextVCenter|SHVDraw::TextLeft|SHVDraw::TextEndEllipsis);
+	}
+	
+	return TRUE;
+}
+///\endcond
