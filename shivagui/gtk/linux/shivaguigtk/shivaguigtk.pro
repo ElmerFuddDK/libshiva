@@ -59,7 +59,9 @@ HEADERS += ../../../gui/shvformimpl.h \
  ../../gui/utils/shvcolorgtk.h \
  ../../gui/shvcontrolimplementerlabelgtk.h \
  ../../gui/shvcontrolimplementergtkwidget.h \
- ../../gui/shvcontrolimplementergtkwidgetbase.h
+ ../../gui/shvcontrolimplementergtkwidgetbase.h \
+ ../../gui/utils/shvdrawgtk.h \
+ ../../gui/utils/shvpengtk.h
 SOURCES += ../../../gui/shvcontrolbutton.cpp \
            ../../../gui/shvcontrolcontainer.cpp \
            ../../../gui/shvcontrol.cpp \
@@ -78,7 +80,9 @@ SOURCES += ../../../gui/shvcontrolbutton.cpp \
  ../../gui/utils/shvcolorgtk.cpp \
  ../../../utilsimpl/shvcolor.cpp \
  ../../gui/shvcontrolimplementerlabelgtk.cpp \
- ../../gui/shvcontrolimplementergtkwidgetbase.cpp
+ ../../gui/shvcontrolimplementergtkwidgetbase.cpp \
+ ../../gui/utils/shvdrawgtk.cpp \
+ ../../gui/utils/shvpengtk.cpp
 INCLUDEPATH += /usr/lib64/gtk-2.0/include \
   /usr/lib64/glib-2.0/include \
   /usr/include/atk-1.0 \
