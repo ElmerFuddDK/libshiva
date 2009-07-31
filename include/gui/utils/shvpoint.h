@@ -13,6 +13,8 @@ public:
 
 
 	inline SHVPoint(int _x = 0, int _y = 0);
+	
+	inline SHVPoint& Move(int _x,int _y);
 
 	int x, y;
 
@@ -27,6 +29,16 @@ public:
  *************************************/
 SHVPoint::SHVPoint(int _x, int _y) : x(_x), y(_y)
 {
+}
+
+/*************************************
+ * Constructor
+ *************************************/
+SHVPoint& SHVPoint::Move(int _x,int _y)
+{
+	x += _x;
+	y += _y;
+	return *this;
 }
 
 #endif
