@@ -95,6 +95,8 @@ SHVBool SHVControlImplementerGtkWidgetBase::Destroy(SHVControl* owner)
 {
 SHVBool retVal(IsCreated());
 
+	SHVUNUSED_PARAM(owner);
+
 	if (retVal)
 	{
 		gtk_widget_destroy(Window);
@@ -111,7 +113,7 @@ SHVRect SHVControlImplementerGtkWidgetBase::GetRect(SHVControl* owner)
 {
 SHVRect retVal;
 
-	SHVASSERT(IsCreated() && owner && owner->GetImplementor()->GetNative() == this);
+	SHVASSERT(IsCreated() && owner && owner->GetImplementor()->GetNative() == GetHandle());
 
 	if (IsCreated())
 	{
@@ -144,12 +146,11 @@ SHVRect retVal;
  *************************************/
 void SHVControlImplementerGtkWidgetBase::SetRect(SHVControl* owner, const SHVRect& rect)
 {
-	SHVASSERT(IsCreated() && owner && owner->GetImplementor()->GetNative() == this);
+	SHVASSERT(IsCreated() && owner && owner->GetImplementor()->GetNative() == GetHandle());
 
 	if (IsCreated())
 	{
 	GtkFixed* parent;
-	gint w,h;
 		g_object_get(Window,"parent",&parent,NULL);
 		if (parent)
 		{
@@ -187,6 +188,8 @@ bool SHVControlImplementerGtkWidgetBase::GetFlag(SHVControl* owner, int flag)
 {
 bool retVal(IsCreated());
 
+	SHVUNUSED_PARAM(owner);
+
 	if (retVal && (flag & SHVControl::FlagVisible))
 	{
 	gboolean b;
@@ -202,6 +205,7 @@ bool retVal(IsCreated());
  *************************************/
 SHVFont* SHVControlImplementerGtkWidgetBase::GetFont(SHVControl* owner)
 {
+	SHVUNUSED_PARAM(owner);
 	return Font;
 }
 
@@ -247,11 +251,6 @@ SHVPoint SHVControlImplementerGtkWidgetBase::CalculateMinSize(SHVControl* owner,
 	}
 
 	return SHVPoint();
-}
-
-void SHVControlImplementerGtkWidgetBase::SetResizable(bool resizable)
-{
-	// TODO: Implement SetResizable
 }
 
 /*************************************

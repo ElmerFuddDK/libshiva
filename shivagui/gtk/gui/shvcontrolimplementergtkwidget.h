@@ -157,7 +157,7 @@ SHVInt newHeight;
 template <class T>
 void* SHVControlImplementerGtkWidget<T>::GetNative()
 {
-	return (SHVControlImplementerGtkWidgetBase*)this;
+	return GetHandle();
 }
 
 /*************************************

@@ -49,21 +49,16 @@ public:
 
 	SHVPoint CalculateMinSize(SHVControl* owner, int widthInChars, int heightInChars);
 
-	void SetResizable(bool resizable);
-
 protected:
 
 	virtual void SetHandle(GtkWidget* handle);
 
 
 private:
-//friend class SHVControlWrapperWin32;
-//friend class SHVControlContainerWrapperWin32;
 
 	GtkWidget* Window;
 	SHVFontGtkRef Font;
 
 };
-
 
 #endif
