@@ -58,11 +58,8 @@ SHVBool SHVControlImplementerLabelGtk::Create(SHVControl* owner, SHVControlImple
 		SetHandle(gtk_label_new(NULL));
 		gtk_container_add(GTK_CONTAINER (parent->GetNative()), GetHandle());
 		
-		if (SubType == SHVControlLabel::SubTypeCustomDraw)
-		{
-			g_signal_connect (G_OBJECT (GetHandle()), "expose-event",
-							  G_CALLBACK (SHVControlImplementerLabelGtk::expose_event), owner);
-		}
+		g_signal_connect (G_OBJECT (GetHandle()), "expose-event",
+						  G_CALLBACK (SHVControlImplementerLabelGtk::expose_event), owner);
 		owner->SetFont(NULL,true);
 		owner->SetFlag(flags);
 		
