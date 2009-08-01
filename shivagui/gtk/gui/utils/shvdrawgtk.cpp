@@ -33,7 +33,7 @@
 #include "shvdrawgtk.h"
 #include "shvpengtk.h"
 #include "../../../../include/gui/shvguimanager.h"
-//#include "shvbitmapgtk.h"
+#include "shvbitmapgtk.h"
 #include "../shvgtk.h"
 #include "../../../../include/utils/shvstringutf8.h"
 
@@ -319,39 +319,55 @@ SHVVA_LIST args;
  *************************************/
 void SHVDrawGtk::DrawBitmap(SHVBitmap* bitmap, SHVPoint position, int width, int height, SHVColor* transparentColor)
 {
-/*
-HDC bmDC;
-HGDIOBJ oldBM;
-
 	if(bitmap && bitmap->IsCreated())
 	{
-	HBITMAP hBitmap = ((SHVBitmapWin32*)bitmap)->hBitmap;
+	GdkDrawable* hBitmap = ((SHVBitmapGtk*)bitmap)->Bitmap;
 
+		position.Move(WindowArea.GetX(),WindowArea.GetY());
 
 		if(width == 0 && height == 0)
 		{
 			width = bitmap->GetWidth();
 			height = bitmap->GetHeight();
 		}
-
-		bmDC = ::CreateCompatibleDC(hDC);
-		oldBM = ::SelectObject(bmDC,hBitmap);
-
-		if (transparentColor)
-			TransparentBlit(bmDC,position,bitmap->GetWidth(),bitmap->GetHeight(),((SHVColorWin32*)transparentColor)->GetColor(),(width != bitmap->GetWidth() || height != bitmap->GetHeight()),width,height);
-		else if(width != bitmap->GetWidth() || height != bitmap->GetHeight())
-			::StretchBlt(hDC,position.x, position.y, width, height, bmDC, 0,0, bitmap->GetWidth(), bitmap->GetHeight(), SRCCOPY);
+		
+		if(width != bitmap->GetWidth() || height != bitmap->GetHeight())
+		{
+		GdkPixbuf* scaledPixBuf;
+		GdkPixbuf* pixBuf;
+			
+			// TODO: Do something about transparency when scaling plix
+			
+			pixBuf = gdk_pixbuf_get_from_drawable(NULL,hBitmap,NULL,0,0,0,0,bitmap->GetWidth(),bitmap->GetHeight());
+			scaledPixBuf = gdk_pixbuf_scale_simple(pixBuf,width,height, transparentColor ? GDK_INTERP_NEAREST : GDK_INTERP_BILINEAR);
+			gdk_draw_pixbuf(GDK_DRAWABLE (Window),GC,scaledPixBuf,0,0,position.x,position.y,-1,-1,GDK_RGB_DITHER_NONE,0,0);
+			
+			g_object_unref(pixBuf);
+			g_object_unref(scaledPixBuf);
+		}
 		else
-			::BitBlt(hDC,position.x, position.y, width, height, bmDC, 0, 0, SRCCOPY);
-
-		::SelectObject(bmDC,oldBM);
-		::DeleteDC(bmDC);
+		{
+			if (transparentColor &&  ((SHVBitmapGtk*)bitmap)->RealiseTransparentBitmap(transparentColor))
+			{
+				hBitmap = ((SHVBitmapGtk*)bitmap)->Bitmap;
+				gdk_gc_set_clip_mask(GC,((SHVBitmapGtk*)bitmap)->TransparencyMask);
+				gdk_gc_set_clip_origin(GC,position.x,position.y);
+			}
+			
+			gdk_draw_drawable(GDK_DRAWABLE (Window),GC,hBitmap,0,0,position.x,position.y,width,height);
+			
+			if (transparentColor)
+			{
+				gdk_gc_set_clip_mask(GC,NULL);
+				SetClipRect();
+			}
+		}
+		
 	}
 
 	bitmap->ValidateRefCount();
 	if (transparentColor)
 		transparentColor->ValidateRefCount();
-	*/
 }
 void SHVDrawGtk::DrawBitmap(SHVBitmap* bitmap, SHVPoint position, SHVColor* transparentColor)
 {

@@ -36,6 +36,7 @@
 #include "shvgtk.h"
 #include "utils/shvpengtk.h"
 #include "utils/shvcolorgtk.h"
+#include "utils/shvbitmapgtk.h"
 
 //#include "shvcontrolimplementercontainerwindowgtk.h"
 //#include "shvcontrolimplementerdialoggtk.h"
@@ -150,7 +151,14 @@ SHVRegion* SHVGUIManagerGtk::CreateRegion(SHVControlContainer* container)
  *************************************/
 SHVBitmap* SHVGUIManagerGtk::CreateBitmap(SHVInt bitmapID)
 {
-	return NULL;
+SHVBitmap* retVal = NULL;
+	if (Modules.GetConfig(SHVModuleList::CfgBitmapResourceMap).Contains(bitmapID))
+	{
+	char ** xpmResource((char **)Modules.GetConfig(SHVModuleList::CfgBitmapResourceMap).FindPtr(bitmapID).ToPtr());
+		retVal = new SHVBitmapGtk(this,xpmResource);
+	}
+
+	return retVal;
 }
 
 /*************************************
