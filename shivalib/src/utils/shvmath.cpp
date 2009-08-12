@@ -31,6 +31,7 @@
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
 #include "../../../include/utils/shvmath.h"
+#include "../../../include/threadutils/shvthreadbase.h"
 
 #include <math.h>
 
@@ -105,6 +106,27 @@ double SHVMath::Sqrt(double x)
 double SHVMath::Pow(double x, double y)
 {
 	return ::pow(x,y);
+}
+
+/*************************************
+ * Rand
+ *************************************/
+/// Returns a random number based on seed
+/**
+ \param seed Seed to generate from
+ \return Random number
+ *
+ * If seed is null it will generate its own seed
+ * based on tick count.
+ */
+int SHVMath::Rand(SHVInt& seed)
+{
+	if (seed.IsNull())
+	{
+		seed = (int)SHVThreadBase::GetTickCount();
+	}
+
+	return ((seed = seed * 1103515245 + 12345) & 0x7fffffff);
 }
 
 /*************************************

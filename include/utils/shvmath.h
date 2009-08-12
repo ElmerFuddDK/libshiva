@@ -29,6 +29,9 @@ public:
 	// Power of
 	static double SHVAPI Pow(double x, double y);
 
+	// Random
+	static int SHVAPI Rand(SHVInt& seed);
+
 	// Formula functions
 	static double SHVAPI Eval(const SHVStringC str);
 	static double SHVAPI Eval(const SHVStringC str, SHVString& err);
