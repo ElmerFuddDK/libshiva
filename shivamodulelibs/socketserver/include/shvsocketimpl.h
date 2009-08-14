@@ -51,6 +51,9 @@ public:
 	virtual SHVBuffer* PopReceiveBuffer(size_t& bytesRead, SHVIPv4Addr &fromIP, SHVIPv4Port &fromPort);
 	virtual SHVBool HasReceivedData();
 
+	virtual SHVBool SetSocketOption(SocketOptions option, int val1, int val2 = 0);
+	virtual SHVBool GetSocketOption(SocketOptions option, int& val1, int& val2);
+
 
 protected:
 friend class SHVSocketServerImpl;

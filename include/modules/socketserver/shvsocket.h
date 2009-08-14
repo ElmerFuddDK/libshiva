@@ -42,6 +42,13 @@ public:
 		ErrBinding = 4,					///< Could not bind socket
 		ErrListening = 5				///< Could not listen on binded socket
 	};
+
+	enum SocketOptions {
+		SockOptKeepalive,
+		SockOptReuseAddr,
+		SockOptLinger,
+		SockOptTcpNodelay
+	};
 	
 	enum Types {
 		TypeTCP,
@@ -72,6 +79,9 @@ public:
 	virtual SHVBuffer* PopReceiveBuffer(size_t& bytesRead) = 0;
 	virtual SHVBuffer* PopReceiveBuffer(size_t& bytesRead, SHVIPv4Addr &fromIP, SHVIPv4Port &fromPort) = 0;
 	virtual SHVBool HasReceivedData() = 0;
+
+	virtual SHVBool SetSocketOption(SocketOptions option, int val1, int val2 = 0) = 0;
+	virtual SHVBool GetSocketOption(SocketOptions option, int& val1, int& val2) = 0;
 
 protected:
 	///\cond INTERNAL

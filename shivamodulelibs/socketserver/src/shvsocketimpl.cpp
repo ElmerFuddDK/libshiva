@@ -97,33 +97,10 @@ SHVSocketImpl::SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* 
 		return;
 	}
 
-#ifdef __SHIVA_WIN32
-LINGER linger;
-BOOL noDelay;
-#elif defined __SHIVA_LINUX
-linger _linger;
-#endif
-
 	Socket = ::socket( PF_INET, (Type == SHVSocket::TypeTCP ? SOCK_STREAM : SOCK_DGRAM), 0 );
 
 	if (Socket != InvalidSocket)
 	{
-		if (Type == SHVSocket::TypeTCP)
-		{
-#if defined __SHIVA_WIN32
-			linger.l_linger = 1;
-			linger.l_onoff  = true;
-	
-			::setsockopt(Socket, SOL_SOCKET, SO_LINGER, (char*)&linger, sizeof(LINGER));
-			noDelay = true;
-			::setsockopt(Socket, IPPROTO_TCP, TCP_NODELAY, (char*)&noDelay, sizeof(BOOL));
-#elif defined __SHIVA_LINUX
-			_linger.l_linger = 1;
-			_linger.l_onoff  = true;
-			::setsockopt(Socket, SOL_SOCKET, SO_LINGER, (char*)&_linger, sizeof(linger));
-#endif
-		}
-		
 #ifdef __SHIVA_WIN32
 		unsigned long nonblock = 1;
 		::ioctlsocket(Socket, FIONBIO, &nonblock);
@@ -427,6 +404,108 @@ SHVBuffer* retVal = NULL;
 SHVBool SHVSocketImpl::HasReceivedData()
 {
 	return (ReceiveBuffers.GetCount() ? SHVBool::True : SHVBool::False);
+}
+
+/*************************************
+ * SetSocketOption
+ *************************************/
+SHVBool SHVSocketImpl::SetSocketOption(SocketOptions option, int val1, int val2)
+{
+int level, optname;
+SHVBool retVal(SHVSocket::ErrGeneric);
+
+	switch (option)
+	{
+	case SHVSocket::SockOptKeepalive:
+		level = SOL_SOCKET;
+		optname = SO_KEEPALIVE;
+		break;
+	case SHVSocket::SockOptLinger:
+		{
+#ifdef __SHIVA_WIN32
+		LINGER ling;
+#elif defined __SHIVA_LINUX
+		linger ling;
+#endif
+			ling.l_linger = val1;
+			ling.l_onoff  = val2;
+			return (::setsockopt(Socket, SOL_SOCKET, SO_LINGER, (char*)&ling, sizeof(ling)) == 0 ? SHVSocket::ErrNone : SHVSocket::ErrGeneric);
+		}
+		break;
+	case SHVSocket::SockOptTcpNodelay:
+		if (GetType() != SHVSocket::TypeTCP)
+			return SHVSocket::ErrInvalidOperation;
+		level = IPPROTO_TCP;
+		optname = TCP_NODELAY;
+		break;
+	case SHVSocket::SockOptReuseAddr:
+		level = SOL_SOCKET;
+		optname = SO_REUSEADDR;
+		break;
+	default:
+		return retVal;
+	}
+
+	retVal = SHVBool(::setsockopt(Socket, level, optname, (char*)&val1, sizeof(int)) == 0 ? SHVSocket::ErrNone : SHVSocket::ErrGeneric);
+
+	return retVal;
+}
+
+/*************************************
+ * GetSocketOption
+ *************************************/
+SHVBool SHVSocketImpl::GetSocketOption(SocketOptions option, int& val1, int& val2)
+{
+int level, optname, val;
+SHVBool retVal(SHVSocket::ErrGeneric);
+#ifdef __SHIVA_LINUX
+socklen_t len;
+#else
+int len;
+#endif
+
+	val1 = val2 = 0;
+
+	switch (option)
+	{
+	case SHVSocket::SockOptKeepalive:
+		level = SOL_SOCKET;
+		optname = SO_KEEPALIVE;
+		break;
+	case SHVSocket::SockOptLinger:
+		{
+		linger ling;
+			len = sizeof(linger);
+			if (::getsockopt(Socket, SOL_SOCKET, SO_LINGER, (char*)&ling, &len) == 0)
+			{
+				val1 = ling.l_linger;
+				val2 = ling.l_onoff;
+				retVal = SHVBool::True;
+			}
+
+			return retVal;
+		}
+		break;
+	case SHVSocket::SockOptTcpNodelay:
+		level = IPPROTO_TCP;
+		optname = TCP_NODELAY;
+		break;
+	case SHVSocket::SockOptReuseAddr:
+		level = SOL_SOCKET;
+		optname = SO_REUSEADDR;
+		break;
+	default:
+		return retVal;
+	}
+
+	len = sizeof(int);
+	if (::getsockopt(Socket, level, optname, (char*)&val, &len) == 0)
+	{
+		val1 = val;
+		retVal = SHVBool::True;
+	}
+
+	return retVal;
 }
 
 /*************************************
