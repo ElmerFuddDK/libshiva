@@ -59,6 +59,7 @@ SHVControlImplementerMainWindowGtk::SHVControlImplementerMainWindowGtk(SHVMainTh
  *************************************/
 int SHVControlImplementerMainWindowGtk::GetSubType(SHVControl* owner)
 {
+	SHVUNUSED_PARAM(owner);
 	return SHVControlContainer::SubTypeMainWindow;
 }
 
@@ -81,11 +82,11 @@ SHVBool retVal(!IsCreated() && parent == NULL);
 	{
 		MainWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	
-		gtk_window_set_default_size (GTK_WINDOW (MainWindow), 300, 240);
-		gtk_window_set_resizable (GTK_WINDOW (MainWindow), false);
+		gtk_window_set_default_size (GTK_WINDOW (MainWindow), 0, 0);
+		gtk_window_set_resizable (GTK_WINDOW (MainWindow), FALSE);
 		
 		Handle = gtk_fixed_new();
-		gtk_widget_set_size_request (Handle, 0, 0);
+		gtk_widget_set_size_request (Handle, 300, 240);
 		gtk_container_add (GTK_CONTAINER (MainWindow), Handle);
 		
 		g_signal_connect (G_OBJECT (MainWindow), "size-allocate",
@@ -95,6 +96,8 @@ SHVBool retVal(!IsCreated() && parent == NULL);
 		{
 			gtk_widget_modify_bg(MainWindow,GTK_STATE_NORMAL,SHVColorGtk::GetNative(Color));
 		}
+		
+		SetFlag(owner,flags,true);
 	}
 	
 	return retVal;
@@ -105,6 +108,9 @@ SHVBool retVal(!IsCreated() && parent == NULL);
  *************************************/
 SHVBool SHVControlImplementerMainWindowGtk::Reparent(SHVControl* owner, SHVControlImplementer* parent, int flags)
 {
+	SHVUNUSED_PARAM(owner);
+	SHVUNUSED_PARAM(parent);
+	SHVUNUSED_PARAM(flags);
 	return SHVBool::False;
 }
 
@@ -113,6 +119,7 @@ SHVBool SHVControlImplementerMainWindowGtk::Reparent(SHVControl* owner, SHVContr
  *************************************/
 SHVBool SHVControlImplementerMainWindowGtk::Destroy(SHVControl* owner)
 {
+	SHVUNUSED_PARAM(owner);
 	return !IsCreated();
 }
 
@@ -122,10 +129,16 @@ SHVBool SHVControlImplementerMainWindowGtk::Destroy(SHVControl* owner)
 SHVRect SHVControlImplementerMainWindowGtk::GetRect(SHVControl* owner)
 {
 SHVRect rect;
+	SHVUNUSED_PARAM(owner);
 	if (IsCreated())
 	{
 	int width,height;
-		gtk_window_get_size(GTK_WINDOW(MainWindow),&width,&height);
+	gboolean resizable = gtk_window_get_resizable (GTK_WINDOW (MainWindow));
+		
+		if (resizable)
+			gtk_window_get_size(GTK_WINDOW(MainWindow),&width,&height);
+		else
+			gtk_widget_get_size_request (Handle, &width,&height);
 		rect.SetWidth(width);
 		rect.SetHeight(height);
 	}
@@ -137,9 +150,15 @@ SHVRect rect;
  *************************************/
 void SHVControlImplementerMainWindowGtk::SetRect(SHVControl* owner, const SHVRect& rect)
 {
+	SHVUNUSED_PARAM(owner);
 	if (IsCreated())
 	{
-		gtk_window_resize (GTK_WINDOW(MainWindow), rect.GetWidth(), rect.GetHeight());
+	gboolean resizable = gtk_window_get_resizable (GTK_WINDOW (MainWindow));
+		
+		if (resizable)
+			gtk_window_resize (GTK_WINDOW(MainWindow), rect.GetWidth(), rect.GetHeight());
+		else
+			gtk_widget_set_size_request (Handle, rect.GetWidth(), rect.GetHeight());
 	}
 }
 
@@ -149,6 +168,7 @@ void SHVControlImplementerMainWindowGtk::SetRect(SHVControl* owner, const SHVRec
 SHVBool SHVControlImplementerMainWindowGtk::SetFlag(SHVControl* owner, int flag, bool enable)
 {
 SHVBool retVal(IsCreated());
+	SHVUNUSED_PARAM(owner);
 
 	if (retVal && (flag & SHVControl::FlagVisible))
 	{
@@ -169,6 +189,7 @@ SHVBool retVal(IsCreated());
 bool SHVControlImplementerMainWindowGtk::GetFlag(SHVControl* owner, int flag)
 {
 bool retVal(IsCreated());
+	SHVUNUSED_PARAM(owner);
 
 	if (retVal && (flag & SHVControl::FlagVisible))
 	{
@@ -183,6 +204,7 @@ bool retVal(IsCreated());
  *************************************/
 SHVFont* SHVControlImplementerMainWindowGtk::GetFont(SHVControl* owner)
 {
+	SHVUNUSED_PARAM(owner);
 	if (Font.IsNull())
 	{
 	GtkStyle* style = gtk_widget_get_style(Handle);
@@ -198,6 +220,8 @@ SHVFont* SHVControlImplementerMainWindowGtk::GetFont(SHVControl* owner)
  *************************************/
 SHVBool SHVControlImplementerMainWindowGtk::SetFont(SHVControl* owner, SHVFont* font, bool resetHeight)
 {
+	SHVUNUSED_PARAM(owner);
+	SHVUNUSED_PARAM(resetHeight);
 	if (IsCreated())
 	{
 		Font = (SHVFontGtk*)font;
@@ -232,7 +256,12 @@ SHVRect rect;
 	if (IsCreated())
 	{
 	int width,height;
-		gtk_window_get_size(GTK_WINDOW(MainWindow),&width,&height);
+	gboolean resizable = gtk_window_get_resizable (GTK_WINDOW (MainWindow));
+		
+		if (resizable)
+			gtk_window_get_size(GTK_WINDOW(MainWindow),&width,&height);
+		else
+			gtk_widget_get_size_request (Handle, &width,&height);
 		rect.SetWidth(width);
 		rect.SetHeight(height);
 	}
@@ -244,9 +273,16 @@ SHVRect rect;
  *************************************/
 void SHVControlImplementerMainWindowGtk::SetSize(SHVControlContainer* owner, int widthInPixels, int heightInPixels, SHVControlContainer::PosModes mode)
 {
+	SHVUNUSED_PARAM(owner);
+	SHVUNUSED_PARAM(mode);
 	if (IsCreated())
 	{
-		gtk_window_resize (GTK_WINDOW(MainWindow), widthInPixels, heightInPixels);
+	gboolean resizable = gtk_window_get_resizable (GTK_WINDOW (MainWindow));
+		
+		if (resizable)
+			gtk_window_resize (GTK_WINDOW(MainWindow), widthInPixels, heightInPixels);
+		else
+			gtk_widget_set_size_request (Handle, widthInPixels, heightInPixels);
 	}
 }
 
@@ -285,6 +321,7 @@ void SHVControlImplementerMainWindowGtk::SetTitle(SHVControlContainer* control, 
  *************************************/
 SHVColor* SHVControlImplementerMainWindowGtk::GetColor(SHVControlContainer* owner)
 {
+	SHVUNUSED_PARAM(owner);
 	return Color;
 }
 
@@ -293,6 +330,7 @@ SHVColor* SHVControlImplementerMainWindowGtk::GetColor(SHVControlContainer* owne
  *************************************/
 void SHVControlImplementerMainWindowGtk::SetColor(SHVControlContainer* owner, SHVColor* color)
 {
+	SHVUNUSED_PARAM(owner);
 	Color = (SHVColorGtk*)color;
 
 	if (IsCreated())
@@ -306,7 +344,12 @@ void SHVControlImplementerMainWindowGtk::SetColor(SHVControlContainer* owner, SH
  *************************************/
 void SHVControlImplementerMainWindowGtk::SetMinimumSize(SHVControlContainer* owner, int widthInPixels, int heightInPixels)
 {
-	gtk_widget_set_size_request(MainWindow,widthInPixels,heightInPixels);
+gboolean resizable = gtk_window_get_resizable (GTK_WINDOW (MainWindow));
+	SHVUNUSED_PARAM(owner);
+	if (resizable)
+		gtk_widget_set_size_request(MainWindow,widthInPixels,heightInPixels);
+	else
+		gtk_window_set_default_size(GTK_WINDOW (MainWindow), widthInPixels, heightInPixels);
 }
 
 /*************************************
@@ -315,7 +358,12 @@ void SHVControlImplementerMainWindowGtk::SetMinimumSize(SHVControlContainer* own
 SHVPoint SHVControlImplementerMainWindowGtk::GetMinimumSizeInPixels(SHVControlContainer* owner)
 {
 gint w,h;
-	gtk_widget_get_size_request(MainWindow,&w,&h);
+gboolean resizable = gtk_window_get_resizable (GTK_WINDOW (MainWindow));
+	SHVUNUSED_PARAM(owner);
+	if (resizable)
+		gtk_widget_get_size_request(MainWindow,&w,&h);
+	else
+		gtk_window_get_default_size(GTK_WINDOW (MainWindow), &w,&h);
 	return SHVPoint(w,h);
 }
 
@@ -324,7 +372,37 @@ gint w,h;
  *************************************/
 void SHVControlImplementerMainWindowGtk::SetResizable(bool resizable)
 {
+int width,height;
+int minWidth,minHeight;
+gboolean oldResizable = gtk_window_get_resizable(GTK_WINDOW (MainWindow));
+	
+	if (oldResizable == resizable)
+		return;
+	
+	if (oldResizable)
+	{
+		gtk_window_get_size(GTK_WINDOW(MainWindow),&width,&height);
+		gtk_widget_get_size_request(MainWindow,&minWidth,&minHeight);
+	}
+	else
+	{
+		gtk_widget_get_size_request (Handle, &width,&height);
+		gtk_window_get_default_size(GTK_WINDOW (MainWindow), &minWidth,&minHeight);
+	}
+	
+	if (!resizable)
+	{
+		gtk_widget_set_size_request (Handle, width, height);
+		gtk_window_set_default_size(GTK_WINDOW (MainWindow),minWidth,minHeight);
+	}
+	
 	gtk_window_set_resizable (GTK_WINDOW (MainWindow), resizable);
+	
+	if (resizable)
+	{
+		gtk_widget_set_size_request (Handle, minWidth, minHeight);
+		gtk_window_resize (GTK_WINDOW(MainWindow), width, height);
+	}
 }
 
 ///\cond INTERNAL
@@ -336,6 +414,8 @@ void SHVControlImplementerMainWindowGtk::on_size_allocate(GtkWidget * widget, Gt
 SHVControlContainer* owner = (SHVControlContainer*)data;
 SHVControlImplementerMainWindowGtk* self = (SHVControlImplementerMainWindowGtk*)owner->GetImplementor();
 
+	SHVUNUSED_PARAM(allocation);
+	
 	if (self->MainWindow && self->MainWindow == widget)
 	{
 	SHVRect newRect(self->GetRect(NULL));

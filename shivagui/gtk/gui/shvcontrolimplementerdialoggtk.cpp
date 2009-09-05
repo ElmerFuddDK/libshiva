@@ -90,11 +90,11 @@ SHVBool retVal(!IsCreated() && parent == NULL);
 	{
 		MainWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	
-		gtk_window_set_default_size (GTK_WINDOW (MainWindow), 300, 240);
-		gtk_window_set_resizable (GTK_WINDOW (MainWindow), false);
+		gtk_window_set_default_size (GTK_WINDOW (MainWindow), 0, 0);
+		gtk_window_set_resizable (GTK_WINDOW (MainWindow), FALSE);
 		
 		Handle = gtk_fixed_new();
-		gtk_widget_set_size_request (Handle, 0, 0);
+		gtk_widget_set_size_request (Handle, 300, 240);
 		gtk_container_add (GTK_CONTAINER (MainWindow), Handle);
 		
 		g_signal_connect (G_OBJECT (MainWindow), "size-allocate",
@@ -107,7 +107,7 @@ SHVBool retVal(!IsCreated() && parent == NULL);
 			gtk_widget_modify_bg(MainWindow,GTK_STATE_NORMAL,SHVColorGtk::GetNative(Color));
 		}
 		
-		if (flags&SHVControl::FlagVisible)
+		if (flags)
 			SetFlag(owner,flags,true);
 	}
 	
@@ -150,7 +150,12 @@ SHVRect rect;
 	if (IsCreated())
 	{
 	int width,height;
-		gtk_window_get_size(GTK_WINDOW(MainWindow),&width,&height);
+	gboolean resizable = gtk_window_get_resizable (GTK_WINDOW (MainWindow));
+		
+		if (resizable)
+			gtk_window_get_size(GTK_WINDOW(MainWindow),&width,&height);
+		else
+			gtk_widget_get_size_request (Handle, &width,&height);
 		rect.SetWidth(width);
 		rect.SetHeight(height);
 	}
@@ -165,7 +170,12 @@ void SHVControlImplementerDialogGtk::SetRect(SHVControl* owner, const SHVRect& r
 	SHVUNUSED_PARAM(owner);
 	if (IsCreated())
 	{
-		gtk_window_resize (GTK_WINDOW(MainWindow), rect.GetWidth(), rect.GetHeight());
+	gboolean resizable = gtk_window_get_resizable (GTK_WINDOW (MainWindow));
+		
+		if (resizable)
+			gtk_window_resize (GTK_WINDOW(MainWindow), rect.GetWidth(), rect.GetHeight());
+		else
+			gtk_widget_set_size_request (Handle, rect.GetWidth(), rect.GetHeight());
 	}
 }
 
@@ -264,7 +274,12 @@ SHVRect rect;
 	if (IsCreated())
 	{
 	int width,height;
-		gtk_window_get_size(GTK_WINDOW(MainWindow),&width,&height);
+	gboolean resizable = gtk_window_get_resizable (GTK_WINDOW (MainWindow));
+		
+		if (resizable)
+			gtk_window_get_size(GTK_WINDOW(MainWindow),&width,&height);
+		else
+			gtk_widget_get_size_request (Handle, &width,&height);
 		rect.SetWidth(width);
 		rect.SetHeight(height);
 	}
@@ -280,7 +295,12 @@ void SHVControlImplementerDialogGtk::SetSize(SHVControlContainer* owner, int wid
 	SHVUNUSED_PARAM(mode);
 	if (IsCreated())
 	{
-		gtk_window_resize (GTK_WINDOW(MainWindow), widthInPixels, heightInPixels);
+	gboolean resizable = gtk_window_get_resizable (GTK_WINDOW (MainWindow));
+		
+		if (resizable)
+			gtk_window_resize (GTK_WINDOW(MainWindow), widthInPixels, heightInPixels);
+		else
+			gtk_widget_set_size_request (Handle, widthInPixels, heightInPixels);
 	}
 }
 
@@ -343,8 +363,12 @@ void SHVControlImplementerDialogGtk::SetColor(SHVControlContainer* owner, SHVCol
  *************************************/
 void SHVControlImplementerDialogGtk::SetMinimumSize(SHVControlContainer* owner, int widthInPixels, int heightInPixels)
 {
+gboolean resizable = gtk_window_get_resizable (GTK_WINDOW (MainWindow));
 	SHVUNUSED_PARAM(owner);
-	gtk_widget_set_size_request(MainWindow,widthInPixels,heightInPixels);
+	if (resizable)
+		gtk_widget_set_size_request(MainWindow,widthInPixels,heightInPixels);
+	else
+		gtk_window_set_default_size(GTK_WINDOW (MainWindow), widthInPixels, heightInPixels);
 }
 
 /*************************************
@@ -353,8 +377,12 @@ void SHVControlImplementerDialogGtk::SetMinimumSize(SHVControlContainer* owner, 
 SHVPoint SHVControlImplementerDialogGtk::GetMinimumSizeInPixels(SHVControlContainer* owner)
 {
 gint w,h;
+gboolean resizable = gtk_window_get_resizable (GTK_WINDOW (MainWindow));
 	SHVUNUSED_PARAM(owner);
-	gtk_widget_get_size_request(MainWindow,&w,&h);
+	if (resizable)
+		gtk_widget_get_size_request(MainWindow,&w,&h);
+	else
+		gtk_window_get_default_size(GTK_WINDOW (MainWindow), &w,&h);
 	return SHVPoint(w,h);
 }
 
@@ -363,7 +391,37 @@ gint w,h;
  *************************************/
 void SHVControlImplementerDialogGtk::SetResizable(bool resizable)
 {
+int width,height;
+int minWidth,minHeight;
+gboolean oldResizable = gtk_window_get_resizable(GTK_WINDOW (MainWindow));
+	
+	if (oldResizable == resizable)
+		return;
+	
+	if (oldResizable)
+	{
+		gtk_window_get_size(GTK_WINDOW(MainWindow),&width,&height);
+		gtk_widget_get_size_request(MainWindow,&minWidth,&minHeight);
+	}
+	else
+	{
+		gtk_widget_get_size_request (Handle, &width,&height);
+		gtk_window_get_default_size(GTK_WINDOW (MainWindow), &minWidth,&minHeight);
+	}
+	
+	if (!resizable)
+	{
+		gtk_widget_set_size_request (Handle, width, height);
+		gtk_window_set_default_size(GTK_WINDOW (MainWindow),minWidth,minHeight);
+	}
+	
 	gtk_window_set_resizable (GTK_WINDOW (MainWindow), resizable);
+	
+	if (resizable)
+	{
+		gtk_widget_set_size_request (Handle, minWidth, minHeight);
+		gtk_window_resize (GTK_WINDOW(MainWindow), width, height);
+	}
 }
 
 ///\cond INTERNAL
