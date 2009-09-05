@@ -39,10 +39,10 @@
 #include "utils/shvbitmapgtk.h"
 
 //#include "shvcontrolimplementercontainerwindowgtk.h"
-//#include "shvcontrolimplementerdialoggtk.h"
+#include "shvcontrolimplementerdialoggtk.h"
 #include "shvcontrolimplementerlabelgtk.h"
 //#include "shvcontrolimplementereditgtk.h"
-//#include "shvcontrolimplementerbuttongtk.h"
+#include "shvcontrolimplementerbuttongtk.h"
 #include "../../../include/gui/shvcontrolcreator.h"
 #include "../../../include/gui/shvcontrolcreatorsubtype.h"
 #include "../../utilsimpl/shvregionimpl.h"
@@ -66,10 +66,10 @@ SHVGUIManagerGtk::SHVGUIManagerGtk(SHVModuleList& modules) : SHVGUIManagerImpl(m
 	//RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeCustomDraw,
 	//	new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerContainerWindowGtk,SHVControlContainer::SubTypeCustomDraw>());
 
-	//RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeModalDialog,
-	//	new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerDialogGtk,SHVControlContainer::SubTypeModalDialog>());
-	//RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeDialog,
-	//	new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerDialogGtk,SHVControlContainer::SubTypeDialog>());
+	RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeModalDialog,
+		new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerDialogGtk,SHVControlContainer::SubTypeModalDialog>());
+	RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeDialog,
+		new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerDialogGtk,SHVControlContainer::SubTypeDialog>());
 
 	RegisterFactory(SHVControl::TypeLabel,SHVControlLabel::SubTypeDefault,
 		new SHVControlCreatorSubType<SHVControlLabel,SHVControlImplementerLabelGtk,SHVControlLabel::SubTypeDefault>());
@@ -81,8 +81,8 @@ SHVGUIManagerGtk::SHVGUIManagerGtk(SHVModuleList& modules) : SHVGUIManagerImpl(m
 	//RegisterFactory(SHVControl::TypeEdit,SHVControlEdit::SubTypeMultiLine,
 	//	new SHVControlCreatorSubType<SHVControlEdit,SHVControlImplementerEditGtk,SHVControlEdit::SubTypeMultiLine>());
 
-	//RegisterFactory(SHVControl::TypeButton,SHVControlButton::SubTypeDefault,
-	//	new SHVControlCreator<SHVControlButton,SHVControlImplementerButtonGtk>());
+	RegisterFactory(SHVControl::TypeButton,SHVControlButton::SubTypeDefault,
+		new SHVControlCreator<SHVControlButton,SHVControlImplementerButtonGtk>());
 
 
 

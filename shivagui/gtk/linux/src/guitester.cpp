@@ -35,16 +35,67 @@
 #include "../../../../include/utils/shvdll.h"
 
 #include "../../../../include/gui/shvguimanager.h"
+#include "../../../../include/gui/shvregisterbitmap.h"
 
+#include "heyyou.xpm"
 
 class SHVTest : public SHVModule
 {
 public:
 	
 	SHVGUIManager* GUIManager;
+	SHVControlLabelRef Label;
+	SHVControlButtonRef Button;
+	SHVControlContainerRef NewWindow;
+	int Counter;
 
 	SHVTest(SHVModuleList& modules) : SHVModule(modules,"Test")
 	{
+		Counter = 0;
+	}
+	
+	void OnResize(SHVControlContainer* container, SHVControlLayout* /*layout*/)
+	{
+		if (Label)
+		{
+		SHVRegionRef rgn = GUIManager->CreateRegion(container);
+			if (++Counter > 10)
+			{
+				Label->SetFlag(SHVControl::FlagVisible);
+				Label->SetText(SHVStringC::Format(_T("Label text : %d and counting"), Counter));
+			}
+			rgn->Move(Button)->Bottom(5)->AlignHorizontal(NULL,NULL,SHVRegion::AlignHCenter,5)->ClipBottom();
+			rgn->Move(Label)
+				->FillHorizontal(NULL,NULL,SHVRegion::AlignHCenter)
+				->AlignVertical(NULL,NULL,SHVRegion::AlignBottom,10);
+		}
+	}
+
+	void OnClick(SHVEvent* event)
+	{
+		NewWindow = GUIManager->NewDialog();
+		NewWindow->Create();
+		NewWindow->SetMinimumSize(120,100);
+		NewWindow->SetTitle(_T("YaY!"));
+		NewWindow->SetFlag(SHVControl::FlagVisible);
+	}
+
+	void OnCustomDraw(SHVEvent* event)
+	{
+	SHVDraw* draw = SHVDraw::FromDrawEvent(event);
+	SHVRect client(draw->GetClientRect(Label));
+		
+		draw->DrawRect(client, GUIManager->CreateColor(0xFF,0x00,0xFF));
+		draw->DrawXORRect(client);
+		draw->DrawXORLine(SHVPoint(client.GetRight()-1, client.GetTop()+1),SHVPoint(client.GetLeft()+1, client.GetBottom()-1));
+		//draw->DrawLine(SHVPoint(client.GetX()+1, client.GetY()+1),SHVPoint(client.GetRight()-1, client.GetBottom()-1),GUIManager->CreateColor(0x00,0xFF,0x00));
+		draw->DrawLine(SHVPoint(client.GetX()+1, client.GetY()+1),SHVPoint(client.GetRight()-1, client.GetBottom()-1),GUIManager->CreatePen(GUIManager->CreateColor(0x00,0xFF,0x00),SHVPen::StyleSolid,3));
+		//draw->DrawPolyline(GUIManager->CreateColor(0xFF,0,0), 2, SHVPoint::Val(client.GetX()+1, client.GetY()+1), SHVPoint::Val(client.GetRight()-1, client.GetTop()+1));
+		draw->DrawPolygon(GUIManager->CreateColor(0xFF,0,0), 3, SHVPoint::Val(client.GetX()+1, client.GetY()+1), SHVPoint::Val(client.GetRight()-1, client.GetTop()+1), SHVPoint::Val(client.GetRight()-1, client.GetBottom()+1));
+		client.Shrink(5,2,5,2);
+		draw->DrawBitmapCentered(GUIManager->CreateBitmap(1),client,GUIManager->CreateColor(0xFF,0xFF,0xFF));
+		draw->DrawBitmap(GUIManager->CreateBitmap(1),SHVPoint(client.GetX(),client.GetY()),13,10);
+		draw->DrawText(GUIManager->GetFont(SHVGUIManager::CfgFontNormalBold),"TEEEEEST teeest\nDette er en test",client, GUIManager->CreateColor(0,0,0xFF), SHVDraw::TextHCenter|SHVDraw::TextVCenter|SHVDraw::TextMultiLine);
 	}
 
 	SHVBool Register()
@@ -67,11 +118,30 @@ public:
 	void PostRegister()
 	{
 		GUIManager->GetMainWindow()->SetTitle(_T("SHIVA GUI test application"));
+		
+		GUIManager->GetMainWindow()->SetLayoutEngine(new SHVControlLayoutCallback<SHVTest>(this,&SHVTest::OnResize));
+		
+		Button = GUIManager->NewButton()
+			->SetParent(GUIManager->GetMainWindow())
+			->SetText(_T("Click me"));
+		Button->SubscribeClicked(new SHVEventSubscriberFunc<SHVTest>(this,&SHVTest::OnClick));
+		
+		//Label = GUIManager->NewLabel()->SetParent(GUIManager->GetMainWindow(),0);
+		Label = GUIManager->NewLabelCustomDraw(new SHVEventSubscriberFunc<SHVTest>(this,&SHVTest::OnCustomDraw))->SetParent(GUIManager->GetMainWindow(),0);
+		Label->SetFont(GUIManager->GetMainWindow()->GetFont(),true);
+		
+		SHVFontRef tstFont = GUIManager->CreateFont("Times",27,SHVFont::StyleItalic|SHVFont::StyleBold);
+		if (!tstFont.IsNull())
+		{
+			printf("Cell height : %d\n", tstFont->GetHeight());
+			Label->SetFont(tstFont,true);
+		}
+		Label->SetText(_T("Label text"));
 
-		GUIManager->GetMainWindow()->SetFlag(SHVControl::FlagVisible);
-		GUIManager->GetMainWindow()->SetMinimumSize(150,100);
-		GUIManager->GetMainWindow()->SetColor(GUIManager->CreateColor(0xFF,0x00,0xFF));
+		GUIManager->GetMainWindow()->SetMinimumSize(120,100);
+		GUIManager->GetMainWindow()->SetColor(GUIManager->CreateColor(0xFF,0xFF,0xFF));
 		GUIManager->GetMainWindow()->ResizeControls();
+		GUIManager->GetMainWindow()->SetFlag(SHVControl::FlagVisible);
 	}
 
 	void OnEvent(SHVEvent* event)
@@ -79,12 +149,16 @@ public:
 		SHVUNUSED_PARAM(event);
 		printf("Delaying shutdown by 2500 ms\n");
 		Modules.EmitEvent(new SHVEventString(this,__EVENT_GLOBAL_DELAYSHUTDOWN,2500));
+		Label->SetParent(NULL);
 	}
 
 	void Unregister()
 	{
 		printf("In unregister\n");
 		SHVModule::Unregister();
+		Label = NULL;
+		Button = NULL;
+		NewWindow = NULL;
 	}
 };
 
@@ -109,6 +183,7 @@ int retVal = -1;
 	else
 	{
 	SHVMainThreadEventQueue mainqueue((SHVMainThreadEventDispatcher*)guilib.CreateObjectInt(NULL,SHVDll::ClassTypeMainThreadDispatcher));
+	SHVRegisterBitmap::SHVRegisterBitmap(mainqueue.GetModuleList(),1,(char**)heyyou_xpm);
 
 // 		mainqueue.GetModuleList().AddModule(new SHVControlTester(mainqueue.GetModuleList()));
  		mainqueue.GetModuleList().AddModule(new SHVTest(mainqueue.GetModuleList()));

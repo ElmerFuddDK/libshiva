@@ -1,0 +1,411 @@
+/*
+ *   Copyright (C) 2008 by Lars Eriksen
+ *
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU Library General Public License as
+ *   published by the Free Software Foundation; either version 2 of the
+ *   License, or (at your option) any later version with the following
+ *   exeptions:
+ *
+ *   1) Static linking to the library does not constitute derivative work
+ *      and does not require the author to provide source code for the
+ *      application.
+ *      Compiling applications with the source code directly linked in is
+ *      Considered static linking as well.
+ *
+ *   2) You do not have to provide a copy of the license with programs
+ *      that are linked against this code.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Library General Public
+ *   License along with this program; if not, write to the
+ *   Free Software Foundation, Inc.,
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
+#include "stdafx.h"
+#include "../../../include/platformspc.h"
+
+#include "shvcontrolimplementerdialoggtk.h"
+#include "shvgtk.h"
+#include "utils/shvfontgtk.h"
+#include "utils/shvcolorgtk.h"
+
+
+
+//=========================================================================================================
+// SHVControlImplementerDialogGtk
+//=========================================================================================================
+
+
+/*************************************
+ * Constructor
+ *************************************/
+SHVControlImplementerDialogGtk::SHVControlImplementerDialogGtk(int subType) : SHVControlImplementerContainer()
+{
+	SubType = subType;
+	Handle = NULL;
+	MainWindow = NULL;
+	Visible = false;
+}
+
+/*************************************
+ * Destructor
+ *************************************/
+SHVControlImplementerDialogGtk::~SHVControlImplementerDialogGtk()
+{
+	SHVASSERT(!IsCreated());
+}
+
+/*************************************
+ * GetSubType
+ *************************************/
+int SHVControlImplementerDialogGtk::GetSubType(SHVControl* owner)
+{
+	SHVUNUSED_PARAM(owner);
+	return SubType;
+}
+
+/*************************************
+ * IsCreated
+ *************************************/
+SHVBool SHVControlImplementerDialogGtk::IsCreated()
+{
+	return (Handle ? SHVBool::True : SHVBool::False);
+}
+
+/*************************************
+ * Create(parent)
+ *************************************/
+SHVBool SHVControlImplementerDialogGtk::Create(SHVControl* owner, SHVControlImplementer* parent, int flags)
+{
+SHVBool retVal(!IsCreated() && parent == NULL);
+
+	if (retVal)
+	{
+		MainWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+	
+		gtk_window_set_default_size (GTK_WINDOW (MainWindow), 300, 240);
+		gtk_window_set_resizable (GTK_WINDOW (MainWindow), false);
+		
+		Handle = gtk_fixed_new();
+		gtk_widget_set_size_request (Handle, 0, 0);
+		gtk_container_add (GTK_CONTAINER (MainWindow), Handle);
+		
+		g_signal_connect (G_OBJECT (MainWindow), "size-allocate",
+						  G_CALLBACK (SHVControlImplementerDialogGtk::on_size_allocate), owner);
+		g_signal_connect (G_OBJECT (MainWindow), "delete-event",
+						  G_CALLBACK (SHVControlImplementerDialogGtk::on_delete_event), owner);
+		
+		if (!Color.IsNull())
+		{
+			gtk_widget_modify_bg(MainWindow,GTK_STATE_NORMAL,SHVColorGtk::GetNative(Color));
+		}
+		
+		if (flags&SHVControl::FlagVisible)
+			SetFlag(owner,flags,true);
+	}
+	
+	return retVal;
+}
+
+/*************************************
+ * Reparent
+ *************************************/
+SHVBool SHVControlImplementerDialogGtk::Reparent(SHVControl* owner, SHVControlImplementer* parent, int flags)
+{
+	SHVUNUSED_PARAM(owner);
+	SHVUNUSED_PARAM(parent);
+	SHVUNUSED_PARAM(flags);
+	return SHVBool::False;
+}
+
+/*************************************
+ * Destroy
+ *************************************/
+SHVBool SHVControlImplementerDialogGtk::Destroy(SHVControl* owner)
+{
+	SHVUNUSED_PARAM(owner);
+	if (Handle)
+		gtk_widget_destroy(GTK_WIDGET (Handle));
+	if (MainWindow)
+		gtk_widget_destroy(GTK_WIDGET (MainWindow));
+	Handle = NULL;
+	MainWindow = NULL;
+	return !IsCreated();
+}
+
+/*************************************
+ * GetRect
+ *************************************/
+SHVRect SHVControlImplementerDialogGtk::GetRect(SHVControl* owner)
+{
+SHVRect rect;
+	SHVUNUSED_PARAM(owner);
+	if (IsCreated())
+	{
+	int width,height;
+		gtk_window_get_size(GTK_WINDOW(MainWindow),&width,&height);
+		rect.SetWidth(width);
+		rect.SetHeight(height);
+	}
+	return rect;
+}
+
+/*************************************
+ * SetRect
+ *************************************/
+void SHVControlImplementerDialogGtk::SetRect(SHVControl* owner, const SHVRect& rect)
+{
+	SHVUNUSED_PARAM(owner);
+	if (IsCreated())
+	{
+		gtk_window_resize (GTK_WINDOW(MainWindow), rect.GetWidth(), rect.GetHeight());
+	}
+}
+
+/*************************************
+ * SetFlag
+ *************************************/
+SHVBool SHVControlImplementerDialogGtk::SetFlag(SHVControl* owner, int flag, bool enable)
+{
+SHVBool retVal(IsCreated());
+
+	SHVUNUSED_PARAM(owner);
+
+	if (retVal && (flag & SHVControl::FlagVisible))
+	{
+		if (enable && !Visible)
+		{
+			Visible = true;
+			gtk_widget_show(Handle);
+			gtk_widget_show_now(MainWindow);
+		}
+	}
+
+	return retVal;
+}
+
+/*************************************
+ * GetFlag
+ *************************************/
+bool SHVControlImplementerDialogGtk::GetFlag(SHVControl* owner, int flag)
+{
+bool retVal(IsCreated());
+
+	SHVUNUSED_PARAM(owner);
+	
+	if (retVal && (flag & SHVControl::FlagVisible))
+	{
+		retVal = Visible;
+	}
+
+	return retVal;
+}
+
+/*************************************
+ * GetFont
+ *************************************/
+SHVFont* SHVControlImplementerDialogGtk::GetFont(SHVControl* owner)
+{
+	if (Font.IsNull())
+	{
+	GtkStyle* style = gtk_widget_get_style(Handle);
+
+		// We can use the context from the main window since it will always exist during the programs lifetime
+		Font = new SHVFontGtk(style->font_desc,gtk_widget_get_pango_context(Gtk::GetMainWndHandle(owner)),false);
+	}
+	return Font;
+}
+
+/*************************************
+ * SetFont
+ *************************************/
+SHVBool SHVControlImplementerDialogGtk::SetFont(SHVControl* owner, SHVFont* font, bool resetHeight)
+{
+	SHVUNUSED_PARAM(owner);
+	SHVUNUSED_PARAM(resetHeight);
+	if (IsCreated())
+	{
+		Font = (SHVFontGtk*)font;
+		gtk_widget_modify_font(Handle,Font->GetFont());
+	}
+	font->ValidateRefCount();
+	return IsCreated();
+}
+
+/*************************************
+ * GetNative
+ *************************************/
+void* SHVControlImplementerDialogGtk::GetNative()
+{
+	return Handle;
+}
+
+/*************************************
+ * GetMainWndHandle
+ *************************************/
+GtkWidget* SHVControlImplementerDialogGtk::GetMainWndHandle()
+{
+	return MainWindow;
+}
+
+/*************************************
+ * GetRegionRect
+ *************************************/
+SHVRect SHVControlImplementerDialogGtk::GetRegionRect()
+{
+SHVRect rect;
+	if (IsCreated())
+	{
+	int width,height;
+		gtk_window_get_size(GTK_WINDOW(MainWindow),&width,&height);
+		rect.SetWidth(width);
+		rect.SetHeight(height);
+	}
+	return rect;
+}
+
+/*************************************
+ * SetSize
+ *************************************/
+void SHVControlImplementerDialogGtk::SetSize(SHVControlContainer* owner, int widthInPixels, int heightInPixels, SHVControlContainer::PosModes mode)
+{
+	SHVUNUSED_PARAM(owner);
+	SHVUNUSED_PARAM(mode);
+	if (IsCreated())
+	{
+		gtk_window_resize (GTK_WINDOW(MainWindow), widthInPixels, heightInPixels);
+	}
+}
+
+/*************************************
+ * GetTitle
+ *************************************/
+SHVStringBuffer SHVControlImplementerDialogGtk::GetTitle(SHVControlContainer* control)
+{
+SHVString retVal;
+
+	SHVUNUSED_PARAM(control);
+
+	if (IsCreated())
+	{
+		retVal = SHVStringC(gtk_window_get_title(GTK_WINDOW (MainWindow)));
+	}
+
+	return retVal.ReleaseBuffer();
+}
+
+/*************************************
+ * SetTitle
+ *************************************/
+void SHVControlImplementerDialogGtk::SetTitle(SHVControlContainer* control, const SHVStringC& title)
+{
+	SHVUNUSED_PARAM(control);
+	
+	if (IsCreated())
+	{
+		gtk_window_set_title (GTK_WINDOW (MainWindow), title.GetSafeBuffer());
+	}
+}
+
+/*************************************
+ * GetColor
+ *************************************/
+SHVColor* SHVControlImplementerDialogGtk::GetColor(SHVControlContainer* owner)
+{
+	SHVUNUSED_PARAM(owner);
+	return Color;
+}
+
+/*************************************
+ * SetColor
+ *************************************/
+void SHVControlImplementerDialogGtk::SetColor(SHVControlContainer* owner, SHVColor* color)
+{
+	SHVUNUSED_PARAM(owner);
+	
+	Color = (SHVColorGtk*)color;
+
+	if (IsCreated())
+	{
+		gtk_widget_modify_bg(MainWindow,GTK_STATE_NORMAL,SHVColorGtk::GetNative(Color));
+	}
+}
+
+/*************************************
+ * SetMinimumSize
+ *************************************/
+void SHVControlImplementerDialogGtk::SetMinimumSize(SHVControlContainer* owner, int widthInPixels, int heightInPixels)
+{
+	SHVUNUSED_PARAM(owner);
+	gtk_widget_set_size_request(MainWindow,widthInPixels,heightInPixels);
+}
+
+/*************************************
+ * GetMinimumSizeInPixels
+ *************************************/
+SHVPoint SHVControlImplementerDialogGtk::GetMinimumSizeInPixels(SHVControlContainer* owner)
+{
+gint w,h;
+	SHVUNUSED_PARAM(owner);
+	gtk_widget_get_size_request(MainWindow,&w,&h);
+	return SHVPoint(w,h);
+}
+
+/*************************************
+ * SetResizable
+ *************************************/
+void SHVControlImplementerDialogGtk::SetResizable(bool resizable)
+{
+	gtk_window_set_resizable (GTK_WINDOW (MainWindow), resizable);
+}
+
+///\cond INTERNAL
+/*************************************
+ * on_size_allocate
+ *************************************/
+void SHVControlImplementerDialogGtk::on_size_allocate(GtkWidget * widget, GtkAllocation *allocation, gpointer data)
+{
+SHVControlContainer* owner = (SHVControlContainer*)data;
+SHVControlImplementerDialogGtk* self = (SHVControlImplementerDialogGtk*)owner->GetImplementor();
+
+	SHVUNUSED_PARAM(allocation);
+	
+	if (self->MainWindow && self->MainWindow == widget)
+	{
+	SHVRect newRect(self->GetRect(NULL));
+		if (newRect != self->SizedRect)
+		{
+			self->SizedRect = newRect;
+			owner->ResizeControls();
+		}
+	}
+}
+
+/*************************************
+ * on_delete_event
+ *************************************/
+gboolean SHVControlImplementerDialogGtk::on_delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
+{
+SHVControlContainerRef owner = (SHVControlContainer*)data;
+//SHVControlImplementerDialogGtk* self = (SHVControlImplementerDialogGtk*)owner->GetImplementor();
+gboolean retVal = FALSE;
+	
+	SHVUNUSED_PARAM(widget);
+	SHVUNUSED_PARAM(event);
+	
+	if (owner->PreDestroy())
+	{
+		owner->Close();
+		//retVal = TRUE;
+	}
+	
+	return retVal;
+}
+///\endcond
