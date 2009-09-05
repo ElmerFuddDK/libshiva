@@ -74,6 +74,7 @@ SHVBool SHVControlImplementerLabelGtk::Create(SHVControl* owner, SHVControlImple
  *************************************/
 int SHVControlImplementerLabelGtk::GetSubType(SHVControl* owner)
 {
+	SHVUNUSED_PARAM(owner);
 	return SubType;
 }
 
@@ -134,6 +135,8 @@ SHVControlImplementerLabelGtk* self = (SHVControlImplementerLabelGtk*)owner->Get
 GdkEventExpose* exposeEvent = (GdkEventExpose*)event;
 SHVDrawGtkRef draw = new SHVDrawGtk(owner->GetManager(),gdk_gc_new(GDK_DRAWABLE (exposeEvent->window)),exposeEvent->window, owner);
 
+	SHVUNUSED_PARAM(widget);
+	
 	if (!self->Subscriber.IsNull())
 	{
 	SHVControlRef refToSelf = owner; // ensure the validity of the object through this function

@@ -64,6 +64,7 @@ SHVControlImplementerGtkWidget<T>::SHVControlImplementerGtkWidget() : SHVControl
 template <class T>
 int SHVControlImplementerGtkWidget<T>::GetSubType(SHVControl* owner)
 {
+	SHVUNUSED_PARAM(owner);
 	return SHVControl::SubTypeDefault;
 }
 
@@ -166,6 +167,7 @@ void* SHVControlImplementerGtkWidget<T>::GetNative()
 template <class T>
 int SHVControlImplementerGtkWidget<T>::CalculateNewHeight(SHVControl* owner, SHVFont* font)
 {
+	SHVUNUSED_PARAM(owner);
 	return (font->GetCellHeight()*145)/100;
 }
 
