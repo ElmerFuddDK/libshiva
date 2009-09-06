@@ -178,6 +178,15 @@ SHVBool retVal(IsCreated());
 		}
 	}
 
+	if (retVal && (flag & SHVControl::FlagDisabled))
+	{
+	gboolean oldSensitive;
+	gboolean sensitive = ( enable ? FALSE : TRUE );
+		g_object_get(G_OBJECT (Window), "sensitive", &oldSensitive, NULL);
+		if (oldSensitive != sensitive)
+			g_object_set(G_OBJECT (Window), "sensitive", sensitive, NULL);
+	}
+
 	return retVal;
 }
 
@@ -195,6 +204,13 @@ bool retVal(IsCreated());
 	gboolean b;
 		g_object_get(Window,"visible",&b, NULL);
 		retVal = b;
+	}
+
+	if (retVal && (flag & SHVControl::FlagDisabled))
+	{
+	gboolean sensitive;
+		g_object_get(G_OBJECT (Window), "sensitive", &sensitive, NULL);
+		retVal = retVal && (sensitive ? false : true);
 	}
 
 	return retVal;
