@@ -2,7 +2,7 @@
 
 if test "$BASH" != "/bin/bash"
 then
-	echo "Not run by bash, fixing ..."
+	# Not run by bash, fixing ...
     bash "$0" "$@"
     exit
 fi
@@ -145,6 +145,7 @@ function Compile()
 	
 	cd "`dirname \"$2\"`"
 	test -n "$ReleaseMode" && SetReleaseMode
+	make distclean &>/dev/null
 	qmake "`basename \"$2\"`" &>/dev/null && make clean &>/dev/null && make &>/dev/null || EchoError "  Error building $2"
 	test -n "$ReleaseMode" && UnsetReleaseMode
 	
