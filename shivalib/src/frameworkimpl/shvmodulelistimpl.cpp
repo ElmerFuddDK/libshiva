@@ -48,7 +48,7 @@
  * Constructor
  *************************************/
 SHVModuleListImpl::SHVModuleListImpl(SHVMainEventQueue& defaultQueue)
-	: DefaultEventQueue(defaultQueue)
+	: DefaultEventQueue(defaultQueue), Config(ConfigLock)
 {
 	State = StateInitializing;
 
@@ -176,7 +176,7 @@ SHVConfig* retVal;
 	{
 		Lock.Lock();
 		if (!UserConfigs.Find(cfgID))
-			UserConfigs[cfgID] = new SHVConfigImpl();
+			UserConfigs[cfgID] = new SHVConfigImpl(ConfigLock);
 		retVal = (SHVConfig*)UserConfigs[cfgID];
 		Lock.Unlock();
 	}
