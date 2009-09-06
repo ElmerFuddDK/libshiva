@@ -138,6 +138,7 @@ friend class SHVModuleListIteratorImpl;
 	SHVEventEmitter Events;
 	SHVConfigImpl Config;
 	int EventsActive;
+	SHVMutex ConfigLock;
 
 	SHVHashTable<int, SHVPtrContainer<SHVConfigImpl> > UserConfigs;
 

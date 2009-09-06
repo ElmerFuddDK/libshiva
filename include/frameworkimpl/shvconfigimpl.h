@@ -5,6 +5,7 @@
 
 #include "../utils/shvhashtable.h"
 #include "../utils/shvptrcontainer.h"
+#include "../threadutils/shvmutex.h"
 
 
 class SHVConfigNodeImpl;
@@ -22,7 +23,7 @@ public:
 
 
 	// constructor
-	SHVConfigImpl();
+	SHVConfigImpl(SHVMutex& lock);
 
 
 	// string config values
@@ -91,6 +92,7 @@ public:
 private:
 	///\cond INTERNAL
 	SHVString FileName;
+	SHVMutex& Lock;
 
 	SHVHashTableString<SHVConfigNodeImplPtr> StringEntries;
 	SHVHashTable<SHVInt,SHVConfigNodeImplPtr> EnumEntries;
