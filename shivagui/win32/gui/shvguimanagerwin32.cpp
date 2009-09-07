@@ -72,7 +72,7 @@
 SHVGUIManagerWin32::SHVGUIManagerWin32(SHVModuleList& modules) : SHVGUIManagerImpl(modules)
 {
 SHVFontWin32Ref font;
-HINSTANCE hInstance = (HINSTANCE)GetConfig().FindPtr(CfgInstanceHandle).ToPtr();
+HINSTANCE hInstance = (HINSTANCE)GetConfig().FindPtr(CfgInstanceHandle)->ToPtr();
 
 	// Register control classes
 	SHVControlImplementerContainerWindowWin32::RegisterClass(this,hInstance);
@@ -205,7 +205,7 @@ SHVBitmap* SHVGUIManagerWin32::CreateBitmap(SHVInt bitmapID)
 SHVBitmap* retVal = NULL;
 	if (Modules.GetConfig(SHVModuleList::CfgBitmapResourceMap).Contains(bitmapID))
 	{
-	SHVBitmapResourceMapWin32* map = (SHVBitmapResourceMapWin32*)Modules.GetConfig(SHVModuleList::CfgBitmapResourceMap).FindRef(bitmapID).ToRef();
+	SHVBitmapResourceMapWin32* map = (SHVBitmapResourceMapWin32*)Modules.GetConfig(SHVModuleList::CfgBitmapResourceMap).FindRef(bitmapID)->ToRef();
 		retVal = new SHVBitmapWin32(map->hInstance,map->ResourceID);
 	}
 

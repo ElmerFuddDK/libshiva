@@ -79,8 +79,8 @@ void SHVRegionImpl::Reset()
 {
 	SetRect(Container->GetRegionRect());
 	Font = Container->GetFont();
-	HorizMargin = Container->GetManager()->GetConfig().FindInt(SHVGUIManager::CfgRegionHorizMargin,0).ToInt();
-	VertMargin = Container->GetManager()->GetConfig().FindInt(SHVGUIManager::CfgRegionVertMargin,0).ToInt();
+	HorizMargin = Container->GetManager()->GetConfig().FindInt(SHVGUIManager::CfgRegionHorizMargin,0)->ToInt();
+	VertMargin = Container->GetManager()->GetConfig().FindInt(SHVGUIManager::CfgRegionVertMargin,0)->ToInt();
 }
 
 /*************************************

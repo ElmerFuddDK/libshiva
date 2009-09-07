@@ -49,81 +49,80 @@
  *************************************/
 SHVConfigImpl::SHVConfigImpl(SHVMutex& lock) : Lock(lock)
 {
-	///\todo Add some more thread safety to ensure SHVConfigNode validity after it has been returned
 }
 
 /*************************************
  * Find
  *************************************/
-SHVConfigNode& SHVConfigImpl::Find(const SHVStringC& name, const SHVStringC& defVal)
+SHVConfigNodeRef SHVConfigImpl::Find(const SHVStringC name, const SHVStringC defVal)
 {
-SHVConfigNode* retVal;
+SHVConfigNodeRef retVal;
 	
 	Lock.Lock();
 	if (StringEntries.Find(name))
 		retVal = StringEntries[name];
 	else
-		retVal = &Set(name,defVal);
+		retVal = Set(name,defVal);
 	Lock.Unlock();
 	
-	return *retVal;
+	return retVal;
 }
 
 /*************************************
  * FindInt
  *************************************/
-SHVConfigNode& SHVConfigImpl::FindInt(const SHVStringC& name, SHVInt defVal)
+SHVConfigNodeRef SHVConfigImpl::FindInt(const SHVStringC name, SHVInt defVal)
 {
-SHVConfigNode* retVal;
+SHVConfigNodeRef retVal;
 	
 	Lock.Lock();
 	if (StringEntries.Find(name))
 		retVal = StringEntries[name];
 	else
-		retVal = &Set(name,defVal);
+		retVal = Set(name,defVal);
 	Lock.Unlock();
 	
-	return *retVal;
+	return retVal;
 }
 
 /*************************************
  * FindPtr
  *************************************/
-SHVConfigNode& SHVConfigImpl::FindPtr(const SHVStringC& name, void* defVal)
+SHVConfigNodeRef SHVConfigImpl::FindPtr(const SHVStringC name, void* defVal)
 {
-SHVConfigNode* retVal;
+SHVConfigNodeRef retVal;
 	
 	Lock.Lock();
 	if (StringEntries.Find(name))
 		retVal = StringEntries[name];
 	else
-		retVal = &SetPtr(name,defVal);
+		retVal = SetPtr(name,defVal);
 	Lock.Unlock();
 	
-	return *retVal;
+	return retVal;
 }
 
 /*************************************
  * FindRef
  *************************************/
-SHVConfigNode& SHVConfigImpl::FindRef(const SHVStringC& name, SHVRefObject* defVal)
+SHVConfigNodeRef SHVConfigImpl::FindRef(const SHVStringC name, SHVRefObject* defVal)
 {
-SHVConfigNode* retVal;
+SHVConfigNodeRef retVal;
 	
 	Lock.Lock();
 	if (StringEntries.Find(name))
 		retVal = StringEntries[name];
 	else
-		retVal = &SetRef(name,defVal);
+		retVal = SetRef(name,defVal);
 	Lock.Unlock();
 	
-	return *retVal;
+	return retVal;
 }
 
 /*************************************
  * Contains
  *************************************/
-SHVBool SHVConfigImpl::Contains(const SHVStringC& name)
+SHVBool SHVConfigImpl::Contains(const SHVStringC name)
 {
 SHVBool retVal;
 	
@@ -137,115 +136,119 @@ SHVBool retVal;
 /*************************************
  * Get
  *************************************/
-SHVBool SHVConfigImpl::Get(const SHVStringC& name, SHVString& value)
+SHVBool SHVConfigImpl::Get(const SHVStringC name, SHVString& value)
 {
 SHVBool retVal(Contains(name));
 	if (retVal)
-		value = Find(name).ToString();
+		value = Find(name)->ToString();
 	return retVal;
 }
 
 /*************************************
  * GetInt
  *************************************/
-SHVBool SHVConfigImpl::GetInt(const SHVStringC& name, SHVInt& value)
+SHVBool SHVConfigImpl::GetInt(const SHVStringC name, SHVInt& value)
 {
 SHVBool retVal(Contains(name));
 	if (retVal)
-		value = FindInt(name).ToInt();
+		value = FindInt(name)->ToInt();
 	return retVal;
 }
 
 /*************************************
  * GetPtr
  *************************************/
-SHVBool SHVConfigImpl::GetPtr(const SHVStringC& name, void*& value)
+SHVBool SHVConfigImpl::GetPtr(const SHVStringC name, void*& value)
 {
 SHVBool retVal(Contains(name));
 	if (retVal)
-		value = FindPtr(name).ToPtr();
+		value = FindPtr(name)->ToPtr();
 	return retVal;
 }
 
 /*************************************
  * GetRef
  *************************************/
-SHVBool SHVConfigImpl::GetRef(const SHVStringC& name, SHVRefObject*& value)
+SHVBool SHVConfigImpl::GetRef(const SHVStringC name, SHVRefObject*& value)
 {
 SHVBool retVal(Contains(name));
 	if (retVal)
-		value = FindRef(name).ToRef();
+		value = FindRef(name)->ToRef();
 	return retVal;
 }
 
 /*************************************
  * Set(string)
  *************************************/
-SHVConfigNode& SHVConfigImpl::Set(const SHVStringC& name, const SHVStringC& val)
+SHVConfigNodeRef SHVConfigImpl::Set(const SHVStringC name, const SHVStringC val)
 {
-SHVConfigNodeImplString* retVal = new SHVConfigNodeImplString(val);
+SHVConfigNodeImpl* entry;
+SHVConfigNodeRef retVal = entry = new SHVConfigNodeImplString(val);
 
 	SHVASSERT( SHVString(name).ToLower() == name );
 
 	Lock.Lock();
-	StringEntries[name] = retVal;
+	StringEntries[name] = entry;
 	Lock.Unlock();
 	
-	return *retVal;
+	return retVal;
 }
 
 /*************************************
  * Set(int)
  *************************************/
-SHVConfigNode& SHVConfigImpl::Set(const SHVStringC& name, SHVInt val)
+SHVConfigNodeRef SHVConfigImpl::Set(const SHVStringC name, SHVInt val)
 {
-SHVConfigNodeImplInt* retVal = new SHVConfigNodeImplInt(val);
+SHVConfigNodeImpl* entry;
+SHVConfigNodeRef retVal = entry = new SHVConfigNodeImplInt(val);
 
 	SHVASSERT( SHVString(name).ToLower() == name );
 
 	Lock.Lock();
-	StringEntries[name] = retVal;
+	StringEntries[name] = entry;
 	Lock.Unlock();
 	
-	return *retVal;
+	return retVal;
 }
 
 /*************************************
  * SetPtr
  *************************************/
-SHVConfigNode& SHVConfigImpl::SetPtr(const SHVStringC& name, void* val)
+SHVConfigNodeRef SHVConfigImpl::SetPtr(const SHVStringC name, void* val)
 {
-SHVConfigNodeImplPointer* retVal = new SHVConfigNodeImplPointer(val);
+SHVConfigNodeImpl* entry;
+SHVConfigNodeRef retVal = entry = new SHVConfigNodeImplPointer(val);
 
 	SHVASSERT( SHVString(name).ToLower() == name );
 
 	Lock.Lock();
-	StringEntries[name] = retVal;
+	StringEntries[name] = entry;
 	Lock.Unlock();
 	
-	return *retVal;
+	return retVal;
 }
 
 /*************************************
  * SetRef
  *************************************/
-SHVConfigNode& SHVConfigImpl::SetRef(const SHVStringC& name, SHVRefObject* val)
+SHVConfigNodeRef SHVConfigImpl::SetRef(const SHVStringC name, SHVRefObject* val)
 {
-SHVConfigNodeImplRef* retVal = new SHVConfigNodeImplRef(val);
+SHVConfigNodeImpl* entry;
+SHVConfigNodeRef retVal = entry = new SHVConfigNodeImplRefObj(val);
 
 	SHVASSERT( SHVString(name).ToLower() == name );
 
 	Lock.Lock();
-	StringEntries[name] = retVal;
+	StringEntries[name] = entry;
 	Lock.Unlock();
 	
-	return *retVal;
+	return retVal;
 }
 
 /*************************************
  * Remove
  *************************************/
-void SHVConfigImpl::Remove(const SHVStringC& name)
+void SHVConfigImpl::Remove(const SHVStringC name)
 {
 	Lock.Lock();
 	StringEntries.Remove(name);
@@ -262,7 +265,7 @@ bool retVal = false;
 	Lock.Lock();
 	if (Contains(token))
 	{
-	SHVDouble val(Find(token).ToDouble());
+	SHVDouble val(Find(token)->ToDouble());
 		if (!val.IsNull())
 		{
 			retVal = true;
@@ -370,7 +373,7 @@ SHVFile file;
 
 	if (retVal && file.Open(FileName,SHVFileBase::FlagCreate|SHVFileBase::FlagWrite|SHVFileBase::FlagOverride|SHVFileBase::FlagOpen))
 	{
-	SHVHashTableStringIterator<SHVConfigNodeImplPtr> itr(StringEntries);
+	SHVHashTableStringIterator<SHVConfigNodeImplRef> itr(StringEntries);
 	SHVString line;
 	const SHVChar utf8Header[] = { (const char)0xEF, (const char)0xBB, (const char)0xBF, (const char)0 };
 
@@ -391,84 +394,85 @@ SHVFile file;
 /*************************************
  * Find
  *************************************/
-SHVConfigNode& SHVConfigImpl::Find(const SHVInt& enumerator, const SHVStringC& defVal)
+SHVConfigNodeRef SHVConfigImpl::Find(const SHVInt& enumerator, const SHVStringC defVal)
 {
-SHVConfigNode* retVal;
+SHVConfigNodeRef retVal;
 	
 	Lock.Lock();
 	if (EnumEntries.Find(enumerator))
 		retVal = EnumEntries[enumerator];
 	else
-		retVal = &Set(enumerator,defVal);
+		retVal = Set(enumerator,defVal);
 	Lock.Unlock();
 	
-	return *retVal;
+	return retVal;
 }
 
 /*************************************
  * FindInt
  *************************************/
-SHVConfigNode& SHVConfigImpl::FindInt(const SHVInt& enumerator, SHVInt defVal)
+SHVConfigNodeRef SHVConfigImpl::FindInt(const SHVInt& enumerator, SHVInt defVal)
 {
-SHVConfigNode* retVal;
+SHVConfigNodeRef retVal;
 	
 	Lock.Lock();
 	if (EnumEntries.Find(enumerator))
 		retVal = EnumEntries[enumerator];
 	else
-		retVal = &Set(enumerator,defVal);
+		retVal = Set(enumerator,defVal);
 	Lock.Unlock();
 	
-	return *retVal;
+	return retVal;
 }
 
 /*************************************
  * FindPtr
  *************************************/
-SHVConfigNode& SHVConfigImpl::FindPtr(const SHVInt& enumerator, void* defVal)
+SHVConfigNodeRef SHVConfigImpl::FindPtr(const SHVInt& enumerator, void* defVal)
 {
-SHVConfigNode* retVal;
+SHVConfigNodeRef retVal;
 	
 	Lock.Lock();
 	if (EnumEntries.Find(enumerator))
 		retVal = EnumEntries[enumerator];
 	else
-		retVal = &SetPtr(enumerator,defVal);
+		retVal = SetPtr(enumerator,defVal);
 	Lock.Unlock();
 	
-	return *retVal;
+	return retVal;
 }
 
 /*************************************
  * FindRef
  *************************************/
-SHVConfigNode& SHVConfigImpl::FindRef(const SHVInt& enumerator, SHVRefObject* defVal)
+SHVConfigNodeRef SHVConfigImpl::FindRef(const SHVInt& enumerator, SHVRefObject* defVal)
 {
-SHVConfigNode* retVal;
+SHVConfigNodeRef retVal;
 	
 	Lock.Lock();
 	if (EnumEntries.Find(enumerator))
 		retVal = EnumEntries[enumerator];
 	else
-		retVal = &SetRef(enumerator,defVal);
+		retVal = SetRef(enumerator,defVal);
 	Lock.Unlock();
 	
-	return *retVal;
+	return retVal;
 }
 
 
 /*************************************
  * Set(string)
  *************************************/
-SHVConfigNode& SHVConfigImpl::Set(const SHVInt& enumerator, const SHVStringC& val)
+SHVConfigNodeRef SHVConfigImpl::Set(const SHVInt& enumerator, const SHVStringC val)
 {
-SHVConfigNodeImplString* retVal = new SHVConfigNodeImplString(val);
+SHVConfigNodeImpl* entry;
+SHVConfigNodeRef retVal = entry = new SHVConfigNodeImplString(val);
 
 	Lock.Lock();
-	EnumEntries[enumerator] = retVal;
+	EnumEntries[enumerator] = entry;
 	Lock.Unlock();
 	
-	return *retVal;
+	return retVal;
 }
 
 /*************************************
@@ -492,7 +496,7 @@ SHVBool SHVConfigImpl::Get(const SHVInt& enumerator, SHVString& value)
 {
 SHVBool retVal(Contains(enumerator));
 	if (retVal)
-		value = Find(enumerator).ToString();
+		value = Find(enumerator)->ToString();
 	return retVal;
 }
 
@@ -503,7 +507,7 @@ SHVBool SHVConfigImpl::GetInt(const SHVInt& enumerator, SHVInt& value)
 {
 SHVBool retVal(Contains(enumerator));
 	if (retVal)
-		value = FindInt(enumerator).ToInt();
+		value = FindInt(enumerator)->ToInt();
 	return retVal;
 }
 
@@ -514,7 +518,7 @@ SHVBool SHVConfigImpl::GetPtr(const SHVInt& enumerator, void*& value)
 {
 SHVBool retVal(Contains(enumerator));
 	if (retVal)
-		value = FindPtr(enumerator).ToPtr();
+		value = FindPtr(enumerator)->ToPtr();
 	return retVal;
 }
 
@@ -525,50 +529,53 @@ SHVBool SHVConfigImpl::GetRef(const SHVInt& enumerator, SHVRefObject*& value)
 {
 SHVBool retVal(Contains(enumerator));
 	if (retVal)
-		value = FindRef(enumerator).ToRef();
+		value = FindRef(enumerator)->ToRef();
 	return retVal;
 }
 
 /*************************************
  * Set(int)
  *************************************/
-SHVConfigNode& SHVConfigImpl::Set(const SHVInt& enumerator, SHVInt val)
+SHVConfigNodeRef SHVConfigImpl::Set(const SHVInt& enumerator, SHVInt val)
 {
-SHVConfigNodeImplInt* retVal = new SHVConfigNodeImplInt(val);
+SHVConfigNodeImpl* entry;
+SHVConfigNodeRef retVal = entry = new SHVConfigNodeImplInt(val);
 
 	Lock.Lock();
-	EnumEntries[enumerator] = retVal;
+	EnumEntries[enumerator] = entry;
 	Lock.Unlock();
 	
-	return *retVal;
+	return retVal;
 }
 
 /*************************************
  * SetPtr
  *************************************/
-SHVConfigNode& SHVConfigImpl::SetPtr(const SHVInt& enumerator, void* val)
+SHVConfigNodeRef SHVConfigImpl::SetPtr(const SHVInt& enumerator, void* val)
 {
-SHVConfigNodeImplPointer* retVal = new SHVConfigNodeImplPointer(val);
+SHVConfigNodeImpl* entry;
+SHVConfigNodeRef retVal = entry = new SHVConfigNodeImplPointer(val);
 
 	Lock.Lock();
-	EnumEntries[enumerator] = retVal;
+	EnumEntries[enumerator] = entry;
 	Lock.Unlock();
 	
-	return *retVal;
+	return retVal;
 }
 
 /*************************************
  * SetRef
  *************************************/
-SHVConfigNode& SHVConfigImpl::SetRef(const SHVInt& enumerator, SHVRefObject* val)
+SHVConfigNodeRef SHVConfigImpl::SetRef(const SHVInt& enumerator, SHVRefObject* val)
 {
-SHVConfigNodeImplRef* retVal = new SHVConfigNodeImplRef(val);
+SHVConfigNodeImpl* entry;
+SHVConfigNodeRef retVal = entry = new SHVConfigNodeImplRefObj(val);
 
 	Lock.Lock();
-	EnumEntries[enumerator] = retVal;
+	EnumEntries[enumerator] = entry;
 	Lock.Unlock();
 	
-	return *retVal;
+	return retVal;
 }
 
 /*************************************
@@ -607,11 +614,11 @@ SHVConfigNodeImpl::SHVConfigNodeImpl()
 {}
 SHVConfigNodeImplInt::SHVConfigNodeImplInt(SHVInt val) : SHVConfigNodeImpl(), Value(val)
 {}
-SHVConfigNodeImplString::SHVConfigNodeImplString(const SHVStringC& val) : SHVConfigNodeImpl(), Value(val)
+SHVConfigNodeImplString::SHVConfigNodeImplString(const SHVStringC val) : SHVConfigNodeImpl(), Value(val)
 {}
 SHVConfigNodeImplPointer::SHVConfigNodeImplPointer(void* val) : SHVConfigNodeImpl(), Value(val)
 {}
-SHVConfigNodeImplRef::SHVConfigNodeImplRef(SHVRefObject* val) : SHVConfigNodeImpl(), Value(val)
+SHVConfigNodeImplRefObj::SHVConfigNodeImplRefObj(SHVRefObject* val) : SHVConfigNodeImpl(), Value(val)
 {}
 
 /*************************************
@@ -634,7 +641,7 @@ SHVInt retVal(!Value.IsNull() ? SHVInt(Value.ToLong(&endp)) : SHVInt());
 	return retVal;
 }
 SHVInt SHVConfigNodeImplPointer::ToInt(){ return ( Value != NULL ? SHVInt(*(int*)&Value) : SHVInt() ); }
-SHVInt SHVConfigNodeImplRef::ToInt()	{ return ( !Value.IsNull() ? 1 : 0 ); }
+SHVInt SHVConfigNodeImplRefObj::ToInt()	{ return ( !Value.IsNull() ? 1 : 0 ); }
 
 /*************************************
  * ToDouble
@@ -656,7 +663,7 @@ SHVDouble retVal(!Value.IsNull() ? SHVDouble(Value.ToDouble(&endp)) : SHVDouble(
 	return retVal;
 }
 SHVDouble SHVConfigNodeImplPointer::ToDouble()	{ return ( Value != NULL ? SHVDouble((double)*(int*)&Value) : SHVDouble() ); }
-SHVDouble SHVConfigNodeImplRef::ToDouble()	{ return ( !Value.IsNull() ? 1.0 : 0.0 ); }
+SHVDouble SHVConfigNodeImplRefObj::ToDouble()	{ return ( !Value.IsNull() ? 1.0 : 0.0 ); }
 
 /*************************************
  * ToString
@@ -664,7 +671,7 @@ SHVDouble SHVConfigNodeImplRef::ToDouble()	{ return ( !Value.IsNull() ? 1.0 : 0.
 SHVStringBuffer SHVConfigNodeImplInt::ToString() { return ( !Value.IsNull() ? SHVStringC::LongToString(Value) : SHVString().ReleaseBuffer() ); }
 SHVStringBuffer SHVConfigNodeImplString::ToString() { SHVString retVal(Value); return retVal.ReleaseBuffer(); }
 SHVStringBuffer SHVConfigNodeImplPointer::ToString() {SHVString retVal; if (Value) retVal.Format(_T("%p"), Value); return retVal.ReleaseBuffer(); }
-SHVStringBuffer SHVConfigNodeImplRef::ToString()	 {SHVString retVal; if (!Value.IsNull()) retVal.Format(_T("%p"), Value.AsConst()); return retVal.ReleaseBuffer(); }
+SHVStringBuffer SHVConfigNodeImplRefObj::ToString()	 {SHVString retVal; if (!Value.IsNull()) retVal.Format(_T("%p"), Value.AsConst()); return retVal.ReleaseBuffer(); }
 
 /*************************************
  * ToPtr
@@ -672,7 +679,7 @@ SHVStringBuffer SHVConfigNodeImplRef::ToString()	 {SHVString retVal; if (!Value.
 void* SHVConfigNodeImplInt::ToPtr() { return NULL; }
 void* SHVConfigNodeImplString::ToPtr() { return NULL; }
 void* SHVConfigNodeImplPointer::ToPtr() { return Value; }
-void* SHVConfigNodeImplRef::ToPtr() { return NULL; }
+void* SHVConfigNodeImplRefObj::ToPtr() { return NULL; }
 
 
 /*************************************
@@ -681,7 +688,7 @@ void* SHVConfigNodeImplRef::ToPtr() { return NULL; }
 SHVRefObject* SHVConfigNodeImplInt::ToRef() { return NULL; }
 SHVRefObject* SHVConfigNodeImplString::ToRef() { return NULL; }
 SHVRefObject* SHVConfigNodeImplPointer::ToRef() { return NULL; }
-SHVRefObject* SHVConfigNodeImplRef::ToRef() { return Value; }
+SHVRefObject* SHVConfigNodeImplRefObj::ToRef() { return Value; }
 
 
 /*************************************
@@ -690,13 +697,13 @@ SHVRefObject* SHVConfigNodeImplRef::ToRef() { return Value; }
 SHVBool SHVConfigNodeImplInt::IsNull() { return Value.IsNull(); }
 SHVBool SHVConfigNodeImplString::IsNull() { return Value.IsNull(); }
 SHVBool SHVConfigNodeImplPointer::IsNull() { return ( Value == NULL ? true : false ); }
-SHVBool SHVConfigNodeImplRef::IsNull() { return Value.IsNull(); }
+SHVBool SHVConfigNodeImplRefObj::IsNull() { return Value.IsNull(); }
 
 
 /*************************************
  * GetStorageString
  *************************************/
-SHVStringBuffer SHVConfigNodeImplInt::GetStorageString(const SHVStringC& name)
+SHVStringBuffer SHVConfigNodeImplInt::GetStorageString(const SHVStringC name)
 {
 SHVString retVal;
 
@@ -707,7 +714,7 @@ SHVString retVal;
 
 	return retVal.ReleaseBuffer();
 }
-SHVStringBuffer SHVConfigNodeImplString::GetStorageString(const SHVStringC& name)
+SHVStringBuffer SHVConfigNodeImplString::GetStorageString(const SHVStringC name)
 {
 SHVString retVal;
 
@@ -718,13 +725,13 @@ SHVString retVal;
 
 	return retVal.ReleaseBuffer();
 }
-SHVStringBuffer SHVConfigNodeImplPointer::GetStorageString(const SHVStringC& name)
+SHVStringBuffer SHVConfigNodeImplPointer::GetStorageString(const SHVStringC name)
 {
 SHVString retVal;
 	SHVUNUSED_PARAM(name);
 	return retVal.ReleaseBuffer();
 }
-SHVStringBuffer SHVConfigNodeImplRef::GetStorageString(const SHVStringC& name)
+SHVStringBuffer SHVConfigNodeImplRefObj::GetStorageString(const SHVStringC name)
 {
 SHVString retVal;
 	SHVUNUSED_PARAM(name);

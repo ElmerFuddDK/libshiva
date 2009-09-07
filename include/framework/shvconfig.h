@@ -13,7 +13,7 @@
  * Contains a data item of type SHVInt, SHVDouble, SHVString or void*
  */
 
-class SHVAPI SHVConfigNode
+class SHVAPI SHVConfigNode : public SHVRefObject
 {
 public:
 
@@ -32,6 +32,7 @@ public:
 protected:
 	virtual ~SHVConfigNode() {}
 };
+typedef SHVRefObjectContainer<SHVConfigNode> SHVConfigNodeRef;
 
 
 
@@ -50,26 +51,26 @@ public:
 	// --------------------
 
 	// getting data
-	virtual SHVConfigNode& Find(const SHVStringC& name, const SHVStringC& defVal = NULL) = 0;
-	virtual SHVConfigNode& FindInt(const SHVStringC& name, SHVInt defVal = SHVInt()) = 0;
-	virtual SHVConfigNode& FindPtr(const SHVStringC& name, void* defVal = NULL) = 0;
-	virtual SHVConfigNode& FindRef(const SHVStringC& name, SHVRefObject* defVal = NULL) = 0;
+	virtual SHVConfigNodeRef Find(const SHVStringC name, const SHVStringC defVal = NULL) = 0;
+	virtual SHVConfigNodeRef FindInt(const SHVStringC name, SHVInt defVal = SHVInt()) = 0;
+	virtual SHVConfigNodeRef FindPtr(const SHVStringC name, void* defVal = NULL) = 0;
+	virtual SHVConfigNodeRef FindRef(const SHVStringC name, SHVRefObject* defVal = NULL) = 0;
 
 
 	// query data
-	virtual SHVBool Contains(const SHVStringC& name) = 0;
-	virtual SHVBool Get(const SHVStringC& name, SHVString& value) = 0;
-	virtual SHVBool GetInt(const SHVStringC& name, SHVInt& value) = 0;
-	virtual SHVBool GetPtr(const SHVStringC& name, void*& value) = 0;
-	virtual SHVBool GetRef(const SHVStringC& name, SHVRefObject*& value) = 0;
+	virtual SHVBool Contains(const SHVStringC name) = 0;
+	virtual SHVBool Get(const SHVStringC name, SHVString& value) = 0;
+	virtual SHVBool GetInt(const SHVStringC name, SHVInt& value) = 0;
+	virtual SHVBool GetPtr(const SHVStringC name, void*& value) = 0;
+	virtual SHVBool GetRef(const SHVStringC name, SHVRefObject*& value) = 0;
 
 
 	// setting data
-	virtual SHVConfigNode& Set(const SHVStringC& name, const SHVStringC& val) = 0;
-	virtual SHVConfigNode& Set(const SHVStringC& name, SHVInt val) = 0;
-	virtual SHVConfigNode& SetPtr(const SHVStringC& name, void* val) = 0;
-	virtual SHVConfigNode& SetRef(const SHVStringC& name, SHVRefObject* val) = 0;
-	virtual void Remove(const SHVStringC& name) = 0;
+	virtual SHVConfigNodeRef Set(const SHVStringC name, const SHVStringC val) = 0;
+	virtual SHVConfigNodeRef Set(const SHVStringC name, SHVInt val) = 0;
+	virtual SHVConfigNodeRef SetPtr(const SHVStringC name, void* val) = 0;
+	virtual SHVConfigNodeRef SetRef(const SHVStringC name, SHVRefObject* val) = 0;
+	virtual void Remove(const SHVStringC name) = 0;
 
 
 	// Store and load string config values
@@ -81,10 +82,10 @@ public:
 	// ------------------------
 
 	// getting data
-	virtual SHVConfigNode& Find(const SHVInt& enumerator, const SHVStringC& defVal = NULL) = 0;
-	virtual SHVConfigNode& FindInt(const SHVInt& enumerator, SHVInt defVal = SHVInt()) = 0;
-	virtual SHVConfigNode& FindPtr(const SHVInt& enumerator, void* defVal = NULL) = 0;
-	virtual SHVConfigNode& FindRef(const SHVInt& enumerator, SHVRefObject* defVal = NULL) = 0;
+	virtual SHVConfigNodeRef Find(const SHVInt& enumerator, const SHVStringC defVal = NULL) = 0;
+	virtual SHVConfigNodeRef FindInt(const SHVInt& enumerator, SHVInt defVal = SHVInt()) = 0;
+	virtual SHVConfigNodeRef FindPtr(const SHVInt& enumerator, void* defVal = NULL) = 0;
+	virtual SHVConfigNodeRef FindRef(const SHVInt& enumerator, SHVRefObject* defVal = NULL) = 0;
 
 
 	// query data
@@ -96,10 +97,10 @@ public:
 
 
 	// setting data
-	virtual SHVConfigNode& Set(const SHVInt& enumerator, const SHVStringC& val) = 0;
-	virtual SHVConfigNode& Set(const SHVInt& enumerator, SHVInt val) = 0;
-	virtual SHVConfigNode& SetPtr(const SHVInt& enumerator, void* val) = 0;
-	virtual SHVConfigNode& SetRef(const SHVInt& enumerator, SHVRefObject* val) = 0;
+	virtual SHVConfigNodeRef Set(const SHVInt& enumerator, const SHVStringC val) = 0;
+	virtual SHVConfigNodeRef Set(const SHVInt& enumerator, SHVInt val) = 0;
+	virtual SHVConfigNodeRef SetPtr(const SHVInt& enumerator, void* val) = 0;
+	virtual SHVConfigNodeRef SetRef(const SHVInt& enumerator, SHVRefObject* val) = 0;
 	virtual void Remove(const SHVInt& enumerator) = 0;
 
 

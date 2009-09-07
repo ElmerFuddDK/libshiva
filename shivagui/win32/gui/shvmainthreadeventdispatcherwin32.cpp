@@ -107,7 +107,7 @@ void SHVMainThreadEventDispatcherWin32::SignalDispatcher()
 SHVBool SHVMainThreadEventDispatcherWin32::InitializeEventLoop()
 {
 SHVBool retVal;
-HINSTANCE hInstance = (HINSTANCE)Queue->GetModuleList().GetConfig(SHVModuleList::CfgGUI).FindPtr(SHVGUIManager::CfgInstanceHandle).ToPtr();
+HINSTANCE hInstance = (HINSTANCE)Queue->GetModuleList().GetConfig(SHVModuleList::CfgGUI).FindPtr(SHVGUIManager::CfgInstanceHandle)->ToPtr();
 
 	// register main window class
 	SHVControlImplementerMainWindowWin32::RegisterClass(hInstance);

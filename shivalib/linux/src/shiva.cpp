@@ -34,6 +34,7 @@
 #include "../../../include/frameworkimpl/shvmainthreadeventdispatchergeneric.h"
 #include "../../../include/shvversion.h"
 #include "../../../include/framework/shvtimer.h"
+#include "../../../include/utils/shvmath.h"
 
 class SHVTest : public SHVModule
 {
@@ -45,6 +46,9 @@ public:
 
 	SHVTest(SHVModuleList& modules) : SHVModule(modules,"Test")
 	{
+		Modules.GetConfig().Set(_T("test"),2);
+		Modules.GetConfig().FindInt(_T("test2"),128);
+		printf("result 128-2^6 : %g\n", SHVMath::EvalMap(_T("test2-test^6"),Modules.GetConfig()));
 	}
 	
 	SHVBool Register()
@@ -66,7 +70,7 @@ public:
 	SHVTime now;
 		now.SetNow();
 		printf(_T("Started: Time now %s\n"), now.ToDateString().GetBufferConst());
-		now.AddSeconds(-5);
+		now.AddSeconds(5);
 		printf("Application running...\n");
 		TimerInstance = Timer->CreateTimer(new SHVEventSubscriber(this));
 		TimerInstance->SetAbsolute(now);

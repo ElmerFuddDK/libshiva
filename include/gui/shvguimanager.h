@@ -278,7 +278,7 @@ SHVControlListView* retVal = (SHVControlListView*)NewControl(SHVControl::TypeLis
  *************************************/
 SHVFont* SHVGUIManager::GetFont(int cfgID)
 {
-	return (SHVFont*)GetConfig().FindRef(cfgID).ToRef();
+	return (SHVFont*)GetConfig().FindRef(cfgID)->ToRef();
 }
 
 /*************************************
@@ -286,7 +286,7 @@ SHVFont* SHVGUIManager::GetFont(int cfgID)
  *************************************/
 SHVColor* SHVGUIManager::GetTransparentColor()
 {
-	return (SHVColor*)GetConfig().FindRef(SHVGUIManager::CfgColorTransparent).ToRef();
+	return (SHVColor*)GetConfig().FindRef(SHVGUIManager::CfgColorTransparent)->ToRef();
 }
 
 /*************************************
