@@ -117,7 +117,7 @@ SHVConfig& Win32::GetGUIConfig(SHVControl* control)
  *************************************/
 HINSTANCE Win32::GetInstance(SHVControl* control)
 {
-	return (HINSTANCE)GetGUIConfig(control).FindPtr(SHVGUIManager::CfgInstanceHandle).ToPtr();
+	return (HINSTANCE)GetGUIConfig(control).FindPtr(SHVGUIManager::CfgInstanceHandle)->ToPtr();
 }
 
 /*************************************

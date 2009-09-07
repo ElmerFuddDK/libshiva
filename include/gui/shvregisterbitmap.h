@@ -49,7 +49,7 @@ public:
 #ifdef __SHIVA_WIN32
 SHVRegisterBitmap::SHVRegisterBitmap(SHVModuleList& modules, Registration* regs)
 {
-	RegisterBitmaps(modules,regs,(HINSTANCE)modules.GetConfig(SHVModuleList::CfgGUI).FindPtr(SHVGUIManager::CfgInstanceHandle).ToPtr());
+	RegisterBitmaps(modules,regs,(HINSTANCE)modules.GetConfig(SHVModuleList::CfgGUI).FindPtr(SHVGUIManager::CfgInstanceHandle)->ToPtr());
 }
 SHVRegisterBitmap::SHVRegisterBitmap(SHVModuleList& modules, Registration* regs, SHVDll& context)
 {
