@@ -41,7 +41,8 @@
 //#include "shvcontrolimplementercontainerwindowgtk.h"
 #include "shvcontrolimplementerdialoggtk.h"
 #include "shvcontrolimplementerlabelgtk.h"
-//#include "shvcontrolimplementereditgtk.h"
+#include "shvcontrolimplementereditgtk.h"
+#include "shvcontrolimplementereditmultigtk.h"
 #include "shvcontrolimplementerbuttongtk.h"
 #include "../../../include/gui/shvcontrolcreator.h"
 #include "../../../include/gui/shvcontrolcreatorsubtype.h"
@@ -76,10 +77,10 @@ SHVGUIManagerGtk::SHVGUIManagerGtk(SHVModuleList& modules) : SHVGUIManagerImpl(m
 	RegisterFactory(SHVControl::TypeLabel,SHVControlLabel::SubTypeCustomDraw,
 		new SHVControlCreatorSubType<SHVControlLabel,SHVControlImplementerLabelGtk,SHVControlLabel::SubTypeCustomDraw>());
 
-	//RegisterFactory(SHVControl::TypeEdit,SHVControlEdit::SubTypeSingleLine,
-	//	new SHVControlCreatorSubType<SHVControlEdit,SHVControlImplementerEditGtk,SHVControlEdit::SubTypeSingleLine>());
-	//RegisterFactory(SHVControl::TypeEdit,SHVControlEdit::SubTypeMultiLine,
-	//	new SHVControlCreatorSubType<SHVControlEdit,SHVControlImplementerEditGtk,SHVControlEdit::SubTypeMultiLine>());
+	RegisterFactory(SHVControl::TypeEdit,SHVControlEdit::SubTypeSingleLine,
+		new SHVControlCreator<SHVControlEdit,SHVControlImplementerEditGtk>());
+	RegisterFactory(SHVControl::TypeEdit,SHVControlEdit::SubTypeMultiLine,
+		new SHVControlCreator<SHVControlEdit,SHVControlImplementerEditMultiGtk>());
 
 	RegisterFactory(SHVControl::TypeButton,SHVControlButton::SubTypeDefault,
 		new SHVControlCreator<SHVControlButton,SHVControlImplementerButtonGtk>());
@@ -154,7 +155,7 @@ SHVBitmap* SHVGUIManagerGtk::CreateBitmap(SHVInt bitmapID)
 SHVBitmap* retVal = NULL;
 	if (Modules.GetConfig(SHVModuleList::CfgBitmapResourceMap).Contains(bitmapID))
 	{
-	char ** xpmResource((char **)Modules.GetConfig(SHVModuleList::CfgBitmapResourceMap).FindPtr(bitmapID).ToPtr());
+	char ** xpmResource((char **)Modules.GetConfig(SHVModuleList::CfgBitmapResourceMap).FindPtr(bitmapID)->ToPtr());
 		retVal = new SHVBitmapGtk(this,xpmResource);
 	}
 

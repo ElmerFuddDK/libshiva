@@ -46,6 +46,7 @@ public:
 	SHVGUIManager* GUIManager;
 	SHVControlLabelRef Label;
 	SHVControlButtonRef Button;
+	SHVControlEditRef Edit;
 	SHVControlContainerRef NewWindow;
 	int Counter;
 
@@ -67,14 +68,25 @@ public:
 			rgn->Move(Button)->Bottom(5)->AlignHorizontal(NULL,NULL,SHVRegion::AlignHCenter,5)->ClipBottom();
 			rgn->Move(Label)
 				->FillHorizontal(NULL,NULL,SHVRegion::AlignHCenter)
-				->AlignVertical(NULL,NULL,SHVRegion::AlignBottom,10);
+				->AlignVertical(NULL,NULL,SHVRegion::AlignBottom,10)
+				->ClipBottom();
+			rgn->Move(Edit)
+				->FillPercent(0,0,100,100, SHVRect(2,2,2,2));
 		}
+	}
+
+	void OnResizeDummy(SHVControlContainer* /*container*/, SHVControlLayout* /*layout*/)
+	{
 	}
 
 	void OnClick(SHVEvent* event)
 	{
+		GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget\nNoget\nNoget\nNoget\nNoget\nNoget\nNoget"),_T("Knap"));
+		GUIManager->ShowMessageBox(_T("En heel masse text med maaaaange linjer hvis word wrap virker eller noget eller noget andet..."),_T("Knap"));
 		NewWindow = GUIManager->NewDialog();
 		NewWindow->Create();
+		NewWindow->SetSize(220,100);
+		NewWindow->SetLayoutEngine(new SHVControlLayoutCallback<SHVTest>(this,&SHVTest::OnResizeDummy));
 		NewWindow->SetMinimumSize(120,100);
 		NewWindow->SetTitle(_T("YaY!"));
 		NewWindow->SetFlag(SHVControl::FlagVisible);
@@ -121,6 +133,9 @@ public:
 		
 		GUIManager->GetMainWindow()->SetLayoutEngine(new SHVControlLayoutCallback<SHVTest>(this,&SHVTest::OnResize));
 		
+		Edit = GUIManager->NewEdit(SHVControlEdit::SubTypeMultiLine)->SetParent(GUIManager->GetMainWindow(),SHVControl::FlagVisible);
+		Edit->SetFont(GUIManager->GetMainWindow()->GetFont(),true);
+		
 		Button = GUIManager->NewButton()
 			->SetParent(GUIManager->GetMainWindow())
 			->SetText(_T("Click me"));
@@ -139,6 +154,7 @@ public:
 		Label->SetText(_T("Label text"));
 
 		GUIManager->GetMainWindow()->SetMinimumSize(120,100);
+		GUIManager->GetMainWindow()->SetSize(300,100);
 		GUIManager->GetMainWindow()->SetColor(GUIManager->CreateColor(0xFF,0xFF,0xFF));
 		GUIManager->GetMainWindow()->ResizeControls();
 		GUIManager->GetMainWindow()->SetFlag(SHVControl::FlagVisible);
@@ -159,6 +175,7 @@ public:
 		Label = NULL;
 		Button = NULL;
 		NewWindow = NULL;
+		Edit = NULL;
 	}
 };
 
