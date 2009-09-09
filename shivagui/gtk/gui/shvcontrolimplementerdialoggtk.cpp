@@ -92,6 +92,7 @@ SHVBool retVal(!IsCreated() && parent == NULL);
 	
 		gtk_window_set_default_size (GTK_WINDOW (MainWindow), 0, 0);
 		gtk_window_set_resizable (GTK_WINDOW (MainWindow), FALSE);
+		gtk_window_set_transient_for (GTK_WINDOW (MainWindow), GTK_WINDOW (Gtk::GetMainWndHandle(owner)));
 		
 		Handle = gtk_fixed_new();
 		gtk_widget_set_size_request (Handle, 300, 240);
@@ -132,7 +133,10 @@ SHVBool SHVControlImplementerDialogGtk::Destroy(SHVControl* owner)
 {
 	SHVUNUSED_PARAM(owner);
 	if (Handle)
+	{
+		((SHVControlContainer*)owner)->Clear();
 		gtk_widget_destroy(GTK_WIDGET (Handle));
+	}
 	if (MainWindow)
 		gtk_widget_destroy(GTK_WIDGET (MainWindow));
 	Handle = NULL;
