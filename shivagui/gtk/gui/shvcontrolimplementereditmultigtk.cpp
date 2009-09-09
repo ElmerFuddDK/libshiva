@@ -78,13 +78,13 @@ SHVBool SHVControlImplementerEditMultiGtk::Create(SHVControl* owner, SHVControlI
  *************************************/
 SHVBool SHVControlImplementerEditMultiGtk::Destroy(SHVControl* owner)
 {
-SHVBool retVal(SHVControlImplementerGtkWidget<SHVControlImplementerEdit>::Destroy(owner));
 	if (TextView)
 	{
 		gtk_widget_destroy(TextView);
 		TextView = NULL;
 	}
-	return retVal;
+	
+	return SHVControlImplementerGtkWidget<SHVControlImplementerEdit>::Destroy(owner);
 }
 
 /*************************************
