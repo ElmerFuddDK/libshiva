@@ -30,6 +30,8 @@
 
 #include "../../../../include/platformspc.h"
 #include "../../../../include/shvversion.h"
+#include "../../../../include/utils/shvmath.h"
+#include "../../../../include/threadutils/shvthread.h"
 
 #include "../../../../include/frameworkimpl/shvmainthreadeventqueue.h"
 #include "../../../../include/utils/shvdll.h"
@@ -39,6 +41,97 @@
 
 #include "heyyou.xpm"
 
+#include "../../../../include/gui/shvform.h"
+class SHVFormTest : public SHVForm<>
+{
+protected:
+
+	SHVControlContainerRef Container;
+	SHVControlEditRef TextBox;
+	SHVControlButtonRef OK;
+	SHVControlButtonRef Cancel;
+	SHVInt Seed;
+
+	SHVEventSubscriberRef ButtonSubscriber;
+
+	SHVFormTest(SHVGUIManager* manager, SHVControlContainer* controlContainer) : SHVForm<>(manager,controlContainer,"FormTest")
+	{
+		ButtonSubscriber = new SHVEventSubscriber(this);
+	}
+
+	void OnEvent(SHVEvent* event)
+	{
+		if (event->GetObject() == Cancel)
+			Container->SetFlag(SHVControl::FlagVisible,false);
+		else if (event->GetObject() == OK)
+			Container->SetColor(GetManager()->CreateColor(SHVMath::Rand(Seed)&0xFF,SHVMath::Rand(Seed)&0xFF,SHVMath::Rand(Seed)&0xFF));
+	}
+	
+public:
+
+	// Constructor
+	static SHVFormTest* Create(SHVGUIManager* manager)
+	{
+	SHVControlContainer* dialog = manager->NewDialog();
+		return (dialog ? new SHVFormTest(manager,dialog) : NULL);
+	}
+
+	// From SHVForm
+	void InitializeForm()
+	{
+		SHVASSERT(!GetContainer()->IsCreated());
+	
+		GetContainer()->Create(0);
+		GetContainer()->SetTitle(_T("Test dialog"));
+	
+		GetContainer()->SetSize(240,120);
+	
+		if (GetContainer()->IsCreated())
+		{
+		SHVRegionRef rgn = GetManager()->CreateRegion(GetContainer());
+			
+			Container = GetManager()->NewContainer(SHVControlContainer::SubTypeWindow);
+			Container->SetParent(GetContainer());
+			rgn->Move(Container)->FillPercent(0,0,100,100,SHVRect(10,10,10,10));
+			rgn = GetManager()->CreateRegion(Container);
+			
+			TextBox = GetManager()->NewEdit(SHVControlEdit::SubTypeMultiLine);
+			TextBox->SetParent(Container,SHVControl::FlagVisible|
+												SHVControlEdit::FlagFlat|
+												SHVControlEdit::FlagReadonly);
+			TextBox->SetText(_T("TEXT\nTEXT\nTEXT\nTEXT\nTEXT\nTEXT\nTEXT\nTEXT\nTEXT\nTEXT\nTEXT"));
+	
+			OK = GetManager()->NewButton();
+			OK->SetParent(Container);
+			OK->SetText(_T("OK"))->SubscribeClicked(ButtonSubscriber);
+	
+			Cancel = GetManager()->NewButton();
+			Cancel->SetParent(Container);
+			Cancel->SetText(_T("Cancel"))->SubscribeClicked(ButtonSubscriber);
+	
+			rgn->SetMargin(4,3);
+	
+			// Set width of OK and Cancel
+			rgn->Move(OK)->CtrlWidth(40)->And(Cancel)->CtrlWidth(40);
+	
+			// Move OK and Cancel
+			rgn->Move(OK)->LeftOf(Cancel,0)->And(Cancel)
+				->Bottom()->AlignHorizontal(NULL,NULL,SHVRegion::AlignHCenter)->ClipBottom();
+	
+			rgn->Move(TextBox)->FillPercent(0,0,100,100);
+	
+			Show();
+		}
+	}
+
+	SHVBool PreClose()
+	{
+		return SHVBool::True;
+	}
+};
+typedef SHVRefObjectContainer<SHVFormTest> SHVFormTestRef;
+
+
 class SHVTest : public SHVModule
 {
 public:
@@ -47,7 +140,7 @@ public:
 	SHVControlLabelRef Label;
 	SHVControlButtonRef Button;
 	SHVControlEditRef Edit;
-	SHVControlContainerRef NewWindow;
+	SHVFormTestRef NewWindow;
 	int Counter;
 
 	SHVTest(SHVModuleList& modules) : SHVModule(modules,"Test")
@@ -83,13 +176,8 @@ public:
 	{
 		GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget\nNoget\nNoget\nNoget\nNoget\nNoget\nNoget"),_T("Knap"));
 		GUIManager->ShowMessageBox(_T("En heel masse text med maaaaange linjer hvis word wrap virker eller noget eller noget andet..."),_T("Knap"));
-		NewWindow = GUIManager->NewDialog();
-		NewWindow->Create();
-		NewWindow->SetSize(220,100);
-		NewWindow->SetLayoutEngine(new SHVControlLayoutCallback<SHVTest>(this,&SHVTest::OnResizeDummy));
-		NewWindow->SetMinimumSize(120,100);
-		NewWindow->SetTitle(_T("YaY!"));
-		NewWindow->SetFlag(SHVControl::FlagVisible);
+		NewWindow = SHVFormTest::Create(GUIManager);
+		NewWindow->InitializeForm();
 	}
 
 	void OnCustomDraw(SHVEvent* event)

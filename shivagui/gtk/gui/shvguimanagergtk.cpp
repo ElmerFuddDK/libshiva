@@ -38,7 +38,7 @@
 #include "utils/shvcolorgtk.h"
 #include "utils/shvbitmapgtk.h"
 
-//#include "shvcontrolimplementercontainerwindowgtk.h"
+#include "shvcontrolimplementercontainerwindowgtk.h"
 #include "shvcontrolimplementerdialoggtk.h"
 #include "shvcontrolimplementerlabelgtk.h"
 #include "shvcontrolimplementereditgtk.h"
@@ -62,10 +62,10 @@ SHVGUIManagerGtk::SHVGUIManagerGtk(SHVModuleList& modules) : SHVGUIManagerImpl(m
 {
 
 	// Register controls
-	//RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeDefault,
-	//	new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerContainerWindowGtk,SHVControlContainer::SubTypeDefault>());
-	//RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeCustomDraw,
-	//	new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerContainerWindowGtk,SHVControlContainer::SubTypeCustomDraw>());
+	RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeDefault,
+		new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerContainerWindowGtk,SHVControlContainer::SubTypeDefault>());
+	RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeCustomDraw,
+		new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerContainerWindowGtk,SHVControlContainer::SubTypeCustomDraw>());
 
 	RegisterFactory(SHVControl::TypeContainer,SHVControlContainer::SubTypeModalDialog,
 		new SHVControlCreatorSubType<SHVControlContainer,SHVControlImplementerDialogGtk,SHVControlContainer::SubTypeModalDialog>());
@@ -202,7 +202,7 @@ void SHVGUIManagerGtk::EmitControlEvent(SHVControl* control, SHVInt controlEvent
 
 ///\cond INTERNAL
 /*************************************
- * EmitControlEvent
+ * SetStandardFonts
  *************************************/
 void SHVGUIManagerGtk::SetStandardFonts(SHVFont* font)
 {
