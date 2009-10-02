@@ -784,18 +784,23 @@ void SHVSocketImpl::ReadThreadFunc()
 {
 fd_set rfds;
 fd_set wfds;
-fd_set* fds;
+fd_set efds;
 int nextFD, retVal;
 
 	while (GetState() != SHVSocket::StateError && Socket != SHVSocketImpl::InvalidSocket)
 	{
 		FD_ZERO(&rfds);
 		FD_ZERO(&wfds);
-		fds = (GetState() == SHVSocket::StateConnecting ? &wfds : &rfds);
-		FD_SET(Socket, fds);
+		FD_ZERO(&efds);
+		FD_SET(Socket, &rfds);
+		if (GetState() == SHVSocket::StateConnecting)
+		{
+			FD_SET(Socket, &wfds);
+			FD_SET(Socket, &efds);
+		}
 		nextFD = int(Socket)+1;
 
-		retVal = select(nextFD, &rfds, &wfds, NULL, NULL);
+		retVal = select(nextFD, &rfds, &wfds, &efds, NULL);
 
 		if (retVal == -1) // ERROR!
 		{
@@ -803,7 +808,7 @@ int nextFD, retVal;
 			SetError();
 			IsPending = true;
 		}
-		else if (FD_ISSET(Socket,fds))
+		else if (FD_ISSET(Socket,&rfds) || FD_ISSET(Socket,&wfds) || FD_ISSET(Socket,&efds))
 		{
 			IsPending = true;
 			ReadThreadSignal.Lock(); // request signal
