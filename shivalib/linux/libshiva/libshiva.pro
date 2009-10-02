@@ -73,7 +73,8 @@ HEADERS += ../../../include/platformspc.h \
            ../../../include/utils/shvuuid.h \
            ../../../include/utils/shvmd5sum.h \
  ../../../include/utils/shvmathtokenmap.h \
- ../../../include/utils/shvmathtokenhashmap.h
+ ../../../include/utils/shvmathtokenhashmap.h \
+ ../../../include/threadutils/shvthreadpoolbase.h
 SOURCES += ../../src/framework/shvevent.cpp \
            ../../src/framework/shveventemitter.cpp \
            ../../src/framework/shveventqueuelist.cpp \
@@ -125,7 +126,8 @@ SOURCES += ../../src/framework/shvevent.cpp \
            ../../src/md5/md5.c \
            ../../src/utils/shvmd5sum.cpp \
  ../../src/gui/utils/shvrect.cpp \
- ../../src/utils/shvmathtokenhashmap.cpp
+ ../../src/utils/shvmathtokenhashmap.cpp \
+ ../../src/threadutils/shvthreadpoolbase.cpp
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
 DEFINES = __SHVSTRING_INCLUDE_UNICODE
 TARGET = shiva 
