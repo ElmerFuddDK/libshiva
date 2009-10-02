@@ -410,6 +410,10 @@
 					RelativePath="..\src\threadutils\shvthreadbase.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\src\threadutils\shvthreadpoolbase.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="framework"
@@ -893,6 +897,10 @@
 					</File>
 					<File
 						RelativePath="..\..\include\threadutils\shvthreadbase.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\threadutils\shvthreadpoolbase.h"
 						>
 					</File>
 				</Filter>
