@@ -265,7 +265,7 @@ SHVThreadPoolBase* self = t->Self;
 			self->Lock.Lock();
 			if (self->WaitQueue.GetCount())
 			{
-			PoolThreadWaitData* data(self->WaitQueue.PopHead());
+			PoolThreadWaitData* data = self->WaitQueue.PopHead();
 				threadData->Lock.Unlock();
 				threadData->Func = data->Func;
 				threadData->Data = data->Data;
