@@ -201,6 +201,7 @@ DEP_CPP_SHVEV=\
 	"..\..\include\threadutils\shvthreadbase.h"\
 	"..\..\include\utils\shvassert.h"\
 	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvmathtokenmap.h"\
 	"..\..\include\utils\shvptrcontainer.h"\
 	"..\..\include\utils\shvrefobject.h"\
 	"..\..\include\utils\shvstring.h"\
@@ -324,6 +325,7 @@ DEP_CPP_SHVEVE=\
 	"..\..\include\utils\shvhashvalue.h"\
 	"..\..\include\utils\shvlist.h"\
 	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvmathtokenmap.h"\
 	"..\..\include\utils\shvptrcontainer.h"\
 	"..\..\include\utils\shvrefobject.h"\
 	"..\..\include\utils\shvstring.h"\
@@ -460,6 +462,7 @@ DEP_CPP_SHVEVEN=\
 	"..\..\include\utils\shvhashvalue.h"\
 	"..\..\include\utils\shvlist.h"\
 	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvmathtokenmap.h"\
 	"..\..\include\utils\shvptrcontainer.h"\
 	"..\..\include\utils\shvrefobject.h"\
 	"..\..\include\utils\shvstring.h"\
@@ -694,6 +697,7 @@ DEP_CPP_SHVEVENTS=\
 	"..\..\include\threadutils\shvthreadbase.h"\
 	"..\..\include\utils\shvassert.h"\
 	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvmathtokenmap.h"\
 	"..\..\include\utils\shvptrcontainer.h"\
 	"..\..\include\utils\shvrefobject.h"\
 	"..\..\include\utils\shvstring.h"\
@@ -817,6 +821,7 @@ DEP_CPP_SHVEVENTSU=\
 	"..\..\include\threadutils\shvthreadbase.h"\
 	"..\..\include\utils\shvassert.h"\
 	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvmathtokenmap.h"\
 	"..\..\include\utils\shvptrcontainer.h"\
 	"..\..\include\utils\shvrefobject.h"\
 	"..\..\include\utils\shvstring.h"\
@@ -941,6 +946,7 @@ DEP_CPP_SHVEVENTSUB=\
 	"..\..\include\threadutils\shvthreadbase.h"\
 	"..\..\include\utils\shvassert.h"\
 	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvmathtokenmap.h"\
 	"..\..\include\utils\shvptrcontainer.h"\
 	"..\..\include\utils\shvrefobject.h"\
 	"..\..\include\utils\shvstring.h"\
@@ -1077,6 +1083,7 @@ DEP_CPP_SHVEVENTSUBS=\
 	"..\..\include\utils\shvhashvalue.h"\
 	"..\..\include\utils\shvlist.h"\
 	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvmathtokenmap.h"\
 	"..\..\include\utils\shvptrcontainer.h"\
 	"..\..\include\utils\shvrefobject.h"\
 	"..\..\include\utils\shvstring.h"\
@@ -1212,6 +1219,7 @@ DEP_CPP_SHVEVENTT=\
 	"..\..\include\utils\shvhashvalue.h"\
 	"..\..\include\utils\shvlist.h"\
 	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvmathtokenmap.h"\
 	"..\..\include\utils\shvptrcontainer.h"\
 	"..\..\include\utils\shvrefobject.h"\
 	"..\..\include\utils\shvstring.h"\
@@ -1358,6 +1366,7 @@ DEP_CPP_SHVMO=\
 	"..\..\include\utils\shvhashvalue.h"\
 	"..\..\include\utils\shvlist.h"\
 	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvmathtokenmap.h"\
 	"..\..\include\utils\shvptrcontainer.h"\
 	"..\..\include\utils\shvrefobject.h"\
 	"..\..\include\utils\shvstring.h"\
@@ -1496,6 +1505,7 @@ DEP_CPP_SHVMOD=\
 	"..\..\include\threadutils\shvthreadbase.h"\
 	"..\..\include\utils\shvassert.h"\
 	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvmathtokenmap.h"\
 	"..\..\include\utils\shvptrcontainer.h"\
 	"..\..\include\utils\shvrefobject.h"\
 	"..\..\include\utils\shvstring.h"\
@@ -1615,6 +1625,9 @@ DEP_CPP_SHVCO=\
 	"..\..\include\platforms\wince\platformspc.h"\
 	"..\..\include\platformspc.h"\
 	"..\..\include\shvtypes.h"\
+	"..\..\include\threadutils\shvmutex.h"\
+	"..\..\include\threadutils\shvmutexbase.h"\
+	"..\..\include\threadutils\shvthreadbase.h"\
 	"..\..\include\utils\shvassert.h"\
 	"..\..\include\utils\shvdir.h"\
 	"..\..\include\utils\shvdynarraybase.h"\
@@ -1625,6 +1638,8 @@ DEP_CPP_SHVCO=\
 	"..\..\include\utils\shvhashvalue.h"\
 	"..\..\include\utils\shvlist.h"\
 	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvmath.h"\
+	"..\..\include\utils\shvmathtokenmap.h"\
 	"..\..\include\utils\shvptrcontainer.h"\
 	"..\..\include\utils\shvrefobject.h"\
 	"..\..\include\utils\shvstring.h"\
@@ -1787,6 +1802,7 @@ DEP_CPP_SHVMA=\
 	"..\..\include\utils\shvhashvalue.h"\
 	"..\..\include\utils\shvlist.h"\
 	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvmathtokenmap.h"\
 	"..\..\include\utils\shvptrcontainer.h"\
 	"..\..\include\utils\shvrefobject.h"\
 	"..\..\include\utils\shvstring.h"\
@@ -1989,6 +2005,7 @@ DEP_CPP_SHVMAI=\
 	"..\..\include\utils\shvhashvalue.h"\
 	"..\..\include\utils\shvlist.h"\
 	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvmathtokenmap.h"\
 	"..\..\include\utils\shvptrcontainer.h"\
 	"..\..\include\utils\shvrefobject.h"\
 	"..\..\include\utils\shvstring.h"\
@@ -2184,6 +2201,7 @@ DEP_CPP_SHVMODU=\
 	"..\..\include\utils\shvhashvalue.h"\
 	"..\..\include\utils\shvlist.h"\
 	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvmathtokenmap.h"\
 	"..\..\include\utils\shvptrcontainer.h"\
 	"..\..\include\utils\shvrefobject.h"\
 	"..\..\include\utils\shvstring.h"\
@@ -2382,6 +2400,7 @@ DEP_CPP_SHVMODUL=\
 	"..\..\include\utils\shvhashvalue.h"\
 	"..\..\include\utils\shvlist.h"\
 	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvmathtokenmap.h"\
 	"..\..\include\utils\shvptrcontainer.h"\
 	"..\..\include\utils\shvrefobject.h"\
 	"..\..\include\utils\shvstring.h"\
@@ -2570,6 +2589,7 @@ DEP_CPP_SHVTI=\
 	"..\..\include\utils\shvhashvalue.h"\
 	"..\..\include\utils\shvlist.h"\
 	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvmathtokenmap.h"\
 	"..\..\include\utils\shvptrcontainer.h"\
 	"..\..\include\utils\shvrefobject.h"\
 	"..\..\include\utils\shvstring.h"\
@@ -3205,6 +3225,117 @@ DEP_CPP_SHVTH=\
 	"..\src\threadutils\stdafx.h"\
 	
 # ADD CPP /Yu"stdafx.h"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\threadutils\shvthreadpoolbase.cpp
+
+!IF  "$(CFG)" == "libshiva - Win32 (WCE ARM) Release"
+
+DEP_CPP_SHVTHR=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\threadutils\shvmutexbase.h"\
+	"..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\include\threadutils\shvthreadpoolbase.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvlist.h"\
+	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvptrcontainer.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvvector.h"\
+	"..\..\include\utils\shvvectorbase.h"\
+	"..\src\threadutils\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE ARM) Debug"
+
+DEP_CPP_SHVTHR=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\threadutils\shvmutexbase.h"\
+	"..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\include\threadutils\shvthreadpoolbase.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvlist.h"\
+	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvptrcontainer.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvvector.h"\
+	"..\..\include\utils\shvvectorbase.h"\
+	"..\src\threadutils\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE x86) Release"
+
+DEP_CPP_SHVTHR=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\threadutils\shvmutexbase.h"\
+	"..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\include\threadutils\shvthreadpoolbase.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvlist.h"\
+	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvptrcontainer.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvvector.h"\
+	"..\..\include\utils\shvvectorbase.h"\
+	"..\src\threadutils\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE x86) Debug"
+
+DEP_CPP_SHVTHR=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\threadutils\shvmutexbase.h"\
+	"..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\include\threadutils\shvthreadpoolbase.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvlist.h"\
+	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvptrcontainer.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\..\include\utils\shvvector.h"\
+	"..\..\include\utils\shvvectorbase.h"\
+	"..\src\threadutils\stdafx.h"\
+	
 
 !ENDIF 
 
@@ -4460,6 +4591,7 @@ DEP_CPP_SHVMAT=\
 	"..\..\include\platforms\wince\platformspc.h"\
 	"..\..\include\platformspc.h"\
 	"..\..\include\shvtypes.h"\
+	"..\..\include\threadutils\shvthreadbase.h"\
 	"..\..\include\utils\shvassert.h"\
 	"..\..\include\utils\shvhashvalue.h"\
 	"..\..\include\utils\shvmath.h"\
@@ -5908,6 +6040,10 @@ SOURCE=..\..\include\threadutils\shvthread.h
 # Begin Source File
 
 SOURCE=..\..\include\threadutils\shvthreadbase.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\threadutils\shvthreadpoolbase.h
 # End Source File
 # End Group
 # Begin Group "utils"
