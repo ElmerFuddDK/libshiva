@@ -57,7 +57,7 @@ SHVBool val;
 		printf(str);
 
 	// here we care about the error type
-	if (!(val = TestString(nullstr))
+	if (!(val = TestString(nullstr)))
 	{
 		switch (val.GetError())
 		{
