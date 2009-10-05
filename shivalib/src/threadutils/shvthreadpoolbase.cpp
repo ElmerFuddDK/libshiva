@@ -157,6 +157,7 @@ bool retVal = false;
 	Lock.Lock();
 	if (!Running && initialCount >= 0)
 	{
+		MaxCount = maxCount;
 		ThreadsStarting = 0;
 		ThreadInitLock.Lock();
 		Running = true;
@@ -178,9 +179,12 @@ bool retVal = false;
 		}
 		Lock.Unlock();
 		
-		ThreadInitLock.Lock();
-		SHVASSERT(ThreadsStarting == 0);
-		ThreadInitLock.Unlock();
+		if (initialCount > 0)
+		{
+			ThreadInitLock.Lock();
+			SHVASSERT(ThreadsStarting == 0);
+			ThreadInitLock.Unlock();
+		}
 	}
 	else
 	{
