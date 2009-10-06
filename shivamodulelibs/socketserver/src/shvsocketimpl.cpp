@@ -40,8 +40,8 @@
 # ifndef __SHIVA_WINCE
 #  include <fcntl.h>
 #  include <errno.h>
-#  include <mstcpip.h>
 # endif
+# include <mstcpip.h>
 #else
 # include <netinet/in.h>
 # include <netinet/tcp.h>

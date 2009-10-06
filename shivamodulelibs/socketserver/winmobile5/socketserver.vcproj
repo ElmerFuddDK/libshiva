@@ -63,7 +63,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /subsystem:windowsce,5.01"
-				AdditionalDependencies="&quot;../../../shivalib/winmobile5/$(PlatformName)/$(ConfigurationName)/libshiva.lib&quot; winsock.lib"
+				AdditionalDependencies="&quot;../../../shivalib/winmobile5/$(PlatformName)/$(ConfigurationName)/libshiva.lib&quot; ws2.lib"
 				OutputFile="$(OutDir)/socketserver.dll"
 				LinkIncremental="2"
 				ModuleDefinitionFile="socketserver.def"
@@ -146,7 +146,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /subsystem:windowsce,5.01"
-				AdditionalDependencies="&quot;../../../shivalib/winmobile5/$(PlatformName)/$(ConfigurationName)/libshiva.lib&quot; winsock.lib"
+				AdditionalDependencies="&quot;../../../shivalib/winmobile5/$(PlatformName)/$(ConfigurationName)/libshiva.lib&quot; ws2.lib"
 				OutputFile="$(OutDir)/socketserver.dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile="socketserver.def"
