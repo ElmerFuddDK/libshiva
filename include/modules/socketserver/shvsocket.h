@@ -45,6 +45,7 @@ public:
 
 	enum SocketOptions {
 		SockOptKeepalive,
+		SockOptKeepaliveIdle,
 		SockOptReuseAddr,
 		SockOptLinger,
 		SockOptTcpNodelay

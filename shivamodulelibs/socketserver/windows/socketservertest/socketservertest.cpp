@@ -127,7 +127,8 @@ public:
 				break;
 			case SHVSocket::StateConnected:
 				printf("Connected\n");
-				SHVVERIFY(SHVSocketServer::SocketFromEvent(event)->SetSocketOption(SHVSocket::SockOptKeepalive,10));
+				SHVVERIFY(SHVSocketServer::SocketFromEvent(event)->SetSocketOption(SHVSocket::SockOptKeepalive,1));
+				SHVVERIFY(SHVSocketServer::SocketFromEvent(event)->SetSocketOption(SHVSocket::SockOptKeepaliveIdle,60));
 				SHVVERIFY(SHVSocketServer::SocketFromEvent(event)->SetSocketOption(SHVSocket::SockOptLinger,1,1));
 				break;
 			case SHVSocket::StateListening:
@@ -230,7 +231,7 @@ public:
 						
 						Socket = SocketServer->CreateSocket(SocketSubscriber);
 						printf("Attempting connect to \"%s\" port %d\n", ip.GetSafeBuffer(), port);
-						SHVASSERT(Socket->Connect(SocketServer->Inetv4ResolveHost(ip.ToStrT()),port ? port : 1234));
+						SHVVERIFY(Socket->Connect(SocketServer->Inetv4ResolveHost(ip.ToStrT()),port ? port : 1234));
 					}
 				}
 				else if (str == SHVString8C("/udp"))

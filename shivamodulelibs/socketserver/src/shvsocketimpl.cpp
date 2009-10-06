@@ -40,6 +40,7 @@
 # ifndef __SHIVA_WINCE
 #  include <fcntl.h>
 #  include <errno.h>
+#  include <mstcpip.h>
 # endif
 #else
 # include <netinet/in.h>
@@ -421,6 +422,30 @@ SHVBool retVal(SHVSocket::ErrGeneric);
 		level = SOL_SOCKET;
 		optname = SO_KEEPALIVE;
 		break;
+#ifdef __SHIVA_WIN32
+	case SHVSocket::SockOptKeepaliveIdle:
+		{
+		DWORD bytesReturned;
+		tcp_keepalive data = { 1, 0, 1000 };
+			data.keepalivetime = val1*1000;
+			if (val2 > 0)
+				data.keepaliveinterval = val2*1000;
+
+			retVal = SHVBool(WSAIoctl(Socket,SIO_KEEPALIVE_VALS,&data,sizeof(tcp_keepalive),NULL,0,&bytesReturned,NULL,NULL) == 0 ? SHVBool::True : SHVSocket::ErrGeneric);
+		}
+		return retVal;
+#else
+	case SHVSocket::SockOptKeepaliveIdle:
+		level = IPPROTO_TCP;
+		optname = TCP_KEEPIDLE;
+		if (val2 > 0)
+		{
+			retVal = SHVBool(::setsockopt(Socket, IPPROTO_TCP, TCP_KEEPINTVL, (char*)&val2, sizeof(int)) == 0 ? SHVSocket::ErrNone : SHVSocket::ErrGeneric);
+			if (!retVal)
+				return retVal;
+		}
+		break;
+#endif
 	case SHVSocket::SockOptLinger:
 		{
 #ifdef __SHIVA_WIN32
@@ -473,6 +498,15 @@ int len;
 		level = SOL_SOCKET;
 		optname = SO_KEEPALIVE;
 		break;
+#ifdef __SHIVA_WIN32
+	case SHVSocket::SockOptKeepaliveIdle:
+		return retVal;
+#else
+	case SHVSocket::SockOptKeepaliveIdle:
+		level = IPPROTO_TCP;
+		optname = TCP_KEEPIDLE;
+		break;
+#endif
 	case SHVSocket::SockOptLinger:
 		{
 		linger ling;
