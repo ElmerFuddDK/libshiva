@@ -57,7 +57,9 @@
  *************************************/
 SHVMainThreadEventDispatcherConsole::SHVMainThreadEventDispatcherConsole()
 {
-#ifndef __SHIVA_WIN32
+#ifdef __SHIVA_WIN32
+	Initializing = false;
+#else
 	// Initialize pipe signaller for the select statement
 	pipe(PipeSignal);
 
@@ -83,6 +85,12 @@ SHVMainThreadEventDispatcherConsole::SHVMainThreadEventDispatcherConsole()
 SHVMainThreadEventDispatcherConsole::~SHVMainThreadEventDispatcherConsole()
 {
 #ifdef __SHIVA_WIN32
+	if (Initializing)
+	{
+		::CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
+		for (int i=10;StdinThread.IsRunning();i+=10)
+			SHVThreadBase::Sleep(i);
+	}
 	SHVASSERT(!StdinThread.IsRunning());
 #else
 	if (PipeSignal[0])
@@ -129,6 +137,7 @@ void SHVMainThreadEventDispatcherConsole::SignalDispatcher()
 SHVBool SHVMainThreadEventDispatcherConsole::InitializeEventLoop()
 {
 #ifdef __SHIVA_WIN32
+	Initializing = true;
 	Signal.Lock();
 	StdinThread.Start(this,&SHVMainThreadEventDispatcherConsole::StdinFunc);
 	return StdinThread.IsRunning();
@@ -152,6 +161,10 @@ size_t bufReadPos = 0;
 #endif
 
 	DispatchEvents();
+
+#ifdef __SHIVA_WIN32
+	Initializing = false;
+#endif
 
 	while ( Running() )
 	{
@@ -293,7 +306,7 @@ size_t bufReadPos = 0;
 int retVal;
 
 	StdinPos = 0;
-	while (Running())
+	while (Running() || Initializing)
 	{
 		if (bufReadPos == StdinBufSize || readBuf.IsNull())
 		{
