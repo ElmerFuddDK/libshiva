@@ -468,7 +468,12 @@ SHVBool retVal(false);
 		}
 	
 		if (StartupErrors.GetCount())
+		{
+		SHVListIterator<SHVModuleBase*> itrReg(registeredModules);
 			State = StateError;
+			while (itrReg.MoveNext())
+				itrReg.Get()->Unregister();
+		}
 
 
 		if (State == StateRegistering)
