@@ -50,6 +50,7 @@ private:
 	enum { StdinBufSize = 256 };
 	
 #ifdef __SHIVA_WIN32
+	bool Initializing;
 	SHVModuleList* ModuleList;
 	SHVMutexBase Signal;
 	SHVEventSubscriberRef selfSubs;
