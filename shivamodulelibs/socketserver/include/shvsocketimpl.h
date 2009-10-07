@@ -4,7 +4,7 @@
 #include "../../../include/modules/socketserver/shvsocketserver.h"
 #ifdef __SHIVA_WIN32
 # define __SHIVASOCKETS_NOSELECTMODE
-# include <winsock.h>
+# include <winsock2.h>
 # define SHVSOCKTYPE SOCKET
 #else
 # define SHVSOCKTYPE int
