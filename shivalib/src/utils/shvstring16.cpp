@@ -343,7 +343,7 @@ SHVString16 str;
  *************************************/
 SHVStringBuffer16 SHVString16C::DoubleToString(double val)
 {
-static const SHVWChar nChar[] = { '%', 'g', '\0' };
+static const SHVWChar nChar[] = { '%', '.', '1', '6', 'g', '\0' };
 static const SHVWChar comma[] = { ',', '\0' };
 static const SHVWChar dot[] = { '.', '\0' };
 SHVString16 str;
