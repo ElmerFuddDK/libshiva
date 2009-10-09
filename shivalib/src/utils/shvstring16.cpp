@@ -31,6 +31,7 @@
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
 #include "../../../include/utils/shvstring16.h"
+#include "../../../include/utils/shvstring.h"
 #include "../../../include/utils/shvlist.h"
 
 #ifndef va_list
@@ -122,51 +123,63 @@ SHVWChar firstVal = *str;
 }
 double SHVString16C::StrToDouble(const SHVWChar* str, SHVWChar** ptr)
 {
-double retVal = 0;
-SHVWChar firstVal = *str;
+SHVString8 copy;
+int exponent;
+SHVChar ch;
 SHVWChar* dummyPtr;
-SHVWChar* cPtr;
-long i;
+bool dotMode = false;
 
 	if (!ptr)
 		ptr = &dummyPtr;
-
-	if (firstVal == '-' || firstVal == '+')
-		str++;
-
-	for(*ptr = (SHVWChar*)str; str && *ptr != '\0'; (*ptr)++)
-	{
-		if (**ptr < '0' || **ptr > '9')
-			break;
-	}
 	
-	i=1;
-	for(cPtr = (*ptr); cPtr != str; cPtr--, i*=10)
+	if (!str || !StrLen(str))
 	{
-		retVal += (*(cPtr-1) - '0')*i;
+		*ptr = (SHVWChar*)str;
+		return 0.0;
 	}
 
-	if (**ptr == '.')
+	copy.SetBufferSize(StrLen(str));
+	copy[0] = '\0';
+
+	if (*str == '-' || *str == '+')
 	{
-		double dec = 0.1;
-		for((*ptr)++;**ptr;(*ptr)++,dec/=10)
+		ch = (SHVChar)*str;
+		copy.AddChars(&ch,1);
+		str++;
+	}
+
+	exponent = 0;
+	for(*ptr = (SHVWChar*)str; str && **ptr != '\0'; (*ptr)++)
+	{
+		if (**ptr >= '0' && **ptr <= '9')
 		{
-			if (**ptr < '0' || **ptr > '9')
+			ch = (SHVChar)**ptr;
+			copy.AddChars(&ch,1);
+			if (dotMode)
+				exponent--;
+		}
+		else if (**ptr == '.')
+		{
+			if (dotMode)
 				break;
-			retVal += ((**ptr) - '0')*dec;
+			dotMode = true;
+		}
+		else
+		{
+			break;
 		}
 	}
 
 	if (**ptr == 'e' || **ptr == 'E')
 	{
 		(*ptr)++;
-		retVal *= pow(10.0, (double)StrToL(*ptr,ptr,10) );
+		exponent += StrToL(*ptr,ptr,10);
 	}
+	
+	if (exponent)
+		copy += SHVString8C::Format("e%d",exponent);
 
-	if (firstVal == '-')
-		retVal *= -1.0;
-
-	return retVal;
+	return ::strtod(copy.GetSafeBuffer(),NULL);
 }
 size_t SHVString16C::StrLen(const SHVWChar* str)
 {
