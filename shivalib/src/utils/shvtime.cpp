@@ -146,31 +146,37 @@ int SHVTime::GetSecond() const
 void SHVTime::SetYear(int year)
 {
 	Time.tm_wday = -1; // weekday needs to be recalculated
+	Time.tm_isdst = -1; // dst needs to be recalculated
 	Time.tm_year = year-1900;
 }
 void SHVTime::SetMonth(int month)
 {
 	Time.tm_wday = -1; // weekday needs to be recalculated
+	Time.tm_isdst = -1; // dst needs to be recalculated
 	Time.tm_mon = month-1;
 }
 void SHVTime::SetDay(int day)
 {
 	Time.tm_wday = -1; // weekday needs to be recalculated
+	Time.tm_isdst = -1; // dst needs to be recalculated
 	Time.tm_mday = day;
 }
 void SHVTime::SetHour(int hour)
 {
 	Time.tm_wday = -1; // weekday needs to be recalculated
+	Time.tm_isdst = -1; // dst needs to be recalculated
 	Time.tm_hour = hour;
 }
 void SHVTime::SetMinute(int minute)
 {
 	Time.tm_wday = -1; // weekday needs to be recalculated
+	Time.tm_isdst = -1; // dst needs to be recalculated
 	Time.tm_min = minute;
 }
 void SHVTime::SetSecond(int second)
 {
 	Time.tm_wday = -1; // weekday needs to be recalculated
+	Time.tm_isdst = -1; // dst needs to be recalculated
 	Time.tm_sec = second;
 }
 
@@ -235,6 +241,21 @@ int week = 0;
 
 	return ( week > 0 ? week : 53 );
 }
+
+/*************************************
+ * CalculateIsDst
+ *************************************/
+bool SHVTime::CalculateIsDst() // Is daylight savings
+{
+	// test if the dst needs to be calculated
+	if (Time.tm_isdst == -1)
+	{
+		MkTime(&Time);
+	}
+
+	return Time.tm_isdst == 1;
+}
+
 
 
 // functions
@@ -665,6 +686,16 @@ SHVTime SHVTime::FromUnixTime(SHVInt64Val unixTime)
 time_t utime = (time_t)unixTime;
 SHVTime retVal;
 	GmTime_r(&utime,&retVal.Time);
+	return retVal;
+}
+
+/*************************************
+ * FromDateString
+ *************************************/
+SHVTime SHVTime::FromDateString(const SHVStringC& dateStr)
+{
+SHVTime retVal;
+	SHVVERIFY(retVal.SetFromDateString(dateStr));
 	return retVal;
 }
 

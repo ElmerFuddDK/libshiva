@@ -73,6 +73,7 @@ public:
 	int CalculateDayOfWeek(); // 0 = sunday and so forth
 	int CalculateLeapDayInEffect(); // returns 1 if leap day is in effect at current date (02/29 excluded) or 0 if not
 	int CalculateWeekNumber(); // ISO 8601
+	bool CalculateIsDst(); // Is daylight savings
 
 
 	// functions
@@ -95,6 +96,7 @@ public:
 
 	// statics
 	static SHVTime FromUnixTime(SHVInt64Val unixTime);
+	static SHVTime FromDateString(const SHVStringC& dateStr);
 	static SHVStringBuffer CreateTimeStringNow(int diffInSeconds=0);
 	static int MonthToDays(int month);
 	static int DaysInMonth(int month, int year);
