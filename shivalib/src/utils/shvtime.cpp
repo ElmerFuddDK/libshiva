@@ -89,6 +89,7 @@ SHVTime& SHVTime::SetLocalTime(bool local, bool convert)
 			ttime = MkTime(&Time);
 			GmTime_r(&ttime,&Time);
 		}
+		Time.tm_isdst = -1;
 	}
 
 	LocalTime = local;
@@ -579,6 +580,7 @@ time_t now = TimeNow() + diffInSeconds;
 		LocalTime = false;
 		SetLocalTime(true);
 	}
+	Time.tm_isdst = -1;
 }
 
 /*************************************
@@ -596,7 +598,7 @@ time_t ttime;
 
 		ttime = MkTime(&Time);
 		LocalTime_r(&ttime,&tmpTime);
-		daylightActive = Time.tm_isdst;
+		daylightActive = CalculateIsDst();
 		ttime += seconds;
 
 
@@ -620,6 +622,7 @@ time_t ttime;
 		ttime = TimeGm(&Time);
 		ttime += seconds;
 		GmTime_r(&ttime,&Time);
+		Time.tm_isdst = -1;
 	}
 
 }
@@ -686,6 +689,7 @@ SHVTime SHVTime::FromUnixTime(SHVInt64Val unixTime)
 time_t utime = (time_t)unixTime;
 SHVTime retVal;
 	GmTime_r(&utime,&retVal.Time);
+	retVal.Time.tm_isdst = -1;
 	return retVal;
 }
 
