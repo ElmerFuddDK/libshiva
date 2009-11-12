@@ -96,6 +96,7 @@ public:
 
 	// statics
 	static SHVTime FromUnixTime(SHVInt64Val unixTime);
+	static SHVInt64Val ToUnixTime(const SHVTime& time);
 	static SHVTime FromDateString(const SHVStringC& dateStr);
 	static SHVStringBuffer CreateTimeStringNow(int diffInSeconds=0);
 	static int MonthToDays(int month);
