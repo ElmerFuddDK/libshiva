@@ -191,6 +191,32 @@ void SHVControlImplementerEditWin32::SetHeight(SHVControlEdit* owner, int lines)
 /*************************************
  * CalculateNewHeight
  *************************************/
+void SHVControlImplementerEditWin32::SetSelection(SHVControlEdit* owner, int pos, SHVInt selectFrom, SHVControlEdit::ScrollModes scroll)
+{
+	SHVUNUSED_PARAM(owner);
+
+	if (IsCreated())
+	{
+	int textLen = ::GetWindowTextLength(GetHandle());
+
+		if (pos > textLen)
+			pos = textLen;
+
+		if (scroll == SHVControlEdit::ScrollTop)
+			::SendMessage(GetHandle(), EM_SETSEL, 0, 0);
+		else if (scroll == SHVControlEdit::ScrollBottom)
+			::SendMessage(GetHandle(), EM_SETSEL, textLen, textLen);
+		if (scroll != SHVControlEdit::ScrollNone)
+			::SendMessage(GetHandle(), EM_SCROLLCARET,0,0);
+
+		::SendMessage(GetHandle(), EM_SETSEL, selectFrom.IsNull() ? pos : selectFrom, pos);
+		::SendMessage(GetHandle(), EM_SCROLLCARET,0,0);
+	}
+}
+
+/*************************************
+ * CalculateNewHeight
+ *************************************/
 int SHVControlImplementerEditWin32::CalculateNewHeight(SHVControl* owner, SHVFont* font)
 {
 	return SHVControlImplementerWin32<SHVControlImplementerEdit>::CalculateNewHeight(owner,font)

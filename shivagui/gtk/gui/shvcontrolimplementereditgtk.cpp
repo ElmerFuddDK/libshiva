@@ -188,3 +188,20 @@ void SHVControlImplementerEditGtk::SetHeight(SHVControlEdit* owner, int lines)
 
 	SHVASSERT(false); // should never happen since it is single line
 }
+
+/*************************************
+ * SetSelection
+ *************************************/
+void SHVControlImplementerEditGtk::SetSelection(SHVControlEdit* owner, int pos, SHVInt selectFrom, SHVControlEdit::ScrollModes scroll)
+{
+	SHVUNUSED_PARAM(owner);
+	SHVUNUSED_PARAM(scroll);
+
+	if (IsCreated())
+	{
+		if (selectFrom.IsNull())
+			selectFrom = pos;
+	
+		gtk_entry_select_region(GTK_ENTRY (GetHandle()), selectFrom, pos);
+	}
+}

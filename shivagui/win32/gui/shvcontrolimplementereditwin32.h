@@ -43,6 +43,8 @@ public:
 
 	virtual void SetHeight(SHVControlEdit* owner, int lines); // only applicable on multiline boxes
 
+	virtual void SetSelection(SHVControlEdit* owner, int pos, SHVInt selectFrom = SHVInt(), SHVControlEdit::ScrollModes scroll = SHVControlEdit::ScrollNone);
+
 	// From SHVControlImplementerWin32
 	virtual int CalculateNewHeight(SHVControl* owner, SHVFont* font);
 

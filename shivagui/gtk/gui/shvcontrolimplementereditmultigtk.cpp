@@ -245,6 +245,43 @@ void SHVControlImplementerEditMultiGtk::SetHeight(SHVControlEdit* owner, int lin
 }
 
 /*************************************
+ * SetSelection
+ *************************************/
+void SHVControlImplementerEditMultiGtk::SetSelection(SHVControlEdit* owner, int pos, SHVInt selectFrom, SHVControlEdit::ScrollModes scroll)
+{
+	SHVUNUSED_PARAM(owner);
+	
+	if (IsCreated())
+	{
+	GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW (TextView));
+	GtkTextIter start, end;
+	gdouble align;
+	gboolean doalign = FALSE;
+	
+		gtk_text_buffer_get_iter_at_offset(buffer, &end, pos);
+		
+		if (selectFrom.IsNull())
+			gtk_text_buffer_get_iter_at_offset(buffer, &start, pos);
+		else
+			gtk_text_buffer_get_iter_at_offset(buffer, &start, selectFrom);
+		
+		if (scroll == SHVControlEdit::ScrollTop)
+		{
+			doalign = TRUE;
+			align = 0.0;
+		}
+		else if (scroll == SHVControlEdit::ScrollBottom)
+		{
+			doalign = TRUE;
+			align = 1.0;
+		}
+
+		if (gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW (TextView), &end, 0.0, doalign, 0.0, align))
+			gtk_text_buffer_select_range(buffer, &start, &end);
+	}
+}
+
+/*************************************
  * CalculateNewHeight
  *************************************/
 int SHVControlImplementerEditMultiGtk::CalculateNewHeight(SHVControl* owner, SHVFont* font)

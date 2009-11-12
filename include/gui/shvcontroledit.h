@@ -27,6 +27,11 @@ public:
 		FlagReadonly = FlagSubType,
 		FlagFlat = FlagSubType*2 ///< no edge
 	};
+	enum ScrollModes {
+		ScrollNone = 0,
+		ScrollTop,
+		ScrollBottom
+	};
 
 
 	// constructor
@@ -49,6 +54,8 @@ public:
 	inline SHVControlEdit* SetLimit(int limit);
 
 	inline void SetHeight(int lines); // only applicable on multiline boxes
+
+	inline void SetSelection(int pos, SHVInt selectFrom = SHVInt(), ScrollModes scroll = ScrollNone);
 
 
 	// obtain pointer to the implementor
@@ -76,6 +83,7 @@ public:
 
 	virtual void SetHeight(SHVControlEdit* owner, int lines) = 0; // only applicable on multiline boxes
 
+	virtual void SetSelection(SHVControlEdit* owner, int pos, SHVInt selectFrom = SHVInt(), SHVControlEdit::ScrollModes scroll = SHVControlEdit::ScrollNone) = 0;
 };
 
 
@@ -138,6 +146,14 @@ SHVControlEdit* SHVControlEdit::SetLimit(int limit)
 void SHVControlEdit::SetHeight(int lines)
 {
 	GetImplementor()->SetHeight(this,lines);
+}
+
+/*************************************
+ * SetSelection
+ *************************************/
+void SHVControlEdit::SetSelection(int pos, SHVInt selectFrom, ScrollModes scroll)
+{
+	GetImplementor()->SetSelection(this,pos,selectFrom,scroll);
 }
 
 /*************************************
