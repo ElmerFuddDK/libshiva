@@ -692,8 +692,9 @@ SHVTime retVal;
 	retVal.Time.tm_isdst = -1;
 	return retVal;
 }
+
 /*************************************
- * AsUnixTime
+ * ToUnixTime
  *************************************/
 SHVInt64Val SHVTime::ToUnixTime(const SHVTime& time)
 {
