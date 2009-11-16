@@ -1,0 +1,15 @@
+#!/bin/bash
+
+test -d html  || mkdir html
+test -d latex || mkdir latex
+
+function Error()
+{
+	echo "$@"
+	exit 1
+}
+
+(cd libshiva && doxygen Doxyfile) || Error "Could not generate libshiva documentation"
+(cd shivagui && doxygen Doxyfile) || Error "Could not generate shivagui documentation"
+
+doxygen Doxyfile # && (cd html/ && ./installdox -l libshiva.tag@libshiva)
