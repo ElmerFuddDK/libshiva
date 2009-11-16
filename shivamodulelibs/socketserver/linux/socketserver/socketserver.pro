@@ -6,7 +6,6 @@ debug \
 LIBS += -ldl \
 -lshiva \
  -L../../../../shivalib/linux/libshiva
-DEFINES = __SHVSTRING_INCLUDE_UNICODE
 
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG
 

@@ -38,7 +38,7 @@
 # include <stdarg.h>
 #endif
 
-#if defined __SHVSTRING_INCLUDE_UNICODE
+#ifndef __SHVSTRING_EXCLUDE_UNICODE
 # ifdef __SHIVA_WINCE
 #  define vswprintf _vsnwprintf
 # elif defined(__SHIVA_WIN32)
@@ -1180,7 +1180,22 @@ long pos = 0;
 			if (isString)
 				tmpStr.Format(fStr.GetSafeBuffer(),SHVString16C(SHVVA_ARG(args,const SHVWChar*)).ToStrUTF8().GetSafeBuffer());
 			else
-				tmpStr.FormatList(fStr.GetSafeBuffer(),args);
+			{
+			char buf[64];
+			int n = vsnprintf( buf, 63, fStr.GetSafeBuffer(), args );
+			
+				if (n < 0)
+				{
+					fprintf(stderr, "ERROR IN SHVString16::FormatList - Buffer Overflow\n");
+					abort();
+				}
+				else
+				{
+					buf[n] = '\0';
+					tmpStr = buf;
+				}
+				//tmpStr.FormatList(fStr.GetSafeBuffer(),args);
+			}
 			chunks.GetLast() = tmpStr.ToStr16();
 			pos = newpos;
 		}

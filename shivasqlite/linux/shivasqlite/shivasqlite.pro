@@ -59,7 +59,6 @@ SOURCES =shivasqlite.cpp \
 ../../src/sqlitewrapperimpl.cpp
 TARGET =shivasqlite
 DESTDIR =../bin
-DEFINES += __SHVSTRING_INCLUDE_UNICODE
 
 LIBS += -L../../../shivalib/linux/libshiva \
   -ldl \

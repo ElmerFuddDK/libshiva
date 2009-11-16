@@ -10,7 +10,6 @@ LIBS += -ldl \
 -lshiva
 QMAKE_LIBDIR = ../../../../shivalib/linux/libshiva
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG
-DEFINES = __SHVSTRING_INCLUDE_UNICODE
 TARGET = ../bin/guitester
 CONFIG = debug \
 warn_on

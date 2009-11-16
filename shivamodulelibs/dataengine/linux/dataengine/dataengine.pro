@@ -5,7 +5,6 @@
 
 INCLUDEPATH += ../../ 
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
-DEFINES = __SHVSTRING_INCLUDE_UNICODE
 CONFIG = debug \
          warn_on \
          dll 

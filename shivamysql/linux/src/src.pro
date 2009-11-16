@@ -22,7 +22,5 @@ HEADERS += ../../include/shvmysqlconnectionimpl.h \
 ../../../include/mysql/shvmysqlresultset.h
 DESTDIR = ../bin
 
-DEFINES += __SHVSTRING_INCLUDE_UNICODE
-
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG
 

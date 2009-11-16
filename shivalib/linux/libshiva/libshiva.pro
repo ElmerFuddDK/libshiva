@@ -129,7 +129,6 @@ SOURCES += ../../src/framework/shvevent.cpp \
  ../../src/utils/shvmathtokenhashmap.cpp \
  ../../src/threadutils/shvthreadpoolbase.cpp
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
-DEFINES = __SHVSTRING_INCLUDE_UNICODE
 TARGET = shiva 
 CONFIG = debug \
          warn_on \

@@ -24,7 +24,7 @@ public:
 	bool WriteString8(const SHVString8C& str);
 	bool ReadLine8(SHVString8& str);
 	bool WriteLine8(const SHVString8C& str);
-#ifdef __SHVSTRING_INCLUDE_UNICODE
+#ifndef __SHVSTRING_EXCLUDE_UNICODE
 	bool ReadString16(SHVString16& str);
 	bool WriteString16(const SHVString16C& str);
 	bool ReadLine16(SHVString16& str);

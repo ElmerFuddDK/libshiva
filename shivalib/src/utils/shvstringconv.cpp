@@ -33,7 +33,7 @@
 #include "../../../include/utils/shvstring.h"
 #include "../../../include/utils/shvstringutf8.h"
 
-#ifdef __SHVSTRING_INCLUDE_UNICODE
+#ifndef __SHVSTRING_EXCLUDE_UNICODE
 
 #ifdef __SHIVA_WIN32
 #elif defined(__SHIVA_EPOC)

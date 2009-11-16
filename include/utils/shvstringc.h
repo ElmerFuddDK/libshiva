@@ -5,11 +5,6 @@
 
 #if defined(__SHIVA_WIN32)
 # define __SHVSTRING_HEAPPROTECT
-# define __SHVSTRING_INCLUDE_UNICODE
-#endif
-
-#if defined(UNICODE) && !defined(__SHVSTRING_INCLUDE_UNICODE)
-# define __SHVSTRING_INCLUDE_UNICODE
 #endif
 
 // Typedefs and forward declares
@@ -29,7 +24,7 @@ typedef SHVString8   SHVString;
 typedef SHVString8CRef SHVStringCRef;
 typedef SHVStringBuffer8 SHVStringBuffer;
 # define _SHVS8(x)  x
-# ifdef __SHVSTRING_INCLUDE_UNICODE
+# ifndef __SHVSTRING_EXCLUDE_UNICODE
 #  define _SHVS16(x) SHVStringC(x).ToStr16()
 # endif
 ///\cond INTERNAL
@@ -40,7 +35,7 @@ typedef SHVStringBuffer8 SHVStringBuffer;
 ///\endcond
 #endif
 
-#ifdef __SHVSTRING_INCLUDE_UNICODE
+#ifndef __SHVSTRING_EXCLUDE_UNICODE
 # include "shvstring16c.h"
 #endif
 
@@ -99,7 +94,7 @@ public:
 	static SHVStringBuffer8 LongToString(long val);
 	static SHVStringBuffer8 Int64ToString(SHVInt64Val val);
 	static SHVStringBuffer8 DoubleToString(double val);
-#ifdef __SHVSTRING_INCLUDE_UNICODE
+#ifndef __SHVSTRING_EXCLUDE_UNICODE
 	SHVStringBuffer16 ToStr16() const;
 	SHVStringBufferUTF8 ToStrUTF8() const;
 	bool ConvertBufferToWChar(SHVWChar* buffer, size_t len) const;
@@ -266,7 +261,7 @@ SHVStringBuffer SHVString8C::ToStrT() const
 /*************************************
  * ToStrT
  *************************************/
-#ifdef __SHVSTRING_INCLUDE_UNICODE
+#ifndef __SHVSTRING_EXCLUDE_UNICODE
 SHVStringBuffer SHVString16C::ToStrT() const
 {
 #ifdef UNICODE

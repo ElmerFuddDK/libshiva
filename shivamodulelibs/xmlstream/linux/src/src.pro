@@ -36,7 +36,6 @@ HEADERS += ../../include/shvxmlreaderimpl.h \
 ../../src/expat/xmltok_impl.h
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG
 
-DEFINES += _STATIC \
-__SHVSTRING_INCLUDE_UNICODE
+DEFINES += _STATIC
 SOURCES -= ../../src/expat/xmltok_impl.c \
 ../../src/expat/xmltok_ns.c

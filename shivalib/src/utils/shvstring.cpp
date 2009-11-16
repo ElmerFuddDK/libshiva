@@ -40,7 +40,7 @@
 # include <stdarg.h>
 #endif
 
-#if defined __SHVSTRING_INCLUDE_UNICODE
+#ifndef __SHVSTRING_EXCLUDE_UNICODE
 # ifdef __SHIVA_WIN32
 # elif defined(__SHIVA_EPOC)
 #  include <string.h>

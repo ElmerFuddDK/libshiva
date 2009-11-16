@@ -8,7 +8,6 @@ LIBS += -ldl \
         -lshiva 
 QMAKE_LIBDIR = ../libshiva 
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
-DEFINES = __SHVSTRING_INCLUDE_UNICODE 
 TARGET = ../bin/shiva 
 CONFIG = debug \
          warn_on 

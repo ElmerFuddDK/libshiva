@@ -7,8 +7,6 @@ LIBS += -L../../../../shivalib/linux/libshiva \
 -lshiva
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG
 
-DEFINES += __SHVSTRING_INCLUDE_UNICODE
-
 CONFIG -= release \
  qt
 

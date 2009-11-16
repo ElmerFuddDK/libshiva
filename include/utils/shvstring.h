@@ -2,7 +2,7 @@
 #define __SHIVA_UTILS_STRING_H
 
 #include "shvstringc.h"
-#ifdef __SHVSTRING_INCLUDE_UNICODE
+#ifndef __SHVSTRING_EXCLUDE_UNICODE
 # include "shvstring16.h"
 class SHVStringUTF8;
 #endif
@@ -71,7 +71,7 @@ public:
 
 private:
 friend class SHVString8C;
-#ifdef __SHVSTRING_INCLUDE_UNICODE
+#ifndef __SHVSTRING_EXCLUDE_UNICODE
 friend class SHVStringUTF8;
 #endif
 	

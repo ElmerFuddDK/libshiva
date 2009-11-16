@@ -147,7 +147,7 @@ SHVString8C newLine(SHVFileBase::LineSeparator8());
 	return (WriteString8(str) && WriteString8(newLine));
 }
 
-#ifdef __SHVSTRING_INCLUDE_UNICODE
+#ifndef __SHVSTRING_EXCLUDE_UNICODE
 /*************************************
  * Read16
  *************************************/
