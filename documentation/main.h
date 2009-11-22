@@ -105,6 +105,7 @@ In this page we will create a simple console application
 #include "shiva/include/platformspc.h"
 #include "shiva/include/shvversion.h"
 #include "shiva/include/framework/shvmodule.h"
+#include "shiva/include/framework/shveventstdin.h"
 #include "shiva/include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
 
 class SHVMain : public SHVModule
