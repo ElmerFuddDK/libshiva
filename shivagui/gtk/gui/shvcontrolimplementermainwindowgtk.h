@@ -4,6 +4,7 @@
 
 #include "../../../include/gui/shvcontrolcontainer.h"
 #include "utils/shvfontgtk.h"
+#include "shvmenugtkcontainer.h"
 
 #ifndef __SHIVA_GTK
 # error This code only works for gtk
@@ -54,6 +55,8 @@ public:
 	virtual SHVRect GetRegionRect();
 	virtual void SetSize(SHVControlContainer* owner, int widthInPixels, int heightInPixels, SHVControlContainer::PosModes mode);
 
+	virtual SHVMenu* CreateMenu(SHVControlContainer* owner, SHVEventSubscriberBase* subscriber);
+
 	virtual SHVStringBuffer GetTitle(SHVControlContainer* control);
 	virtual void SetTitle(SHVControlContainer* control, const SHVStringC& title);
 
@@ -81,6 +84,7 @@ private:
 	SHVMainThreadEventDispatcherGtk* Dispatcher;
 	SHVColorRef Color;
 	SHVFontGtkRef Font;
+	SHVMenuGtkContainerRef Menu;
 	///\endcond
 };
 

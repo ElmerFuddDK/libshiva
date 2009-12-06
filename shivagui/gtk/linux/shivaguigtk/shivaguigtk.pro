@@ -67,7 +67,10 @@ HEADERS += ../../../gui/shvformimpl.h \
  ../../gui/shvcontrolimplementerdialoggtk.h \
  ../../gui/shvcontrolimplementereditgtk.h \
  ../../gui/shvcontrolimplementereditmultigtk.h \
- ../../gui/shvcontrolimplementercontainerwindowgtk.h
+ ../../gui/shvcontrolimplementercontainerwindowgtk.h \
+ ../../gui/shvmenugtkcontainer.h \
+ ../../gui/shvmenugtksub.h \
+ ../../gui/shvmenugtkroot.h
 SOURCES += ../../../gui/shvcontrolbutton.cpp \
            ../../../gui/shvcontrolcontainer.cpp \
            ../../../gui/shvcontrol.cpp \
@@ -94,7 +97,9 @@ SOURCES += ../../../gui/shvcontrolbutton.cpp \
  ../../gui/shvcontrolimplementerdialoggtk.cpp \
  ../../gui/shvcontrolimplementereditgtk.cpp \
  ../../gui/shvcontrolimplementereditmultigtk.cpp \
- ../../gui/shvcontrolimplementercontainerwindowgtk.cpp
+ ../../gui/shvcontrolimplementercontainerwindowgtk.cpp \
+ ../../gui/shvmenugtkcontainer.cpp \
+ ../../gui/shvmenugtksub.cpp
 INCLUDEPATH += /usr/lib64/gtk-2.0/include \
   /usr/lib64/glib-2.0/include \
   /usr/include/atk-1.0 \

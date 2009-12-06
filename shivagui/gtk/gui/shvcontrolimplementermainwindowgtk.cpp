@@ -280,6 +280,8 @@ SHVRect rect;
 			gtk_widget_get_size_request (Handle, &width,&height);
 		rect.SetWidth(width);
 		rect.SetHeight(height);
+		if (!Menu.IsNull() && Menu->IsShown())
+			rect.SetTop(rect.GetTop()+Menu->GetHeight());
 	}
 	return rect;
 }
@@ -300,6 +302,19 @@ void SHVControlImplementerMainWindowGtk::SetSize(SHVControlContainer* owner, int
 		else
 			gtk_widget_set_size_request (Handle, widthInPixels, heightInPixels);
 	}
+}
+
+/*************************************
+ * CreateMenu
+ *************************************/
+SHVMenu* SHVControlImplementerMainWindowGtk::CreateMenu(SHVControlContainer* owner, SHVEventSubscriberBase* subscriber)
+{
+	if (Menu)
+		Menu->Destroy();
+	
+	SHVASSERT(IsCreated());
+	
+	return Menu = new SHVMenuGtkContainer((SHVGUIManagerGtk*)owner->GetManager(), subscriber, owner);
 }
 
 /*************************************
@@ -435,9 +450,15 @@ SHVControlImplementerMainWindowGtk* self = (SHVControlImplementerMainWindowGtk*)
 	if (self->MainWindow && self->MainWindow == widget)
 	{
 	SHVRect newRect(self->GetRect(NULL));
+		
+		if (!self->Menu.IsNull() && self->Menu->IsShown())
+			newRect.SetTop(newRect.GetTop()+self->Menu->GetHeight());
+		
 		if (newRect != self->SizedRect)
 		{
 			self->SizedRect = newRect;
+			if (!self->Menu.IsNull() && self->Menu->IsShown())
+				self->Menu->Move(newRect);
 			owner->ResizeControls();
 		}
 	}

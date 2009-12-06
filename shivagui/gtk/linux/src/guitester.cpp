@@ -54,6 +54,10 @@ protected:
 
 	SHVEventSubscriberRef ButtonSubscriber;
 
+	enum Menus {
+		MenuQuit = 1
+	};
+	
 	SHVFormTest(SHVGUIManager* manager, SHVControlContainer* controlContainer) : SHVForm<>(manager,controlContainer,"FormTest")
 	{
 		ButtonSubscriber = new SHVEventSubscriber(this);
@@ -65,6 +69,14 @@ protected:
 			Container->SetFlag(SHVControl::FlagVisible,false);
 		else if (event->GetObject() == OK)
 			Container->SetColor(GetManager()->CreateColor(SHVMath::Rand(Seed)&0xFF,SHVMath::Rand(Seed)&0xFF,SHVMath::Rand(Seed)&0xFF));
+	}
+	
+	void OnMenuEvent(SHVEvent* event)
+	{
+		if (event->GetSubID() == SHVInt(MenuQuit))
+		{
+			GetManager()->GetModuleList().CloseApp();
+		}
 	}
 	
 public:
@@ -85,7 +97,22 @@ public:
 		GetContainer()->SetTitle(_T("Test dialog"));
 	
 		GetContainer()->SetSize(240,120);
-	
+		
+		SHVMenuRef menu = GetContainer()->CreateMenu(new SHVEventSubscriberFunc<SHVFormTest>(this,&SHVFormTest::OnMenuEvent));
+		SHVMenuRef menu2 = menu->AddSubMenu(_T("test"));
+		menu2->AddStringItem(SHVInt(), _T("Test 1"));
+		menu2->AddStringItem(SHVInt(), _T("Test 2"), SHVMenu::FlagDisabled);
+		menu2->AddStringItem(SHVInt(), _T("Test 3"));
+		SHVMenuRef menu3 = menu2->AddSubMenu(_T("Sub"));
+		menu2->AddSeparator();
+		menu2->AddStringItem(MenuQuit, _T("Quit"));
+		menu3->AddStringItem(SHVInt(), _T("Test 4"));
+		menu3->AddSeparator();
+		menu3->AddStringItem(MenuQuit, _T("Quit"));
+		menu->AddSeparator();
+		menu->AddStringItem(MenuQuit, _T("Quit"));
+		menu->Show();
+		
 		if (GetContainer()->IsCreated())
 		{
 		SHVRegionRef rgn = GetManager()->CreateRegion(GetContainer());
@@ -142,6 +169,10 @@ public:
 	SHVControlEditRef Edit;
 	SHVFormTestRef NewWindow;
 	int Counter;
+	
+	enum Menus {
+		MenuQuit = 1
+	};
 
 	SHVTest(SHVModuleList& modules) : SHVModule(modules,"Test")
 	{
@@ -198,6 +229,14 @@ public:
 		draw->DrawText(GUIManager->GetFont(SHVGUIManager::CfgFontNormalBold),"TEEEEEST teeest\nDette er en test",client, GUIManager->CreateColor(0,0,0xFF), SHVDraw::TextHCenter|SHVDraw::TextVCenter|SHVDraw::TextMultiLine);
 	}
 
+	void OnMenuEvent(SHVEvent* event)
+	{
+		if (event->GetSubID() == SHVInt(MenuQuit))
+		{
+			Modules.CloseApp();
+		}
+	}
+
 	SHVBool Register()
 	{
 		printf("In register\n");
@@ -241,6 +280,21 @@ public:
 		}
 		Label->SetText(_T("Label text"));
 
+		SHVMenuRef menu = GUIManager->GetMainWindow()->CreateMenu(new SHVEventSubscriberFunc<SHVTest>(this,&SHVTest::OnMenuEvent));
+		SHVMenuRef menu2 = menu->AddSubMenu(_T("test"));
+		menu2->AddStringItem(SHVInt(), _T("Test 1"));
+		menu2->AddStringItem(SHVInt(), _T("Test 2"), SHVMenu::FlagDisabled);
+		menu2->AddStringItem(SHVInt(), _T("Test 3"));
+		SHVMenuRef menu3 = menu2->AddSubMenu(_T("Sub"));
+		menu2->AddSeparator();
+		menu2->AddStringItem(MenuQuit, _T("Quit"));
+		menu3->AddStringItem(SHVInt(), _T("Test 4"));
+		menu3->AddSeparator();
+		menu3->AddStringItem(MenuQuit, _T("Quit"));
+		menu->AddSeparator();
+		menu->AddStringItem(MenuQuit, _T("Quit"));
+		menu->Show();
+		
 		GUIManager->GetMainWindow()->SetMinimumSize(120,100);
 		GUIManager->GetMainWindow()->SetSize(300,100);
 		GUIManager->GetMainWindow()->SetColor(GUIManager->CreateColor(0xFF,0xFF,0xFF));
