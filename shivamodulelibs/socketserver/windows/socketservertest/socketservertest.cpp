@@ -79,7 +79,7 @@ public:
 	{
 		if (SHVEvent::Equals(event,SHVSocketServer::EventSockStatus))
 		{
-			switch (SHVSocketServer::SocketFromEvent(event)->GetState())
+			switch (event->GetSubID())
 			{
 			default:
 			case SHVSocket::StateError:

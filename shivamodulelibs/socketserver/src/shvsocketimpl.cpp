@@ -674,6 +674,7 @@ SHVEventQueue* queue = NULL;
 SHVSocketImplRef sockObj;
 SHVBuffer* bufPtr;
 SHVSocketRef retValObj;
+SHVInt subID;
 int evCode = SHVSocketServer::EventSockStatus;
 bool doEvent = true;
 int sockerr;
@@ -713,6 +714,7 @@ SHVIPv4Port fromport = 0;
 		{
 			State = SHVSocket::StateConnected;
 		}
+		subID = State;
 		break;
 	case SHVSocket::StateConnected: // received something
 		bufPtr = new SHVBufferPtr();
@@ -757,10 +759,12 @@ SHVIPv4Port fromport = 0;
 			BytesRead += (size_t)sz;
 			evCode = SHVSocketServer::EventSockDataRead;
 		}
+		subID = State;
 		break;
 	default:
 		Close();
 		SetError(SHVSocket::ErrGeneric);
+		subID = State;
 		break;
 	}
 	
@@ -768,7 +772,7 @@ SHVIPv4Port fromport = 0;
 	
 	if (doEvent)
 	{
-		queue = EventSubscriber->Emit(SocketServer->GetModules(), new SHVEventSocket(SocketServer,evCode,Tag,this,retValObj));
+		queue = EventSubscriber->Emit(SocketServer->GetModules(), new SHVEventSocket(SocketServer,evCode,subID,this,retValObj));
 	}
 	if (queue)
 	{
