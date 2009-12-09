@@ -80,7 +80,7 @@ function ConvertString()
 
 test -d "$TargetDir" && Error "Target dir $TargetDir exists" || mkdir "$TargetDir" || Error "Could not create $TargetDir"
 
-(cd "$TemplateDir" && find ./) | while read f
+(cd "$TemplateDir" && find ./) | grep -v "/CVS/" | while read f
 do
 	if test "$f" != "./"
 	then
@@ -88,7 +88,7 @@ do
 		if test -f "$f" -a "`dirname \"$f\"`" == "."
 		then
 			true # don't include files in the root dir
-		elif test -d "$f"
+		elif test -d "$f" -a "`basename \"$f\"`" != "CVS"
 		then
 			test -d "$tof" || mkdir "$tof" || Error "Could not create dir $tof"
 		elif test -f "$f"
