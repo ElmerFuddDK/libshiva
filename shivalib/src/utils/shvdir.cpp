@@ -517,7 +517,7 @@ SHVString path = SHVDir::ExtractPath(fileName);
 
 #elif defined(__SHIVA_LINUX)
 SHVString execstr;
-	execstr.Format(_T("fileHandler.sh \"%s\" &"), fileName.GetSafeBuffer());
+	execstr.Format(_T("xdg-open \"%s\" &"), fileName.GetSafeBuffer());
 	::system(execstr.GetSafeBuffer());
 #elif defined(__SHIVA_EPOC)
 	///\todo Implement SHVDir::ExecuteFile for symbian
