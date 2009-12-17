@@ -40,7 +40,21 @@
 # include <f32file.h>
 # include <charconv.h>
 #else
-# include <unicode.h>
+# ifdef __SHIVA_USELIBUNICODE
+#  include <unicode.h>
+#  define iconv_open unicode_iconv_open
+#  define iconv unicode_iconv
+#  define iconv_close unicode_iconv_close
+#  define iconv_t unicode_iconv_t
+#  define ICONV_IBUFTYPE const char**
+#  define ICONV_ERR -1
+# else
+#  include <stdlib.h>
+#  include <errno.h>
+#  include <iconv.h>
+#  define ICONV_IBUFTYPE char**
+#  define ICONV_ERR (size_t)-1
+# endif
 const char* SHVStringC_Get8BitCharSet()
 {
 const char* retVal = getenv("CHARSET");
@@ -96,12 +110,12 @@ const char*  iBuf;
 SHVWChar* oBuf;
 size_t iLeft;
 size_t oLeft;
-unicode_iconv_t conv = unicode_iconv_open("UCS-2",SHVStringC_Get8BitCharSet());
+iconv_t conv = iconv_open("UCS-2",SHVStringC_Get8BitCharSet());
 
-	if (conv == (unicode_iconv_t)-1) // failure, try ascii as fallback
-		conv = unicode_iconv_open("UCS-2","ASCII");
+	if (conv == (iconv_t)-1) // failure, try ascii as fallback
+		conv = iconv_open("UCS-2","ASCII");
 
-	if (conv == (unicode_iconv_t)-1)
+	if (conv == (iconv_t)-1)
 	{
 		fprintf(stderr, "local->UNICODE conversion error %d\n", errno);
 		outBuffer[0] = 0;
@@ -115,7 +129,7 @@ unicode_iconv_t conv = unicode_iconv_open("UCS-2",SHVStringC_Get8BitCharSet());
 		outBuffer[i]=0;
 		iLeft  = 1;
 		oLeft  = 2;
-		if ( unicode_iconv(conv,&iBuf,&iLeft,(char**)&oBuf,&oLeft) == -1)
+		if ( iconv(conv,(ICONV_IBUFTYPE)&iBuf,&iLeft,(char**)&oBuf,&oLeft) == ICONV_ERR)
 		{
 			switch (Buffer[i])
 			{
@@ -129,7 +143,7 @@ unicode_iconv_t conv = unicode_iconv_open("UCS-2",SHVStringC_Get8BitCharSet());
 
 	outBuffer[len] = 0;
 
-	unicode_iconv_close(conv);
+	iconv_close(conv);
 #endif
 	return retVal;
 }
@@ -181,12 +195,12 @@ const SHVWChar* iBuf;
 char* oBuf;
 size_t iLeft;
 size_t oLeft;
-unicode_iconv_t conv = unicode_iconv_open(SHVStringC_Get8BitCharSet(),"UCS-2");
+iconv_t conv = iconv_open(SHVStringC_Get8BitCharSet(),"UCS-2");
 
-	if (conv == (unicode_iconv_t)-1) // failure, try ascii as fallback
-		conv = unicode_iconv_open("ASCII","UCS-2");
+	if (conv == (iconv_t)-1) // failure, try ascii as fallback
+		conv = iconv_open("ASCII","UCS-2");
 
-	if (conv == (unicode_iconv_t)-1)
+	if (conv == (iconv_t)-1)
 	{
 		fprintf(stderr, "UNICODE->local conversion error %d\n", errno);
 		outBuffer[0] = '\0';
@@ -199,7 +213,7 @@ unicode_iconv_t conv = unicode_iconv_open(SHVStringC_Get8BitCharSet(),"UCS-2");
 		oBuf = outBuffer+i;
 		iLeft  = 2;
 		oLeft  = 1;
-		if ( unicode_iconv(conv,(const char**)&iBuf,&iLeft,&oBuf,&oLeft) == -1)
+		if ( iconv(conv,(ICONV_IBUFTYPE)&iBuf,&iLeft,&oBuf,&oLeft) == ICONV_ERR)
 		{
 			switch (Buffer[i])
 			{
@@ -212,7 +226,7 @@ unicode_iconv_t conv = unicode_iconv_open(SHVStringC_Get8BitCharSet(),"UCS-2");
 
 	outBuffer[len] = '\0';
 
-	unicode_iconv_close(conv);
+	iconv_close(conv);
 #endif
 
 	return retVal;
@@ -260,12 +274,12 @@ const char* iBuf;
 char* oBuf;
 size_t iLeft;
 size_t oLeft;
-unicode_iconv_t conv = unicode_iconv_open(SHVStringC_Get8BitCharSet(),"UTF-8");
+iconv_t conv = iconv_open(SHVStringC_Get8BitCharSet(),"UTF-8");
 
-	if (conv == (unicode_iconv_t)-1) // failure, try ascii as fallback
-		conv = unicode_iconv_open("ASCII","UTF-8");
+	if (conv == (iconv_t)-1) // failure, try ascii as fallback
+		conv = iconv_open("ASCII","UTF-8");
 
-	if (conv == (unicode_iconv_t)-1)
+	if (conv == (iconv_t)-1)
 	{
 		fprintf(stderr, "UTF-8 conversion error %d\n", errno);
 		return false;
@@ -307,7 +321,7 @@ unicode_iconv_t conv = unicode_iconv_open(SHVStringC_Get8BitCharSet(),"UTF-8");
 			iLeft  = bytes;
 			oLeft  = 1;
 
-			if ( unicode_iconv(conv,&iBuf,&iLeft,&oBuf,&oLeft) == -1)
+			if ( iconv(conv,(ICONV_IBUFTYPE)&iBuf,&iLeft,&oBuf,&oLeft) == ICONV_ERR)
 				*buffer = '?';
 #endif
 
@@ -322,7 +336,7 @@ unicode_iconv_t conv = unicode_iconv_open(SHVStringC_Get8BitCharSet(),"UTF-8");
 	fs.Close();
 	CleanupStack::PopAndDestroy(2); // cnv's
 #else
-	unicode_iconv_close(conv);
+	iconv_close(conv);
 #endif
 
 	return true;
@@ -366,9 +380,9 @@ const char* iBuf;
 char* oBuf;
 size_t iLeft;
 size_t oLeft;
-unicode_iconv_t conv = unicode_iconv_open("UCS-2","UTF-8");
+iconv_t conv = iconv_open("UCS-2","UTF-8");
 
-	if (conv == (unicode_iconv_t)-1)
+	if (conv == (iconv_t)-1)
 	{
 		fprintf(stderr, "UTF-8 conversion error %d\n", errno);
 		return false;
@@ -407,7 +421,7 @@ unicode_iconv_t conv = unicode_iconv_open("UCS-2","UTF-8");
 			iLeft  = bytes;
 			oLeft  = 2;
 
-			if ( unicode_iconv(conv,&iBuf,&iLeft,&oBuf,&oLeft) == -1)
+			if ( iconv(conv,(ICONV_IBUFTYPE)&iBuf,&iLeft,&oBuf,&oLeft) == ICONV_ERR)
 				*buffer = '?';
 #endif
 
@@ -422,7 +436,7 @@ unicode_iconv_t conv = unicode_iconv_open("UCS-2","UTF-8");
 	fs.Close();
 	CleanupStack::PopAndDestroy(1); // cnv
 #else
-	unicode_iconv_close(conv);
+	iconv_close(conv);
 #endif
 
 	return true;
@@ -487,12 +501,12 @@ const char* iBuf;
 char* oBuf;
 size_t iLeft;
 size_t oLeft;
-unicode_iconv_t conv = unicode_iconv_open("UTF-8",SHVStringC_Get8BitCharSet());
+iconv_t conv = iconv_open("UTF-8",SHVStringC_Get8BitCharSet());
 
-	if (conv == (unicode_iconv_t)-1) // failure, try ascii as fallback
-		conv = unicode_iconv_open("UTF-8","ASCII");
+	if (conv == (iconv_t)-1) // failure, try ascii as fallback
+		conv = iconv_open("UTF-8","ASCII");
 
-	if (conv == (unicode_iconv_t)-1)
+	if (conv == (iconv_t)-1)
 	{
 		fprintf(stderr, "UTF-8 conversion error %d\n", errno);
 		return false;
@@ -559,7 +573,7 @@ unicode_iconv_t conv = unicode_iconv_open("UTF-8",SHVStringC_Get8BitCharSet());
 			iLeft  = 1;
 			oLeft  = 4;
 
-			if ( unicode_iconv(conv,&iBuf,&iLeft,&oBuf,&oLeft) == -1)
+			if ( iconv(conv,(ICONV_IBUFTYPE)&iBuf,&iLeft,&oBuf,&oLeft) == ICONV_ERR)
 			{
 				retVal++;
 				if (str)
@@ -590,7 +604,7 @@ unicode_iconv_t conv = unicode_iconv_open("UTF-8",SHVStringC_Get8BitCharSet());
 	fs.Close();
 	CleanupStack::PopAndDestroy(2); // cnv's
 #else
-	unicode_iconv_close(conv);
+	iconv_close(conv);
 #endif
 
 	len = retVal;
@@ -657,9 +671,9 @@ const char* iBuf;
 char* oBuf;
 size_t iLeft;
 size_t oLeft;
-unicode_iconv_t conv = unicode_iconv_open("UTF-8","UCS-2");
+iconv_t conv = iconv_open("UTF-8","UCS-2");
 
-	if (conv == (unicode_iconv_t)-1)
+	if (conv == (iconv_t)-1)
 	{
 		fprintf(stderr, "UTF-8 conversion error %d\n", errno);
 		return false;
@@ -724,7 +738,7 @@ unicode_iconv_t conv = unicode_iconv_open("UTF-8","UCS-2");
 			iLeft  = 2;
 			oLeft  = 4;
 
-			if ( unicode_iconv(conv,&iBuf,&iLeft,&oBuf,&oLeft) == -1)
+			if ( iconv(conv,(ICONV_IBUFTYPE)&iBuf,&iLeft,&oBuf,&oLeft) == ICONV_ERR)
 			{
 				retVal++;
 				if (str)
@@ -754,7 +768,7 @@ unicode_iconv_t conv = unicode_iconv_open("UTF-8","UCS-2");
 	fs.Close();
 	CleanupStack::PopAndDestroy(2); // cnv's
 #else
-	unicode_iconv_close(conv);
+	iconv_close(conv);
 #endif
 
 	len = retVal;
