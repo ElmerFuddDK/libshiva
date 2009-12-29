@@ -193,7 +193,7 @@ SHVVA_LIST args;
 #ifdef __SHIVA_LINUX
 	fprintf(stderr, "%s", SHVString16C::FormatList(str, args).ToStrT().GetSafeBuffer());
 #else
-	vfwprintf(stderr,str,args);
+	vfwprintf(str,args);
 #endif
 	SHVVA_END(args);
 }
@@ -209,7 +209,7 @@ SHVVA_LIST argList;
 #ifdef __SHIVA_LINUX
 	fprintf(stderr, "%s", SHVString16C::FormatList(str, argList).ToStrT().GetSafeBuffer());
 #else
-	vfwprintf(stderr,str,args);
+	vfwprintf(str,args);
 #endif
 	SHVVA_END( argList );
 }
