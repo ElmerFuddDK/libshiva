@@ -419,6 +419,10 @@
 				Name="framework"
 				>
 				<File
+					RelativePath="..\src\framework\shvconsole.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\framework\shvevent.cpp"
 					>
 				</File>
@@ -797,6 +801,10 @@
 					>
 					<File
 						RelativePath="..\..\include\framework\shvconfig.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\framework\shvconsole.h"
 						>
 					</File>
 					<File

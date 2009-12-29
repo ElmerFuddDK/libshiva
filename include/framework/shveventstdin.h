@@ -2,6 +2,7 @@
 #define __SHIVA_FRAMEWORK_EVENTSTDIN_H
 
 #include "../framework/shveventstring.h"
+#include "../framework/shvconsole.h"
 
 #define __EVENT_GLOBAL_STDIN  "Stdin"
 

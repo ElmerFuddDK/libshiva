@@ -31,6 +31,7 @@
 
 #include "../../../include/platformspc.h"
 #include "../../../include/framework/shvmodule.h"
+#include "../../../include/framework/shveventstdin.h"
 #include "../../../include/frameworkimpl/shvmainthreadeventdispatchergeneric.h"
 #include "../../../include/shvversion.h"
 #include "../../../include/framework/shvtimer.h"
@@ -48,12 +49,12 @@ public:
 	{
 		Modules.GetConfig().Set(_T("test"),2);
 		Modules.GetConfig().FindInt(_T("test2"),128);
-		printf("result 128-2^6 : %g\n", SHVMath::EvalMap(_T("test2-test^6"),Modules.GetConfig()));
+		SHVConsole::Printf8("result 128-2^6 : %g\n", SHVMath::EvalMap(_T("test2-test^6"),Modules.GetConfig()));
 	}
 	
 	SHVBool Register()
 	{
-		printf("In register\n");
+		SHVConsole::Printf8("In register\n");
 				
 		if (!SHVModuleResolver<SHVTimer>(Modules, Timer, _T("Timer")))
 			return SHVBool::False;
@@ -69,9 +70,9 @@ public:
 	{
 	SHVTime now;
 		now.SetNow();
-		printf(_T("Started: Time now %s\n"), now.ToDateString().GetBufferConst());
+		SHVConsole::Printf(_T("Started: Time now %s\n"), now.ToDateString().GetBufferConst());
 		now.AddSeconds(5);
-		printf("Application running...\n");
+		SHVConsole::Printf8("Application running...\n");
 		TimerInstance = Timer->CreateTimer(new SHVEventSubscriber(this));
 		TimerInstance->SetAbsolute(now);
 	}
@@ -82,20 +83,20 @@ public:
 		{
 		SHVTime now;
 			now.SetNow();
-			printf(_T("Stopped: Time now %s\n"), now.ToDateString().GetBufferConst());
-			printf("Shutting it down\n");
+			SHVConsole::Printf8(_T("Stopped: Time now %s\n"), now.ToDateString().GetBufferConst());
+			SHVConsole::Printf8("Shutting it down\n");
 			Modules.CloseApp();
 		}
 		else
 		{
-			printf("Delaying shutdown by 1000 ms\n");
+			SHVConsole::Printf8("Delaying shutdown by 1000 ms\n");
 			Modules.EmitEvent(new SHVEventString(this,__EVENT_GLOBAL_DELAYSHUTDOWN,1000));
 		}
 	}
 
 	void Unregister()
 	{
-		printf("In unregister\n");
+		SHVConsole::Printf8("In unregister\n");
 		SHVModule::Unregister();
 	}
 };
@@ -108,7 +109,7 @@ int main(int argc, char *argv[])
 
 	if (!SHVModuleList::CheckVersion(__SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE))
 	{
-		fprintf(stderr,"WRONG SHIVA VERSION\n");
+		SHVConsole::ErrPrintf8("WRONG SHIVA VERSION\n");
 	}
 	else
 	{
@@ -117,12 +118,12 @@ int main(int argc, char *argv[])
 
 		mainqueue.GetModuleList().AddModule(new SHVTest(mainqueue.GetModuleList()));
 
-		printf("Testing assertions - should fail in debug mode\n");
+		SHVConsole::Printf8("Testing assertions - should fail in debug mode\n");
 		SHVASSERT(false);
 	
 		testStr.Format(_T("This is a test %s %d.%d.%d\n"), _T("of SHIVA version"), __SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE);
 	
-		printf("%s", testStr.GetSafeBuffer());
+		SHVConsole::Printf(_T("%s"), testStr.GetSafeBuffer());
 		
 		return mainqueue.Run().GetError();
 	}

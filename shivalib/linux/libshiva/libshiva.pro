@@ -74,7 +74,8 @@ HEADERS += ../../../include/platformspc.h \
            ../../../include/utils/shvmd5sum.h \
  ../../../include/utils/shvmathtokenmap.h \
  ../../../include/utils/shvmathtokenhashmap.h \
- ../../../include/threadutils/shvthreadpoolbase.h
+ ../../../include/threadutils/shvthreadpoolbase.h \
+ ../../../include/framework/shvconsole.h
 SOURCES += ../../src/framework/shvevent.cpp \
            ../../src/framework/shveventemitter.cpp \
            ../../src/framework/shveventqueuelist.cpp \
@@ -127,7 +128,8 @@ SOURCES += ../../src/framework/shvevent.cpp \
            ../../src/utils/shvmd5sum.cpp \
  ../../src/gui/utils/shvrect.cpp \
  ../../src/utils/shvmathtokenhashmap.cpp \
- ../../src/threadutils/shvthreadpoolbase.cpp
+ ../../src/threadutils/shvthreadpoolbase.cpp \
+ ../../src/framework/shvconsole.cpp
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
 TARGET = shiva 
 CONFIG = debug \
