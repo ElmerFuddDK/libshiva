@@ -3,16 +3,18 @@
 
 #include "shiva/include/shvversion.h"
 #include "shiva/include/framework/shvmodule.h"
+#include "shiva/include/framework/shvconsole.h"
 #include "shiva/include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
 
 #include "shvshvtemplateshv.h"
 
 // The main function -boots up the application
-int main()
+// Macro exists for windows CE compatibility
+CONSOLEMAIN
 {
 	if (!SHVModuleList::CheckVersion(__SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE))
 	{
-		fprintf(stderr,"WRONG SHIVA VERSION\n");
+		SHVConsole::ErrPrintf(_T("WRONG SHIVA VERSION\n"));
 	}
 	else
 	{

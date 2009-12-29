@@ -3,6 +3,14 @@
 
 #include "../utils/shvstringc.h"
 
+// use this define on windows CE in order to enable the fake console window
+#ifdef __SHIVA_WINCE
+# define CONSOLEMAIN int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
+#else
+# define CONSOLEMAIN int main()
+#endif
+
+
 //-=========================================================================================================
 /// SHVConsole class - console output static class
 /**
