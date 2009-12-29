@@ -56,7 +56,7 @@ public:
 	
 	SHVBool Register()
 	{
-		printf("In register\n");
+		SHVConsole::Printf(_T("In register\n"));
 		
 		if (!SHVModuleResolver<SHVSocketServer>(Modules,SocketServer,"SocketServer"))
 			return false;
@@ -85,7 +85,7 @@ public:
 			case SHVSocket::StateError:
 				if (SHVSocketServer::SocketFromEvent(event) == Socket)
 				{
-					printf("Main socket Error\n");
+					SHVConsole::Printf(_T("Main socket Error\n"));
 					ClientSockets.RemoveAll();
 					Socket = NULL;
 				}
@@ -93,11 +93,11 @@ public:
 				{
 				SHVListPos pos = ClientSockets.Find(SHVSocketServer::SocketFromEvent(event));
 				
-					printf("SocketError\n");
+					SHVConsole::Printf(_T("SocketError\n"));
 					
 					if (pos)
 					{
-						printf("Removing client socket\n");
+						SHVConsole::Printf(_T("Removing client socket\n"));
 						ClientSockets.RemoveAt(pos);
 					}
 				}
@@ -105,7 +105,7 @@ public:
 			case SHVSocket::StateDisconnected:
 				if (SHVSocketServer::SocketFromEvent(event) == Socket)
 				{
-					printf("Main socket disconnected\n");
+					SHVConsole::Printf(_T("Main socket disconnected\n"));
 					ClientSockets.RemoveAll();
 					Socket = NULL;
 				}
@@ -113,26 +113,26 @@ public:
 				{
 				SHVListPos pos = ClientSockets.Find(SHVSocketServer::SocketFromEvent(event));
 				
-					printf("Socket disconnected\n");
+					SHVConsole::Printf(_T("Socket disconnected\n"));
 					
 					if (pos)
 					{
-						printf("Removing client socket\n");
+						SHVConsole::Printf(_T("Removing client socket\n"));
 						ClientSockets.RemoveAt(pos);
 					}
 				}
 				break;
 			case SHVSocket::StateConnecting:
-				printf("Connecting ...\n");
+				SHVConsole::Printf(_T("Connecting ...\n"));
 				break;
 			case SHVSocket::StateConnected:
-				printf("Connected\n");
+				SHVConsole::Printf(_T("Connected\n"));
 				SHVVERIFY(SHVSocketServer::SocketFromEvent(event)->SetSocketOption(SHVSocket::SockOptKeepalive,1));
 				SHVVERIFY(SHVSocketServer::SocketFromEvent(event)->SetSocketOption(SHVSocket::SockOptKeepaliveIdle,60));
 				SHVVERIFY(SHVSocketServer::SocketFromEvent(event)->SetSocketOption(SHVSocket::SockOptLinger,1,1));
 				break;
 			case SHVSocket::StateListening:
-				printf("Listening\n");
+				SHVConsole::Printf(_T("Listening\n"));
 				break;
 			}
 		}
@@ -148,14 +148,14 @@ public:
 			SHVString8 str;
 				str.AddChars(buffer->GetBufferConst(),bytesRead);
 				if (fromIP)
-					printf("Received from (%s,%d): %s\n", SocketServer->Inetv4ToAddr(fromIP).GetSafeBuffer(), fromPort, str.GetSafeBuffer());
+					SHVConsole::Printf(_T("Received from (%s,%d): %s\n"), SocketServer->Inetv4ToAddr(fromIP).GetSafeBuffer(), fromPort, str.ToStrT().GetSafeBuffer());
 				else
-					printf("Received : %s\n", str.GetSafeBuffer());
+					SHVConsole::Printf(_T("Received : %s\n"), str.ToStrT().GetSafeBuffer());
 			}
 		}
 		else if (SHVEvent::Equals(event,SHVSocketServer::EventSockIncomingConn))
 		{
-			printf("Incomming connection ...\n");
+			SHVConsole::Printf(_T("Incomming connection ...\n"));
 			ClientSockets.AddTail(SHVSocketServer::NewSocketFromEvent(event));
 		}
 	}
@@ -178,7 +178,7 @@ public:
 			{
 				if (!Socket.IsNull())
 				{
-					printf("Closing socket\n");
+					SHVConsole::Printf(_T("Closing socket\n"));
 					Socket->Close();
 					Socket = NULL;
 				}
@@ -197,7 +197,7 @@ public:
 					}
 					
 					Socket = SocketServer->CreateSocket(SocketSubscriber);
-					printf("Attempting to start server at %d\n", port);
+					SHVConsole::Printf(_T("Attempting to start server at %d\n"), port);
 					SHVASSERT(Socket->BindAndListen(port ? port : 1234));
 				}
 				else if (str.Left(9) == SHVString8C("/connect "))
@@ -230,7 +230,7 @@ public:
 						}
 						
 						Socket = SocketServer->CreateSocket(SocketSubscriber);
-						printf("Attempting connect to \"%s\" port %d\n", ip.GetSafeBuffer(), port);
+						SHVConsole::Printf(_T("Attempting connect to \"%s\" port %d\n"), ip.ToStrT().GetSafeBuffer(), port);
 						SHVVERIFY(Socket->Connect(SocketServer->Inetv4ResolveHost(ip.ToStrT()),port ? port : 1234));
 					}
 				}
@@ -246,7 +246,7 @@ public:
 					}
 					
 					Socket = SocketServer->CreateSocket(SocketSubscriber,SHVSocket::TypeUDP);
-					printf("Created a UDP client socket\n");
+					SHVConsole::Printf(_T("Created a UDP client socket\n"));
 				}
 				else if (str.Left(5) == SHVString8C("/udp "))
 				{
@@ -263,14 +263,14 @@ public:
 					}
 					
 					Socket = SocketServer->CreateSocket(SocketSubscriber,SHVSocket::TypeUDP);
-					printf("Attempting to start UDP at %d\n", port);
+					SHVConsole::Printf(_T("Attempting to start UDP at %d\n"), port);
 					SHVASSERT(Socket->BindAndListen(port ? port : 1234));
 				}
 				else if (str == SHVString8C("/disconnect"))
 				{
 					if (!Socket.IsNull())
 					{
-						printf("Disconnecting ...\n");
+						SHVConsole::Printf(_T("Disconnecting ...\n"));
 						Socket->Close();
 						Socket = NULL;
 					}
@@ -295,12 +295,12 @@ public:
 					}
 					
 					Socket = SocketServer->CreateSocket(SocketSubscriber,SHVSocket::TypeUDP);
-					printf("Attempting connect to \"%s\" port %d\n", ip.GetSafeBuffer(), port);
+					SHVConsole::Printf(_T("Attempting connect to \"%s\" port %d\n"), ip.ToStrT().GetSafeBuffer(), port);
 					SHVASSERT(Socket->Connect(SocketServer->Inetv4ResolveHost(ip.ToStrT()),port ? port : 1234));
 				}
 				else if (str == SHVString8C("/help"))
 				{
-					printf("Commands available:\n"
+					SHVConsole::Printf8("Commands available:\n"
 						   " /server <port>            Will start a server at a given port\n"
 						   " /udp                      Will set udp mode\n"
 						   " /udp <port>               Will start an udp socket - set udp mode\n"
@@ -312,7 +312,7 @@ public:
 				}
 				else
 				{
-					printf("Unknown command\n");
+					SHVConsole::Printf(_T("Unknown command\n"));
 				}
 			}
 			else if (!Socket.IsNull())
@@ -342,7 +342,7 @@ public:
 
 	void Unregister()
 	{
-		printf("In unregister\n");
+		SHVConsole::Printf(_T("In unregister\n"));
 		Socket = NULL;
 		ClientSockets.RemoveAll();
 		SHVModule::Unregister();
@@ -359,11 +359,11 @@ SHVDll socketlib;
 
 	if (!SHVModuleList::CheckVersion(__SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE))
 	{
-		fprintf(stderr,"WRONG SHIVA VERSION\n");
+		SHVConsole::ErrPrintf(_T("WRONG SHIVA VERSION\n"));
 	}
 	else if (!socketlib.Load(socketlib.CreateLibFileName(_T("socketserver"))))
 	{
-		fprintf(stderr,"Could not load socket server\n");
+		SHVConsole::ErrPrintf(_T("Could not load socket server\n"));
 	}
 	else
 	{
@@ -376,7 +376,7 @@ SHVDll socketlib;
 
 		testStr.Format(_T("This is a test %s %d.%d.%d\n"), _T("of SHIVA version"), __SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE);
 	
-		printf("%s", testStr.GetSafeBuffer());
+		SHVConsole::Printf(_T("%s"), testStr.GetSafeBuffer());
 		
 		return mainqueue.Run().GetError();
 	}
