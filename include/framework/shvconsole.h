@@ -36,6 +36,15 @@ public:
 	static void ErrPrintf16(const SHVWChar* str, ...);
 	static void ErrPrintfList16(const SHVWChar* str, SHVVA_LIST args);
 	
+#ifdef __SHIVA_WINCE
+private:
+	///\cond INTERNAL
+	static void vwprintf(const SHVWChar* str, SHVVA_LIST args);
+	static void vprintf(const SHVChar* str, SHVVA_LIST args);
+	static void vfwprintf(FILE* f, const SHVWChar* str, SHVVA_LIST args);
+	static void vfprintf(FILE* f, const SHVChar* str, SHVVA_LIST args);
+	///\endcond
+#endif
 };
 
 #endif

@@ -37,7 +37,12 @@
 #include "../../../include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
 #include "../../../include/framework/shveventstdin.h"
 
-#ifdef __SHIVA_WIN32
+#if defined(__SHIVA_WINCE)
+# include "../../../include/threadutils/shvmutexlocker.h"
+# define WM_SHV_DISPATCHMESSAGES    0x8001
+# define WM_SHV_PRINT               0x8002
+static SHVMainThreadEventDispatcherConsole* evDispatcherConsole;
+#elif defined(__SHIVA_WIN32)
 # include <io.h>
 # define EventInternalSdin -1
 #else
@@ -57,7 +62,19 @@
  *************************************/
 SHVMainThreadEventDispatcherConsole::SHVMainThreadEventDispatcherConsole()
 {
-#ifdef __SHIVA_WIN32
+#if defined(__SHIVA_WINCE)
+	wndConsole = NULL;
+	edtProc = NULL;
+	edtConsole = NULL;
+	Font = NULL;
+	boundaries.cx = boundaries.cy = 0;
+	if (!evDispatcherConsole)
+	{
+		evDispatcherConsole = this;
+		if (!CreateDlg())
+			evDispatcherConsole = NULL;
+	}
+#elif defined(__SHIVA_WIN32)
 	Initializing = false;
 #else
 	// Initialize pipe signaller for the select statement
@@ -84,7 +101,10 @@ SHVMainThreadEventDispatcherConsole::SHVMainThreadEventDispatcherConsole()
  *************************************/
 SHVMainThreadEventDispatcherConsole::~SHVMainThreadEventDispatcherConsole()
 {
-#ifdef __SHIVA_WIN32
+#if defined(__SHIVA_WINCE)
+	if (evDispatcherConsole == this)
+		evDispatcherConsole = NULL;
+#elif defined(__SHIVA_WIN32)
 	if (Initializing)
 	{
 		::CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
@@ -105,7 +125,9 @@ SHVMainThreadEventDispatcherConsole::~SHVMainThreadEventDispatcherConsole()
  *************************************/
 void SHVMainThreadEventDispatcherConsole::SetupDefaults(SHVModuleList& modules)
 {
-#ifdef __SHIVA_WIN32
+#if defined(__SHIVA_WINCE)
+	ModuleList = &modules;
+#elif defined(__SHIVA_WIN32)
 	selfSubs = new SHVEventSubscriber(this,&modules);
 	ModuleList = &modules;
 #endif
@@ -118,7 +140,9 @@ void SHVMainThreadEventDispatcherConsole::SetupDefaults(SHVModuleList& modules)
  *************************************/
 void SHVMainThreadEventDispatcherConsole::SignalDispatcher()
 {
-#ifdef __SHIVA_WIN32
+#if defined(__SHIVA_WINCE)
+	::PostMessage(wndConsole,WM_SHV_DISPATCHMESSAGES,0,0);
+#elif defined(__SHIVA_WIN32)
 	Signal.Unlock();
 #else
 	Mutex.Lock();
@@ -136,7 +160,9 @@ void SHVMainThreadEventDispatcherConsole::SignalDispatcher()
  *************************************/
 SHVBool SHVMainThreadEventDispatcherConsole::InitializeEventLoop()
 {
-#ifdef __SHIVA_WIN32
+#if defined(__SHIVA_WINCE)
+	return (evDispatcherConsole == this);
+#elif defined(__SHIVA_WIN32)
 	Initializing = true;
 	Signal.Lock();
 	StdinThread.Start(this,&SHVMainThreadEventDispatcherConsole::StdinFunc);
@@ -158,17 +184,39 @@ int nextFD, retVal;
 char dummyBuffer[50];
 SHVBufferRef readBuf;
 size_t bufReadPos = 0;
+#elif defined(__SHIVA_WINCE)
+BOOL msgRetVal;
+MSG msg;
 #endif
 
 	DispatchEvents();
 
-#ifdef __SHIVA_WIN32
+#if defined(__SHIVA_WIN32) && !defined(__SHIVA_WINCE)
 	Initializing = false;
 #endif
 
 	while ( Running() )
 	{
-#ifdef __SHIVA_WIN32
+#if defined(__SHIVA_WINCE)
+
+		msgRetVal = GetMessage(&msg, NULL, 0, 0);
+
+		if (msgRetVal == -1)
+		{
+			continue;
+		}
+		else if (msgRetVal == 0)
+		{
+			DestroyWindow(wndConsole);
+			wndConsole = NULL;
+			continue;
+		}
+		else
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+#elif defined(__SHIVA_WIN32)
 		Signal.Lock();
 		DispatchEvents();
 #else
@@ -235,7 +283,7 @@ size_t bufReadPos = 0;
 #endif
 	}
 
-#ifdef __SHIVA_WIN32
+#if defined(__SHIVA_WIN32) && !defined(__SHIVA_WINCE)
 	::CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
 	for (int i=10;StdinThread.IsRunning();i+=10)
 		SHVThreadBase::Sleep(i);
@@ -251,7 +299,7 @@ void SHVMainThreadEventDispatcherConsole::StopEventLoop(SHVBool errors)
 	if (!errors)
 	{
 	SHVString errStr = Queue->GetModuleList().GetStartupErrors();
-		fprintf(stderr, "\n\nRegistering failed:\n\"%s\"\n\n", errStr.GetSafeBuffer());
+		SHVConsole::ErrPrintf(_T("\n\nRegistering failed:\n\"%s\"\n\n"), errStr.GetSafeBuffer());
 	}
 }
 
@@ -269,7 +317,7 @@ SHVString8 str, cmd, data;
 		StdinStream.ReadString8(str,newline - StdinPos,StdinPos);
 		StdinPos = newline + 1;
 		
-#ifdef __SHIVA_WIN32
+#if defined(__SHIVA_WIN32) && !defined(__SHIVA_WINCE)
 		this->selfSubs->EmitNow(*ModuleList,new SHVEvent(this,EventInternalSdin,SHVInt(),new SHVEventStdin(NULL,str.ReleaseBuffer())));
 #else
 		Queue->GetModuleList().EmitEvent(new SHVEventStdin(NULL,str.ReleaseBuffer()));
@@ -284,7 +332,9 @@ SHVString8 str, cmd, data;
  *************************************/
 void SHVMainThreadEventDispatcherConsole::OnEvent(SHVEvent* event)
 {
-#ifdef __SHIVA_WIN32
+#if defined(__SHIVA_WINCE)
+	SHVUNUSED_PARAM(event);
+#elif defined(__SHIVA_WIN32)
 	if (event->GetCaller() == this && SHVEvent::Equals(event,EventInternalSdin))
 	{
 		Queue->GetModuleList().EmitEvent((SHVEvent*)event->GetObject());
@@ -294,8 +344,383 @@ void SHVMainThreadEventDispatcherConsole::OnEvent(SHVEvent* event)
 #endif
 }
 
-#ifdef __SHIVA_WIN32
+
 ///\cond INTERNAL
+#if defined(__SHIVA_WINCE)
+/***************************
+ * Print
+ ***************************/
+void SHVMainThreadEventDispatcherConsole::Print(const SHVStringC str)
+{
+	if (evDispatcherConsole && evDispatcherConsole->boundaries.cx > 0 && evDispatcherConsole->boundaries.cy > 0)
+	{
+		evDispatcherConsole->PrintInternal(str);
+	}
+}
+void SHVMainThreadEventDispatcherConsole::PrintInternal(const SHVStringC str)
+{
+SHVMutexLocker l(Lock);
+long pos = 0, oldPos = 0;
+SHVString empty;
+SHVString tmp;
+size_t tmpLen;
+
+	if (StringBuffers.GetCount() == 0)
+	{
+		StringBuffers.AddTail(empty.ReleaseBuffer());
+	}
+
+	for(pos=str.Find(_T("\n")); pos >= 0 && pos < (long)str.GetLength(); oldPos = pos+1, pos=str.Find(_T("\n"),oldPos) )
+	{
+		tmp = str.Mid((size_t)oldPos,(size_t)(pos-oldPos));
+		while (StringBuffers.GetLast().GetLength() + tmp.GetLength() > (size_t)boundaries.cx)
+		{
+			tmpLen = boundaries.cx - StringBuffers.GetLast().GetLength();
+			StringBuffers.GetLast() += tmp.Left(tmpLen);
+			tmp = tmp.Mid(tmpLen);
+			StringBuffers.AddTail(empty.ReleaseBuffer());
+		}
+		StringBuffers.GetLast() += tmp;
+		StringBuffers.AddTail(empty.ReleaseBuffer());
+	}
+
+	// Add the final bit after newline
+	if (oldPos < (long)str.GetLength())
+		StringBuffers.GetLast() += str.Mid((size_t)oldPos);
+
+	if (wndConsole)
+		::PostMessage(wndConsole,WM_SHV_PRINT,0,0);
+}
+
+/***************************
+ * CreateDlg
+ ***************************/
+SHVBool SHVMainThreadEventDispatcherConsole::CreateDlg()
+{
+SHVString title(_T("SHIVA Console"));
+int titleLength = title.GetLength();
+HLOCAL templateHandle;
+void* dlgTemplate;
+char* buffer;
+int len = AlignDWord( sizeof(DLGTEMPLATE) + sizeof(WORD) * 4
+	+ ((titleLength) ? ((titleLength+1)*2 + sizeof(WORD)) : 0)
+	);
+
+	HWND oldWindow = FindWindow(NULL,title.GetSafeBuffer());
+	///\todo add code to make sure the window is created with the same application as us
+	if (oldWindow) 
+	{
+		// set focus to foremost child window
+		// The "| 0x01" is used to bring any owned windows to the foreground and
+		// activate them.
+		SetForegroundWindow((HWND)((ULONG) oldWindow | 0x00000001));
+		return SHVBool::False;
+	}
+
+	templateHandle = LocalAlloc(LHND, len);
+
+	dlgTemplate = LocalLock(templateHandle);
+	
+	memset(dlgTemplate,0,len);
+
+	LPDLGTEMPLATE temp = (LPDLGTEMPLATE)dlgTemplate;
+	temp->x  = 0;
+	temp->y  = 0;
+	temp->cx = 240;
+	temp->cy = 180;
+	temp->cdit  = 0; // number of controls
+	temp->style = WS_CAPTION | WS_SYSMENU | WS_POPUP | WS_OVERLAPPED;
+	temp->dwExtendedStyle = WS_EX_DLGMODALFRAME;
+
+	// skip the dlgtemplate data from buffer
+	buffer = (char*)dlgTemplate;
+	buffer += sizeof(DLGTEMPLATE);
+
+	// set menu and skip
+	*(WORD*)buffer = 0;
+	buffer += sizeof(WORD);
+
+	// set class and skip
+	*(WORD*)buffer = 0;
+	buffer += sizeof(WORD);
+
+	// set title and skip
+	if (titleLength)
+	{
+	WCHAR* titleWChar = (WCHAR*)buffer;
+
+	#ifdef UNICODE
+		wcscpy(titleWChar,title.GetSafeBuffer());
+	#else
+		::mbstowcs(titleWChar,title,titleLength);
+		titleWChar[TitleLength] = 0;
+	#endif
+	}
+	else
+	{
+		*(WORD*)buffer = 0;
+		buffer += sizeof(WORD);
+	}
+
+#ifdef __SHIVA_POCKETPC
+	memset (&s_sai, 0, sizeof(s_sai));
+	s_sai.cbSize = sizeof(s_sai);
+#endif
+
+	wndConsole = CreateDialogIndirect(GetModuleHandle(NULL), (LPDLGTEMPLATE)dlgTemplate, NULL, &SHVMainThreadEventDispatcherConsole::WinceDlgProc);
+
+	LocalUnlock(templateHandle);
+	LocalFree(templateHandle);
+
+
+	SetWindowLongPtr(wndConsole,GWLP_USERDATA,(LONG_PTR)this);
+
+#ifdef __SHIVA_POCKETPC
+	{
+	SHMENUBARINFO mbi;
+
+		memset(&mbi, 0, sizeof(SHMENUBARINFO));
+		mbi.cbSize     = sizeof(SHMENUBARINFO);
+		mbi.hwndParent = wndConsole;
+		mbi.nToolBarId = 100;
+		mbi.hInstRes   = GetModuleHandle(NULL);
+		mbi.nBmpId     = 0;
+		mbi.cBmpImages = 0;
+		mbi.dwFlags    = SHCMBF_EMPTYBAR;
+
+		SHCreateMenuBar(&mbi);
+		if (mbi.hwndMB)
+		{
+		RECT menubarRect, winRect;
+			GetWindowRect(wndConsole, &winRect);
+			GetWindowRect(mbi.hwndMB, &menubarRect);
+			winRect.bottom -= (menubarRect.bottom - menubarRect.top);
+			MoveWindow(wndConsole, winRect.left, winRect.top, winRect.right, winRect.bottom, FALSE);
+		}
+	}
+#endif
+
+	// font stuff
+	{
+	HDC dc = ::GetDC(NULL);
+	int dcBackup = ::SaveDC(dc);
+	SIZE sz;
+	LOGFONT lf;
+
+#if defined(__SHIVA_WINCE) && (_WIN32_WCE < 500)
+		///\todo Implement a way to get the real message font from the system on windows CE
+		memset(&lf, 0, sizeof(LOGFONT));
+		lf.lfWeight = FW_NORMAL;
+		lf.lfHeight = 15; // reasonable size
+#else
+	HFONT stockFont = (HFONT)::GetStockObject(SYSTEM_FONT);
+
+		///\todo Test if this method works for older wince's
+	
+		// do something!
+		SHVVERIFY(::GDIGetObject(stockFont, sizeof(LOGFONT), &lf));
+#endif
+		lf.lfPitchAndFamily = FIXED_PITCH|FF_MODERN;
+		_tcscpy(lf.lfFaceName, _T("MS Shell Dlg"));
+		Font = ::CreateFontIndirect(&lf);
+		::SendMessage(wndConsole,WM_SETFONT,(WPARAM)Font,0);
+
+		::SelectObject(dc,Font);
+		
+		SHVVERIFY(::GetTextExtentPoint(dc,_T(" "),1,&sz));
+		fontHeight = sz.cy + 2;
+		fontWidth = sz.cx;
+
+		::RestoreDC(dc,dcBackup);
+		::ReleaseDC(NULL,dc);
+
+	}
+
+	// edit box
+	edtConsole = ::CreateWindowEx(0,_T("EDIT"), _T(""), ES_LEFT|ES_AUTOHSCROLL|WS_TABSTOP|WS_CHILD|WS_VISIBLE,
+			0, 0, 0, fontHeight, wndConsole, NULL, GetModuleHandle(NULL), NULL);
+	edtProc = (WNDPROC)GetWindowLongPtr(edtConsole,GWLP_WNDPROC);
+	SetWindowLongPtr(edtConsole,GWLP_WNDPROC,(LONG_PTR)&SHVMainThreadEventDispatcherConsole::WinceEditProc);
+
+	::SendMessage(edtConsole,WM_SETFONT,(WPARAM)Font,0);
+
+	Resize();
+	::ShowWindow(wndConsole,SW_SHOW);
+	::UpdateWindow(wndConsole);
+
+	return SHVBool::True;
+}
+
+/*************************************
+ * Resize
+ *************************************/
+void SHVMainThreadEventDispatcherConsole::Resize()
+{
+RECT rect;
+	::GetClientRect(wndConsole,&rect);
+	boundaries.cx = (rect.right - rect.left) / fontWidth;
+	boundaries.cy = (rect.bottom - rect.top) / fontHeight;
+	::MoveWindow(edtConsole,rect.left,rect.bottom-fontHeight,rect.right-rect.left,fontHeight,TRUE);
+}
+
+/*************************************
+ * WinceDlgProc
+ *************************************/
+INT_PTR CALLBACK SHVMainThreadEventDispatcherConsole::WinceDlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+SHVMainThreadEventDispatcherConsole* self = evDispatcherConsole;
+INT_PTR retVal = 0;
+
+	switch (message) 
+	{
+	case WM_INITDIALOG:
+		// Create a Done button and size it.  
+		{
+		SHINITDLGINFO shidi;
+			shidi.dwMask = SHIDIM_FLAGS;
+			shidi.dwFlags = SHIDIF_DONEBUTTON | SHIDIF_SIPDOWN | SHIDIF_SIZEDLGFULLSCREEN;
+			shidi.hDlg = hWnd;
+			SHInitDialog(&shidi);
+		}
+		return TRUE; 
+
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDOK)
+		{
+			self->ModuleList->CloseApp();
+			return TRUE;
+		}
+		break;
+
+	// normal message types
+	case WM_SHV_DISPATCHMESSAGES:
+		self->DispatchEvents();
+		break;
+	case WM_SHV_PRINT:
+		InvalidateRect(hWnd,NULL,TRUE);
+		break;
+	case WM_CLOSE:
+		self->ModuleList->CloseApp();
+		break;
+	case WM_ERASEBKGND:
+		retVal = DefWindowProc(hWnd, message, wParam, lParam);
+#ifdef __SHIVA_POCKETPC
+	case WM_SETTINGCHANGE:
+		if (evDispatcherConsole)
+			SHHandleWMSettingChange(hWnd, wParam, lParam, &evDispatcherConsole->s_sai);
+		break;
+	case WM_ACTIVATE:
+		// Notify shell of our activate message
+		if (self)
+		{
+			SHHandleWMActivate(hWnd, wParam, lParam, &evDispatcherConsole->s_sai, FALSE);
+			::SetFocus(self->edtConsole);
+		}
+		break;
+#else
+	case WM_ACTIVATE:
+		if (self)
+			::SetFocus(self->edtConsole);
+		break;
+#endif
+	case WM_PAINT:
+		{
+		PAINTSTRUCT ps;
+		HDC hdc;
+			hdc = BeginPaint(hWnd, &ps);
+
+			if (evDispatcherConsole)
+			{
+			RECT rect;
+			SHVListIterator<SHVString,SHVStringBuffer> itr(evDispatcherConsole->StringBuffers);
+			bool first = true;
+			int dcBackup = ::SaveDC(hdc);
+
+				::SelectObject(hdc,self->Font);
+
+				// obtain boundaries
+				::GetClientRect(hWnd,&rect);
+				if (evDispatcherConsole->edtConsole)
+				{
+				RECT wndRect, edtRect;
+					::GetWindowRect(hWnd,&wndRect);
+					::GetWindowRect(evDispatcherConsole->edtConsole,&edtRect);
+					rect.bottom = edtRect.top - wndRect.top;
+				}
+
+				// print the text
+				rect.top = rect.bottom - evDispatcherConsole->fontHeight;
+				for (;rect.bottom > 0 && evDispatcherConsole->StringBuffers.MovePrev(itr.Pos()); rect.bottom -= evDispatcherConsole->fontHeight, rect.top -= evDispatcherConsole->fontHeight)
+				{
+					if (first && itr.Get().IsEmpty())
+					{
+						if (!evDispatcherConsole->StringBuffers.MovePrev(itr.Pos()))
+							break;
+					}
+					::DrawText(hdc,itr.Get().GetSafeBuffer(),(int)itr.Get().GetLength(),&rect,DT_TOP|DT_SINGLELINE);
+					first = false;
+				}
+
+				while (itr.Pos() && evDispatcherConsole->StringBuffers.GetHeadPosition() != itr.Pos() && evDispatcherConsole->StringBuffers.GetCount())
+				{
+					evDispatcherConsole->StringBuffers.RemoveHead();
+				}
+
+				::RestoreDC(hdc,dcBackup);
+			}
+
+			EndPaint(hWnd, &ps);
+		}
+		break;
+	case WM_WINDOWPOSCHANGED:
+		if (self)
+		{
+		WINDOWPOS* wpos = (WINDOWPOS*)lParam;
+			if (self->edtConsole && !(wpos->flags&SWP_FRAMECHANGED) && (!(wpos->flags&SWP_NOMOVE) || !(wpos->flags&SWP_NOSIZE)))
+			{
+				self->Resize();
+			}
+			InvalidateRect(hWnd,NULL,TRUE);
+		}
+		retVal = DefWindowProc(hWnd, message, wParam, lParam);
+		break;
+	default:
+		retVal = DefWindowProc(hWnd, message, wParam, lParam);
+	}
+
+	return retVal;
+}
+
+/*************************************
+ * WinceDlgProc
+ *************************************/
+LRESULT CALLBACK SHVMainThreadEventDispatcherConsole::WinceEditProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+LRESULT retVal = 0;
+
+	switch (message) 
+	{
+	case WM_CHAR:
+		if (wParam == VK_RETURN)
+		{
+		SHVString str;
+			str.SetBufferSize(::GetWindowTextLength(hWnd)+1);
+			::GetWindowText(hWnd,str.GetBuffer(),::GetWindowTextLength(hWnd)+1);
+			evDispatcherConsole->Queue->GetModuleList().EmitEvent(new SHVEventStdin(NULL,str.ToStr8()));
+			::SetWindowText(hWnd,_T(""));
+			break;
+		}
+	default:
+		if (evDispatcherConsole && evDispatcherConsole->edtProc)
+			retVal = CallWindowProc(evDispatcherConsole->edtProc, hWnd, message, wParam, lParam);
+		else
+			retVal = DefWindowProc(hWnd, message, wParam, lParam);
+	}
+
+	return retVal;
+}
+
+#elif defined(__SHIVA_WIN32)
 /*************************************
  * OnEvent
  *************************************/
@@ -334,5 +759,5 @@ int retVal;
 		}
 	}
 }
-///\endcond
 #endif
+///\endcond

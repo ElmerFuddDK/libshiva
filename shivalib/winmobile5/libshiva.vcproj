@@ -221,6 +221,10 @@
 					Name="framework"
 					>
 					<File
+						RelativePath="..\src\framework\shvconsole.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\src\framework\shvevent.cpp"
 						>
 					</File>
@@ -230,6 +234,10 @@
 					</File>
 					<File
 						RelativePath="..\src\framework\shveventqueuelist.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\src\framework\shveventstdin.cpp"
 						>
 					</File>
 					<File
@@ -270,6 +278,10 @@
 					>
 					<File
 						RelativePath="..\src\frameworkimpl\shvconfigimpl.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\src\frameworkimpl\shvmainthreadeventdispatcherconsole.cpp"
 						>
 					</File>
 					<File
@@ -535,6 +547,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\include\framework\shvconsole.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\framework\shvevent.h"
 						>
 					</File>
@@ -548,6 +564,10 @@
 					</File>
 					<File
 						RelativePath="..\..\include\framework\shveventqueuelist.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\framework\shveventstdin.h"
 						>
 					</File>
 					<File
@@ -616,6 +636,10 @@
 					>
 					<File
 						RelativePath="..\..\include\frameworkimpl\shvconfigimpl.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\frameworkimpl\shvmainthreadeventdispatcherconsole.h"
 						>
 					</File>
 					<File

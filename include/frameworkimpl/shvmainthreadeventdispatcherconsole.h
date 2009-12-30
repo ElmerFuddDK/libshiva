@@ -7,7 +7,10 @@
 
 #include "../framework/shveventstdin.h"
 #ifdef __SHIVA_WIN32
-#include "../threadutils/shvthread.h"
+# include "../threadutils/shvthread.h"
+# ifdef __SHIVA_POCKETPC
+#  include <aygshell.h>
+# endif
 #endif
 
 //-=========================================================================================================
@@ -49,7 +52,30 @@ private:
 	
 	enum { StdinBufSize = 256 };
 	
-#ifdef __SHIVA_WIN32
+#if defined(__SHIVA_WINCE)
+friend class SHVConsole;
+
+	static void Print(const SHVStringC str);
+	void PrintInternal(const SHVStringC str);
+	static int AlignDWord(int val) { return ((val + 3) & ~3); }
+	SHVBool CreateDlg();
+	void Resize();
+	static INT_PTR CALLBACK WinceDlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK WinceEditProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+# ifdef __SHIVA_POCKETPC
+	SHACTIVATEINFO s_sai;
+# endif
+	SHVModuleList* ModuleList;
+	SHVMutex Lock;
+	SHVList<SHVString,SHVStringBuffer> StringBuffers;
+	int fontHeight, fontWidth;
+	SIZE boundaries;
+	HWND wndConsole;
+	HWND edtConsole;
+	HFONT Font;
+	WNDPROC edtProc;
+#elif defined(__SHIVA_WIN32)
 	bool Initializing;
 	SHVModuleList* ModuleList;
 	SHVMutexBase Signal;
