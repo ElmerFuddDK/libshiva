@@ -17,26 +17,28 @@ WinNewLines="1"
 
 function Help()
 {
-	echo " "
+	echo 
 	echo "Usage:"
-	echo "   `basename $0` <options> Template NameOfApp"
+	echo "   `basename $0` <options> template NameOfApp"
 	echo " "
 	echo "Options"
-	echo "  --help|-h|help   This menu"
-	echo "  --list|-l        List available templates"
-	echo "  --nowin|-n       Don't use windows newlines on windows specific files"
-	echo " "
+	echo "  -h|--help|help   This menu"
+	echo "  -l|--list        List available templates"
+	echo "  -n|--nowin       Don't use windows newlines on windows specific files"
+	echo 
 	
 	exit 1
 }
 
 function List()
 {
+	echo
 	echo "Listing available templates:"
 	while read dname
 	do
 		test -d "$RootDir/$dname" && echo "  $dname"
-	done < <(cd "$RootDir" && ls -1 | grep -v CVS)
+	done < <(cd "$RootDir" && ls -1 | sort | grep -v CVS)
+	echo
 }
 
 function Error()
@@ -123,7 +125,9 @@ function CheckIgnore()
 
 test -d "$TargetDir" && Error "Target dir $TargetDir exists" || mkdir "$TargetDir" || Error "Could not create $TargetDir"
 
-(cd "$TemplateDir" && find ./) | grep -v "/CVS/" | while read f
+cd "$TemplateDir" 
+
+find ./ | grep -v "/CVS/" | while read f
 do
 	if test "$f" != "./"
 	then
