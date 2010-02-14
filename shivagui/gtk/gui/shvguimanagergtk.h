@@ -2,6 +2,8 @@
 #define __SHIVA_GTKGUI_MANAGER_H
 
 #include "../../gui/shvguimanagerimpl.h"
+#include "../../../include/utils/shvvectorref.h"
+#include "shvmenugtkpopup.h"
 
 #include <gtk/gtk.h>
 
@@ -52,6 +54,10 @@ protected:
 	virtual void EmitControlEvent(SHVControl* control, SHVInt controlEvent);
 	///\cond INTERNAL
 	friend class SHVMainThreadEventDispatcherGtk;
+	friend class SHVMenuGtkPopup;
+	
+	SHVVectorRef<SHVMenuGtkPopup> ActivePopupMenus;
+	
 	void SetStandardFonts(SHVFont* font);
 	///\endcond
 };

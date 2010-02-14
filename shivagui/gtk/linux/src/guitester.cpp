@@ -203,12 +203,19 @@ public:
 	{
 	}
 
-	void OnClick(SHVEvent* event)
+	void OnPopupMenu(SHVEvent* event)
 	{
 		GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget\nNoget\nNoget\nNoget\nNoget\nNoget\nNoget"),_T("Knap"));
 		GUIManager->ShowMessageBox(_T("En heel masse text med maaaaange linjer hvis word wrap virker eller noget eller noget andet..."),_T("Knap"));
 		NewWindow = SHVFormTest::Create(GUIManager);
 		NewWindow->InitializeForm();
+	}
+
+	void OnClick(SHVEvent* event)
+	{
+		SHVMenuRef popup = GUIManager->CreatePopupMenu(new SHVEventSubscriberFunc<SHVTest>(this,&SHVTest::OnPopupMenu),Button);
+		popup->AddStringItem(SHVInt(),_T("Test dialoger"));
+		popup->Show(SHVMenu::PopupBelowWindow);
 	}
 
 	void OnCustomDraw(SHVEvent* event)

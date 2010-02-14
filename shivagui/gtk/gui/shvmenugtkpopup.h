@@ -1,32 +1,30 @@
-#ifndef __SHIVA_GTKGUI_SHVMENUGTKSUB_H
-#define __SHIVA_GTKGUI_SHVMENUGTKSUB_H
+#ifndef __SHIVA_GTKGUI_SHVMENUGTKPOPUP_H
+#define __SHIVA_GTKGUI_SHVMENUGTKPOPUP_H
 
 
-#include "../../../include/gui/shvmenu.h"
-#include "../../../include/utils/shvvectorref.h"
+#include "shvmenugtkroot.h"
 
 #ifndef __SHIVA_GTK
 # error This code only works for gtk
 #endif
-#include <gtk/gtk.h>
-class SHVMenuGtkRoot;
-class SHVGUIManagerGtk;
 
 
 //-=========================================================================================================
-/// SHVMenuGtkSub
+/// SHVMenuGtkPopup
 /**
  */
 
-class SHVMenuGtkSub : public SHVMenu
+class SHVMenuGtkPopup : public SHVMenuGtkRoot
 {
 public:
 
 
 	// constructor
-	SHVMenuGtkSub(SHVGUIManagerGtk* manager, SHVMenuGtkRoot* rootMenu);
-	virtual ~SHVMenuGtkSub();
+	SHVMenuGtkPopup(SHVGUIManagerGtk* manager, SHVEventSubscriberBase* subscriber, SHVControl* parent);
+	virtual ~SHVMenuGtkPopup();
 
+	// Destroy the menu
+	void Destroy();
 
 	// Obtain type
 	virtual Types GetType();
@@ -45,10 +43,11 @@ public:
 	// Make the menu visible
 	virtual void Show(PopupTypes type = PopupDefault, SHVPoint offset = SHVPoint());
 
-	void EmitEvent(SHVInt id);
+	virtual void EmitEvent(SHVInt id);
+	bool IsShown();
 	
 	///\cond INTERNAL
-	GtkWidget* EnsureMenuCreated();
+	void EnsureMenuCreated();
 	///\endcond
 
 
@@ -56,14 +55,19 @@ public:
 protected:
 	///\cond INTERNAL
 	static void on_activate(GtkMenuItem *menuitem, gpointer data);
+	static void on_selection_done(GtkMenuShell* menushell, gpointer data);
+	static void menu_position(GtkMenu* menu, gint* x, gint* y, gboolean* push_in, gpointer data);
 	
 	GtkWidget* Menu;
-	SHVVectorRef<SHVMenuGtkSub> SubMenus;
-
+	bool Shown;
+	SHVPoint Offset;
+	PopupTypes ShowType;
+	
 	SHVGUIManagerGtk* Manager;
-	SHVMenuGtkRoot* RootMenu;
+	SHVEventSubscriberBaseRef Subscriber;
+	SHVControl* Parent;
 	///\endcond
 };
-typedef SHVRefObjectContainer<SHVMenuGtkSub> SHVMenuGtkSubRef;
+typedef SHVRefObjectContainer<SHVMenuGtkPopup> SHVMenuGtkPopupRef;
 
 #endif

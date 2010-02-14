@@ -4,11 +4,13 @@
 #include "shvmenugtksub.h"
 #include "../../../include/utils/shvvectorref.h"
 #include "../../../include/utils/shvhashtable.h"
-#include "shvguimanagergtk.h"
 
 #ifndef __SHIVA_GTK
 # error This code only works for gtk
 #endif
+
+#include <gtk/gtk.h>
+class SHVGUIManagerGtk;
 
 
 //-=========================================================================================================

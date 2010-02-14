@@ -44,6 +44,7 @@
 #include "shvcontrolimplementereditgtk.h"
 #include "shvcontrolimplementereditmultigtk.h"
 #include "shvcontrolimplementerbuttongtk.h"
+#include "shvmenugtkpopup.h"
 #include "../../../include/gui/shvcontrolcreator.h"
 #include "../../../include/gui/shvcontrolcreatorsubtype.h"
 #include "../../utilsimpl/shvregionimpl.h"
@@ -105,6 +106,8 @@ SHVBool SHVGUIManagerGtk::Register()
 void SHVGUIManagerGtk::Unregister()
 {
 	SHVGUIManagerImpl::Unregister();
+	
+	ActivePopupMenus.Clear();
 }
 
 /*************************************
@@ -167,7 +170,7 @@ SHVBitmap* retVal = NULL;
  *************************************/
 SHVMenu* SHVGUIManagerGtk::CreatePopupMenu(SHVEventSubscriberBase* subscriber, SHVControl* parent)
 {
-	return NULL;
+	return new SHVMenuGtkPopup(this,subscriber,parent);
 }
 
 /*************************************
