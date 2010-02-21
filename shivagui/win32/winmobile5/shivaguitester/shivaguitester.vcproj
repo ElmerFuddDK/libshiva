@@ -255,13 +255,6 @@
 			<File
 				RelativePath=".\shivaguitesterppc.rc"
 				>
-				<FileConfiguration
-					Name="Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)"
-					>
-					<Tool
-						Name="VCResourceCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\shivaguitesterppc.rc2"
