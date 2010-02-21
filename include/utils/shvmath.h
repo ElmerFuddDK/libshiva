@@ -3,7 +3,7 @@
 
 #include "shvstring.h"
 #include "shvmathtokenmap.h"
-#include <math.h>
+
 
 //-=========================================================================================================
 /// SHVMath class
