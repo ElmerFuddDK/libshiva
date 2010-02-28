@@ -86,6 +86,8 @@ long i;
 	Queue->GetModuleList().GetConfig().Set(SHVModuleList::DefaultCfgAppPath,appPath);
 	Queue->GetModuleList().GetConfig().Set(SHVModuleList::DefaultCfgAppName,appName);
 
+	// Set default instance handle
+	modules.GetConfig(SHVModuleList::CfgGUI).SetPtr(SHVGUIManager::CfgInstanceHandle,::GetModuleHandle(NULL));
 
 #ifndef __SHIVA_WINCE
 	// set up POSIX locale according to win32 locale

@@ -63,12 +63,11 @@ int retVal = -1;
 	}
 	else if (!guilib.Load(guilib.CreateLibFileName(_T("shivaguiwin32"))))
 	{
-		::MessageBox(NULL,_T("These are not the droids you are looking for ..."),_T("FætterHat"),0);
+		::MessageBox(NULL,_T("Failed loading GUI module"),_T("GUI Tester"),MB_ICONERROR);
 	}
 	else
 	{
 	SHVMainThreadEventQueue mainqueue((SHVMainThreadEventDispatcher*)guilib.CreateObjectInt(NULL,SHVDll::ClassTypeMainThreadDispatcher));
-		mainqueue.GetModuleList().GetConfig(SHVModuleList::CfgGUI).SetPtr(SHVGUIManager::CfgInstanceHandle,hInstance);
 
 		// register bitmap resources
 		SHVRegisterBitmap::Registration regs[] = { {IDB_HEYYOU,1}, {0,0} };
