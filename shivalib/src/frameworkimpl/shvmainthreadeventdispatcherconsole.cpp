@@ -44,6 +44,8 @@
 static SHVMainThreadEventDispatcherConsole* evDispatcherConsole;
 #elif defined(__SHIVA_WIN32)
 # include <io.h>
+# include <fcntl.h>
+# include "../../../include/utils/shvdllbase.h"
 # define EventInternalSdin -1
 #else
 # include <unistd.h>
@@ -75,7 +77,33 @@ SHVMainThreadEventDispatcherConsole::SHVMainThreadEventDispatcherConsole()
 			evDispatcherConsole = NULL;
 	}
 #elif defined(__SHIVA_WIN32)
+TCHAR name[MAX_PATH];
+
 	Initializing = false;
+
+	if (!::GetConsoleTitle(name,MAX_PATH))
+	{
+	BOOL (WINAPI *attachConsole)(DWORD dwProcessId) = NULL;
+	SHVDllBase kernel32;
+
+		///\todo Figure out how to attach to a console on win32 from a gui app when using console dispatcher
+		//if (!kernel32.Load(_T("kernel32")) ||!kernel32.Resolve((void**)&attachConsole,_T("AttachConsole")))
+		//	attachConsole = NULL;
+		SHVUNUSED_PARAM(attachConsole); // for future use
+
+		if (!attachConsole || !(*attachConsole)(-1))
+		{
+			::AllocConsole();
+		}
+		// else attached to an existing console
+
+		// redirect stdin/out/err
+		freopen("CON", "w", stdout);
+		freopen("CON", "w", stderr);
+		freopen("CONIN$", "r", stdin);
+	}
+	// else got a console already - must be console application
+
 #else
 	// Initialize pipe signaller for the select statement
 	pipe(PipeSignal);
@@ -742,7 +770,8 @@ int retVal;
 			StdinStream.AddBuffer(readBuf);
 		}
 
-		retVal = _read(0, readBuf->GetBuffer()+bufReadPos, (unsigned int)StdinBufSize-bufReadPos);
+		retVal = (int)fread(readBuf->GetBuffer()+bufReadPos, 1, StdinBufSize-bufReadPos, stdin);
+		//retVal = _read(0,readBuf->GetBuffer()+bufReadPos, (unsigned int)StdinBufSize-bufReadPos);
 		
 		if (retVal <=0)
 		{
