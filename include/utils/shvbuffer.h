@@ -120,6 +120,7 @@ protected:
 	virtual size_t Size() const;
 	///\endcond
 };
+typedef SHVRefObjectContainer<SHVBufferPtr> SHVBufferPtrRef;
 
 
 //-=========================================================================================================
