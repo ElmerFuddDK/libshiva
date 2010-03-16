@@ -195,7 +195,7 @@ SHVIPv4Addr retVal = Inetv4Addr(host);
 	if (retVal == SHVSocket::InvalidIPv4)
 	{
 	hostent* h = gethostbyname(host.ToStr8().GetSafeBuffer());
-		retVal = ((struct in_addr *)*h->h_addr_list)->s_addr;
+		retVal = (h ? ((struct in_addr *)*h->h_addr_list)->s_addr : (SHVIPv4Addr)SHVSocket::InvalidIPv4);
 	}
 	
 	return retVal;
