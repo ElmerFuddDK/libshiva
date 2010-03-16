@@ -108,12 +108,13 @@ SHVEventSubscriberBaseRef queued = new SHVEventSubscriber(this,this);
  *************************************/
 void SHVModuleListImpl::DestroyModules()
 {
-	if (State == StateInitializing)
+	if (State == StateInitializing || State == StateInitialized)
 	{
 		Config.Clear();
 		UserConfigs.Clear();
 		Modules.RemoveAll();
 		ShutdownDelays.RemoveAll();
+		State = StateInitializing;
 	}
 }
 
