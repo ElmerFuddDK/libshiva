@@ -14,4 +14,4 @@ CONFIG -= release \
 CONFIG += debug
 QMAKE_POST_LINK = ../bin/copydeps.sh
 
-INCLUDEPATH += ../../SHVRelPathSHV
+INCLUDEPATH += ../../../SHVRelPathSHV
