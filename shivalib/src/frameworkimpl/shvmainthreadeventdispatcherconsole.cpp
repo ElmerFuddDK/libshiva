@@ -80,6 +80,7 @@ SHVMainThreadEventDispatcherConsole::SHVMainThreadEventDispatcherConsole()
 TCHAR name[MAX_PATH];
 
 	Initializing = false;
+	QuirksMode = false;
 
 	if (!::GetConsoleTitle(name,MAX_PATH))
 	{
@@ -90,6 +91,7 @@ TCHAR name[MAX_PATH];
 		//if (!kernel32.Load(_T("kernel32")) ||!kernel32.Resolve((void**)&attachConsole,_T("AttachConsole")))
 		//	attachConsole = NULL;
 		SHVUNUSED_PARAM(attachConsole); // for future use
+		QuirksMode = true;
 
 		if (!attachConsole || !(*attachConsole)(-1))
 		{
@@ -770,8 +772,10 @@ int retVal;
 			StdinStream.AddBuffer(readBuf);
 		}
 
-		retVal = (int)fread(readBuf->GetBuffer()+bufReadPos, 1, StdinBufSize-bufReadPos, stdin);
-		//retVal = _read(0,readBuf->GetBuffer()+bufReadPos, (unsigned int)StdinBufSize-bufReadPos);
+		if (QuirksMode)
+			retVal = (int)fread(readBuf->GetBuffer()+bufReadPos, 1, StdinBufSize-bufReadPos, stdin);
+		else
+			retVal = _read(0,readBuf->GetBuffer()+bufReadPos, (unsigned int)StdinBufSize-bufReadPos);
 		
 		if (retVal <=0)
 		{

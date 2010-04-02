@@ -77,6 +77,7 @@ friend class SHVConsole;
 	WNDPROC edtProc;
 #elif defined(__SHIVA_WIN32)
 	bool Initializing;
+	bool QuirksMode;
 	SHVModuleList* ModuleList;
 	SHVMutexBase Signal;
 	SHVEventSubscriberRef selfSubs;
