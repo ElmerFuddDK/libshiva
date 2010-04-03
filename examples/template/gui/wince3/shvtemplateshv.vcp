@@ -1,0 +1,839 @@
+# Microsoft eMbedded Visual Tools Project File - Name="SHVTemplateSHV" - Package Owner=<4>
+# Microsoft eMbedded Visual Tools Generated Build File, Format Version 6.02
+# ** DO NOT EDIT **
+
+# TARGTYPE "Win32 (WCE x86) Application" 0x8301
+# TARGTYPE "Win32 (WCE ARM) Application" 0x8501
+
+CFG=SHVTemplateSHV - Win32 (WCE ARM) Debug
+!MESSAGE This is not a valid makefile. To build this project using NMAKE,
+!MESSAGE use the Export Makefile command and run
+!MESSAGE 
+!MESSAGE NMAKE /f "SHVTemplateSHV.vcn".
+!MESSAGE 
+!MESSAGE You can specify a configuration when running NMAKE
+!MESSAGE by defining the macro CFG on the command line. For example:
+!MESSAGE 
+!MESSAGE NMAKE /f "SHVTemplateSHV.vcn" CFG="SHVTemplateSHV - Win32 (WCE ARM) Debug"
+!MESSAGE 
+!MESSAGE Possible choices for configuration are:
+!MESSAGE 
+!MESSAGE "SHVTemplateSHV - Win32 (WCE ARM) Release" (based on "Win32 (WCE ARM) Application")
+!MESSAGE "SHVTemplateSHV - Win32 (WCE ARM) Debug" (based on "Win32 (WCE ARM) Application")
+!MESSAGE "SHVTemplateSHV - Win32 (WCE x86) Release" (based on "Win32 (WCE x86) Application")
+!MESSAGE "SHVTemplateSHV - Win32 (WCE x86) Debug" (based on "Win32 (WCE x86) Application")
+!MESSAGE 
+
+# Begin Project
+# PROP AllowPerConfigDependencies 0
+# PROP Scc_ProjName ""
+# PROP Scc_LocalPath ""
+# PROP ATL_Project 2
+
+!IF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE ARM) Release"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "ARMRel"
+# PROP BASE Intermediate_Dir "ARMRel"
+# PROP BASE CPU_ID "{D6518FFC-710F-11D3-99F2-00105A0DF099}"
+# PROP BASE Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "ARMRel"
+# PROP Intermediate_Dir "ARMRel"
+# PROP CPU_ID "{D6518FFC-710F-11D3-99F2-00105A0DF099}"
+# PROP Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+RSC=rc.exe
+# ADD BASE RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /r
+# ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /r
+CPP=clarm.exe
+# ADD BASE CPP /nologo /W3 /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D "UNICODE" /D "_UNICODE" /D "NDEBUG" /Yu"stdafx.h" /Oxs /M$(CECrtMT) /c
+# ADD CPP /nologo /W3 /I "../../SHVRelPathSHV" /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D "UNICODE" /D "_UNICODE" /D "NDEBUG" /Yu"stdafx.h" /Oxs /M$(CECrtMT) /c
+MTL=midl.exe
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 commctrl.lib coredll.lib aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"$(CENoDefaultLib)" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
+# ADD LINK32 libshiva.lib coredll.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"$(CENoDefaultLib)" /libpath:"..\SHVRelPathWinSHV\shivalib\wince3\ARMRel" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
+
+!ELSEIF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE ARM) Debug"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "ARMDbg"
+# PROP BASE Intermediate_Dir "ARMDbg"
+# PROP BASE CPU_ID "{D6518FFC-710F-11D3-99F2-00105A0DF099}"
+# PROP BASE Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "ARMDbg"
+# PROP Intermediate_Dir "ARMDbg"
+# PROP CPU_ID "{D6518FFC-710F-11D3-99F2-00105A0DF099}"
+# PROP Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+RSC=rc.exe
+# ADD BASE RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /r
+# ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "$(CePlatform)" /d "ARM" /d "_ARM_" /r
+CPP=clarm.exe
+# ADD BASE CPP /nologo /W3 /Zi /Od /D "DEBUG" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "UNICODE" /D "_UNICODE" /Yu"stdafx.h" /M$(CECrtMTDebug) /c
+# ADD CPP /nologo /W3 /Zi /Od /I "../../SHVRelPathSHV" /D "DEBUG" /D "ARM" /D "_ARM_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "UNICODE" /D "_UNICODE" /Yu"stdafx.h" /M$(CECrtMTDebug) /c
+MTL=midl.exe
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 commctrl.lib coredll.lib aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"$(CENoDefaultLib)" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
+# ADD LINK32 libshiva.lib coredll.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"$(CENoDefaultLib)" /libpath:"..\SHVRelPathWinSHV\shivalib\wince3\ARMDbg" /subsystem:$(CESubsystem) /align:"4096" /MACHINE:ARM
+
+!ELSEIF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE x86) Release"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "X86Rel"
+# PROP BASE Intermediate_Dir "X86Rel"
+# PROP BASE CPU_ID "{D6518FF3-710F-11D3-99F2-00105A0DF099}"
+# PROP BASE Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "X86Rel"
+# PROP Intermediate_Dir "X86Rel"
+# PROP CPU_ID "{D6518FF3-710F-11D3-99F2-00105A0DF099}"
+# PROP Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+RSC=rc.exe
+# ADD BASE RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "_i386_" /r
+# ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "NDEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "_i386_" /r
+CPP=cl.exe
+# ADD BASE CPP /nologo /W3 /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "_i386_" /D UNDER_CE=$(CEVersion) /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "NDEBUG" /Yu"stdafx.h" /Gs8192 /GF /Oxs /c
+# ADD CPP /nologo /W3 /I "../../SHVRelPathSHV" /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "_i386_" /D UNDER_CE=$(CEVersion) /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /D "NDEBUG" /Yu"stdafx.h" /Gs8192 /GF /Oxs /c
+MTL=midl.exe
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
+# ADD LINK32 $(CEx86Corelibc) libshiva.lib coredll.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /libpath:"..\SHVRelPathWinSHV\shivalib\wince3\X86Rel" /subsystem:$(CESubsystem) /MACHINE:IX86
+
+!ELSEIF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE x86) Debug"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "X86Dbg"
+# PROP BASE Intermediate_Dir "X86Dbg"
+# PROP BASE CPU_ID "{D6518FF3-710F-11D3-99F2-00105A0DF099}"
+# PROP BASE Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "X86Dbg"
+# PROP Intermediate_Dir "X86Dbg"
+# PROP CPU_ID "{D6518FF3-710F-11D3-99F2-00105A0DF099}"
+# PROP Platform_ID "{8A9A2F80-6887-11D3-842E-005004848CBA}"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+RSC=rc.exe
+# ADD BASE RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "_i386_" /r
+# ADD RSC /l 0x409 /d UNDER_CE=$(CEVersion) /d _WIN32_WCE=$(CEVersion) /d "UNICODE" /d "_UNICODE" /d "DEBUG" /d "$(CePlatform)" /d "_X86_" /d "x86" /d "_i386_" /r
+CPP=cl.exe
+# ADD BASE CPP /nologo /W3 /Zi /Od /D "DEBUG" /D "_i386_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /Yu"stdafx.h" /Gs8192 /GF /c
+# ADD CPP /nologo /W3 /Zi /Od /I "../../SHVRelPathSHV" /D "DEBUG" /D "_i386_" /D UNDER_CE=$(CEVersion) /D _WIN32_WCE=$(CEVersion) /D "$(CePlatform)" /D "i_386_" /D "UNICODE" /D "_UNICODE" /D "_X86_" /D "x86" /Yu"stdafx.h" /Gs8192 /GF /c
+MTL=midl.exe
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 commctrl.lib coredll.lib $(CEx86Corelibc) aygshell.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /subsystem:$(CESubsystem) /MACHINE:IX86
+# ADD LINK32 $(CEx86Corelibc) libshiva.lib coredll.lib /nologo /base:"0x00010000" /stack:0x10000,0x1000 /entry:"WinMainCRTStartup" /debug /nodefaultlib:"OLDNAMES.lib" /nodefaultlib:$(CENoDefaultLib) /libpath:"..\SHVRelPathWinSHV\shivalib\wince3\X86Dbg" /subsystem:$(CESubsystem) /MACHINE:IX86
+
+!ENDIF 
+
+# Begin Target
+
+# Name "SHVTemplateSHV - Win32 (WCE ARM) Release"
+# Name "SHVTemplateSHV - Win32 (WCE ARM) Debug"
+# Name "SHVTemplateSHV - Win32 (WCE x86) Release"
+# Name "SHVTemplateSHV - Win32 (WCE x86) Debug"
+# Begin Group "Source Files"
+
+# PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# Begin Group "src"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\src\main.cpp
+# PROP Exclude_From_Scan -1
+
+!IF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE ARM) Release"
+
+# PROP BASE Exclude_From_Build 1
+DEP_CPP_MAIN_=\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvconsole.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventemitter.h"\
+	"..\..\..\include\framework\shveventqueuelist.h"\
+	"..\..\..\include\framework\shveventstdin.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriber.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shveventsubscriptionlist.h"\
+	"..\..\..\include\framework\shvmainthreadeventdispatcher.h"\
+	"..\..\..\include\framework\shvmodule.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\framework\shvtimer.h"\
+	"..\..\..\include\frameworkimpl\shvconfigimpl.h"\
+	"..\..\..\include\frameworkimpl\shvmaineventqueue.h"\
+	"..\..\..\include\frameworkimpl\shvmainthreadeventdispatcherconsole.h"\
+	"..\..\..\include\frameworkimpl\shvmainthreadeventqueue.h"\
+	"..\..\..\include\frameworkimpl\shvmodulelistimpl.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\shvversion.h"\
+	"..\..\..\include\threadutils\shvmutex.h"\
+	"..\..\..\include\threadutils\shvmutexbase.h"\
+	"..\..\..\include\threadutils\shvthread.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvbufferc.h"\
+	"..\..\..\include\utils\shvbuffercstream.h"\
+	"..\..\..\include\utils\shvdynarray.h"\
+	"..\..\..\include\utils\shvdynarraybase.h"\
+	"..\..\..\include\utils\shvhashtable.h"\
+	"..\..\..\include\utils\shvhashtablebase.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvlist.h"\
+	"..\..\..\include\utils\shvlistbase.h"\
+	"..\..\..\include\utils\shvmathtokenmap.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\..\..\include\utils\shvtime.h"\
+	"..\..\..\include\utils\shvvectorbase.h"\
+	"..\src\shvshvtemplateshv.h"\
+	"..\src\stdafx.h"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	
+
+!ELSEIF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE ARM) Debug"
+
+# PROP BASE Exclude_From_Build 1
+DEP_CPP_MAIN_=\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvconsole.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventemitter.h"\
+	"..\..\..\include\framework\shveventqueuelist.h"\
+	"..\..\..\include\framework\shveventstdin.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriber.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shveventsubscriptionlist.h"\
+	"..\..\..\include\framework\shvmainthreadeventdispatcher.h"\
+	"..\..\..\include\framework\shvmodule.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\framework\shvtimer.h"\
+	"..\..\..\include\frameworkimpl\shvconfigimpl.h"\
+	"..\..\..\include\frameworkimpl\shvmaineventqueue.h"\
+	"..\..\..\include\frameworkimpl\shvmainthreadeventdispatcherconsole.h"\
+	"..\..\..\include\frameworkimpl\shvmainthreadeventqueue.h"\
+	"..\..\..\include\frameworkimpl\shvmodulelistimpl.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\shvversion.h"\
+	"..\..\..\include\threadutils\shvmutex.h"\
+	"..\..\..\include\threadutils\shvmutexbase.h"\
+	"..\..\..\include\threadutils\shvthread.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvbufferc.h"\
+	"..\..\..\include\utils\shvbuffercstream.h"\
+	"..\..\..\include\utils\shvdynarray.h"\
+	"..\..\..\include\utils\shvdynarraybase.h"\
+	"..\..\..\include\utils\shvhashtable.h"\
+	"..\..\..\include\utils\shvhashtablebase.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvlist.h"\
+	"..\..\..\include\utils\shvlistbase.h"\
+	"..\..\..\include\utils\shvmathtokenmap.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\..\..\include\utils\shvtime.h"\
+	"..\..\..\include\utils\shvvectorbase.h"\
+	"..\src\shvshvtemplateshv.h"\
+	"..\src\stdafx.h"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	
+
+!ELSEIF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE x86) Release"
+
+# PROP BASE Exclude_From_Build 1
+DEP_CPP_MAIN_=\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvconsole.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventemitter.h"\
+	"..\..\..\include\framework\shveventqueuelist.h"\
+	"..\..\..\include\framework\shveventstdin.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriber.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shveventsubscriptionlist.h"\
+	"..\..\..\include\framework\shvmainthreadeventdispatcher.h"\
+	"..\..\..\include\framework\shvmodule.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\framework\shvtimer.h"\
+	"..\..\..\include\frameworkimpl\shvconfigimpl.h"\
+	"..\..\..\include\frameworkimpl\shvmaineventqueue.h"\
+	"..\..\..\include\frameworkimpl\shvmainthreadeventdispatcherconsole.h"\
+	"..\..\..\include\frameworkimpl\shvmainthreadeventqueue.h"\
+	"..\..\..\include\frameworkimpl\shvmodulelistimpl.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\shvversion.h"\
+	"..\..\..\include\threadutils\shvmutex.h"\
+	"..\..\..\include\threadutils\shvmutexbase.h"\
+	"..\..\..\include\threadutils\shvthread.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvbufferc.h"\
+	"..\..\..\include\utils\shvbuffercstream.h"\
+	"..\..\..\include\utils\shvdynarray.h"\
+	"..\..\..\include\utils\shvdynarraybase.h"\
+	"..\..\..\include\utils\shvhashtable.h"\
+	"..\..\..\include\utils\shvhashtablebase.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvlist.h"\
+	"..\..\..\include\utils\shvlistbase.h"\
+	"..\..\..\include\utils\shvmathtokenmap.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\..\..\include\utils\shvtime.h"\
+	"..\..\..\include\utils\shvvectorbase.h"\
+	"..\src\shvshvtemplateshv.h"\
+	"..\src\stdafx.h"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	
+
+!ELSEIF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE x86) Debug"
+
+# PROP BASE Exclude_From_Build 1
+DEP_CPP_MAIN_=\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvconsole.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventemitter.h"\
+	"..\..\..\include\framework\shveventqueuelist.h"\
+	"..\..\..\include\framework\shveventstdin.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriber.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shveventsubscriptionlist.h"\
+	"..\..\..\include\framework\shvmainthreadeventdispatcher.h"\
+	"..\..\..\include\framework\shvmodule.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\framework\shvtimer.h"\
+	"..\..\..\include\frameworkimpl\shvconfigimpl.h"\
+	"..\..\..\include\frameworkimpl\shvmaineventqueue.h"\
+	"..\..\..\include\frameworkimpl\shvmainthreadeventdispatcherconsole.h"\
+	"..\..\..\include\frameworkimpl\shvmainthreadeventqueue.h"\
+	"..\..\..\include\frameworkimpl\shvmodulelistimpl.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\shvversion.h"\
+	"..\..\..\include\threadutils\shvmutex.h"\
+	"..\..\..\include\threadutils\shvmutexbase.h"\
+	"..\..\..\include\threadutils\shvthread.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvbufferc.h"\
+	"..\..\..\include\utils\shvbuffercstream.h"\
+	"..\..\..\include\utils\shvdynarray.h"\
+	"..\..\..\include\utils\shvdynarraybase.h"\
+	"..\..\..\include\utils\shvhashtable.h"\
+	"..\..\..\include\utils\shvhashtablebase.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvlist.h"\
+	"..\..\..\include\utils\shvlistbase.h"\
+	"..\..\..\include\utils\shvmathtokenmap.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\..\..\include\utils\shvtime.h"\
+	"..\..\..\include\utils\shvvectorbase.h"\
+	"..\src\shvshvtemplateshv.h"\
+	"..\src\stdafx.h"\
+	{$(INCLUDE)}"aygshell.h"\
+	{$(INCLUDE)}"sipapi.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\shvshvtemplateshv.cpp
+# PROP Exclude_From_Scan -1
+
+!IF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE ARM) Release"
+
+# PROP BASE Exclude_From_Build 1
+DEP_CPP_SHVSH=\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvconsole.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventemitter.h"\
+	"..\..\..\include\framework\shveventstdin.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriber.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shveventsubscriptionlist.h"\
+	"..\..\..\include\framework\shvmodule.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvlist.h"\
+	"..\..\..\include\utils\shvlistbase.h"\
+	"..\..\..\include\utils\shvmathtokenmap.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\src\shvshvtemplateshv.h"\
+	"..\src\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE ARM) Debug"
+
+# PROP BASE Exclude_From_Build 1
+DEP_CPP_SHVSH=\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvconsole.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventemitter.h"\
+	"..\..\..\include\framework\shveventstdin.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriber.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shveventsubscriptionlist.h"\
+	"..\..\..\include\framework\shvmodule.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvlist.h"\
+	"..\..\..\include\utils\shvlistbase.h"\
+	"..\..\..\include\utils\shvmathtokenmap.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\src\shvshvtemplateshv.h"\
+	"..\src\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE x86) Release"
+
+# PROP BASE Exclude_From_Build 1
+DEP_CPP_SHVSH=\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvconsole.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventemitter.h"\
+	"..\..\..\include\framework\shveventstdin.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriber.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shveventsubscriptionlist.h"\
+	"..\..\..\include\framework\shvmodule.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvlist.h"\
+	"..\..\..\include\utils\shvlistbase.h"\
+	"..\..\..\include\utils\shvmathtokenmap.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\src\shvshvtemplateshv.h"\
+	"..\src\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE x86) Debug"
+
+# PROP BASE Exclude_From_Build 1
+DEP_CPP_SHVSH=\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvconsole.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventemitter.h"\
+	"..\..\..\include\framework\shveventstdin.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriber.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shveventsubscriptionlist.h"\
+	"..\..\..\include\framework\shvmodule.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvlist.h"\
+	"..\..\..\include\utils\shvlistbase.h"\
+	"..\..\..\include\utils\shvmathtokenmap.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\src\shvshvtemplateshv.h"\
+	"..\src\stdafx.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# End Group
+# Begin Group "srcforms"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\src\forms\shvformmain.cpp
+# PROP Exclude_From_Scan -1
+
+!IF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE ARM) Release"
+
+# PROP BASE Exclude_From_Build 1
+DEP_CPP_SHVSH=\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvconsole.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventemitter.h"\
+	"..\..\..\include\framework\shveventstdin.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriber.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shveventsubscriptionlist.h"\
+	"..\..\..\include\framework\shvmodule.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvlist.h"\
+	"..\..\..\include\utils\shvlistbase.h"\
+	"..\..\..\include\utils\shvmathtokenmap.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\src\shvshvtemplateshv.h"\
+	"..\src\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE ARM) Debug"
+
+# PROP BASE Exclude_From_Build 1
+DEP_CPP_SHVSH=\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvconsole.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventemitter.h"\
+	"..\..\..\include\framework\shveventstdin.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriber.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shveventsubscriptionlist.h"\
+	"..\..\..\include\framework\shvmodule.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvlist.h"\
+	"..\..\..\include\utils\shvlistbase.h"\
+	"..\..\..\include\utils\shvmathtokenmap.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\src\shvshvtemplateshv.h"\
+	"..\src\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE x86) Release"
+
+# PROP BASE Exclude_From_Build 1
+DEP_CPP_SHVSH=\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvconsole.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventemitter.h"\
+	"..\..\..\include\framework\shveventstdin.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriber.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shveventsubscriptionlist.h"\
+	"..\..\..\include\framework\shvmodule.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvlist.h"\
+	"..\..\..\include\utils\shvlistbase.h"\
+	"..\..\..\include\utils\shvmathtokenmap.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\src\shvshvtemplateshv.h"\
+	"..\src\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE x86) Debug"
+
+# PROP BASE Exclude_From_Build 1
+DEP_CPP_SHVSH=\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvconsole.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventemitter.h"\
+	"..\..\..\include\framework\shveventstdin.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriber.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shveventsubscriptionlist.h"\
+	"..\..\..\include\framework\shvmodule.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvlist.h"\
+	"..\..\..\include\utils\shvlistbase.h"\
+	"..\..\..\include\utils\shvmathtokenmap.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\src\shvshvtemplateshv.h"\
+	"..\src\stdafx.h"\
+	
+
+!ENDIF 
+
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=.\SHVTemplateSHV.rc
+
+!IF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE ARM) Release"
+
+!ELSEIF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE ARM) Debug"
+
+!ELSEIF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE x86) Release"
+
+!ELSEIF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE x86) Debug"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\StdAfx.cpp
+
+!IF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE ARM) Release"
+
+DEP_CPP_STDAF=\
+	".\StdAfx.h"\
+	
+# ADD CPP /Yc"stdafx.h"
+
+!ELSEIF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE ARM) Debug"
+
+DEP_CPP_STDAF=\
+	".\StdAfx.h"\
+	
+# ADD CPP /Yc"stdafx.h"
+
+!ELSEIF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE x86) Release"
+
+DEP_CPP_STDAF=\
+	".\StdAfx.h"\
+	
+# ADD CPP /Yc"stdafx.h"
+
+!ELSEIF  "$(CFG)" == "SHVTemplateSHV - Win32 (WCE x86) Debug"
+
+DEP_CPP_STDAF=\
+	".\StdAfx.h"\
+	
+# ADD CPP /Yc"stdafx.h"
+
+!ENDIF 
+
+# End Source File
+# End Group
+# Begin Group "Header Files"
+
+# PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Group "src No. 1"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\src\shvshvtemplateshv.h
+# PROP Exclude_From_Scan -1
+# PROP BASE Exclude_From_Build 1
+# PROP Exclude_From_Build 1
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=.\newres.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\resource.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\StdAfx.h
+# End Source File
+# End Group
+# Begin Group "Resource Files"
+
+# PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+# Begin Source File
+
+SOURCE=.\SHVTemplateSHV.ico
+# End Source File
+# End Group
+# End Target
+# End Project
