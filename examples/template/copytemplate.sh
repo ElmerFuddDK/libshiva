@@ -9,10 +9,12 @@ fi
 
 unset NameOfApp
 unset TemplateDir
-RelPath="../.."
+unset RelPath
 unset RelPathWin
 unset Template
 RootDir=$(cd "`dirname \"$0\"`" && pwd)
+ShivaDir=$(cd "`dirname \"$0\"`/../../.." && pwd)
+TargetPrefix="$RootDir/.."
 WinNewLines="1"
 
 function Help()
@@ -25,6 +27,7 @@ function Help()
 	echo "  -h|--help|help   This menu"
 	echo "  -l|--list        List available templates"
 	echo "  -n|--nowin       Don't use windows newlines on windows specific files"
+	echo "  -t|--targetdir   Directory to place the project in (default"
 	echo 
 	
 	exit 1
@@ -67,6 +70,11 @@ do
 	{
 		unset WinNewLines
 	} ;;
+	( "--targetdir" | "-t" )
+	{
+		shift
+		TargetPrefix="$1"
+	} ;;
 	( * )
 	{
 		if test -z "$Template"
@@ -83,14 +91,71 @@ do
 	shift
 done
 
+test -n "$TargetPrefix" -a -d "$TargetPrefix" || Error "Target dir does not exist: $TargetPrefix"
+
 test -n "$NameOfApp" || Help
 test -n "$Template" || Help
 
+TargetPrefix="`cd \"$TargetPrefix\" && pwd`"
 TemplateDir="$RootDir/$Template"
-TargetDir="$RootDir/../$nameofapp"
+TargetDir="$TargetPrefix/$nameofapp"
 RelPathWin=$(echo -n "$RelPath" | awk '{gsub(/\//,"\\\\"); print}') # couldn't get sed to replace / with \\ ... but awk rules
 
 test -z "$TemplateDir" && Error "Could not find template dir"
+
+RelPath=$(
+awk 'BEGIN {
+
+	if (ARGC < 3)
+	{
+		Help()
+		exit
+	}
+	
+	p1len=split(TrimSlashes(ARGV[1]),p1,"/")
+	p2len=split(TrimSlashes(ARGV[2]),p2,"/")
+	
+	i=1
+	while (i < p1len && i < p2len && p1[i+1] == p2[i+1])
+	{
+		i++
+	}
+	
+	result=""
+	slash=""
+	
+ 	j=i
+	while (j<p1len)
+	{
+		if (result != "")
+			slash = "/"
+		result = result slash ".."
+		j++
+	}
+	
+	j=i
+	while (j<p2len)
+	{
+		if (result != "")
+			slash = "/"
+		result = result slash p2[j+1]
+		j++
+	}
+	
+	print result
+	exit
+}
+
+function TrimSlashes(s)
+{
+	sub(/\/$/, "", s)
+	return s
+}' "$TargetPrefix" "$ShivaDir"
+)
+
+#echo "$TargetPrefix - $ShivaDir"
+#echo "$RelPath"
+#exit
 
 function Convert()
 {
