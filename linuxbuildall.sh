@@ -161,6 +161,7 @@ Compile "socketserver" "./shivamodulelibs/socketserver/linux/socketserver.pro"
 Compile "xmlstream"    "./shivamodulelibs/xmlstream/linux/xmlstream.pro"
 Compile "shivasqlite"  "./shivasqlite/linux/shivasqlite/shivasqlite.pro"
 Compile "dataengine"   "./shivamodulelibs/dataengine/linux/dataengine.pro"
+Compile "subprocess"   "./shivamodulelibs/subprocess/linux/subprocess.pro"
 
 #Compile ""
 exit 0
