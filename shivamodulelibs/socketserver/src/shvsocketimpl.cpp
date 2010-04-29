@@ -824,6 +824,7 @@ fd_set rfds;
 fd_set wfds;
 fd_set efds;
 int nextFD, retVal;
+SHVSocketImplRef tmpRefToSelf;
 
 	while (GetState() != SHVSocket::StateError && Socket != SHVSocketImpl::InvalidSocket)
 	{
@@ -842,14 +843,16 @@ int nextFD, retVal;
 
 		if (retVal == -1) // ERROR!
 		{
+			tmpRefToSelf = this;
 			Close();
 			SetError();
 			IsPending = true;
+			SocketServer->SocketServerThread.SignalDispatcher(); // signal the socket server thread
 		}
 		else if (FD_ISSET(Socket,&rfds) || FD_ISSET(Socket,&wfds) || FD_ISSET(Socket,&efds))
 		{
-			IsPending = true;
 			ReadThreadSignal.Lock(); // request signal
+			IsPending = true;
 			SocketServer->SocketServerThread.SignalDispatcher(); // signal the socket server thread
 
 			ReadThreadSignal.Lock();
