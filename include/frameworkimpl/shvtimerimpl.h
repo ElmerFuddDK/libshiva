@@ -1,11 +1,11 @@
 #ifndef __SHIVA_FRAMEWORK_TIMERIMPL_H
 #define __SHIVA_FRAMEWORK_TIMERIMPL_H
 
-#include "../../../include/framework/shvtimer.h"
-#include "../../../include/framework/shveventthread.h"
+#include "../../include/framework/shvtimer.h"
+#include "../../include/framework/shveventthread.h"
 
-#include "../../../include/utils/shvlist.h"
-#include "../../../include/utils/shvrefobject.h"
+#include "../../include/utils/shvlist.h"
+#include "../../include/utils/shvrefobject.h"
 
 
 class SHVTimerImpl;
