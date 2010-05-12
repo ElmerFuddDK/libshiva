@@ -772,7 +772,7 @@ time_t ttime2;
 time_t SHVTime::TimeGm(struct tm *t, bool setDst)
 {
 ///\todo Implement support for setting tm_dst and tm_gmtoff on non-linux
-#ifndef __SHIVA_LINUX
+#if !defined(__SHIVA_LINUX) || defined(__SHIVA_NO_TIMEGM)
 time_t retVal;
 short month;
 short year;
