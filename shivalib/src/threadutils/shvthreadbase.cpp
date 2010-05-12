@@ -196,7 +196,7 @@ void** tmpData = (void**)::malloc(sizeof(void*)*3);
 		}
 
 		pthread_attr_setschedpolicy(&attr,SCHED_RR);
-		param.__sched_priority = priority;
+		param.sched_priority = priority;
 		pthread_attr_setschedparam(&attr, &param);
 	}
 
@@ -248,7 +248,7 @@ bool retVal = false;
 		Running = false;
 		retVal = true;
 #else
-		pthread_cancel(ID);
+		pthread_kill(ID,SIGTERM);
 		ThreadHandle = 0;
 		retVal = true;
 #endif
