@@ -137,6 +137,10 @@ void get_random_info(char seed[16])
 #else
 
 #include <unistd.h>
+#ifdef __SHIVA_SYSINFOSYSCALL
+# include <asm/unistd.h>
+# define sysinfo(x) syscall(__NR_sysinfo,x)
+#endif
 
 void get_system_time(uuid_time_t *uuid_time)
 {
