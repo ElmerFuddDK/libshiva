@@ -41,7 +41,7 @@
 # include <charconv.h>
 #else
 # ifdef __SHIVA_USELIBUNICODE
-#  include <unicode.h>
+#  include "../libunicode/unicode.h"
 #  define iconv_open unicode_iconv_open
 #  define iconv unicode_iconv
 #  define iconv_close unicode_iconv_close
