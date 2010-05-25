@@ -1,4 +1,3 @@
-
 // This is the main header for libshiva documentation
 
 #error Do not include doxysource headers - they are for documentation only
@@ -25,12 +24,12 @@ applications that builds upon these classes.\n
 This page will describe how strings work in SHIVA
 
 
-\section tut_string File handling
+\section tut_file File handling
 
 This page will describe how files work in SHIVA
 
 
-\section tut_string Container classes
+\section tut_containers Container classes
 
 This page will describe how containers work in SHIVA
 */

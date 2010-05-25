@@ -15,7 +15,7 @@ The general idea about SHIVA is fine grained modularity. A SHIVA program
 concists of a huge amount of building blocks called modules. These are
 put together to form the actual application. It is the UNIX idea of having
 alot of small entities that each solve a simple task, and solves it well.
-You can then put these blocks together to from a single highly modular and
+You can then put these blocks together to form a single highly modular and
 extendable application.
 \n
 Furthermore the goal of the framework is to achieve the best possible
@@ -32,6 +32,7 @@ Below is a list of sections in this manual:
 - \subpage tutorials
 - \subpage examples
 - \subpage referencemanual
+- \subpage licenses
 
 
 \page shivabasics Shiva basics
@@ -87,7 +88,76 @@ program will start.
 
 \page gettingstarted Getting started
 
-This page will contain a guide to create your very first SHIVA application.
+For the impatient I suggest checking out the \ref tutorials page.\n
+First off a little explanation as to what different parts SHIVA concists of.
+
+\section getstart_sourcestructure Source code structure
+
+- examples\n
+  Contains example projects
+- include\n
+  Contains the public include files for libshiva and the included
+  module libraries:
+  - framework\n
+    The SHIVA application framework (libshiva)
+  - frameworkimpl\n
+    The framework includes needed to implement an actual SHIVA app
+  - gui\n
+    SHIVA gui includes
+  - modules\n
+    Contains includes for each module library
+  - mysql\n
+    Headers for the SHIVA mysql library
+  - platforms\n
+    Platform specific headers included form platformspc.h
+  - sqlite\n
+    Headers for the SHIVA sqlite library
+  - threadutils\n
+    Headers for thread oriented utility classes
+  - utils\n
+    Headers for utility classes
+- shivagui\n
+  Standard implementations of SHIVA gui
+  - gtk\n
+    GTK based SHIVA gui
+  - gui\n
+    Common classes to include in shivagui implementations
+  - utilsimpl\n
+    Common classes to include in shivagui implementations
+  - win32\n
+    Win32 based SHIVA gui
+- shivalib\n
+  Implementation of shivalib. This library is what every SHIVA
+  module lirary or application links against.
+- shivamodulelibs\n
+  Contains implementation of various standard module libraries
+  - dataengine\n
+    Implements a simple data engine that uses shiva sqlite
+  - socketserver\n
+    Implements a TCP/UDP socket system
+  - subprocess\n
+    Implements a method to launch sub processes and stream
+    data to and from them
+  - xmlstream\n
+    Implements an xml reader (using expat) and writer
+- shivamysql\n
+  Interface for a MySQL database
+- shivasqlite\n
+  Includes implementation of sqlite for SHIVA
+
+\section getstart_libshiva libshiva
+
+This is the library that contains the cross platform utility classes, as well
+as the SHIVA framework. It is the main building block of all SHIVA libraries.
+
+\section getstart_shivagui shivagui
+
+The general idea behind SHIVA GUI is that we should utilize the GUI subsystem
+if the different platforms, in order to produce an application that is as true
+as possible to the different platforms.\n
+This is done through wrapping the native controls into control implementers
+that are in turn used by the SHIVA controls. SHIVA then takex over layout
+management, and implements a uniform way of communicating with the controls.
 
 
 \page codingconventions Coding conventions
@@ -105,6 +175,7 @@ In this page we will create a simple console application
 #include "shiva/include/platformspc.h"
 #include "shiva/include/shvversion.h"
 #include "shiva/include/framework/shvmodule.h"
+#include "shiva/include/framework/shvconsole.h"
 #include "shiva/include/framework/shveventstdin.h"
 #include "shiva/include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
 
@@ -131,7 +202,7 @@ SHVMain::SHVMain(SHVModuleList& modules) : SHVModule(modules,"Main")
 // Register
 SHVBool SHVMain::Register()
 {
-	printf("In register\n");
+	SHVConsole::Printf8("In register\n");
 	Modules.EventSubscribe(__EVENT_GLOBAL_STDIN, new SHVEventSubscriber(this));
 	return SHVModule::Register();
 }
@@ -140,8 +211,8 @@ SHVBool SHVMain::Register()
 void SHVMain::PostRegister()
 {
 	SHVModule::PostRegister();
-	printf("Application running\n");
-	printf("You can now write /quit to quit the application\n");
+	SHVConsole::Printf8("Application running\n");
+	SHVConsole::Printf8("You can now write /quit to quit the application\n");
 }
 
 // OnEvent
@@ -157,7 +228,7 @@ void SHVMain::OnEvent(SHVEvent* event)
 		}
 		else
 		{
-			printf("Invalid input : %s\n", str.GetSafeBuffer());
+			SHVConsole::Printf8("Invalid input : %s\n", str.GetSafeBuffer());
 		}
 	}
 }
@@ -168,7 +239,7 @@ int main()
 {
 	if (!SHVModuleList::CheckVersion(__SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE))
 	{
-		fprintf(stderr,"WRONG SHIVA VERSION\n");
+		SHVConsole::ErrPrintf8("WRONG SHIVA VERSION\n");
 	}
 	else
 	{
@@ -197,8 +268,46 @@ This page will contain code samples.
 
 \page referencemanual Reference manual
 
-This page will contain links to reference manuals for the various libs in SHIVA.\n
+Here is a link to reference manuals for the different libraries in SHIVA.\n
 <a class="el" href="libshiva/index.html">lib shiva</a>\n
 <a class="el" href="shivagui/index.html">shiva gui</a>\n
+
+\page licenses SHIVA license, and included software
+
+All parts but the ones listed here are covered by the license at the bottom:\n
+ - SQLite in shivasqlite/src/sqlite
+ - expat in shivamodulelibs/xmlstream/src/expat
+ - UUID generation in shivalib/src/uuid
+ - md5 generation in shivalib/src/md5
+
+\n
+Copyright (C) 2008 by Lars Eriksen and others\n
+\n
+\n
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Library General Public License as
+published by the Free Software Foundation; either version 2 of the
+License, or (at your option) any later version with the following
+exeptions:\n
+\n
+1) Static linking to the library does not constitute derivative work\n
+   and does not require the author to provide source code for the\n
+   application.\n
+   Compiling applications with the source code directly linked in is\n
+   Considered static linking as well.\n
+\n
+2) You do not have to provide a copy of the license with programs\n
+   that are linked against this code.\n
+\n
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.\n
+\n
+You should have received a copy of the GNU Library General Public
+License along with this program; if not, write to the
+Free Software Foundation, Inc.,\n
+59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.\n
+
 
 */
