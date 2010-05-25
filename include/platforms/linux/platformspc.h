@@ -2,6 +2,7 @@
 #include <malloc.h>
 #include <string.h>
 #include <stdio.h>
+#include <limits.h>
 
 # ifdef DEBUG
 #  include <signal.h>
