@@ -147,7 +147,7 @@ SHVSQLiteStatementRef statement;
 long rc;
 
 // Let the magic begin
-	IndexTableName.Format("%s_%d", Alias.GetSafeBuffer(), GetDataSession()->GetFactory()->GetDataEngine().GetModuleList().CreateTag());
+	IndexTableName.Format("%s_%d", Alias.GetSafeBuffer(), (int) GetDataSession()->GetFactory()->GetDataEngine().GetModuleList().CreateTag());
 	for (size_t i = 0; i < Key.Count(); i++)
 	{
 	size_t colIdx;
