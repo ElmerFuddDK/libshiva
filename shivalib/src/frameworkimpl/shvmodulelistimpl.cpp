@@ -87,7 +87,7 @@ SHVBool retVal(false);
  \param argString The string to parse
  \return true if the parameter line got fully parsed. The partial result will still be stored.
  
- Each parameter is a pair of -<name> "value". If no value is given then the parameter
+ Each parameter is a pair of -name "value". If no value is given then the parameter
  is set to NULL. "'s are to be escaped with \.
  \note Config names are always lower cased.
  */
@@ -195,7 +195,7 @@ SHVString param, val;
 }
 
 /*************************************
- * Start
+ * ParseArgs
  *************************************/
 /// Parse a set of arguments from main
 /**
@@ -204,7 +204,7 @@ SHVString param, val;
  \param argv The argument list
  \return true if the parameters got fully parsed. The partial result will still be stored.
  
- Each parameter is a pair of -<name> "value". If no value is given then the parameter
+ Each parameter is a pair of -name "value". If no value is given then the parameter
  is set to NULL.
  \note Config names are always lower cased.
  */
