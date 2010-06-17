@@ -136,10 +136,10 @@ SHVString param, val;
 							escaping = false;
 							switch (c[pos])
 							{
-							case '\\': val += "\\"; break;
-							case 'n':  val += "\n"; break;
-							case '"':  val += "\""; break;
-							case 't':  val += "\t"; break;
+							case '\\': val += _T("\\"); break;
+							case 'n':  val += _T("\n"); break;
+							case '"':  val += _T("\""); break;
+							case 't':  val += _T("\t"); break;
 							default:
 								running = false;
 								break;
@@ -230,13 +230,13 @@ SHVString8 param, val;
 			}
 			else
 			{
-				val = SHVStringC(NULL);
+				val = SHVString8C(NULL);
 			}
 			
 			if (retVal)
 			{
 				param.MakeLower();
-				cfg.Set(param,val);
+				cfg.Set(param.ToStrT(),val.ToStrT());
 			}
 		}
 	}
