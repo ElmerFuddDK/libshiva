@@ -5,9 +5,11 @@
 
 // use this define on windows CE in order to enable the fake console window
 #ifdef __SHIVA_WINCE
-# define CONSOLEMAIN int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
+# define CONSOLEMAIN() int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
+# define CONSOLEPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVStringC(lpCmdLine))
 #else
-# define CONSOLEMAIN int main()
+# define CONSOLEMAIN() int main(int argc, char *argv[])
+# define CONSOLEPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,argc,argv)
 #endif
 
 

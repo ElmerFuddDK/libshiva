@@ -8,12 +8,14 @@ HEADERS += ../../../include/platformspc.h \
            ../../../include/shvtypes.h \
            ../../../include/shvversion.h \
            ../../../include/framework/shvconfig.h \
+           ../../../include/framework/shvconsole.h \
            ../../../include/framework/shveventdata.h \
            ../../../include/framework/shveventemitter.h \
            ../../../include/framework/shvevent.h \
            ../../../include/framework/shveventqueuelist.h \
            ../../../include/framework/shveventstring.h \
            ../../../include/framework/shveventstructs.h \
+           ../../../include/framework/shvgui.h \
            ../../../include/framework/shvmainthreadeventdispatcher.h \
            ../../../include/framework/shvmodulebase.h \
            ../../../include/framework/shvmodulefactory.h \
@@ -74,9 +76,9 @@ HEADERS += ../../../include/platformspc.h \
            ../../../include/utils/shvmd5sum.h \
  ../../../include/utils/shvmathtokenmap.h \
  ../../../include/utils/shvmathtokenhashmap.h \
- ../../../include/threadutils/shvthreadpoolbase.h \
- ../../../include/framework/shvconsole.h
-SOURCES += ../../src/framework/shvevent.cpp \
+ ../../../include/threadutils/shvthreadpoolbase.h
+SOURCES += ../../src/framework/shvconsole.cpp \
+           ../../src/framework/shvevent.cpp \
            ../../src/framework/shveventemitter.cpp \
            ../../src/framework/shveventqueuelist.cpp \
            ../../src/framework/shveventstdin.cpp \
@@ -86,6 +88,7 @@ SOURCES += ../../src/framework/shvevent.cpp \
            ../../src/framework/shveventsubscriberdynamic.cpp \
            ../../src/framework/shveventsubscriptionlist.cpp \
            ../../src/framework/shveventthread.cpp \
+           ../../src/framework/shvgui.cpp \
            ../../src/framework/shvmodule.cpp \
            ../../src/framework/shvmodulelist.cpp \
            ../../src/frameworkimpl/shvconfigimpl.cpp \
@@ -128,8 +131,7 @@ SOURCES += ../../src/framework/shvevent.cpp \
            ../../src/utils/shvmd5sum.cpp \
  ../../src/gui/utils/shvrect.cpp \
  ../../src/utils/shvmathtokenhashmap.cpp \
- ../../src/threadutils/shvthreadpoolbase.cpp \
- ../../src/framework/shvconsole.cpp
+ ../../src/threadutils/shvthreadpoolbase.cpp
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
 TARGET = shiva 
 CONFIG = debug \

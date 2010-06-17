@@ -234,8 +234,8 @@ void SHVMain::OnEvent(SHVEvent* event)
 }
 
 
-// The main function -boots up the application
-int main()
+// The main function - boots up the application
+CONSOLEMAIN()
 {
 	if (!SHVModuleList::CheckVersion(__SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE))
 	{

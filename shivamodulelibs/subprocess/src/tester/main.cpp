@@ -10,9 +10,8 @@
 
 #include "shvsubprocesstester.h"
 
-// The main function -boots up the application
-// Macro exists for windows CE compatibility
-CONSOLEMAIN
+// The main function - boots up the application
+CONSOLEMAIN()
 {
 SHVDll subprocesslib;
 
@@ -30,6 +29,9 @@ SHVDll subprocesslib;
 	SHVMainThreadEventQueue mainqueue(new SHVMainThreadEventDispatcherConsole());
 	// Initialize module factory
 	SHVModuleFactoryPtr factory = (SHVModuleFactory*)subprocesslib.CreateObjectInt(&mainqueue.GetModuleList(),SHVDll::ClassTypeModuleFactory);
+
+		// Parse any command line arguments into default config
+		CONSOLEPARSEARGS(mainqueue.GetModuleList().GetConfig());
 
 		// Resolve default modules from the factory
 		factory->ResolveModules(__MODULESYMBOL_DEFAULTS);

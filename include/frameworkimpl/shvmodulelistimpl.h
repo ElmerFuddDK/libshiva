@@ -33,6 +33,11 @@ public:
 	SHVBool Initialize();
 
 
+	// Parsing command line arguments
+	static SHVBool ParseArgs(SHVConfig& cfg, const SHVStringC argString);
+	static SHVBool ParseArgs(SHVConfig& cfg, int argc, char *argv[]);
+
+
 	// Module management stuff
 	SHVBool Start();
 	void DestroyModules();

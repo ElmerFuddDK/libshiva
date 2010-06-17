@@ -102,7 +102,7 @@ public:
 };
 
 
-int main(int argc, char *argv[])
+CONSOLEMAIN()
 {
 	SHVUNUSED_PARAM(argc);
 	SHVUNUSED_PARAM(argv);
@@ -115,6 +115,8 @@ int main(int argc, char *argv[])
 	{
 	SHVMainThreadEventQueue mainqueue(new SHVMainThreadEventDispatcherGeneric());
 	SHVString testStr;
+
+		CONSOLEPARSEARGS(mainqueue.GetModuleList().GetConfig());
 
 		mainqueue.GetModuleList().AddModule(new SHVTest(mainqueue.GetModuleList()));
 

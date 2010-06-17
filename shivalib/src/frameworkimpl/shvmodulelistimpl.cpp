@@ -79,6 +79,172 @@ SHVBool retVal(false);
 }
 
 /*************************************
+ * ParseArgs
+ *************************************/
+/// Parse an argument string
+/**
+ \param cfg The config to store the parameters in
+ \param argString The string to parse
+ \return true if the parameter line got fully parsed. The partial result will still be stored.
+ 
+ Each parameter is a pair of -<name> "value". If no value is given then the parameter
+ is set to NULL. "'s are to be escaped with \.
+ \note Config names are always lower cased.
+ */
+SHVBool SHVModuleListImpl::ParseArgs(SHVConfig& cfg, const SHVStringC argString)
+{
+SHVBool retVal(SHVBool::True);
+const SHVTChar* c = argString.GetSafeBuffer();
+long pos;
+SHVString param, val;
+
+	while (*c == ' ') c++;
+	while (*c && retVal)
+	{
+		if (*c != '-')
+		{
+			retVal.SetError(SHVBool::False);
+		}
+		else
+		{
+		SHVStringC cStr(++c);
+			pos = cStr.Find(_T(" "));
+			if (pos < 0)
+			{
+				param = cStr;
+				val = SHVStringC(NULL);
+				c += param.GetLength();
+			}
+			else
+			{
+				param = cStr.Mid(0,(size_t)pos);
+				c += param.GetLength();
+				while (*c == ' ') c++;
+
+				if (*c == '"')
+				{
+				SHVStringC cStr(++c);
+				bool escaping = false;
+				bool running = true;
+
+					retVal.SetError(SHVBool::False);
+					val = SHVStringC(NULL);
+					for (pos=0; c[pos] && !retVal && running; pos++)
+					{
+						if (escaping)
+						{
+							escaping = false;
+							switch (c[pos])
+							{
+							case '\\': val += "\\"; break;
+							case 'n':  val += "\n"; break;
+							case '"':  val += "\""; break;
+							case 't':  val += "\t"; break;
+							default:
+								running = false;
+								break;
+							}
+						}
+						else if (c[pos] == '\\')
+						{
+							escaping = true;
+						}
+						else if (c[pos] == '"')
+						{
+							retVal = true;
+						}
+						else
+						{
+							val.AddChars(c+pos,1);
+						}
+					}
+					
+					c += pos;
+				}
+				else if (*c != '-')
+				{
+				SHVStringC cStr(c);
+					pos = cStr.Find(_T(" "));
+					if (pos < 0)
+					{
+						val = cStr;
+						c += val.GetLength();
+					}
+					else
+					{
+						val = cStr.Mid(0,(size_t)pos);
+						c += val.GetLength();
+					}
+				}
+			}
+		}
+		
+		if (param.IsEmpty())
+			retVal.SetError(SHVBool::False);
+		
+		if (retVal)
+		{
+			param.MakeLower();
+			cfg.Set(param,val);
+		}
+		
+		while (*c == ' ') c++;
+	}
+
+	return retVal;
+}
+
+/*************************************
+ * Start
+ *************************************/
+/// Parse a set of arguments from main
+/**
+ \param cfg The config to store the parameters in
+ \param argc The number of args, including the program name
+ \param argv The argument list
+ \return true if the parameters got fully parsed. The partial result will still be stored.
+ 
+ Each parameter is a pair of -<name> "value". If no value is given then the parameter
+ is set to NULL.
+ \note Config names are always lower cased.
+ */
+SHVBool SHVModuleListImpl::ParseArgs(SHVConfig& cfg, int argc, char *argv[])
+{
+SHVBool retVal(SHVBool::True);
+SHVString8 param, val;
+
+	for (int i=1; i<argc && retVal; i++)
+	{
+		if (*argv[i] != '-')
+		{
+			retVal.SetError(SHVBool::False);
+		}
+		else
+		{
+			param = argv[i]+1;
+			
+			if (i+1 < argc && *argv[i+1] != '-')
+			{
+				i++;
+				val = argv[i];
+			}
+			else
+			{
+				val = SHVStringC(NULL);
+			}
+			
+			if (retVal)
+			{
+				param.MakeLower();
+				cfg.Set(param,val);
+			}
+		}
+	}
+
+	return retVal;
+}
+
+/*************************************
  * Start
  *************************************/
 SHVBool SHVModuleListImpl::Start()
