@@ -99,7 +99,6 @@ test -n "$Template" || Help
 TargetPrefix="`cd \"$TargetPrefix\" && pwd`"
 TemplateDir="$RootDir/$Template"
 TargetDir="$TargetPrefix/$nameofapp"
-RelPathWin=$(echo -n "$RelPath" | awk '{gsub(/\//,"\\\\"); print}') # couldn't get sed to replace / with \\ ... but awk rules
 
 test -z "$TemplateDir" && Error "Could not find template dir"
 
@@ -152,6 +151,7 @@ function TrimSlashes(s)
 	return s
 }' "$TargetPrefix" "$ShivaDir"
 )
+RelPathWin=$(echo -n "$RelPath" | awk '{gsub(/\//,"\\\\"); print}') # couldn't get sed to replace / with \\ ... but awk rules
 
 #echo "$TargetPrefix - $ShivaDir"
 #echo "$RelPath"
