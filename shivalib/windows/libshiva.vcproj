@@ -463,6 +463,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\framework\shvgui.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\framework\shvmodule.cpp"
 					>
 				</File>
@@ -853,6 +857,10 @@
 					</File>
 					<File
 						RelativePath="..\..\include\framework\shveventthread.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\framework\shvgui.h"
 						>
 					</File>
 					<File
