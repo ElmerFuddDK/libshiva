@@ -137,7 +137,10 @@ SHVMainThreadEventDispatcherConsole::~SHVMainThreadEventDispatcherConsole()
 #elif defined(__SHIVA_WIN32)
 	if (Initializing)
 	{
-		::CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
+		if (QuirksMode)
+			::FreeConsole();
+		else
+			::CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
 		for (int i=10;StdinThread.IsRunning();i+=10)
 			SHVThreadBase::Sleep(i);
 	}
@@ -314,7 +317,10 @@ MSG msg;
 	}
 
 #if defined(__SHIVA_WIN32) && !defined(__SHIVA_WINCE)
-	::CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
+	if (QuirksMode)
+		::FreeConsole();
+	else
+		::CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
 	for (int i=10;StdinThread.IsRunning();i+=10)
 		SHVThreadBase::Sleep(i);
 #endif
@@ -773,7 +779,7 @@ int retVal;
 		}
 
 		if (QuirksMode)
-			retVal = (int)fread(readBuf->GetBuffer()+bufReadPos, 1, StdinBufSize-bufReadPos, stdin);
+			retVal = (int)fread(readBuf->GetBuffer()+bufReadPos, 1, 1 /*StdinBufSize-bufReadPos*/, stdin);
 		else
 			retVal = _read(0,readBuf->GetBuffer()+bufReadPos, (unsigned int)StdinBufSize-bufReadPos);
 		
