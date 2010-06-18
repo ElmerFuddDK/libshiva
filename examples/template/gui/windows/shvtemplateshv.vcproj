@@ -278,7 +278,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Copying libshiva.dll"
-					CommandLine="xcopy /D &quot;..\SHVRelPathWinSHV\shivalib\windows\$(ConfigurationName)\libshiva.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
+					CommandLine="xcopy /D /Y &quot;..\SHVRelPathWinSHV\shivalib\windows\$(ConfigurationName)\libshiva.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
 					Outputs="libshiva.dll"
 				/>
 			</FileConfiguration>
@@ -288,7 +288,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Copying libshiva.dll"
-					CommandLine="xcopy /D &quot;..\SHVRelPathWinSHV\shivalib\windows\$(ConfigurationName)\libshiva.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
+					CommandLine="xcopy /D /Y &quot;..\SHVRelPathWinSHV\shivalib\windows\$(ConfigurationName)\libshiva.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
 					Outputs="libshiva.dll"
 				/>
 			</FileConfiguration>
@@ -302,7 +302,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Copying shivaguiwin32.dll"
-					CommandLine="xcopy /D &quot;..\SHVRelPathWinSHV\shivagui\win32\windows\$(ConfigurationName)\shivaguiwin32.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
+					CommandLine="xcopy /D /Y &quot;..\SHVRelPathWinSHV\shivagui\win32\windows\$(ConfigurationName)\shivaguiwin32.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
 					Outputs="shivaguiwin32.dll"
 				/>
 			</FileConfiguration>
@@ -312,7 +312,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Copying shivaguiwin32.dll"
-					CommandLine="xcopy /D &quot;..\SHVRelPathWinSHV\shivagui\win32\windows\$(ConfigurationName)\shivaguiwin32.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
+					CommandLine="xcopy /D /Y &quot;..\SHVRelPathWinSHV\shivagui\win32\windows\$(ConfigurationName)\shivaguiwin32.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
 					Outputs="shivaguiwin32.dll"
 				/>
 			</FileConfiguration>
