@@ -255,10 +255,17 @@ void SHVControlImplementerEditMultiGtk::SetSelection(SHVControlEdit* owner, int 
 	{
 	GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW (TextView));
 	GtkTextIter start, end;
+	GtkTextMark* mark;
 	gdouble align;
 	gboolean doalign = FALSE;
-	
+
+		if ((mark = gtk_text_buffer_get_mark(buffer,"scrollmark")))
+		{
+			gtk_text_buffer_delete_mark(buffer, mark);
+			mark = NULL;
+		}
 		gtk_text_buffer_get_iter_at_offset(buffer, &end, pos);
+		mark = gtk_text_buffer_create_mark(buffer, "scrollmark", &end, TRUE);
 		
 		if (selectFrom.IsNull())
 			gtk_text_buffer_get_iter_at_offset(buffer, &start, pos);
@@ -276,8 +283,8 @@ void SHVControlImplementerEditMultiGtk::SetSelection(SHVControlEdit* owner, int 
 			align = 1.0;
 		}
 
-		if (gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW (TextView), &end, 0.0, doalign, 0.0, align))
-			gtk_text_buffer_select_range(buffer, &start, &end);
+		gtk_text_view_scroll_to_mark(GTK_TEXT_VIEW (TextView), mark, 0.0, doalign, 0.0, align);
+		gtk_text_buffer_select_range(buffer, &start, &end);
 	}
 }
 
