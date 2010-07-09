@@ -70,7 +70,7 @@ public:
 			else
 			if (str == SHVString8C("/insert"))
 			{			
-			SHVDataRowListRef rowList = DataSession->GetRows("testtable", _T(""), 0);
+			SHVDataRowListRef rowList = DataSession->GetRows("testtable", _S(""), 0);
 			SHVDataRowRef row;
 				if (rowList.IsNull())
 				{
@@ -104,7 +104,7 @@ public:
 			else
 			if (str == SHVString8C("/select"))
 			{
-			SHVDataRowListCRef rows = DataSession->GetRows("testtable", _T(""), 0);
+			SHVDataRowListCRef rows = DataSession->GetRows("testtable", _S(""), 0);
 				if (rows.IsNull())
 				{
 					printf("Verdamnt\n");
@@ -147,7 +147,7 @@ SHVDll dataenginelib;
 	{
 		fprintf(stderr,"WRONG SHIVA VERSION\n");
 	}
-	else if (!dataenginelib.Load(dataenginelib.CreateLibFileName(_T("dataengine"))))
+	else if (!dataenginelib.Load(dataenginelib.CreateLibFileName(_S("dataengine"))))
 	{
 		fprintf(stderr,"Could not load dataengine\n");
 	}

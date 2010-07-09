@@ -8,11 +8,6 @@
 #endif
 
 // Typedefs and forward declares
-#ifdef __SHIVA_WIN32
-# define SHVWChar wchar_t
-#else
-# define SHVWChar short
-#endif
 class SHVString8C;
 class SHVString8;
 class SHVString8CRef;
@@ -23,14 +18,17 @@ typedef SHVString8C  SHVStringC;
 typedef SHVString8   SHVString;
 typedef SHVString8CRef SHVStringCRef;
 typedef SHVStringBuffer8 SHVStringBuffer;
-# define _SHVS8(x)  x
+# define _SHVS8(x)  SHVStringC(x)
 # ifndef __SHVSTRING_EXCLUDE_UNICODE
 #  define _SHVS16(x) SHVStringC(x).ToStr16()
 # endif
 ///\cond INTERNAL
-# if !defined(_T)
-#  define _T(x) x
+# ifdef _T
+#  undef _T
 # endif
+# define _S(x)  x
+# define _SD(x) x
+# define _T(x)  x
 # define _TD(x) x
 ///\endcond
 #endif

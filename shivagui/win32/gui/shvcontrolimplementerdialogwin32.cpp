@@ -46,7 +46,7 @@
 
 
 #define SHVWIN32CLASS_DIALOG _T("SHV_Dialog")
-#define SHVWIN32ATOM_DIALOG _T("shv_dialogatom")
+#define SHVWIN32ATOM_DIALOG _S("shv_dialogatom")
 
 //=========================================================================================================
 // SHVControlImplementerDialogWin32
@@ -257,7 +257,7 @@ void SHVControlImplementerDialogWin32::SetTitle(SHVControlContainer* owner, cons
 {
 	SHVASSERT(IsCreated());
 
-	SetWindowText(GetHandle(),title.GetSafeBuffer());
+	SetWindowText(GetHandle(),(const TCHAR*)title.GetSafeBuffer());
 }
 
 /*************************************

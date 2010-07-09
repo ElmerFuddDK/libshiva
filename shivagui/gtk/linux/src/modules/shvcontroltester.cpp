@@ -76,7 +76,7 @@ SHVEventSubscriberBaseRef subsOnDrawContainer = new SHVEventSubscriberFunc<SHVCo
 SHVFontRef ownerDrawFont = GUIManager->GetFont(SHVGUIManager::CfgFontNormal)->CreateCopy(250);
 
 	
-	GUIManager->GetMainWindow()->SetTitle(_T("SHIVA GUI test application"));
+	GUIManager->GetMainWindow()->SetTitle(_S("SHIVA GUI test application"));
 	GUIManager->GetMainWindow()->SetMinimumSize(200,115);
 	GUIManager->GetMainWindow()->SetLayoutEngine(new SHVControlLayoutCallback<SHVControlTester>(this,&SHVControlTester::OnResizeContainer));
 
@@ -87,10 +87,10 @@ SHVFontRef ownerDrawFont = GUIManager->GetFont(SHVGUIManager::CfgFontNormal)->Cr
 
 	Container->SetLayoutEngine(new SHVControlLayoutCallback<SHVControlTester>(this,&SHVControlTester::OnResizeControls));
 
-	Label = GUIManager->NewLabel()->SetParent(Container)->SetText(_T("Label text"));
-	LabelCustomDraw = GUIManager->NewLabelCustomDraw(subsOnDrawLabel)->SetParent(Container)->SetText(_T(""));
-	EditBox = GUIManager->NewEdit(SHVControlEdit::SubTypeMultiLine)->SetParent(Container)->SetText(_T("Edit\ntext"))->SetLimit(50);
-	Button = GUIManager->NewButton()->SetParent(Container)->SetText(_T("Click Me!"));
+	Label = GUIManager->NewLabel()->SetParent(Container)->SetText(_S("Label text"));
+	LabelCustomDraw = GUIManager->NewLabelCustomDraw(subsOnDrawLabel)->SetParent(Container)->SetText(_S(""));
+	EditBox = GUIManager->NewEdit(SHVControlEdit::SubTypeMultiLine)->SetParent(Container)->SetText(_S("Edit\ntext"))->SetLimit(50);
+	Button = GUIManager->NewButton()->SetParent(Container)->SetText(_S("Click Me!"));
 
 
 	LabelCustomDraw->SetFont(ownerDrawFont,true);
@@ -121,10 +121,10 @@ void SHVControlTester::Unregister()
 void SHVControlTester::OnEvent(SHVEvent* event)
 {
 	//::MessageBox(NULL,_T("Noget"),_T("Knap"),MB_OK);
-	GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"),_T("Knap"));
-	GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"));
-	GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"),_T("Knap"));
-	GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"));
+	GUIManager->ShowMessageBox(_S("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"),_S("Knap"));
+	GUIManager->ShowMessageBox(_S("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"));
+	GUIManager->ShowMessageBox(_S("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"),_S("Knap"));
+	GUIManager->ShowMessageBox(_S("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"));
 	GUIManager->GetMainWindow()->SetColor(GUIManager->CreateColor(0x99,0x66,0x66));
 }
 
@@ -153,7 +153,7 @@ SHVDrawRef draw = SHVDraw::FromDrawEvent(event);
 SHVControlRef control = (SHVControl*)event->GetObject();
 SHVRect rct = draw->GetClientRect(control);
 
-	draw->DrawText(_T("These are not the droids you are looking for"),
+	draw->DrawText(_S("These are not the droids you are looking for"),
 		rct,
 		NULL,
 		SHVDraw::TextSingleLine|SHVDraw::TextHCenter|SHVDraw::TextVCenter|SHVDraw::TextEndEllipsis);

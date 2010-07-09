@@ -56,7 +56,7 @@ SHVMenuRef toplevelmenu, menu;
 
 	SetStandardLayoutEngine();
 
-	GetContainer()->SetTitle(_T("Tab test dialog"));
+	GetContainer()->SetTitle(_S("Tab test dialog"));
 
 	GetContainer()->SetMinimumSize(230,185);
 
@@ -65,12 +65,12 @@ SHVMenuRef toplevelmenu, menu;
 
 	toplevelmenu = GetContainer()->CreateMenu(new SHVEventSubscriber(this,&GetManager()->GetModuleList()));
 
-	menu = toplevelmenu->AddSubMenu(_T("Dialog"));
-	menu->AddStringItem(1,_T("Close"));
-	menu->AddStringItem(2,_T("Add tab"));
-	menu->AddStringItem(3,_T("Remove tab"));
+	menu = toplevelmenu->AddSubMenu(_S("Dialog"));
+	menu->AddStringItem(1,_S("Close"));
+	menu->AddStringItem(2,_S("Add tab"));
+	menu->AddStringItem(3,_S("Remove tab"));
 	menu->AddSeparator();
-	menu->AddStringItem(4,_T("Change color"));
+	menu->AddStringItem(4,_S("Change color"));
 	toplevelmenu->Show();
 
 	GetContainer()->ResizeControls();
@@ -118,7 +118,7 @@ void SHVFormTabTest::OnEvent(SHVEvent* event)
 				SHVControlContainer* cnt;
 				SHVFormBase* form;
 
-					str.Format(_T("Tab %d"), tbTabs->GetPageCount()+1);
+					str.Format(_S("Tab %d"), tbTabs->GetPageCount()+1);
 					cnt = tbTabs->AddPage(str);
 					tbTabs->SetPageForm(tbTabs->GetPageCount()-1, form = new SHVFormTabTestPage(GetManager(),cnt,str));
 
@@ -139,7 +139,7 @@ void SHVFormTabTest::OnEvent(SHVEvent* event)
 	{
 		if (SHVEvent::Equals(event,SHVControlTab::EventSelectedPageChanged))
 		{
-			SHVTRACE(_T("Tab number %d selected\n"), (int)event->GetSubID());
+			SHVTRACE(_S("Tab number %d selected\n"), (int)event->GetSubID());
 		}
 	}
 }

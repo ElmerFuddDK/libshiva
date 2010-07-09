@@ -92,7 +92,7 @@ SHVInt SHVModuleFactoryXmlStream::GetBuild()
  *************************************/
 SHVStringBuffer SHVModuleFactoryXmlStream::GetDescription()
 {
-SHVString retVal(_T("Module library for XmlStream"));
+SHVString retVal(_S("Module library for XmlStream"));
 	return retVal.ReleaseBuffer();
 }
 
@@ -101,7 +101,7 @@ SHVString retVal(_T("Module library for XmlStream"));
  *************************************/
 SHVStringBuffer SHVModuleFactoryXmlStream::GetName()
 {
-SHVString retVal(_T("XmlStream"));
+SHVString retVal(_S("XmlStream"));
 	return retVal.ReleaseBuffer();
 }
 

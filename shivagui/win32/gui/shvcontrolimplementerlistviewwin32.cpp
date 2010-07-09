@@ -130,7 +130,7 @@ size_t result = 0;
 		retVal.SetBufferSize(len);
 
 		item.cchTextMax = (int)len;
-		item.pszText = retVal.GetBuffer();
+		item.pszText = (TCHAR*)retVal.GetBuffer();
 		result  = (size_t)::SendMessage(GetHandle(), LVM_GETITEMTEXT, index, (LPARAM)&item);
 
 	}

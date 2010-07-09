@@ -74,11 +74,11 @@ long i;
 	// Set up application path and name
 	moduleFileName.SetBufferSize(_MAX_PATH);
 
-	SHVVERIFY(::GetModuleFileName(NULL,moduleFileName.GetBuffer(),_MAX_PATH));
+	SHVVERIFY(::GetModuleFileName(NULL,(TCHAR*)moduleFileName.GetBuffer(),_MAX_PATH));
 	appPath = SHVDir::ExtractPath(moduleFileName);
 	appName = SHVDir::ExtractName(moduleFileName);
 
-	i = appName.ReverseFind(_T("."));
+	i = appName.ReverseFind(_S("."));
 
 	if (i > 0)
 		appName[i] = 0;
@@ -206,7 +206,7 @@ void SHVMainThreadEventDispatcherWin32::StopEventLoop(SHVBool errors)
 	if (!errors) // errors during startup
 	{
 	SHVString errStr = Queue->GetModuleList().GetStartupErrors();
-		MessageBox(NULL,errStr.GetSafeBuffer(),_T("Registering failed:"),MB_ICONERROR);
+		MessageBox(NULL,(const TCHAR*)errStr.GetSafeBuffer(),_T("Registering failed:"),MB_ICONERROR);
 	}
 		
 	::PostMessage(Win32::GetHandle(MainWindow),WM_DESTROY,0,0);

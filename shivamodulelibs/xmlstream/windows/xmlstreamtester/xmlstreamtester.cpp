@@ -83,13 +83,13 @@ public:
 
 SHVString GetAppPath()
 {
-TCHAR szBuffer[_MAX_PATH];
+SHVTChar szBuffer[_MAX_PATH];
 SHVString apppath(szBuffer);
 SHVString path;
-	::GetModuleFileName(NULL, szBuffer, _MAX_PATH);
+	::GetModuleFileName(NULL, (TCHAR*)szBuffer, _MAX_PATH);
 	apppath = szBuffer;
-	path = apppath.Left(apppath.ReverseFind(_T("\\")));
-	path += _T("\\");
+	path = apppath.Left(apppath.ReverseFind(_S("\\")));
+	path += _S("\\");
 	return path;
 }
 class SHVTestLoggerConsole : public SHVLogger
@@ -99,7 +99,7 @@ class SHVTestLoggerConsole : public SHVLogger
 	SHVStringC sSuccess;
 	SHVStringC sFailure;
 public:
-	SHVTestLoggerConsole() : sTrue(_T("true")), sFalse(_T("false")), sSuccess(_T("\033[32msucceeded\033[0m")), sFailure(_T("\033[31mFAILED\033[0m")) {}
+	SHVTestLoggerConsole() : sTrue(_S("true")), sFalse(_S("false")), sSuccess(_S("\033[32msucceeded\033[0m")), sFailure(_S("\033[31mFAILED\033[0m")) {}
 	virtual void AddTitle(const SHVStringC& str)   { _tprintf(_T("\n\n%s:\n------------------------------------------\n"), str.GetSafeBuffer()); }
 	virtual void AddHeader(const SHVStringC& str)  { _tprintf(_T("\n%s\n"), str.GetSafeBuffer()); }
 	virtual void AddHeader(const SHVTChar* s, ...) { SHVString str; SHVVA_LIST args; SHVVA_START(args, s); str.FormatList(s,args); AddHeader(str); SHVVA_END(args); }
@@ -124,16 +124,16 @@ SHVBool retVal;
 	{
 		if (argv[i][0] == '-' && argv[i][1] != '\0' && i+1 < argc)
 		{
-			mainqueue.GetModuleList().GetConfig().Set(SHVStringC(argv[i]+1), SHVStringC(argv[i+1]));
+			mainqueue.GetModuleList().GetConfig().Set(SHVStringC((const SHVTChar*)(argv[i]+1)), SHVStringC((const SHVTChar*)(argv[i+1])));
 			i++;
 		}
 	}
 
-	mainqueue.GetModuleList().GetConfig().Set(_T("applicationpath"), GetAppPath());
+	mainqueue.GetModuleList().GetConfig().Set(_S("applicationpath"), GetAppPath());
 	mainqueue.GetModuleList().AddModule(new SHVTestDone(mainqueue.GetModuleList()));
 	mainqueue.GetModuleList().AddModule(new SHVTestServer(mainqueue.GetModuleList(),logger));
 	mainqueue.GetModuleList().AddModule(new SHVXmlStreamTester(mainqueue.GetModuleList()));
-	if (!dll.Load(dll.CreateLibFileName(_T("XmlStream"))))
+	if (!dll.Load(dll.CreateLibFileName(_S("XmlStream"))))
 	{
 		_putts(_T("Could not load XmlStream"));
 		return 1;

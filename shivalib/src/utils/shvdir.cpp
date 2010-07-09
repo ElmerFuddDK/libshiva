@@ -60,11 +60,11 @@
 const SHVStringC SHVDir::Delimiter()
 {
 #ifdef __SHIVA_WIN32
-	return _T("\\");
+	return _S("\\");
 #elif defined(__SHIVA_EPOC)
-	return _T("\\");
+	return _S("\\");
 #else
-	return _T("/");
+	return _S("/");
 #endif
 }
 
@@ -74,11 +74,11 @@ const SHVStringC SHVDir::Delimiter()
 const SHVStringC SHVDir::WildcardAll()
 {
 #ifdef __SHIVA_WIN32
-	return _T("*.*");
+	return _S("*.*");
 #elif defined(__SHIVA_EPOC)
-	return _T("*.*");
+	return _S("*.*");
 #else
-	return _T("*");
+	return _S("*");
 #endif
 }
 
@@ -138,15 +138,15 @@ SHVStringC wc(wildcard.GetBufferConst());
 	dirs.RemoveAll();
 	files.RemoveAll();
 
-	fileName.Format(_T("%s%s%s"),
+	fileName.Format(_S("%s%s%s"),
 		path.GetSafeBuffer(),
-		path.Right(1) == Delimiter() ? _T("") : Delimiter().GetSafeBuffer(),
+		path.Right(1) == Delimiter() ? _S("") : Delimiter().GetSafeBuffer(),
 		wc.GetSafeBuffer());
 
 #if defined(__SHIVA_WIN32)
 WIN32_FIND_DATA lpData;
 int num;
-HANDLE handle = ::FindFirstFile(fileName.GetSafeBuffer(), &lpData);
+HANDLE handle = ::FindFirstFile((const TCHAR*)fileName.GetSafeBuffer(), &lpData);
 
 	num = lpData.dwFileAttributes;	// what we're doing here is isolating the bit
 	num >>= 4;						// that tells us if the handle points to a 
@@ -155,9 +155,9 @@ HANDLE handle = ::FindFirstFile(fileName.GetSafeBuffer(), &lpData);
 	if(handle != INVALID_HANDLE_VALUE)
 	{
 		if(num != 1)
-			files.AddTail(lpData.cFileName);
-		else if (SHVStringC(_T(".")).Compare(lpData.cFileName))
-			dirs.AddTail(lpData.cFileName);
+			files.AddTail((SHVTChar*)lpData.cFileName);
+		else if (SHVStringC(_S(".")).Compare((SHVTChar*)lpData.cFileName))
+			dirs.AddTail((SHVTChar*)lpData.cFileName);
 	}
 
 	while(handle != INVALID_HANDLE_VALUE)
@@ -169,9 +169,9 @@ HANDLE handle = ::FindFirstFile(fileName.GetSafeBuffer(), &lpData);
 			num &= 0x00000001;				// directory
 
 			if(num != 1)
-				files.AddTail(lpData.cFileName);
-			else if (SHVStringC(_T("..")).Compare(lpData.cFileName))
-				dirs.AddTail(lpData.cFileName);
+				files.AddTail((SHVTChar*)lpData.cFileName);
+			else if (SHVStringC(_S("..")).Compare((SHVTChar*)lpData.cFileName))
+				dirs.AddTail((SHVTChar*)lpData.cFileName);
 		}
 		else
 			break;
@@ -203,9 +203,9 @@ struct dirent *ep;
 SHVString dirName;
 struct stat fStat;
 
-	dirName.Format(_T("%s%s"),
+	dirName.Format(_S("%s%s"),
 		path.GetSafeBuffer(),
-		path.Right(1) == Delimiter() ? _T("") : Delimiter().GetSafeBuffer());
+		path.Right(1) == Delimiter() ? _S("") : Delimiter().GetSafeBuffer());
 
 	dp = opendir(dirName.GetSafeBuffer());
 	if(dp != NULL)
@@ -274,7 +274,7 @@ SHVBool retVal;
 	else
 	{
 #ifdef __SHIVA_WIN32
-		retVal = (::MoveFile(from.GetSafeBuffer(),to.GetSafeBuffer()) ? SHVBool::True : SHVBool::False);
+		retVal = (::MoveFile((const TCHAR*)from.GetSafeBuffer(),(const TCHAR*)to.GetSafeBuffer()) ? SHVBool::True : SHVBool::False);
 
 #elif defined __SHIVA_EPOC
 	RFs fs;
@@ -307,7 +307,7 @@ SHVBool retVal;
 	else
 	{
 #ifdef __SHIVA_WIN32
-		retVal = (::CopyFile(from.GetSafeBuffer(),to.GetSafeBuffer(),TRUE) ? SHVBool::True : SHVBool::False);
+		retVal = (::CopyFile((const TCHAR*)from.GetSafeBuffer(),(const TCHAR*)to.GetSafeBuffer(),TRUE) ? SHVBool::True : SHVBool::False);
 #else
 	SHVFileBase filefrom,fileto;
 	bool ok = true;
@@ -347,7 +347,7 @@ SHVBool retVal;
 		if (dirName.Right(1) == Delimiter())
 			retVal = SHVDir::CreateDir(dirName.Left(dirName.GetLength()-1));
 		else
-			retVal = (::CreateDirectory(dirName.GetSafeBuffer(),NULL) ? SHVBool::True :  SHVBool::False);
+			retVal = (::CreateDirectory((const TCHAR*)dirName.GetSafeBuffer(),NULL) ? SHVBool::True :  SHVBool::False);
 #elif defined __SHIVA_EPOC
 # ifdef UNICODE
 		retVal = (wmkdir((wchar_t*)(WCHAR*)dirName.GetSafeBuffer(),448) == 0);
@@ -384,7 +384,7 @@ SHVBool SHVDir::GetModifyTime(const SHVStringC fileName, SHVTime& stamp)
 SHVBool retVal(SHVBool::False);
 #ifdef __SHIVA_WIN32
 HANDLE f;
-	if ((f = CreateFile(fileName.GetSafeBuffer(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL)))
+	if ((f = CreateFile((const TCHAR*)fileName.GetSafeBuffer(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL)))
 	{
 	FILETIME aTime;
 
@@ -442,9 +442,9 @@ SHVBool retVal;
 	else
 	{
 #ifdef __SHIVA_WINCE
-		retVal = (::DeleteFile(fileName.GetSafeBuffer()) ? SHVBool::False : SHVBool::True);
+		retVal = (::DeleteFile((const TCHAR*)fileName.GetSafeBuffer()) ? SHVBool::False : SHVBool::True);
 #elif defined(UNICODE)
-		retVal = (wremove(fileName.GetSafeBuffer()) ? SHVBool::False : SHVBool::True);
+		retVal = (wremove((const TCHAR*)fileName.GetSafeBuffer()) ? SHVBool::False : SHVBool::True);
 #else
 		retVal = (remove(fileName.GetSafeBuffer()) ? SHVBool::False : SHVBool::True);
 #endif
@@ -510,14 +510,14 @@ SHVString path = SHVDir::ExtractPath(fileName);
 	info.cbSize = sizeof(SHELLEXECUTEINFO);
 	info.fMask  = SEE_MASK_NOCLOSEPROCESS;
 	info.lpVerb = _T("open");
-	info.lpFile = fileName.GetSafeBuffer();
-	info.lpDirectory = path.GetSafeBuffer();
+	info.lpFile = (const TCHAR*)fileName.GetSafeBuffer();
+	info.lpDirectory = (const TCHAR*)path.GetSafeBuffer();
 	info.nShow = SW_SHOWNORMAL;
 	ShellExecuteEx(&info);
 
 #elif defined(__SHIVA_LINUX)
 SHVString execstr;
-	execstr.Format(_T("xdg-open \"%s\" &"), fileName.GetSafeBuffer());
+	execstr.Format(_S("xdg-open \"%s\" &"), fileName.GetSafeBuffer());
 	::system(execstr.GetSafeBuffer());
 #elif defined(__SHIVA_EPOC)
 	///\todo Implement SHVDir::ExecuteFile for symbian
@@ -552,7 +552,7 @@ long pos = fileName.ReverseFind(SHVDir::Delimiter());
  */
 SHVStringBuffer SHVDir::ExtractExtension(const SHVStringC fileName)
 {
-long pos = fileName.ReverseFind(_T("."));
+long pos = fileName.ReverseFind(_S("."));
 	return (pos >= 0 ? fileName.Mid(pos+1) : SHVString(fileName).ReleaseBuffer());
 }
 
@@ -582,15 +582,15 @@ SHELLEXECUTEINFO info;
 	
 	memset(&info, 0, sizeof(SHELLEXECUTEINFO));
 	info.cbSize = sizeof(SHELLEXECUTEINFO);
-	info.lpFile = program.GetSafeBuffer();
-	info.lpParameters = args.GetSafeBuffer();
+	info.lpFile = (const TCHAR*)program.GetSafeBuffer();
+	info.lpParameters = (const TCHAR*)args.GetSafeBuffer();
 	info.nShow = SW_SHOWNORMAL;
 	ShellExecuteEx(&info);
 #elif defined(__SHIVA_EPOC)
 	///\todo Implement SHVDir::Execute for symbian
 #else
 SHVString execstr;
-	execstr.Format(_T("%s %s &"), program.GetSafeBuffer(), args.GetSafeBuffer());
+	execstr.Format(_S("%s %s &"), program.GetSafeBuffer(), args.GetSafeBuffer());
 	::system(execstr.GetSafeBuffer());
 #endif
 }
@@ -610,13 +610,13 @@ SHVFileListIterator itr(args);
 		if (arg.IsNull())
 			arg = itr.Get();
 		else
-			arg += _T(" ") + itr.Get();
+			arg += _S(" ") + itr.Get();
 	}
 
 	memset(&info, 0, sizeof(SHELLEXECUTEINFO));
 	info.cbSize = sizeof(SHELLEXECUTEINFO);
-	info.lpFile = program.GetSafeBuffer();
-	info.lpParameters = arg.GetSafeBuffer();
+	info.lpFile = (const TCHAR*)program.GetSafeBuffer();
+	info.lpParameters = (const TCHAR*)arg.GetSafeBuffer();
 	info.nShow = SW_SHOWNORMAL;
 	ShellExecuteEx(&info);
 #elif defined(__SHIVA_EPOC)
@@ -631,10 +631,10 @@ SHVFileListIterator itr(args);
 		if (arg.IsNull())
 			arg = itr.Get();
 		else
-			arg += _T(" ") + itr.Get();
+			arg += _S(" ") + itr.Get();
 	}
 
-	execstr.Format(_T("%s %s &"), program.GetSafeBuffer(), arg.GetSafeBuffer());
+	execstr.Format(_S("%s %s &"), program.GetSafeBuffer(), arg.GetSafeBuffer());
 	::system(execstr.GetSafeBuffer());
 #endif
 }

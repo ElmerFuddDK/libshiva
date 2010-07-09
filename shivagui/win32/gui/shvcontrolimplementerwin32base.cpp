@@ -237,9 +237,9 @@ void SHVControlImplementerWin32Base::SetText(const SHVStringC& text)
 	SHVASSERT(IsCreated());
 
 	if (Win32::CheckForNewlines(text))
-		SetWindowText(GetHandle(),Win32::ConvertNewlinesC(text.GetSafeBuffer()).GetSafeBuffer());
+		SetWindowText(GetHandle(),(const TCHAR*)Win32::ConvertNewlinesC(text.GetSafeBuffer()).GetSafeBuffer());
 	else
-		SetWindowText(GetHandle(),text.GetSafeBuffer());
+		SetWindowText(GetHandle(),(const TCHAR*)text.GetSafeBuffer());
 }
 
 /*************************************

@@ -73,11 +73,11 @@ SHVBool SHVSocketServerImpl::Register()
 #ifdef __SHIVA_WIN32
 	if (!WSAInitialized)
 	{
-		Modules.AddStartupError(_T("Failed initializing socket system"));
+		Modules.AddStartupError(_S("Failed initializing socket system"));
 	}
 #endif
 	if (!SocketServerThread.StartThread(Modules))
-		return Modules.AddStartupError(_T("Failed starting socket server thread"));
+		return Modules.AddStartupError(_S("Failed starting socket server thread"));
 
 	return SHVSocketServer::Register();
 }
@@ -177,7 +177,7 @@ in_addr addr;
 in_addr addr = { ip };
 #endif
 #ifdef UNICODE
-SHVString8 tmpBuf = ::inet_ntoa(addr);
+SHVString8 tmpBuf = SHVString8C(::inet_ntoa(addr));
 	retVal = tmpBuf.ToStrT();
 #else
 	retVal = ::inet_ntoa(addr);

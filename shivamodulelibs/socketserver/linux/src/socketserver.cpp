@@ -202,7 +202,7 @@ public:
 				SHVIPv4Port port = 0;
 				int space;
 				
-					if ( (space = ip.ReverseFind(_T(" "))) > 0)
+					if ( (space = ip.ReverseFind(_S(" "))) > 0)
 					{
 					SHVChar* c;
 						port = SHVString8C::StrToL(ip.GetSafeBuffer() + space, &c);
@@ -268,7 +268,7 @@ public:
 				SHVIPv4Port port = 0;
 				int space;
 				
-					if ( (space = ip.ReverseFind(_T(" "))) > 0)
+					if ( (space = ip.ReverseFind(_S(" "))) > 0)
 					{
 						SHVChar* c;
 						port = SHVString8C::StrToL(ip.GetSafeBuffer() + space, &c);
@@ -347,7 +347,7 @@ SHVDll socketlib;
 	{
 		fprintf(stderr,"WRONG SHIVA VERSION\n");
 	}
-	else if (!socketlib.Load(socketlib.CreateLibFileName(_T("socketserver"))))
+	else if (!socketlib.Load(socketlib.CreateLibFileName(_S("socketserver"))))
 	{
 		fprintf(stderr,"Could not load socket server\n");
 	}
@@ -360,7 +360,7 @@ SHVDll socketlib;
 		mainqueue.GetModuleList().AddModule(new SHVTest(mainqueue.GetModuleList()));
 		factory->ResolveModules(__MODULESYMBOL_DEFAULTS);
 
-		testStr.Format(_T("This is a test %s %d.%d.%d\n"), _T("of SHIVA version"), __SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE);
+		testStr.Format(_S("This is a test %s %d.%d.%d\n"), _S("of SHIVA version"), __SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE);
 	
 		printf("%s", testStr.GetSafeBuffer());
 		

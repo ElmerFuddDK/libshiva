@@ -143,7 +143,7 @@ int SHVMath::Rand(SHVInt& seed)
  \code
 void foo()
 {
-	if (SHVMath::Eval(_T("2+2")) == 4)
+	if (SHVMath::Eval(_S("2+2")) == 4)
 		printf("bar\n");
 }
  \endcode
@@ -162,7 +162,7 @@ void foo()
 \code
 double foo()
 {
-	return SHVMath::Eval(_T(" sin( rad(180)*1.5 ) "));
+	return SHVMath::Eval(_S(" sin( rad(180)*1.5 ) "));
 }
 \endcode
  *
@@ -301,7 +301,7 @@ double shvmath_calculate(SHVTChar op, double a, double b, SHVString& err)
 		case '/':	return a/b;
 		case '^':	return SHVMath::Pow(a,b);
 		default:
-			err.Format(_T("Invalid operant '%c'"), op);
+			err.Format(_S("Invalid operant '%c'"), op);
 	}
 	
 	return a; // in order to preserve the original result
@@ -336,33 +336,33 @@ double shvmath_performfunc(const SHVStringC token, double val, SHVString& err)
 	if (!err.IsNull())
 		return 0.0;
 	
-	if (token.Compare(_T("sin")) == 0)
+	if (token.Compare(_S("sin")) == 0)
 	{
 		return SHVMath::Sin(val);
 	}
-	else if  (token.Compare(_T("cosin")) == 0)
+	else if  (token.Compare(_S("cosin")) == 0)
 	{
 		return SHVMath::Cosin(val);
 	}
-	else if  (token.Compare(_T("tan")) == 0)
+	else if  (token.Compare(_S("tan")) == 0)
 	{
 		return SHVMath::Cosin(val);
 	}
-	else if  (token.Compare(_T("rad")) == 0)
+	else if  (token.Compare(_S("rad")) == 0)
 	{
 		return SHVMath::Rad(val);
 	}
-	else if  (token.Compare(_T("deg")) == 0)
+	else if  (token.Compare(_S("deg")) == 0)
 	{
 		return SHVMath::Deg(val);
 	}
-	else if  (token.Compare(_T("sqrt")) == 0 || token.Compare(_T("q")) == 0)
+	else if  (token.Compare(_S("sqrt")) == 0 || token.Compare(_S("q")) == 0)
 	{
 		return SHVMath::Sqrt(val);
 	}
 	else
 	{
-		err.Format(_T("Invalid token %s"), token.GetSafeBuffer());
+		err.Format(_S("Invalid token %s"), token.GetSafeBuffer());
 		return 0.0;
 	}
 }
@@ -398,7 +398,7 @@ double retVal;
 		retVal = shvmath_doeval(str,tmplevel,err,map);
 		
 		if (err.IsNull() && *str != ')')
-			err = _T("Missing paranthesis");
+			err = _S("Missing paranthesis");
 		else
 			str++;
 	}
@@ -411,9 +411,9 @@ double retVal;
 			
 		shvmath_trim(str);
 			
-		if (token == _T(""))
+		if (token == _S(""))
 		{
-			err = _T("Missing operant");
+			err = _S("Missing operant");
 		}
 		else if (str[0] == '(')
 		{
@@ -422,19 +422,19 @@ double retVal;
 			retVal = shvmath_performfunc(token,shvmath_doeval(str,tmplevel,err,map),err);
 			
 			if (err.IsNull() && *str != ')')
-				err = _T("Missing paranthesis");
+				err = _S("Missing paranthesis");
 			else
 				str++;
 		}
 		else
 		{
-			if (token.Compare(_T("pi")) == 0)
+			if (token.Compare(_S("pi")) == 0)
 			{
 				retVal = SHVMATH_PI;
 			}
 			else if (!map || !map->LookupValue(token,retVal))
 			{
-				err.Format(_T("Invalid constant %s"), token.GetSafeBuffer());
+				err.Format(_S("Invalid constant %s"), token.GetSafeBuffer());
 			}
 		}
 	}

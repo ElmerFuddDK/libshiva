@@ -101,7 +101,7 @@ void SHVControlImplementerButtonWin32::SetText(SHVControlButton* owner, const SH
 {
 	SHVASSERT(IsCreated());
 
-	SetWindowText(GetHandle(),text.GetSafeBuffer());
+	SetWindowText(GetHandle(),(const TCHAR*)text.GetSafeBuffer());
 
 	if (autoSize)
 	{

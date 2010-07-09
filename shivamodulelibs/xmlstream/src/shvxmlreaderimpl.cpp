@@ -126,7 +126,7 @@ SHVStringBuffer16 SHVXmlReaderImpl::GetAttributeValueByName16(const SHVString16C
 {
 size_t idx = 0;
 #ifdef UNICODE
-	for (; Attributes && Attributes[idx] && SHVString16C::StrCmp(name.GetBufferConst(), Attributes[idx]); idx+=2);
+	for (; Attributes && Attributes[idx] && SHVString16C::StrCmp(name.GetBufferConst(), (const SHVWChar*)Attributes[idx]); idx+=2);
 #else
 SHVStringUTF8 nameUTF8(name.ToStrUTF8());
 	for (; Attributes && Attributes[idx] && SHVStringUTF8C::StrCmp(nameUTF8.GetBufferConst(), Attributes[idx]); idx+=2);	
@@ -192,7 +192,7 @@ SHVString str = name.ToStrT();
 const SHVString8C& str = name;
 #endif
 size_t idx = 0;
-	for (; Attributes && Attributes[idx] && SHVStringC::StrCmp(str.GetBufferConst(), Attributes[idx]); idx+=2);
+	for (; Attributes && Attributes[idx] && SHVStringC::StrCmp(str.GetBufferConst(), (const SHVTChar*)Attributes[idx]); idx+=2);
 	if (Attributes && Attributes[idx])
 		return XML_Char2String8(Attributes[idx+1]);
 	else
@@ -250,7 +250,7 @@ SHVStringBufferUTF8 SHVXmlReaderImpl::GetAttributeValueByNameUTF8(const SHVStrin
 {
 SHVString str = name.ToStrT();
 size_t idx = 0;
-	for (; Attributes && Attributes[idx] && SHVStringC::StrCmp(str.GetBufferConst(), Attributes[idx]); idx+=2);
+	for (; Attributes && Attributes[idx] && SHVStringC::StrCmp(str.GetBufferConst(), (const SHVTChar*)Attributes[idx]); idx+=2);
 	if (Attributes && Attributes[idx])
 		return XML_Char2StringUTF8(Attributes[idx+1]);
 	else
@@ -447,7 +447,7 @@ SHVXmlReaderImpl* self = (SHVXmlReaderImpl*) userData;
 SHVStringBuffer16 SHVXmlReaderImpl::XML_Char2String16(const XML_Char *str) const
 {
 #ifdef UNICODE
-	return SHVString(str).ReleaseBuffer();
+	return SHVString((const SHVWChar*)str).ReleaseBuffer();
 #else
 	return SHVStringUTF8(str).ToStr16();
 #endif
@@ -459,7 +459,7 @@ SHVStringBuffer16 SHVXmlReaderImpl::XML_Char2String16(const XML_Char *str) const
 SHVStringBuffer8 SHVXmlReaderImpl::XML_Char2String8(const XML_Char *str) const
 {
 #ifdef UNICODE
-	return SHVString(str).ToStr8();
+	return SHVString((const SHVWChar*)str).ToStr8();
 #else
 	return SHVStringUTF8(str).ToStr8();
 #endif
@@ -471,7 +471,7 @@ SHVStringBuffer8 SHVXmlReaderImpl::XML_Char2String8(const XML_Char *str) const
 SHVStringBufferUTF8 SHVXmlReaderImpl::XML_Char2StringUTF8(const XML_Char *str) const
 {
 #ifdef UNICODE
-	return SHVString(str).ToStrUTF8();
+	return SHVString((const SHVWChar*)str).ToStrUTF8();
 #else
 	return SHVStringUTF8(str).ReleaseBuffer();
 #endif

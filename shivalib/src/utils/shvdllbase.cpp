@@ -71,9 +71,9 @@ SHVDllBase::~SHVDllBase()
 const SHVStringC SHVDllBase::FileExtension()
 {
 #ifdef __SHIVA_LINUX
-	return _T("so");
+	return _S("so");
 #else
-	return _T("dll");
+	return _S("dll");
 #endif
 }
 
@@ -92,21 +92,21 @@ SHVStringBuffer SHVDllBase::CreateLibFileName(const SHVStringC libName, const SH
 {
 SHVString retVal;
 #ifdef __SHIVA_LINUX
-SHVString prefix(libName.Left(3) == _T("lib") ? NULL : _T("lib"));
-SHVString extension(_T(".so"));
+SHVString prefix(libName.Left(3) == _S("lib") ? NULL : _S("lib"));
+SHVString extension(_S(".so"));
 const int extLen = 3;
 #else
 SHVString prefix;
-SHVString extension(_T(".dll"));
+SHVString extension(_S(".dll"));
 const int extLen = 4;
 #endif
 
-	retVal.Format(_T("%s%s%s%s%s"),
+	retVal.Format(_S("%s%s%s%s%s"),
 		defaultPath.GetSafeBuffer(),
-		defaultPath.IsNull() || defaultPath.Right(1) == SHVDir::Delimiter() ? _T("") : SHVDir::Delimiter().GetBufferConst(),
+		defaultPath.IsNull() || defaultPath.Right(1) == SHVDir::Delimiter() ? _S("") : SHVDir::Delimiter().GetBufferConst(),
 		prefix.GetSafeBuffer(),
 		libName.GetSafeBuffer(),
-		libName.Right(extLen) == extension ? _T("") : extension.GetBufferConst());
+		libName.Right(extLen) == extension ? _S("") : extension.GetBufferConst());
 
 
 	return retVal.ReleaseBuffer();
@@ -195,7 +195,7 @@ SHVBool retVal(SHVBool::False);
 	SHVString8 name8(name.ToStr8());
 		*symbol = (void*)GetProcAddress(hDll,name8.GetBufferConst());
 # else
-		*symbol = (void*)GetProcAddress(hDll,name.GetBufferConst());
+		*symbol = (void*)GetProcAddress(hDll,(const TCHAR*)name.GetBufferConst());
 # endif
 #elif defined(__SHIVA_LINUX)
 		*symbol = dlsym(hDll, name.GetBufferConst());

@@ -40,7 +40,7 @@
 
 
 #define SHVWIN32CLASS_CONTAINERWND _T("SHV_CntWnd")
-#define SHVWIN32ATOM_CONTAINERWND _T("shv_containerwndatom")
+#define SHVWIN32ATOM_CONTAINERWND _S("shv_containerwndatom")
 
 //=========================================================================================================
 // SHVControlImplementerContainerWindowWin32
@@ -185,7 +185,7 @@ void SHVControlImplementerContainerWindowWin32::SetTitle(SHVControlContainer* ow
 	}
 	else
 	{
-		SetWindowText(GetHandle(),title.GetSafeBuffer());
+		SetWindowText(GetHandle(),(const TCHAR*)title.GetSafeBuffer());
 	}
 }
 

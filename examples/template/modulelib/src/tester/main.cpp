@@ -18,11 +18,11 @@ SHVDll shvtemplateshvlib;
 
 	if (!SHVModuleList::CheckVersion(__SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE))
 	{
-		SHVConsole::ErrPrintf(_T("WRONG SHIVA VERSION\n"));
+		SHVConsole::ErrPrintf(_S("WRONG SHIVA VERSION\n"));
 	}
-	else if (!shvtemplateshvlib.Load(shvtemplateshvlib.CreateLibFileName(_T("shvtemplateshv"))))
+	else if (!shvtemplateshvlib.Load(shvtemplateshvlib.CreateLibFileName(_S("shvtemplateshv"))))
 	{
-		SHVConsole::ErrPrintf(_T("Could not load shvtemplateshv library\n"));
+		SHVConsole::ErrPrintf(_S("Could not load shvtemplateshv library\n"));
 	}
 	else
 	{

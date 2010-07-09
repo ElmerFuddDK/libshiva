@@ -18,11 +18,11 @@ int retVal = -1;
 
 	if (!SHVModuleList::CheckVersion(__SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE))
 	{
-		SHVConsole::ErrPrintf(_T("WRONG SHIVA VERSION\n"));
+		SHVConsole::ErrPrintf(_S("WRONG SHIVA VERSION\n"));
 	}
 	else if (!SHVGUI::LoadLib(guilib))
 	{
-		SHVConsole::ErrPrintf(_T("Could not load GUI module library\n"));
+		SHVConsole::ErrPrintf(_S("Could not load GUI module library\n"));
 	}
 	else
 	{

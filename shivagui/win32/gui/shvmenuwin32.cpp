@@ -130,7 +130,7 @@ void SHVMenuWin32::AddStringItem(SHVInt id, const SHVStringC name, int flags)
 	{
 	int disabledflag = ( (flags&FlagDisabled) ? MF_DISABLED|MF_GRAYED : 0);
 	int cmdID = Manager->CreateCommandID(hMenuTopLevel,id);
-		::AppendMenu(hMenu,MF_STRING|disabledflag,cmdID,name.GetSafeBuffer());
+		::AppendMenu(hMenu,MF_STRING|disabledflag,cmdID,(const TCHAR*)name.GetSafeBuffer());
 	}
 }
 
@@ -155,7 +155,7 @@ SHVMenu* SHVMenuWin32::AddSubMenu(const SHVStringC name)
 	SHVMenuWin32* retVal = new SHVMenuWin32(Manager,SHVMenu::TypeSub, NULL, Parent);
 		retVal->hMenu = ::CreatePopupMenu();
 		retVal->hMenuTopLevel = hMenuTopLevel;
-		::AppendMenu(hMenu,MF_POPUP,(UINT_PTR)retVal->hMenu,name.GetSafeBuffer());
+		::AppendMenu(hMenu,MF_POPUP,(UINT_PTR)retVal->hMenu,(const TCHAR*)name.GetSafeBuffer());
 		return retVal;
 	}
 	else
@@ -536,7 +536,7 @@ void SHVMenuCommandBarPocketPC::SetMenu(HWND parent, SHVMenuContainerPocketPC* m
 		tbButton.fsStyle   = TBSTYLE_BUTTON|TBSTYLE_AUTOSIZE;
 		tbButton.dwData    = 0;
 		tbButton.idCommand = 0;
-		tbButton.iString   = ::SendMessage(hCmdWnd, TB_ADDSTRING,NULL,(LPARAM)(Menu->Button1MenuName.IsEmpty() ? _T(" ") : Menu->Button1MenuName.GetSafeBuffer()));
+		tbButton.iString   = ::SendMessage(hCmdWnd, TB_ADDSTRING,NULL,(LPARAM)(Menu->Button1MenuName.IsEmpty() ? _T(" ") : (const TCHAR*)Menu->Button1MenuName.GetSafeBuffer()));
 		::SendMessage(hCmdWnd,TB_INSERTBUTTON,::SendMessage(hCmdWnd,TB_BUTTONCOUNT,0,0),(LPARAM)&tbButton);
 
 		memset(&tbButton, 0, sizeof(TBBUTTON));
@@ -545,7 +545,7 @@ void SHVMenuCommandBarPocketPC::SetMenu(HWND parent, SHVMenuContainerPocketPC* m
 		tbButton.fsStyle   = TBSTYLE_BUTTON|TBSTYLE_AUTOSIZE;
 		tbButton.dwData    = 0;
 		tbButton.idCommand = 1;
-		tbButton.iString   = ::SendMessage(hCmdWnd, TB_ADDSTRING,NULL,(LPARAM)(Menu->Button2MenuName.IsEmpty() ? _T(" ") : Menu->Button2MenuName.GetSafeBuffer()));
+		tbButton.iString   = ::SendMessage(hCmdWnd, TB_ADDSTRING,NULL,(LPARAM)(Menu->Button2MenuName.IsEmpty() ? _T(" ") : (const TCHAR*)Menu->Button2MenuName.GetSafeBuffer()));
 		::SendMessage(hCmdWnd,TB_INSERTBUTTON,::SendMessage(hCmdWnd,TB_BUTTONCOUNT,0,0),(LPARAM)&tbButton);
 
 	}

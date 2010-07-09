@@ -52,8 +52,8 @@ SHVDll dll;
 SHVMySQLConnectionParmsRef Parms = new SHVMySQLConnectionParms("192.168.1.42", "cowdetect", "KoKasse", "CowDetect", 0);
 SHVMySQLConnectionRef Connection;
 SHVMySQLResultSetRef Result;
-	printf(_T("%s\n"), dll.CreateLibFileName(_T("shivamysql")).GetSafeBuffer());
-	if (!dll.Load(dll.CreateLibFileName(_T("shivamysql"))))
+	printf("%s\n", dll.CreateLibFileName(_S("shivamysql")).GetSafeBuffer());
+	if (!dll.Load(dll.CreateLibFileName(_S("shivamysql"))))
 	{
 		printf("Could not load\n");
 	}

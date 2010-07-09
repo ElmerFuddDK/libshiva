@@ -94,23 +94,23 @@ public:
 		SHVASSERT(!GetContainer()->IsCreated());
 	
 		GetContainer()->Create(0);
-		GetContainer()->SetTitle(_T("Test dialog"));
+		GetContainer()->SetTitle(_S("Test dialog"));
 	
 		GetContainer()->SetSize(240,120);
 		
 		SHVMenuRef menu = GetContainer()->CreateMenu(new SHVEventSubscriberFunc<SHVFormTest>(this,&SHVFormTest::OnMenuEvent));
-		SHVMenuRef menu2 = menu->AddSubMenu(_T("test"));
-		menu2->AddStringItem(SHVInt(), _T("Test 1"));
-		menu2->AddStringItem(SHVInt(), _T("Test 2"), SHVMenu::FlagDisabled);
-		menu2->AddStringItem(SHVInt(), _T("Test 3"));
-		SHVMenuRef menu3 = menu2->AddSubMenu(_T("Sub"));
+		SHVMenuRef menu2 = menu->AddSubMenu(_S("test"));
+		menu2->AddStringItem(SHVInt(), _S("Test 1"));
+		menu2->AddStringItem(SHVInt(), _S("Test 2"), SHVMenu::FlagDisabled);
+		menu2->AddStringItem(SHVInt(), _S("Test 3"));
+		SHVMenuRef menu3 = menu2->AddSubMenu(_S("Sub"));
 		menu2->AddSeparator();
-		menu2->AddStringItem(MenuQuit, _T("Quit"));
-		menu3->AddStringItem(SHVInt(), _T("Test 4"));
+		menu2->AddStringItem(MenuQuit, _S("Quit"));
+		menu3->AddStringItem(SHVInt(), _S("Test 4"));
 		menu3->AddSeparator();
-		menu3->AddStringItem(MenuQuit, _T("Quit"));
+		menu3->AddStringItem(MenuQuit, _S("Quit"));
 		menu->AddSeparator();
-		menu->AddStringItem(MenuQuit, _T("Quit"));
+		menu->AddStringItem(MenuQuit, _S("Quit"));
 		menu->Show();
 		
 		if (GetContainer()->IsCreated())
@@ -126,15 +126,15 @@ public:
 			TextBox->SetParent(Container,SHVControl::FlagVisible|
 												SHVControlEdit::FlagFlat|
 												SHVControlEdit::FlagReadonly);
-			TextBox->SetText(_T("TEXT\nTEXT\nTEXT\nTEXT\nTEXT\nTEXT\nTEXT\nTEXT\nTEXT\nTEXT\nTEXT"));
+			TextBox->SetText(_S("TEXT\nTEXT\nTEXT\nTEXT\nTEXT\nTEXT\nTEXT\nTEXT\nTEXT\nTEXT\nTEXT"));
 	
 			OK = GetManager()->NewButton();
 			OK->SetParent(Container);
-			OK->SetText(_T("OK"))->SubscribeClicked(ButtonSubscriber);
+			OK->SetText(_S("OK"))->SubscribeClicked(ButtonSubscriber);
 	
 			Cancel = GetManager()->NewButton();
 			Cancel->SetParent(Container);
-			Cancel->SetText(_T("Cancel"))->SubscribeClicked(ButtonSubscriber);
+			Cancel->SetText(_S("Cancel"))->SubscribeClicked(ButtonSubscriber);
 	
 			rgn->SetMargin(4,3);
 	
@@ -187,7 +187,7 @@ public:
 			if (++Counter > 10)
 			{
 				Label->SetFlag(SHVControl::FlagVisible);
-				Label->SetText(SHVStringC::Format(_T("Label text : %d and counting"), Counter));
+				Label->SetText(SHVStringC::Format(_S("Label text : %d and counting"), Counter));
 			}
 			rgn->Move(Button)->Bottom(5)->AlignHorizontal(NULL,NULL,SHVRegion::AlignHCenter,5)->ClipBottom();
 			rgn->Move(Label)
@@ -205,8 +205,8 @@ public:
 
 	void OnPopupMenu(SHVEvent* event)
 	{
-		GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget\nNoget\nNoget\nNoget\nNoget\nNoget\nNoget"),_T("Knap"));
-		GUIManager->ShowMessageBox(_T("En heel masse text med maaaaange linjer hvis word wrap virker eller noget eller noget andet..."),_T("Knap"));
+		GUIManager->ShowMessageBox(_S("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget\nNoget\nNoget\nNoget\nNoget\nNoget\nNoget"),_S("Knap"));
+		GUIManager->ShowMessageBox(_S("En heel masse text med maaaaange linjer hvis word wrap virker eller noget eller noget andet..."),_S("Knap"));
 		NewWindow = SHVFormTest::Create(GUIManager);
 		NewWindow->InitializeForm();
 	}
@@ -214,7 +214,7 @@ public:
 	void OnClick(SHVEvent* event)
 	{
 		SHVMenuRef popup = GUIManager->CreatePopupMenu(new SHVEventSubscriberFunc<SHVTest>(this,&SHVTest::OnPopupMenu),Button);
-		popup->AddStringItem(SHVInt(),_T("Test dialoger"));
+		popup->AddStringItem(SHVInt(),_S("Test dialoger"));
 		popup->Show(SHVMenu::PopupBelowWindow);
 	}
 
@@ -263,7 +263,7 @@ public:
 	
 	void PostRegister()
 	{
-		GUIManager->GetMainWindow()->SetTitle(_T("SHIVA GUI test application"));
+		GUIManager->GetMainWindow()->SetTitle(_S("SHIVA GUI test application"));
 		
 		GUIManager->GetMainWindow()->SetLayoutEngine(new SHVControlLayoutCallback<SHVTest>(this,&SHVTest::OnResize));
 		
@@ -272,7 +272,7 @@ public:
 		
 		Button = GUIManager->NewButton()
 			->SetParent(GUIManager->GetMainWindow())
-			->SetText(_T("Click me"));
+			->SetText(_S("Click me"));
 		Button->SubscribeClicked(new SHVEventSubscriberFunc<SHVTest>(this,&SHVTest::OnClick));
 		
 		//Label = GUIManager->NewLabel()->SetParent(GUIManager->GetMainWindow(),0);
@@ -285,21 +285,21 @@ public:
 			printf("Cell height : %d\n", tstFont->GetHeight());
 			Label->SetFont(tstFont,true);
 		}
-		Label->SetText(_T("Label text"));
+		Label->SetText(_S("Label text"));
 
 		SHVMenuRef menu = GUIManager->GetMainWindow()->CreateMenu(new SHVEventSubscriberFunc<SHVTest>(this,&SHVTest::OnMenuEvent));
-		SHVMenuRef menu2 = menu->AddSubMenu(_T("test"));
-		menu2->AddStringItem(SHVInt(), _T("Test 1"));
-		menu2->AddStringItem(SHVInt(), _T("Test 2"), SHVMenu::FlagDisabled);
-		menu2->AddStringItem(SHVInt(), _T("Test 3"));
-		SHVMenuRef menu3 = menu2->AddSubMenu(_T("Sub"));
+		SHVMenuRef menu2 = menu->AddSubMenu(_S("test"));
+		menu2->AddStringItem(SHVInt(), _S("Test 1"));
+		menu2->AddStringItem(SHVInt(), _S("Test 2"), SHVMenu::FlagDisabled);
+		menu2->AddStringItem(SHVInt(), _S("Test 3"));
+		SHVMenuRef menu3 = menu2->AddSubMenu(_S("Sub"));
 		menu2->AddSeparator();
-		menu2->AddStringItem(MenuQuit, _T("Quit"));
-		menu3->AddStringItem(SHVInt(), _T("Test 4"));
+		menu2->AddStringItem(MenuQuit, _S("Quit"));
+		menu3->AddStringItem(SHVInt(), _S("Test 4"));
 		menu3->AddSeparator();
-		menu3->AddStringItem(MenuQuit, _T("Quit"));
+		menu3->AddStringItem(MenuQuit, _S("Quit"));
 		menu->AddSeparator();
-		menu->AddStringItem(MenuQuit, _T("Quit"));
+		menu->AddStringItem(MenuQuit, _S("Quit"));
 		menu->Show();
 		
 		GUIManager->GetMainWindow()->SetMinimumSize(120,100);

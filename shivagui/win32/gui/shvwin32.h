@@ -141,7 +141,7 @@ SHVDrawWin32* Win32::CreateDrawPaint(SHVControl* control)
  *************************************/
 bool Win32::CheckForNewlines(const SHVStringC str)
 {
-	return (str.Find(_T("\n")) >= 0);
+	return (str.Find(_S("\n")) >= 0);
 }
 
 /*************************************
@@ -151,7 +151,7 @@ SHVStringBuffer Win32::ConvertNewlinesC(const SHVStringC str)
 {
 SHVString retVal(str);
 
-	retVal.Replace(_T("\n"),_T("\r\n"));
+	retVal.Replace(_S("\n"),_S("\r\n"));
 
 	return retVal.ReleaseBuffer();
 }
@@ -161,7 +161,7 @@ SHVString retVal(str);
  *************************************/
 void Win32::ConvertNewlines(SHVString& str)
 {
-	str.Replace(_T("\n"),_T("\r\n"));
+	str.Replace(_S("\n"),_S("\r\n"));
 }
 
 #endif

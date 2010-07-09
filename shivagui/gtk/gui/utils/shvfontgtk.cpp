@@ -138,7 +138,7 @@ int SHVFontGtk::GetCellHeight()
 int SHVFontGtk::GetApproximateWidth()
 {
 	if (ApproximateWidth == -1)
-		ApproximateWidth = CalculateTextWidth(_T("W"));
+		ApproximateWidth = CalculateTextWidth(_S("W"));
 	return ApproximateWidth;
 }
 

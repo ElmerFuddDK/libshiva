@@ -32,18 +32,19 @@ typedef SHVString16  SHVString;
 typedef SHVString16CRef SHVStringCRef;
 typedef SHVStringBuffer16 SHVStringBuffer;
 # define _SHVS8(x)  SHVStringC(_T(x)).ToStr8()
-# define _SHVS16(x) _T(x)
+# define _SHVS16(x) SHVString16C(_T(x))
 ///\cond INTERNAL
 # ifdef __SHIVA_LINUX
 #  error "Linux is currently UCS4 only - doesn't work with shiva in unicode"
-# elif !defined(_T)
-#  define _T(x) L##x
 # endif
+# ifdef _T
+#  undef _T
+# endif
+# define _S(x)  (const SHVWChar*)L##x
+# define _SD(x) _S(x)
+# define _T(x)  L##x
 # define _TD(x) _T(x)
 ///\endcond
-#endif
-#ifndef _SHVWSTR
-# define _SHVWSTR(x) (const SHVWChar*) L##x
 #endif
 
 #ifdef __SHVSTRING_HEAPPROTECT
@@ -246,6 +247,10 @@ bool SHVString16C::IsNull() const { return Buffer == NULL; }
 bool SHVString16C::IsEmpty() const { return Buffer == NULL || *Buffer == 0; }
 #ifdef __SHIVA_EPOC
 TPtrC16 SHVString16C::ToPtr() const { return TPtrC16((TUint16*)Buffer,GetLength()); }
+#endif
+#ifdef __SHIVASTR_WCHAR_T
+const wchar_t* SHVString16C::GetWcharConst() const { return (const wchar_t*)Buffer; }
+const wchar_t* SHVString16C::GetSafeWchar() const { return (const wchar_t*)GetSafeBuffer(); }
 #endif
 
 

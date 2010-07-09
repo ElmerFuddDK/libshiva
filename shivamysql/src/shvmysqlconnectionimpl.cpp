@@ -102,5 +102,5 @@ SHVStringBuffer SHVMySQLConnectionImpl::GetError()
 	if (Connection)
 		return SHVStringUTF8(mysql_error(Connection)).ToStrT();
 	else
-		return SHVString(_T("Not connected")).ReleaseBuffer();
+		return SHVString(_S("Not connected")).ReleaseBuffer();
 }

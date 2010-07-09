@@ -70,7 +70,7 @@ SHVString retVal;
 			retVal = SHVStringC::Int64ToString(Data.int64Val);
 			break;
 		case SHVDataVariant::TypeBool:
-			retVal = Data.boolVal ? SHVString(_T("1")) : SHVString(_T("0"));
+			retVal = Data.boolVal ? SHVString(_S("1")) : SHVString(_S("0"));
 			break;
 		case SHVDataVariant::TypeDouble:
 			retVal = SHVString::DoubleToString(Data.doubleVal);
@@ -101,8 +101,8 @@ SHVString retVal;
 		case SHVDataVariant::TypeTime:
 			{
 			SHVString value(AsString());
-				value.Replace(_T("'"), _T("''"));
-				retVal.Format(_T("'%s'"), value.GetSafeBuffer());
+				value.Replace(_S("'"), _S("''"));
+				retVal.Format(_S("'%s'"), value.GetSafeBuffer());
 			}
 			break;
 		default:
@@ -115,10 +115,10 @@ SHVString retVal;
 		switch (DataType)
 		{
 		case SHVDataVariant::TypeBool:
-			retVal = _T("0");
+			retVal = _S("0");
 			break;
 		default:
-			retVal = _T("null");
+			retVal = _S("null");
 			break;
 		}
 	}
@@ -158,7 +158,7 @@ void SHVDataVariantImpl::SetString(const SHVStringC& val)
 			Data.int64Val = SHVStringC::StrToInt64(val.GetSafeBuffer(), NULL, 10);
 			break;
 		case SHVDataVariant::TypeBool:
-			Data.boolVal = val == _T("1");
+			Data.boolVal = val == _S("1");
 			break;
 		case SHVDataVariant::TypeDouble:
 			Data.doubleVal = SHVStringC::StrToDouble(val.GetSafeBuffer(), NULL);
@@ -405,7 +405,7 @@ void SHVDataVariantImpl::SetDouble(SHVDouble val)
 			break;
 		case SHVDataVariant::TypeString:
 			Data.stringVal = new SHVString();
-			Data.stringVal->Format(_T("%g"), (double)val);
+			Data.stringVal->Format(_S("%g"), (double)val);
 			break;
 		}
 	}
@@ -488,7 +488,7 @@ SHVBool retVal;
 				retVal = SHVBool(Data.intVal != 0);
 				break;
 			case SHVDataVariant::TypeString:
-				return *Data.stringVal == _T("1");
+				return *Data.stringVal == _S("1");
 				break;
 			case SHVDataVariant::TypeTime:
 				break;
@@ -526,7 +526,7 @@ void SHVDataVariantImpl::SetBool(SHVBool val)
 			Data.doubleVal = (double) val.GetError();
 			break;
 		case SHVDataVariant::TypeString:
-			Data.stringVal = new SHVString(val ? _T("1") : _T("0"));
+			Data.stringVal = new SHVString(val ? _S("1") : _S("0"));
 			break;
 		}
 	}

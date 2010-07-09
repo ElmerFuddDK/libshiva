@@ -42,7 +42,7 @@
  *************************************/
 const SHVTChar* SHVGUI::LibNameWin32()
 {
-	return _T("shivaguiwin32");
+	return _S("shivaguiwin32");
 }
 
 /*************************************
@@ -50,7 +50,7 @@ const SHVTChar* SHVGUI::LibNameWin32()
  *************************************/
 const SHVTChar* SHVGUI::LibNameGtk()
 {
-	return _T("shivaguigtk");
+	return _S("shivaguigtk");
 }
 
 

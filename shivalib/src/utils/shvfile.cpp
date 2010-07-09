@@ -331,7 +331,7 @@ SHVFile file;
 SHVString str;
 
 	// open the file
-	file.Open( _T("file.txt") );
+	file.Open( _S("file.txt") );
 
 	// set the buffer size
 	str.SetBufferSize(51); // room for 50 chars

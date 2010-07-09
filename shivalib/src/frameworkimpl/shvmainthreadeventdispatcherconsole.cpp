@@ -88,7 +88,7 @@ TCHAR name[MAX_PATH];
 	SHVDllBase kernel32;
 
 		///\todo Figure out how to attach to a console on win32 from a gui app when using console dispatcher
-		//if (!kernel32.Load(_T("kernel32")) ||!kernel32.Resolve((void**)&attachConsole,_T("AttachConsole")))
+		//if (!kernel32.Load(_S("kernel32")) ||!kernel32.Resolve((void**)&attachConsole,_S("AttachConsole")))
 		//	attachConsole = NULL;
 		SHVUNUSED_PARAM(attachConsole); // for future use
 		QuirksMode = true;
@@ -164,8 +164,8 @@ void SHVMainThreadEventDispatcherConsole::SetupDefaults(SHVModuleList& modules)
 	selfSubs = new SHVEventSubscriber(this,&modules);
 	ModuleList = &modules;
 #endif
-	modules.GetConfig().Set(SHVModuleList::DefaultCfgAppPath,SHVStringC(_T(".")) + SHVDir::Delimiter());
-	modules.GetConfig().Set(SHVModuleList::DefaultCfgAppName,SHVStringC(_T("")));
+	modules.GetConfig().Set(SHVModuleList::DefaultCfgAppPath,SHVStringC(_S(".")) + SHVDir::Delimiter());
+	modules.GetConfig().Set(SHVModuleList::DefaultCfgAppName,SHVStringC(_S("")));
 }
 
 /*************************************
@@ -335,7 +335,7 @@ void SHVMainThreadEventDispatcherConsole::StopEventLoop(SHVBool errors)
 	if (!errors)
 	{
 	SHVString errStr = Queue->GetModuleList().GetStartupErrors();
-		SHVConsole::ErrPrintf(_T("\n\nRegistering failed:\n\"%s\"\n\n"), errStr.GetSafeBuffer());
+		SHVConsole::ErrPrintf(_S("\n\nRegistering failed:\n\"%s\"\n\n"), errStr.GetSafeBuffer());
 	}
 }
 
@@ -406,7 +406,7 @@ size_t tmpLen;
 		StringBuffers.AddTail(empty.ReleaseBuffer());
 	}
 
-	for(pos=str.Find(_T("\n")); pos >= 0 && pos < (long)str.GetLength(); oldPos = pos+1, pos=str.Find(_T("\n"),oldPos) )
+	for(pos=str.Find(_S("\n")); pos >= 0 && pos < (long)str.GetLength(); oldPos = pos+1, pos=str.Find(_S("\n"),oldPos) )
 	{
 		tmp = str.Mid((size_t)oldPos,(size_t)(pos-oldPos));
 		while (StringBuffers.GetLast().GetLength() + tmp.GetLength() > (size_t)boundaries.cx)
@@ -433,7 +433,7 @@ size_t tmpLen;
  ***************************/
 SHVBool SHVMainThreadEventDispatcherConsole::CreateDlg()
 {
-SHVString title(_T("SHIVA Console"));
+SHVString title(_S("SHIVA Console"));
 int titleLength = title.GetLength();
 HLOCAL templateHandle;
 void* dlgTemplate;
@@ -442,7 +442,7 @@ int len = AlignDWord( sizeof(DLGTEMPLATE) + sizeof(WORD) * 4
 	+ ((titleLength) ? ((titleLength+1)*2 + sizeof(WORD)) : 0)
 	);
 
-	HWND oldWindow = FindWindow(NULL,title.GetSafeBuffer());
+	HWND oldWindow = FindWindow(NULL,(const TCHAR*)title.GetSafeBuffer());
 	///\todo add code to make sure the window is created with the same application as us
 	if (oldWindow) 
 	{
@@ -486,7 +486,7 @@ int len = AlignDWord( sizeof(DLGTEMPLATE) + sizeof(WORD) * 4
 	WCHAR* titleWChar = (WCHAR*)buffer;
 
 	#ifdef UNICODE
-		wcscpy(titleWChar,title.GetSafeBuffer());
+		wcscpy(titleWChar,(const TCHAR*)title.GetSafeBuffer());
 	#else
 		::mbstowcs(titleWChar,title,titleLength);
 		titleWChar[TitleLength] = 0;
@@ -693,7 +693,7 @@ INT_PTR retVal = 0;
 						if (!evDispatcherConsole->StringBuffers.MovePrev(itr.Pos()))
 							break;
 					}
-					::DrawText(hdc,itr.Get().GetSafeBuffer(),(int)itr.Get().GetLength(),&rect,DT_TOP|DT_SINGLELINE);
+					::DrawText(hdc,(const TCHAR*)itr.Get().GetSafeBuffer(),(int)itr.Get().GetLength(),&rect,DT_TOP|DT_SINGLELINE);
 					first = false;
 				}
 
@@ -741,7 +741,7 @@ LRESULT retVal = 0;
 		{
 		SHVString str;
 			str.SetBufferSize(::GetWindowTextLength(hWnd)+1);
-			::GetWindowText(hWnd,str.GetBuffer(),::GetWindowTextLength(hWnd)+1);
+			::GetWindowText(hWnd,(TCHAR*)str.GetBuffer(),::GetWindowTextLength(hWnd)+1);
 			evDispatcherConsole->Queue->GetModuleList().EmitEvent(new SHVEventStdin(NULL,str.ToStr8()));
 			::SetWindowText(hWnd,_T(""));
 			break;

@@ -411,7 +411,7 @@ bool endEllipsis = ( (options&TextEndEllipsis) ? true : false );
 		endEllipsis = false;
 	}
 
-	::GetTextExtentPoint(hDC,txt.GetSafeBuffer(),(int)txt.GetLength(),&sz);
+	::GetTextExtentPoint(hDC,(const TCHAR*)txt.GetSafeBuffer(),(int)txt.GetLength(),&sz);
 	if (sz.cx > nWidth && endEllipsis)
 	{
 	SHVString strTemp;
@@ -425,18 +425,18 @@ bool endEllipsis = ( (options&TextEndEllipsis) ? true : false );
 
 		for(i=txt.GetLength(); i>0; i--)
 		{
-			::GetTextExtentPoint(hDC, txt.GetSafeBuffer(), (int)i, &sz);
+			::GetTextExtentPoint(hDC, (const TCHAR*)txt.GetSafeBuffer(), (int)i, &sz);
 			if (sz.cx <= nWidth)
 				break;
 		}
 
-		strTemp = txt.Left(i) + SHVStringC(_T("..."));
+		strTemp = txt.Left(i) + SHVStringC(_S("..."));
 
-		::DrawText(hDC, strTemp.GetSafeBuffer(), (int)strTemp.GetLength(), &rectNative, mapoptions);
+		::DrawText(hDC, (const TCHAR*)strTemp.GetSafeBuffer(), (int)strTemp.GetLength(), &rectNative, mapoptions);
 	}
 	else
 	{
-		::DrawText(hDC, txt.GetSafeBuffer(), (int)txt.GetLength(), &rectNative, mapoptions);
+		::DrawText(hDC, (const TCHAR*)txt.GetSafeBuffer(), (int)txt.GetLength(), &rectNative, mapoptions);
 	}
 
 //	for windows - maybe later -- ::DrawText( hDC, txt.GetSafeBuffer(), -1, &rectNative, mapoptions | (endEllipsis ? DT_END_ELLIPSIS : 0) );

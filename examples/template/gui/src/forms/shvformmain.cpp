@@ -24,11 +24,11 @@ void SHVFormMain::InitializeForm()
 	// Will make the form resizable, through the OnResizeForm function
 	SetStandardLayoutEngine();
 	
-	GetContainer()->SetTitle(_T("SHVTemplateSHV"));
+	GetContainer()->SetTitle(_S("SHVTemplateSHV"));
 	GetContainer()->SetMinimumSize(230,180);
 	
 	// Create a label into the form, setting the text as well
-	Label = GetManager()->NewLabel()->SetParent(GetContainer())->SetText(_T("Hello World!"));
+	Label = GetManager()->NewLabel()->SetParent(GetContainer())->SetText(_S("Hello World!"));
 	
 	// Force a resize and show the form
 	GetContainer()->ResizeControls();

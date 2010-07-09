@@ -91,8 +91,8 @@ SHVMainThreadEventDispatcherGtk::~SHVMainThreadEventDispatcherGtk()
 void SHVMainThreadEventDispatcherGtk::SetupDefaults(SHVModuleList& modules)
 {
 	///\todo Implement a proper way to get AppPath and AppName
-	modules.GetConfig().Set(SHVModuleList::DefaultCfgAppPath,SHVStringC(_T(".")) + SHVDir::Delimiter());
-	modules.GetConfig().Set(SHVModuleList::DefaultCfgAppName,SHVStringC(_T("")));
+	modules.GetConfig().Set(SHVModuleList::DefaultCfgAppPath,SHVStringC(_S(".")) + SHVDir::Delimiter());
+	modules.GetConfig().Set(SHVModuleList::DefaultCfgAppName,SHVStringC(_S("")));
 }
 
 /*************************************

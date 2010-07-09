@@ -84,7 +84,7 @@ SHVEventSubscriberBaseRef subsOnDrawContainer = new SHVEventSubscriberFunc<SHVCo
 SHVFontRef ownerDrawFont = GUIManager->GetFont(SHVGUIManager::CfgFontNormal)->CreateCopy(250);
 
 	
-	GUIManager->GetMainWindow()->SetTitle(_T("SHIVA GUI test application"));
+	GUIManager->GetMainWindow()->SetTitle(_S("SHIVA GUI test application"));
 	GUIManager->GetMainWindow()->SetMinimumSize(200,115);
 	GUIManager->GetMainWindow()->SetLayoutEngine(new SHVControlLayoutCallback<SHVControlTester>(this,&SHVControlTester::OnResizeContainer));
 
@@ -96,12 +96,12 @@ SHVFontRef ownerDrawFont = GUIManager->GetFont(SHVGUIManager::CfgFontNormal)->Cr
 
 	Container->SetLayoutEngine(new SHVControlLayoutCallback<SHVControlTester>(this,&SHVControlTester::OnResizeControls));
 
-	Label = GUIManager->NewLabel()->SetParent(Container)->SetText(_T("Label text"));
-	LabelCustomDraw = GUIManager->NewLabelCustomDraw(subsOnDrawLabel)->SetParent(Container)->SetText(_T(""));
-	EditBox = GUIManager->NewEdit(SHVControlEdit::SubTypeMultiLine)->SetParent(Container)->SetText(_T("Edit\ntext"))->SetLimit(50);
-	Button = GUIManager->NewButton()->SetParent(Container)->SetText(_T("Click Me!"));
+	Label = GUIManager->NewLabel()->SetParent(Container)->SetText(_S("Label text"));
+	LabelCustomDraw = GUIManager->NewLabelCustomDraw(subsOnDrawLabel)->SetParent(Container)->SetText(_S(""));
+	EditBox = GUIManager->NewEdit(SHVControlEdit::SubTypeMultiLine)->SetParent(Container)->SetText(_S("Edit\ntext"))->SetLimit(50);
+	Button = GUIManager->NewButton()->SetParent(Container)->SetText(_S("Click Me!"));
 	ComboBox = GUIManager->NewComboBox(SHVControlComboBox::SubTypeList)->SetParent(Container)->SetDropdownHeight(4);
-	ComboBox->AddItem(_T("Test1"))->AddItem(_T("Test2"))->AddItem(_T("Test3"))->AddItem(_T("Test4"))->AddItem(_T("Test5"))->SetSelected(0);
+	ComboBox->AddItem(_S("Test1"))->AddItem(_S("Test2"))->AddItem(_S("Test3"))->AddItem(_S("Test4"))->AddItem(_S("Test5"))->SetSelected(0);
 
 
 	LabelCustomDraw->SetFont(ownerDrawFont,true);
@@ -115,15 +115,15 @@ SHVFontRef ownerDrawFont = GUIManager->GetFont(SHVGUIManager::CfgFontNormal)->Cr
 	GUIManager->GetMainWindow()->ResizeControls();
 
 	SHVMenuRef menu = GUIManager->GetMainWindow()->CreateMenu(new SHVEventSubscriber(this,&Modules));
-	SHVMenuRef menu2 = menu->AddSubMenu(_T("Test"));
-	menu2->AddStringItem(__MENU_MSGBOXES,_T("Look at all those msgs"));
+	SHVMenuRef menu2 = menu->AddSubMenu(_S("Test"));
+	menu2->AddStringItem(__MENU_MSGBOXES,_S("Look at all those msgs"));
 	menu2->AddSeparator();
-	menu2->AddStringItem(__MENU_STUFF,_T("More stuff"));
-	menu2->AddStringItem(__MENU_DIALOGTST,_T("Dialog test"));
-	menu2->AddStringItem(__MENU_DIALOGTST,_T("Disabled item"), SHVMenu::FlagDisabled);
+	menu2->AddStringItem(__MENU_STUFF,_S("More stuff"));
+	menu2->AddStringItem(__MENU_DIALOGTST,_S("Dialog test"));
+	menu2->AddStringItem(__MENU_DIALOGTST,_S("Disabled item"), SHVMenu::FlagDisabled);
 	menu2->AddSeparator();
-	menu2->AddStringItem(__MENU_WAITCURSORSHOW,_T("Show wait cursor"));
-	menu2->AddStringItem(__MENU_WAITCURSORHIDE,_T("Hide wait cursor"));
+	menu2->AddStringItem(__MENU_WAITCURSORSHOW,_S("Show wait cursor"));
+	menu2->AddStringItem(__MENU_WAITCURSORHIDE,_S("Hide wait cursor"));
 	menu->Show();
 
 	SHVModule::PostRegister();
@@ -156,10 +156,10 @@ void SHVControlTester::OnEvent(SHVEvent* event)
 				switch (event->GetSubID())
 				{
 				case __MENU_MSGBOXES:
-					GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"),_T("Knap"),SHVGUIManager::MsgBoxOKCancel);
-					GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"));
-					GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"),_T("Knap"));
-					GUIManager->ShowMessageBox(_T("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"));
+					GUIManager->ShowMessageBox(_S("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"),_S("Knap"),SHVGUIManager::MsgBoxOKCancel);
+					GUIManager->ShowMessageBox(_S("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"));
+					GUIManager->ShowMessageBox(_S("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"),_S("Knap"));
+					GUIManager->ShowMessageBox(_S("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"));
 					break;
 				case __MENU_STUFF:
 					GUIManager->GetMainWindow()->SetColor(GUIManager->CreateColor(::rand()&0xFF,::rand()&0xFF,::rand()&0xFF));
@@ -188,7 +188,7 @@ void SHVControlTester::OnEvent(SHVEvent* event)
 			if (SHVEvent::Equals(event,SHVControlButton::EventClicked))
 			{
 			SHVMenuRef menu = Button->CreatePopupMenu(new SHVEventSubscriber(this,&Modules));
-				menu->AddStringItem(__MENU_STUFF,_T("Stuff"));
+				menu->AddStringItem(__MENU_STUFF,_S("Stuff"));
 				menu->Show(SHVMenu::PopupBelowWindow);
 				menu = NULL;
 			}
@@ -206,7 +206,7 @@ void SHVControlTester::OnEvent(SHVEvent* event)
 		{
 			if (SHVEvent::Equals(event,SHVControlComboBox::EventSelectedChanged))
 			{
-				GUIManager->ShowMessageBox(SHVStringC(_T("Selected item ")) + SHVStringC::LongToString(ComboBox->GetSelected()) + SHVStringC(_T(", ")) + ComboBox->GetItemText(ComboBox->GetSelected()));
+				GUIManager->ShowMessageBox(SHVStringC(_S("Selected item ")) + SHVStringC::LongToString(ComboBox->GetSelected()) + SHVStringC(_S(", ")) + ComboBox->GetItemText(ComboBox->GetSelected()));
 			}
 		}
 	}
@@ -215,14 +215,14 @@ void SHVControlTester::OnEvent(SHVEvent* event)
 		if (SHVEvent::Equals(event,SHVGUIManager::EventControl,SHVGUIManager::CtrlEventContainerDestroy))
 		{
 		SHVControlContainer* ctrl = (SHVControlContainer*)event->GetObject();
-			GUIManager->ShowMessageBox(SHVStringC::Format(_T("The dialog has been destroyed")),_T("GUI"),SHVGUIManager::MsgBoxOKCancel);
+			GUIManager->ShowMessageBox(SHVStringC::Format(_S("The dialog has been destroyed")),_S("GUI"),SHVGUIManager::MsgBoxOKCancel);
 			TestDialog = NULL;
 		}
 		else if (SHVEvent::Equals(event,SHVGUIManager::EventControl,SHVGUIManager::CtrlEventContainerRectChanged))
 		{
 		SHVControlContainer* ctrl = (SHVControlContainer*)event->GetObject();
 		SHVRect rect(ctrl->GetRect());
-			SHVTRACE(_T("Rect Changed to %d,%d %d,%d\n"), rect.GetLeft(),rect.GetTop(), rect.GetRight(),rect.GetBottom());
+			SHVTRACE(_S("Rect Changed to %d,%d %d,%d\n"), rect.GetLeft(),rect.GetTop(), rect.GetRight(),rect.GetBottom());
 		}
 	}
 }
@@ -254,7 +254,7 @@ SHVDrawRef draw = SHVDraw::FromDrawEvent(event);
 SHVControlRef control = (SHVControl*)event->GetObject();
 SHVRect rct = draw->GetClientRect(control);
 
-	draw->DrawText(_T("These are not the droids you are looking for"),
+	draw->DrawText(_S("These are not the droids you are looking for"),
 		rct,
 		NULL,
 		SHVDraw::TextSingleLine|SHVDraw::TextHCenter|SHVDraw::TextVCenter|SHVDraw::TextEndEllipsis);

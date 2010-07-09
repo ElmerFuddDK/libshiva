@@ -257,7 +257,7 @@ SHVDataRowList* SHVDataSessionSQLite::CopyAlias(const SHVString8C& sourceAlias, 
 	}
 	else
 		return NULL;
-	return this->GetRows(destAlias, _T(""), 0);
+	return this->GetRows(destAlias, _S(""), 0);
 }
 
 /*************************************
@@ -417,7 +417,7 @@ const SHVDataStructC& st = *row->GetStruct();
 	}
 	else
 	{
-		SHVTRACE(_T("Error in %s: %s\n"), sql.ToStrT().GetSafeBuffer(), GetErrorMessage().GetSafeBuffer());
+		SHVTRACE(_S("Error in %s: %s\n"), sql.ToStrT().GetSafeBuffer(), GetErrorMessage().GetSafeBuffer());
 	}
 	return retVal;
 }

@@ -27,13 +27,13 @@ public:
 		Modules.EventSubscribe(SHVModuleList::EventEndRegister, new SHVEventSubscriber(this));
 		Modules.EventSubscribe(SHVModuleList::EventClosing, new SHVEventSubscriber(this));
 		Modules.EventSubscribe(__EVENT_GLOBAL_STDIN, new SHVEventSubscriber(this));
-		if (!SqliteDLL.Load(SqliteDLL.CreateLibFileName(_T("shivasqlite"))))
+		if (!SqliteDLL.Load(SqliteDLL.CreateLibFileName(_S("shivasqlite"))))
 		{
-			Modules.AddStartupError(_T("Could not load shivasqlite"));
+			Modules.AddStartupError(_S("Could not load shivasqlite"));
 			return false;
 		}
 		Connection = (SHVSQLiteWrapper*) SqliteDLL.CreateObjectInt(&Modules, SHVDll::ClassTypeUser);
-		Connection->Open(_T("test.sqlite"));
+		Connection->Open(_S("test.sqlite"));
 		return SHVModule::Register();
 	}
 

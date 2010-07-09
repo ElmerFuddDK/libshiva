@@ -237,7 +237,7 @@ void SHVControlImplementerMainWindowWin32::SetTitle(SHVControlContainer* owner, 
 {
 	SHVASSERT(IsCreated());
 
-	SetWindowText(GetHandle(),title.GetSafeBuffer());
+	SetWindowText(GetHandle(),(const TCHAR*)title.GetSafeBuffer());
 }
 
 /*************************************

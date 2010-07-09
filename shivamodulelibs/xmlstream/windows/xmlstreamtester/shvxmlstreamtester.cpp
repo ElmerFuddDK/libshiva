@@ -38,8 +38,8 @@ void SHVXmlStreamTester::PerformTest(SHVTestResult* result)
 SHVBool ok;
 	Result = result;
 SHVString FilePath;
-	FilePath = Modules.GetConfig().Find(_T("applicationpath")).ToString();
-	FilePath += _T("test.xml");
+	FilePath = Modules.GetConfig().Find(_S("applicationpath"))->ToString();
+	FilePath += _S("test.xml");
 SHVStreamOutTest testout(FilePath);
 	if (testout.IsOk())
 	{
@@ -58,7 +58,7 @@ SHVStreamOutTest testout(FilePath);
 		writer->WriteAttributeUTF8(testout, "lastName", "Nielsen");
 		writer->WriteEndElement(testout);
 
-		writer->WriteText(testout, _T("This is j\tust a test\r\n"));
+		writer->WriteText(testout, _S("This is j\tust a test\r\n"));
 		writer->WriteEndElement(testout);
 		writer->WriteStartElementUTF8(testout, "persons");
 
@@ -74,7 +74,7 @@ SHVStreamOutTest testout(FilePath);
 		writer->WriteAttributeUTF8(testout, "lastName", "Nielsen");
 		writer->WriteEndElement(testout);
 
-		writer->WriteText(testout, _T("This is j\tust a test\r\n"));
+		writer->WriteText(testout, _S("This is j\tust a test\r\n"));
 		writer->WriteEndElement(testout);
 		testout.Close();
 	}
@@ -108,21 +108,21 @@ void SHVXmlStreamTester::PostRegister()
 void SHVXmlStreamTester::StartElem(SHVXmlReader& reader)
 {
 size_t attrCount = reader.CalculateAttributeCount();
-	Result->AddLog(_T("Element <%s>"), reader.GetElementName().GetSafeBuffer());
+	Result->AddLog(_S("Element <%s>"), reader.GetElementName().GetSafeBuffer());
 
 	for (size_t i = 0; i < attrCount; i++)
 	{
-		Result->AddLog(_T("%s = %s"), reader.GetAttributeName(i).GetSafeBuffer(), reader.GetAttributeValue(i));
+		Result->AddLog(_S("%s = %s"), reader.GetAttributeName(i).GetSafeBuffer(), reader.GetAttributeValue(i));
 	}
 }
 void SHVXmlStreamTester::EndElem(SHVXmlReader& reader)
 {
-	Result->AddLog(_T("Element </%s>"), reader.GetElementName().GetSafeBuffer());
+	Result->AddLog(_S("Element </%s>"), reader.GetElementName().GetSafeBuffer());
 }
 
 void SHVXmlStreamTester::CharData(SHVXmlReader& reader)
 {
-	Result->AddLog(_T("Char data %s"), reader.GetValue().GetSafeBuffer());
+	Result->AddLog(_S("Char data %s"), reader.GetValue().GetSafeBuffer());
 }
 
 SHVStreamInTest::SHVStreamInTest(const SHVStringC& fileName)

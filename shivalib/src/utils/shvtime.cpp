@@ -303,7 +303,7 @@ SHVString retVal;
 
 	if (!IsNull())
 	{
-		retVal.Format(_T("%04d-%02d-%02dT%02d:%02d:%02d"), GetYear(), GetMonth(), GetDay(), GetHour(), GetMinute(), GetSecond());
+		retVal.Format(_S("%04d-%02d-%02dT%02d:%02d:%02d"), GetYear(), GetMonth(), GetDay(), GetHour(), GetMinute(), GetSecond());
 	}
 
 	return retVal.ReleaseBuffer();
@@ -332,50 +332,50 @@ SHVString retVal(s);
 	///\todo Implement more format types in SHVTime::Format for Windows CE
 
 	// %'s in the string
-	if (s.Find(_T("%%")) >= 0)
+	if (s.Find(_S("%%")) >= 0)
 	{
-		retVal.Replace(_T("%%"),_T("%"));
+		retVal.Replace(_S("%%"),_S("%"));
 	}
 
 	// abbreviated weekday name
-	if (s.Find(_T("%a")) >= 0)
+	if (s.Find(_S("%a")) >= 0)
 	{
 		if (::GetDateFormat(LOCALE_USER_DEFAULT,0,&sysTime,_T("ddd"),buffer,__SHVTIME_MAXDATESTR))
 		{
-			retVal.Replace(_T("%a"),buffer);
+			retVal.Replace(_S("%a"),(const SHVTChar*)buffer);
 		}
 	}
 
 	// full weekday name
-	if (s.Find(_T("%A")) >= 0)
+	if (s.Find(_S("%A")) >= 0)
 	{
 		if (::GetDateFormat(LOCALE_USER_DEFAULT,0,&sysTime,_T("dddd"),buffer,__SHVTIME_MAXDATESTR))
 		{
-			retVal.Replace(_T("%A"),buffer);
+			retVal.Replace(_S("%A"),(const SHVTChar*)buffer);
 		}
 	}
 
 	// abbreviated month name
-	if (s.Find(_T("%b")) >= 0 || s.Find(_T("%h")) >= 0)
+	if (s.Find(_S("%b")) >= 0 || s.Find(_S("%h")) >= 0)
 	{
 		if (::GetDateFormat(LOCALE_USER_DEFAULT,0,&sysTime,_T("MMM"),buffer,__SHVTIME_MAXDATESTR))
 		{
-			retVal.Replace(_T("%b"),buffer);
-			retVal.Replace(_T("%h"),buffer);
+			retVal.Replace(_S("%b"),(const SHVTChar*)buffer);
+			retVal.Replace(_S("%h"),(const SHVTChar*)buffer);
 		}
 	}
 
 	// full month name
-	if (s.Find(_T("%B")) >= 0)
+	if (s.Find(_S("%B")) >= 0)
 	{
 		if (::GetDateFormat(LOCALE_USER_DEFAULT,0,&sysTime,_T("MMMM"),buffer,__SHVTIME_MAXDATESTR))
 		{
-			retVal.Replace(_T("%B"),buffer);
+			retVal.Replace(_S("%B"),(const SHVTChar*)buffer);
 		}
 	}
 
 	// preferred date and time representation
-	if (s.Find(_T("%c")) >= 0)
+	if (s.Find(_S("%c")) >= 0)
 	{
 	int len = ::GetDateFormat(LOCALE_USER_DEFAULT,DATE_SHORTDATE,&sysTime,NULL,buffer,__SHVTIME_MAXDATESTR);
 
@@ -383,169 +383,169 @@ SHVString retVal(s);
 		{
 			buffer[len-1] = ' ';
 			if (::GetTimeFormat(LOCALE_USER_DEFAULT,TIME_NOSECONDS,&sysTime,NULL,buffer+len,__SHVTIME_MAXDATESTR-len))
-				retVal.Replace(_T("%c"),buffer);
+				retVal.Replace(_S("%c"),(const SHVTChar*)buffer);
 		}
 	}
 
 	// Century number (year/100)
-	if (s.Find(_T("%C")) >= 0)
+	if (s.Find(_S("%C")) >= 0)
 	{
-		retVal.Replace(_T("%C"),SHVStringC::Format(_T("%02d"), sysTime.wYear/100));
+		retVal.Replace(_S("%C"),SHVStringC::Format(_S("%02d"), sysTime.wYear/100));
 	}
 
 	// Day of month (01 to 31)
-	if (s.Find(_T("%d")) >= 0)
+	if (s.Find(_S("%d")) >= 0)
 	{
-		retVal.Replace(_T("%d"),SHVStringC::Format(_T("%02d"), sysTime.wDay));
+		retVal.Replace(_S("%d"),SHVStringC::Format(_S("%02d"), sysTime.wDay));
 	}
 
 	// mm/dd/yy or similar, according to locale
-	if (s.Find(_T("%D")) >= 0)
+	if (s.Find(_S("%D")) >= 0)
 	{
 		if (::GetDateFormat(LOCALE_USER_DEFAULT,DATE_SHORTDATE,&sysTime,NULL,buffer,__SHVTIME_MAXDATESTR))
 		{
-			retVal.Replace(_T("%D"),buffer);
+			retVal.Replace(_S("%D"),(const SHVTChar*)buffer);
 		}
 	}
 
 	// Day of month (' 1' to '31')
-	if (s.Find(_T("%e")) >= 0)
+	if (s.Find(_S("%e")) >= 0)
 	{
-		retVal.Replace(_T("%e"),SHVStringC::Format(_T("%2d"), sysTime.wDay));
+		retVal.Replace(_S("%e"),SHVStringC::Format(_S("%2d"), sysTime.wDay));
 	}
 
 	// ISO 8601 formatted date (yyyy-mm-dd)
-	if (s.Find(_T("%F")) >= 0)
+	if (s.Find(_S("%F")) >= 0)
 	{
-		retVal.Replace(_T("%F"),SHVStringC::Format(_T("%04d-%02d-%02d"), sysTime.wYear, sysTime.wMonth, sysTime.wDay));
+		retVal.Replace(_S("%F"),SHVStringC::Format(_S("%04d-%02d-%02d"), sysTime.wYear, sysTime.wMonth, sysTime.wDay));
 	}
 
 	//\todo %g/%G are not implemented, they are "the year the week in the day are for", eg if 1/1 is week 53, then the previous year
 
 	// 2 decimal hour (00 to 23)
-	if (s.Find(_T("%H")) >= 0)
+	if (s.Find(_S("%H")) >= 0)
 	{
-		retVal.Replace(_T("%H"),SHVStringC::Format(_T("%02d"), sysTime.wHour));
+		retVal.Replace(_S("%H"),SHVStringC::Format(_S("%02d"), sysTime.wHour));
 	}
 
 	// 2 decimal hour (01 to 12)
-	if (s.Find(_T("%I")) >= 0)
+	if (s.Find(_S("%I")) >= 0)
 	{
-		retVal.Replace(_T("%I"),SHVStringC::Format(_T("%02d"), sysTime.wHour%12 ? sysTime.wHour%12 : 12 ));
+		retVal.Replace(_S("%I"),SHVStringC::Format(_S("%02d"), sysTime.wHour%12 ? sysTime.wHour%12 : 12 ));
 	}
 
 	// day of year, ranging from 001 to 366
-	if (s.Find(_T("%j")) >= 0)
+	if (s.Find(_S("%j")) >= 0)
 	{
-		retVal.Replace(_T("%j"),SHVStringC::Format(_T("%03d"), DaysInMonth(GetMonth(),GetYear()) + GetDay() ));
+		retVal.Replace(_S("%j"),SHVStringC::Format(_S("%03d"), DaysInMonth(GetMonth(),GetYear()) + GetDay() ));
 	}
 
 	// 2 decimal hour (' 0' to '23')
-	if (s.Find(_T("%k")) >= 0)
+	if (s.Find(_S("%k")) >= 0)
 	{
-		retVal.Replace(_T("%k"),SHVStringC::Format(_T("%2d"), sysTime.wHour));
+		retVal.Replace(_S("%k"),SHVStringC::Format(_S("%2d"), sysTime.wHour));
 	}
 
 	// 2 decimal hour (' 1' to '12')
-	if (s.Find(_T("%l")) >= 0)
+	if (s.Find(_S("%l")) >= 0)
 	{
-		retVal.Replace(_T("%l"),SHVStringC::Format(_T("%2d"), sysTime.wHour%12 ? sysTime.wHour%12 : 12 ));
+		retVal.Replace(_S("%l"),SHVStringC::Format(_S("%2d"), sysTime.wHour%12 ? sysTime.wHour%12 : 12 ));
 	}
 
 	// 2 month (01 to 12)
-	if (s.Find(_T("%m")) >= 0)
+	if (s.Find(_S("%m")) >= 0)
 	{
-		retVal.Replace(_T("%m"),SHVStringC::Format(_T("%02d"), sysTime.wMonth));
+		retVal.Replace(_S("%m"),SHVStringC::Format(_S("%02d"), sysTime.wMonth));
 	}
 
 	// 2 decimal minute (00 to 59)
-	if (s.Find(_T("%M")) >= 0)
+	if (s.Find(_S("%M")) >= 0)
 	{
-		retVal.Replace(_T("%M"),SHVStringC::Format(_T("%02d"), sysTime.wMinute));
+		retVal.Replace(_S("%M"),SHVStringC::Format(_S("%02d"), sysTime.wMinute));
 	}
 
 	// newline char
-	if (s.Find(_T("%n")) >= 0)
+	if (s.Find(_S("%n")) >= 0)
 	{
-		retVal.Replace(_T("%n"),_T("\n"));
+		retVal.Replace(_S("%n"),_S("\n"));
 	}
 
 	// AM/PM, 12-23:59 is PM, 00-11:59 is AM
-	if (s.Find(_T("%p")) >= 0)
+	if (s.Find(_S("%p")) >= 0)
 	{
-		retVal.Replace(_T("%p"), sysTime.wHour < 12 ? _T("AM") : _T("PM"));
+		retVal.Replace(_S("%p"), sysTime.wHour < 12 ? _S("AM") : _S("PM"));
 	}
 
 	// %P is GNU specific and not implemented
 
 	// time in AM/PM notation
-	if (s.Find(_T("%r")) >= 0)
+	if (s.Find(_S("%r")) >= 0)
 	{
-		retVal.Replace(_T("%r"), SHVStringC::Format(_T("%02d:%02d:%02d %s"), sysTime.wHour%12 ? sysTime.wHour%12 : 12, sysTime.wMinute, sysTime.wSecond, sysTime.wHour < 12 ? _T("AM") : _T("PM")));
+		retVal.Replace(_S("%r"), SHVStringC::Format(_S("%02d:%02d:%02d %s"), sysTime.wHour%12 ? sysTime.wHour%12 : 12, sysTime.wMinute, sysTime.wSecond, sysTime.wHour < 12 ? _S("AM") : _S("PM")));
 	}
 
 	// time in HH:MM notation
-	if (s.Find(_T("%R")) >= 0)
+	if (s.Find(_S("%R")) >= 0)
 	{
-		retVal.Replace(_T("%R"), SHVStringC::Format(_T("%02d:%02d"), sysTime.wHour, sysTime.wMinute));
+		retVal.Replace(_S("%R"), SHVStringC::Format(_S("%02d:%02d"), sysTime.wHour, sysTime.wMinute));
 	}
 
 	//\todo implement %s wich is seconds since epoch (unix time)
 
 	// 2 decimal second (00 to 59)
-	if (s.Find(_T("%S")) >= 0)
+	if (s.Find(_S("%S")) >= 0)
 	{
-		retVal.Replace(_T("%S"),SHVStringC::Format(_T("%02d"), sysTime.wSecond));
+		retVal.Replace(_S("%S"),SHVStringC::Format(_S("%02d"), sysTime.wSecond));
 	}
 
 	// tab char
-	if (s.Find(_T("%t")) >= 0)
+	if (s.Find(_S("%t")) >= 0)
 	{
-		retVal.Replace(_T("%t"),_T("\t"));
+		retVal.Replace(_S("%t"),_S("\t"));
 	}
 
 	// day of week as a decimal, 1 being monday, 7 sunday
-	if (s.Find(_T("%u")) >= 0)
+	if (s.Find(_S("%u")) >= 0)
 	{
-		retVal.Replace(_T("%u"),SHVStringC::LongToString(sysTime.wDayOfWeek ? sysTime.wDayOfWeek : 7));
+		retVal.Replace(_S("%u"),SHVStringC::LongToString(sysTime.wDayOfWeek ? sysTime.wDayOfWeek : 7));
 	}
 
 	///\todo Implement %U, as weeknumber with the first week being the first week with a sunday, and as first weekday
 
 	// Week number according to the ISO 8601 standard
-	if (s.Find(_T("%V")) >= 0)
+	if (s.Find(_S("%V")) >= 0)
 	{
-		retVal.Replace(_T("%V"),SHVStringC::LongToString(((SHVTime*)this)->CalculateWeekNumber()));
+		retVal.Replace(_S("%V"),SHVStringC::LongToString(((SHVTime*)this)->CalculateWeekNumber()));
 	}
 
 	// preferred date representation
-	if (s.Find(_T("%x")) >= 0)
+	if (s.Find(_S("%x")) >= 0)
 	{
 		if (::GetDateFormat(LOCALE_USER_DEFAULT,DATE_SHORTDATE,&sysTime,NULL,buffer,__SHVTIME_MAXDATESTR))
 		{
-			retVal.Replace(_T("%x"),buffer);
+			retVal.Replace(_S("%x"),(const SHVTChar*)buffer);
 		}
 	}
 
 	// preferred time representation
-	if (s.Find(_T("%X")) >= 0)
+	if (s.Find(_S("%X")) >= 0)
 	{
 		if (::GetTimeFormat(LOCALE_USER_DEFAULT,TIME_NOSECONDS,&sysTime,NULL,buffer,__SHVTIME_MAXDATESTR))
 		{
-			retVal.Replace(_T("%X"),buffer);
+			retVal.Replace(_S("%X"),(const SHVTChar*)buffer);
 		}
 	}
 
 	// 2 decimal year (00 to 99)
-	if (s.Find(_T("%y")) >= 0)
+	if (s.Find(_S("%y")) >= 0)
 	{
-		retVal.Replace(_T("%y"),SHVStringC::Format(_T("%02d"), sysTime.wYear%100));
+		retVal.Replace(_S("%y"),SHVStringC::Format(_S("%02d"), sysTime.wYear%100));
 	}
 
 	// 4 decimal year (0000 to 9999)
-	if (s.Find(_T("%Y")) >= 0)
+	if (s.Find(_S("%Y")) >= 0)
 	{
-		retVal.Replace(_T("%Y"),SHVStringC::Format(_T("%04d"), sysTime.wYear));
+		retVal.Replace(_S("%Y"),SHVStringC::Format(_S("%04d"), sysTime.wYear));
 	}
 
 	//\todo Implement timezone formats %z and %Z
@@ -557,7 +557,7 @@ SHVTChar* retVal = (SHVTChar*)::malloc(__SHVTIME_MAXDATESTR*sizeof(SHVTChar));
 	retVal[0] = 0;
 
 # if defined(UNICODE)
-	wcsftime(retVal,__SHVTIME_MAXDATESTR,s.GetSafeBuffer(),&Time);
+	wcsftime((TCHAR*)retVal,__SHVTIME_MAXDATESTR,(TCHAR*)s.GetSafeBuffer(),&Time);
 # else
 	strftime(retVal,__SHVTIME_MAXDATESTR,s.GetSafeBuffer(),&Time);
 # endif

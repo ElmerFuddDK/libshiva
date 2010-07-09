@@ -386,7 +386,7 @@ SHVString8 condition8;
 SHVString8 orderby8;
 
 	GetDataSession()->GetFactory()->GetDataEngine().BuildKeySQL(StructCache->GetIndex(SortIndex), condition8, orderby8,"",reverse);
-	if (!condition.IsNull() && condition != _T(""))
+	if (!condition.IsEmpty())
 	{
 		queryUTF8.Format("select * from %s where (%s) and %s order by %s", 
 			Alias.GetSafeBuffer(),

@@ -63,32 +63,32 @@ SHVMenuRef toplevelmenu, menu;
 	EditBox->SetParent(GetContainer());
 
 	Button = GetManager()->NewButton();
-	Button->SetParent(GetContainer())->SetText(_T("Click me"))->SubscribeClicked(new SHVEventSubscriber(this));
+	Button->SetParent(GetContainer())->SetText(_S("Click me"))->SubscribeClicked(new SHVEventSubscriber(this));
 
 	lblLongDate = GetManager()->NewLabel();
-	lblLongDate->SetParent(GetContainer())->SetText(_T("Long date:"));
+	lblLongDate->SetParent(GetContainer())->SetText(_S("Long date:"));
 
 	dtLongDate = GetManager()->NewDateTime(SHVControlDateTime::SubTypeLongDate);
 	dtLongDate->SetParent(GetContainer());
 
 	lblShortDate = GetManager()->NewLabel();
-	lblShortDate->SetParent(GetContainer())->SetText(_T("Short date:"));
+	lblShortDate->SetParent(GetContainer())->SetText(_S("Short date:"));
 
 	dtShortDate = GetManager()->NewDateTime(SHVControlDateTime::SubTypeShortDate);
 	dtShortDate->SetParent(GetContainer());
 
 	lblTime = GetManager()->NewLabel();
-	lblTime->SetParent(GetContainer())->SetText(_T("Time:"));
+	lblTime->SetParent(GetContainer())->SetText(_S("Time:"));
 
 	dtTime = GetManager()->NewDateTime(SHVControlDateTime::SubTypeTime);
 	dtTime->SetParent(GetContainer());
 
 	lvData = GetManager()->NewListView();
-	lvData->SetParent(GetContainer())->AddColumn(_T("Data"),50)->AddColumn(_T("Note"),100)->AddColumn(_T("Other"),50);
-	lvData->AddItem(_T("Stuff"))->SetItemText(_T("Note"),0,1);
-	lvData->AddItem(_T("Stuff1"))->SetItemText(_T("Note"),1,1);
-	lvData->AddItem(_T("Stuff2"))->SetItemText(_T("Note"),2,1);
-	lvData->AddItem(_T("Stuff3"))->SetItemText(_T("Note"),3,1);
+	lvData->SetParent(GetContainer())->AddColumn(_S("Data"),50)->AddColumn(_S("Note"),100)->AddColumn(_S("Other"),50);
+	lvData->AddItem(_S("Stuff"))->SetItemText(_S("Note"),0,1);
+	lvData->AddItem(_S("Stuff1"))->SetItemText(_S("Note"),1,1);
+	lvData->AddItem(_S("Stuff2"))->SetItemText(_S("Note"),2,1);
+	lvData->AddItem(_S("Stuff3"))->SetItemText(_S("Note"),3,1);
 
 	lvData->SubscribeSelectedChanged(new SHVEventSubscriber(this));
 	lvData->SubscribeShowContextMenu(new SHVEventSubscriber(this));
@@ -135,12 +135,12 @@ void SHVFormTabTestPage::OnEvent(SHVEvent* event)
 			lblShortDate->SetText(lblShortDate->GetText());
 			lblTime->SetText(lblTime->GetText());
 
-			if (GetContainer()->GetTitle().Right(1) != _T("*"))
-				GetContainer()->SetTitle(GetContainer()->GetTitle()+SHVStringC(_T("*")));
+			if (GetContainer()->GetTitle().Right(1) != _S("*"))
+				GetContainer()->SetTitle(GetContainer()->GetTitle()+SHVStringC(_S("*")));
 			GetContainer()->ResizeControls();
 
-			SHVTRACE(_T("DateTime from short date is : %s\n"), dtShortDate->GetTime().ToDateString().GetSafeBuffer());
-			SHVTRACE(_T("DateTime combined from short date/time is : %s\n"), dtShortDate->GetCombinedTime(dtTime).ToDateString().GetSafeBuffer());
+			SHVTRACE(_S("DateTime from short date is : %s\n"), dtShortDate->GetTime().ToDateString().GetSafeBuffer());
+			SHVTRACE(_S("DateTime combined from short date/time is : %s\n"), dtShortDate->GetCombinedTime(dtTime).ToDateString().GetSafeBuffer());
 
 			dtLongDate->SetTime(dtShortDate->GetTime());
 
@@ -157,18 +157,18 @@ void SHVFormTabTestPage::OnEvent(SHVEvent* event)
 		}
 		else if (SHVEvent::Equals(event,SHVControlListView::EventShowContextMenu))
 		{
-			SHVTRACE(_T("A\n"));
+			SHVTRACE(_S("A\n"));
 			if (!event->GetSubID().IsNull())
 			{
 			SHVMenuRef menu = lvData->CreatePopupMenu(new SHVEventSubscriber(this));
-				menu->AddStringItem(1,_T("All Ur base"));
-				menu->AddStringItem(2,_T("R belong 2 us!"));
+				menu->AddStringItem(1,_S("All Ur base"));
+				menu->AddStringItem(2,_S("R belong 2 us!"));
 				menu->Show();
 			}
 		}
 		else if (SHVEvent::Equals(event,SHVControl::EventMenu))
 		{
-			SHVTRACE(_T("ListView context menu item result = %d\n"), (int)event->GetSubID());
+			SHVTRACE(_S("ListView context menu item result = %d\n"), (int)event->GetSubID());
 		}
 	}
 }

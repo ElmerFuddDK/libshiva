@@ -107,7 +107,7 @@ void SHVTestServer::TestDone(SHVTestResult* result)
 void SHVTestServer::AddLogLine(SHVModuleBase* caller, const SHVStringC& log)
 {
 SHVRefObjectTemplate<SHVString>* obj = new SHVRefObjectTemplate<SHVString>;
-	obj->Object().Format(_T("LOG (%s - 0x%X): %s"), caller->GetName().GetSafeBuffer(), SHVThreadBase::GetCurrentThreadID(), log.GetSafeBuffer());
+	obj->Object().Format(_S("LOG (%s - 0x%X): %s"), caller->GetName().GetSafeBuffer(), SHVThreadBase::GetCurrentThreadID(), log.GetSafeBuffer());
 	EmitEvent(new SHVEvent(this,EventInternalAddLogLine,0,obj));
 }
 
@@ -133,7 +133,7 @@ void SHVTestServer::OnEvent(SHVEvent* event)
 				
 				if (!result || result->Title.IsNull())
 				{
-					Logger.AddHeader(_T("Log for module %s"), result->Caller->GetName().ToStrT().GetBufferConst());
+					Logger.AddHeader(_S("Log for module %s"), result->Caller->GetName().ToStrT().GetBufferConst());
 				}
 		
 				if (result)
@@ -141,22 +141,22 @@ void SHVTestServer::OnEvent(SHVEvent* event)
 				SHVListIterator<SHVString,const SHVStringC&> itr(result->Log);
 		
 					if (!result->Title.IsNull())
-						Logger.AddHeader(_T("Log for %s"), result->Title.GetSafeBuffer());
+						Logger.AddHeader(_S("Log for %s"), result->Title.GetSafeBuffer());
 		
 					while (itr.MoveNext())
 					{
 						Logger.AddLine(itr.Get());
 					}
 					if (result->GetResult())
-						Logger.AddLine(_T("Test result: %s"), Logger.Success(result->GetResult()));
+						Logger.AddLine(_S("Test result: %s"), Logger.Success(result->GetResult()));
 					else
-						Logger.AddLine(_T("Test result: %s with code %d"), Logger.Success(result->GetResult()), result->GetResult().GetError());
+						Logger.AddLine(_S("Test result: %s with code %d"), Logger.Success(result->GetResult()), result->GetResult().GetError());
 
-					Logger.AddLine(_T(""));
+					Logger.AddLine(_S(""));
 				}
 				else
 				{
-					Logger.AddLine(_T("No results"));
+					Logger.AddLine(_S("No results"));
 				}
 
 				if (pos)

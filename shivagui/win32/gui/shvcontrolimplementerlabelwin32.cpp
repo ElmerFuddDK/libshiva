@@ -99,7 +99,7 @@ void SHVControlImplementerLabelWin32::SetText(SHVControlLabel* owner, const SHVS
 {
 	SHVASSERT(IsCreated());
 
-	SetWindowText(GetHandle(),text.GetSafeBuffer());
+	SetWindowText(GetHandle(),(const TCHAR*)text.GetSafeBuffer());
 
 	if (autoSize)
 	{

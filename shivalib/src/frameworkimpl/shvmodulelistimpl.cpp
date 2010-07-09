@@ -108,7 +108,7 @@ SHVString param, val;
 		else
 		{
 		SHVStringC cStr(++c);
-			pos = cStr.Find(_T(" "));
+			pos = cStr.Find(_S(" "));
 			if (pos < 0)
 			{
 				param = cStr;
@@ -136,10 +136,10 @@ SHVString param, val;
 							escaping = false;
 							switch (c[pos])
 							{
-							case '\\': val += _T("\\"); break;
-							case 'n':  val += _T("\n"); break;
-							case '"':  val += _T("\""); break;
-							case 't':  val += _T("\t"); break;
+							case '\\': val += _S("\\"); break;
+							case 'n':  val += _S("\n"); break;
+							case '"':  val += _S("\""); break;
+							case 't':  val += _S("\t"); break;
 							default:
 								running = false;
 								break;
@@ -164,7 +164,7 @@ SHVString param, val;
 				else if (*c != '-')
 				{
 				SHVStringC cStr(c);
-					pos = cStr.Find(_T(" "));
+					pos = cStr.Find(_S(" "));
 					if (pos < 0)
 					{
 						val = cStr;
@@ -382,7 +382,7 @@ SHVBool SHVModuleListImpl::AddStartupError(const SHVStringC& error)
 {
 	if (State == StateInitialized || State == StateRegistering)
 	{
-		StartupErrors.AddTail(error + SHVStringC(_T("\n")));
+		StartupErrors.AddTail(error + SHVStringC(_S("\n")));
 	}
 
 	return SHVBool::False;
@@ -627,7 +627,7 @@ SHVBool retVal(false);
 				{
 				SHVString errMsg;
 
-					errMsg.Format( _T("%s failed to register"), itr.Get()->GetName().ToStrT().GetSafeBuffer() );
+					errMsg.Format( _S("%s failed to register"), itr.Get()->GetName().ToStrT().GetSafeBuffer() );
 					AddStartupError( errMsg );
 					State = StateError;
 				}

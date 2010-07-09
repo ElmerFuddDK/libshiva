@@ -59,7 +59,7 @@ int retVal = -1;
 	{
 		::MessageBox(NULL,_T("Invalid version of libshiva.dll"),_T("Error"),MB_ICONERROR);
 	}
-	else if (!guilib.Load(guilib.CreateLibFileName(_T("shivaguiwin32"))))
+	else if (!guilib.Load(guilib.CreateLibFileName(_S("shivaguiwin32"))))
 	{
 		::MessageBox(NULL,_T("Failed loading GUI module"),_T("GUI Tester"),MB_ICONERROR);
 	}

@@ -695,7 +695,7 @@ iconv_t conv = iconv_open("UTF-8","UCS-2");
 		else
 		{
 #ifdef __SHIVA_WIN32
-			bytes = WideCharToMultiByte(CP_UTF8,0,buffer,1,str ? str : utf8Str,5,NULL,NULL);
+			bytes = WideCharToMultiByte(CP_UTF8,0,(const WCHAR*)buffer,1,str ? str : utf8Str,5,NULL,NULL);
 			if (bytes)
 			{
 				retVal += bytes;

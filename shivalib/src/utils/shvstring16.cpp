@@ -116,6 +116,8 @@ SHVWChar firstVal = *str;
 		retVal *= -1;
 
 	return retVal;
+#elif defined(__MINGW32__)
+	return (str ? wcstoll((const wchar_t*)str,(wchar_t**)ptr,base) : NULL);
 #else
 	return (str ? _wcstoi64((const wchar_t*)str,(wchar_t**)ptr,base) : NULL);
 #endif
@@ -1244,7 +1246,11 @@ int n;
 	{
 		AllocBuffer(newSize);
 		SHVVA_COPY( argList, args );
+# ifdef __MINGW32__
+		n = _vsnwprintf( (wchar_t*)Buffer, newSize, (const wchar_t*)s, argList );
+# else
 		n = vswprintf( (wchar_t*)Buffer, newSize, (const wchar_t*)s, argList );
+# endif
 		SHVVA_END( argList );
 
 		if (n > -1 && (size_t)n < newSize)

@@ -47,16 +47,16 @@ public:
 
 	SHVTest(SHVModuleList& modules) : SHVModule(modules,"Test")
 	{
-		Modules.GetConfig().Set(_T("test"),2);
-		Modules.GetConfig().FindInt(_T("test2"),128);
-		SHVConsole::Printf8("result 128-2^6 : %g\n", SHVMath::EvalMap(_T("test2-test^6"),Modules.GetConfig()));
+		Modules.GetConfig().Set(_S("test"),2);
+		Modules.GetConfig().FindInt(_S("test2"),128);
+		SHVConsole::Printf8("result 128-2^6 : %g\n", SHVMath::EvalMap(_S("test2-test^6"),Modules.GetConfig()));
 	}
 	
 	SHVBool Register()
 	{
 		SHVConsole::Printf8("In register\n");
 				
-		if (!SHVModuleResolver<SHVTimer>(Modules, Timer, _T("Timer")))
+		if (!SHVModuleResolver<SHVTimer>(Modules, Timer, "Timer"))
 			return SHVBool::False;
 		
 		SHVASSERT(Modules.ResolveModule("Test"));
@@ -70,7 +70,7 @@ public:
 	{
 	SHVTime now;
 		now.SetNow();
-		SHVConsole::Printf(_T("Started: Time now %s\n"), now.ToDateString().GetBufferConst());
+		SHVConsole::Printf(_S("Started: Time now %s\n"), now.ToDateString().GetBufferConst());
 		now.AddSeconds(5);
 		SHVConsole::Printf8("Application running...\n");
 		TimerInstance = Timer->CreateTimer(new SHVEventSubscriber(this));
@@ -83,7 +83,7 @@ public:
 		{
 		SHVTime now;
 			now.SetNow();
-			SHVConsole::Printf8(_T("Stopped: Time now %s\n"), now.ToDateString().GetBufferConst());
+			SHVConsole::Printf8(_S("Stopped: Time now %s\n"), now.ToDateString().GetBufferConst());
 			SHVConsole::Printf8("Shutting it down\n");
 			Modules.CloseApp();
 		}
@@ -123,9 +123,9 @@ CONSOLEMAIN()
 		SHVConsole::Printf8("Testing assertions - should fail in debug mode\n");
 		SHVASSERT(false);
 	
-		testStr.Format(_T("This is a test %s %d.%d.%d\n"), _T("of SHIVA version"), __SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE);
+		testStr.Format(_S("This is a test %s %d.%d.%d\n"), _T("of SHIVA version"), __SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE);
 	
-		SHVConsole::Printf(_T("%s"), testStr.GetSafeBuffer());
+		SHVConsole::Printf(_S("%s"), testStr.GetSafeBuffer());
 		
 		return mainqueue.Run().GetError();
 	}

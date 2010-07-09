@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#ifndef _WIN32_WCE
+#if !defined(_WIN32_WCE) && !defined(__MINGW32__)
 # include <time.h>
 # if !defined(_WINDOWS_) && !defined(_WINDOWS)
 #  include <arpa/inet.h>

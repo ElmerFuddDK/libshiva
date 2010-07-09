@@ -42,22 +42,22 @@
  *************************************/
 SHVDataEngineImpl::SHVDataEngineImpl(SHVModuleList& modules): SHVDataEngine(modules)
 {
-SHVString database = modules.GetConfig().Find(__DATAENGINE_DEFAULT_DATABASE, _T("database.db"))->ToString();
+SHVString database = modules.GetConfig().Find(__DATAENGINE_DEFAULT_DATABASE, _S("database.db"))->ToString();
 SHVString datapath = modules.GetConfig().Find(__DATAENGINE_DATAPATH, Modules.GetConfig().Find(SHVModuleList::DefaultCfgAppPath)->ToString())->ToString();
 SHVBool ok;
 SHVString driverPath;
 
 	datapath += SHVDir::Delimiter() + database;
 #if defined(__SHIVA_LINUX) && defined(DEBUG)
-	driverPath = SQLiteDll.CreateLibFileName(_T("shivasqlite"));
+	driverPath = SQLiteDll.CreateLibFileName(_S("shivasqlite"));
 #else
-	driverPath = SQLiteDll.CreateLibFileName(_T("shivasqlite"),modules.GetConfig().Find(SHVModuleList::DefaultCfgAppPath)->ToString());
+	driverPath = SQLiteDll.CreateLibFileName(_S("shivasqlite"),modules.GetConfig().Find(SHVModuleList::DefaultCfgAppPath)->ToString());
 #endif
 
 	ok = SQLiteDll.Load(driverPath);
 	if (!ok)
 	{
-		Modules.AddStartupError(SHVStringC::Format(_T("Could not load %s"), driverPath.GetSafeBuffer()));
+		Modules.AddStartupError(SHVStringC::Format(_S("Could not load %s"), driverPath.GetSafeBuffer()));
 	}
 	else
 	{
@@ -225,7 +225,7 @@ SHVSQLiteWrapperRef retVal = (SHVSQLiteWrapper*) SQLiteDll.CreateObjectInt(&Modu
 	{
 	SHVStringSQLite rest("");
 	// Lets setup a default memory database
-		if (dataBase != _T(":memory"))
+		if (dataBase != _S(":memory"))
 			retVal->ExecuteUTF8(Ok, "attach database :memory as memdb", rest);
 		if (Ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 		{

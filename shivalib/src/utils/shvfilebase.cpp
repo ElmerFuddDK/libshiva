@@ -58,11 +58,11 @@
 const SHVStringC SHVFileBase::Wildcard()
 {
 #ifdef __SHIVA_WIN32
-	return _T("*.*");
+	return _S("*.*");
 #elif defined(__SHIVA_EPOC)
-	return _T("*.*");
+	return _S("*.*");
 #else
-	return _T("*");
+	return _S("*");
 #endif
 }
 
@@ -297,16 +297,16 @@ SHVBool retVal( (flags&FlagRead) || (flags&FlagWrite) ? (int)SHVBool::True : (in
 	SHVString mode;
 
 		if (flags&FlagOverride)
-			mode += _T("w");
+			mode += _S("w");
 		else if ( (flags&FlagWrite) )
-			mode += _T("a");
+			mode += _S("a");
 		else if (flags&FlagRead)
-			mode += _T("r");
+			mode += _S("r");
 
 		if ( (flags&FlagRead) && (flags&FlagWrite) )
-			mode += _T("+b");
+			mode += _S("+b");
 		else
-			mode += _T("b");
+			mode += _S("b");
 
 #if defined(UNICODE)
 		File = wfopen((const wchar_t*)fileName.GetSafeBuffer(),(const wchar_t*)mode.GetSafeBuffer());

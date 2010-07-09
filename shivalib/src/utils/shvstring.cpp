@@ -77,7 +77,7 @@ SHVInt64Val retVal = (str ? ::_atoi64(str) : 0);
 		while (*ptr && (*ptr)[0] >= '0' && (*ptr)[0] <= '9') (*ptr)++;
 	}
 	return retVal;
-#elif defined(__SHIVA_WIN32)
+#elif defined(__SHIVA_WIN32) && !defined(__MINGW32__)
 	return (str ? ::_strtoi64(str,ptr,base) : 0);
 #else
 	return (str ? ::strtoll(str,ptr,base) : 0);

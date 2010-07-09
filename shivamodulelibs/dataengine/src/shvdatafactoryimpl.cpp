@@ -895,7 +895,7 @@ SHVBool ok = SHVBool::True;
 			ok = SHVBool::True;
 #ifdef DEBUG
 		else
-			SHVTRACE(_T("Begin transaction: %s\n"), sqlite->GetErrorMsg().GetSafeBuffer());
+			SHVTRACE(_S("Begin transaction: %s\n"), sqlite->GetErrorMsg().GetSafeBuffer());
 #endif
 	}
 	if (ok)
@@ -953,7 +953,7 @@ bool more;
 		else
 		{
 #ifdef DEBUG
-			SHVTRACE(_T("End transaction: %s\n"), sqlite->GetErrorMsg().GetSafeBuffer());
+			SHVTRACE(_S("End transaction: %s\n"), sqlite->GetErrorMsg().GetSafeBuffer());
 #endif
 			InTransaction++;
 			InternalRollbackTransaction(sqlite);

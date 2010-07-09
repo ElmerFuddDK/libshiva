@@ -32,8 +32,9 @@
 #include "../../../include/platformspc.h"
 #include "../../../include/utils/shvassert.h"
 #include "../../../include/utils/shvstring.h"
+#include "../../../include/framework/shvconsole.h"
 
-#if defined(__SHIVA_WIN32) && !defined(__SHIVA_WINCE)
+#if defined(__SHIVA_WIN32) && !defined(__SHIVA_WINCE) && !defined(__MINGW32__)
 # include <crtdbg.h>
 #endif
 
@@ -42,7 +43,7 @@ bool SHVAPI SHVAssert::ReportError(const char* fileName, int lineNo)
 #if defined(__SHIVA_WINCE)
 	///\todo Implement assertions for wince
 	return true;
-#elif defined(__SHIVA_WIN32)
+#elif defined(__SHIVA_WIN32) && !defined(__MINGW32__)
 # ifdef DEBUG
 	// we remove WM_QUIT because if it is in the queue then the message box
 	// won't display
@@ -55,7 +56,10 @@ bool SHVAPI SHVAssert::ReportError(const char* fileName, int lineNo)
 	return (bResult ? true : false);
 # endif
 #else
-	fprintf(stderr,"ASSERTION FAILED IN %s, LINE %d\n",fileName,lineNo);
+	SHVConsole::ErrPrintf8("ASSERTION FAILED IN %s, LINE %d\n",fileName,lineNo);
+# ifdef __MINGW32__
+	fflush(stderr);
+# endif
 	return false;
 #endif
 	return true;
@@ -70,11 +74,14 @@ SHVVA_LIST args;
 	str.FormatList(s,args);
 	SHVVA_END(args);
 
-#if defined(__SHIVA_WIN32)
-	::OutputDebugString(str.GetSafeBuffer());
+#if defined(__SHIVA_WIN32) && !defined(__MINGW32__)
+	::OutputDebugString((const TCHAR*)str.GetSafeBuffer());
 #elif defined(__SHIVA_EPOC)
-#elif defined(UNICODE)
 #else
-	fprintf(stderr,"%s",str.GetSafeBuffer());
+	SHVConsole::ErrPrintf(_S("%s"),str.GetSafeBuffer());
+# ifdef __MINGW32__
+	if (str.Find(_S("\n")) >= 0)
+		fflush(stderr);
+# endif
 #endif
 }

@@ -100,13 +100,13 @@ void SHVMessageBox::InitializeForm()
 
 		OK = GetManager()->NewButton();
 		OK->SetParent(GetContainer());
-		OK->SetText(_T("OK"))->SubscribeClicked(ButtonSubscriber);
+		OK->SetText(_S("OK"))->SubscribeClicked(ButtonSubscriber);
 
 		if (Type == SHVGUIManager::MsgBoxOKCancel)
 		{
 			Cancel = GetManager()->NewButton();
 			Cancel->SetParent(GetContainer());
-			Cancel->SetText(_T("Cancel"))->SubscribeClicked(ButtonSubscriber);
+			Cancel->SetText(_S("Cancel"))->SubscribeClicked(ButtonSubscriber);
 		}
 
 		rgn->SetMargin(4,3);

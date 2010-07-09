@@ -93,7 +93,7 @@ SHVInt SHVModuleFactorySocketServer::GetBuild()
  *************************************/
 SHVStringBuffer SHVModuleFactorySocketServer::GetDescription()
 {
-SHVString retVal(_T("Module library for SocketServer"));
+SHVString retVal(_S("Module library for SocketServer"));
 	return retVal.ReleaseBuffer();
 }
 
@@ -121,5 +121,5 @@ void SHVModuleFactorySocketServer::OnEvent(SHVEvent* event)
 
 SHVStringBuffer SHVModuleFactorySocketServer::GetName()
 {
-	return SHVString(_T("SocketServer")).ReleaseBuffer();
+	return SHVString(_S("SocketServer")).ReleaseBuffer();
 }

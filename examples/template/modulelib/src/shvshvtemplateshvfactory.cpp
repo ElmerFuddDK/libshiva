@@ -63,7 +63,7 @@ SHVInt SHVModuleFactorySHVTemplateSHV::GetBuild()
  *************************************/
 SHVStringBuffer SHVModuleFactorySHVTemplateSHV::GetDescription()
 {
-SHVString retVal(_T("Module library for SHVTemplateSHV"));
+SHVString retVal(_S("Module library for SHVTemplateSHV"));
 	return retVal.ReleaseBuffer();
 }
 
@@ -91,5 +91,5 @@ void SHVModuleFactorySHVTemplateSHV::OnEvent(SHVEvent* event)
 
 SHVStringBuffer SHVModuleFactorySHVTemplateSHV::GetName()
 {
-	return SHVString(_T("SHVTemplateSHV")).ReleaseBuffer();
+	return SHVString(_S("SHVTemplateSHV")).ReleaseBuffer();
 }

@@ -43,7 +43,7 @@ GLOB;
 /* system dependent call to get the current system time. Returned as
    100ns ticks since UUID epoch, but resolution may be less than
    100ns. */
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE) || defined(__MINGW32__)
 
 void get_system_time(uuid_time_t *uuid_time)
 {

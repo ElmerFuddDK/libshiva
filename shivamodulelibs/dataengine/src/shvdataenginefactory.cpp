@@ -93,7 +93,7 @@ SHVInt SHVModuleFactoryDataEngine::GetBuild()
  *************************************/
 SHVStringBuffer SHVModuleFactoryDataEngine::GetDescription()
 {
-SHVString retVal(_T("Module library for DataEngine"));
+SHVString retVal(_S("Module library for DataEngine"));
 	return retVal.ReleaseBuffer();
 }
 
@@ -120,5 +120,5 @@ void SHVModuleFactoryDataEngine::OnEvent(SHVEvent* event)
 
 SHVStringBuffer SHVModuleFactoryDataEngine::GetName()
 {
-	return SHVString(_T("DataEngine")).ReleaseBuffer();
+	return SHVString(_S("DataEngine")).ReleaseBuffer();
 }

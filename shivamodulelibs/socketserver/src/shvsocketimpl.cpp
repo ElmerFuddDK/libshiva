@@ -34,7 +34,17 @@
 
 #include "../include/shvsocketserverimpl.h"
 
-#ifdef __SHIVA_WIN32
+#ifdef __MINGW32__
+# ifndef SIO_KEEPALIVE_VALS
+struct tcp_keepalive { u_long  onoff; u_long  keepalivetime; u_long  keepaliveinterval; };
+#  define SIO_KEEPALIVE_VALS _WSAIOW(IOC_VENDOR,4)
+# endif
+# define MSG_DONTWAIT 0
+# define MSG_NOSIGNAL 0
+# include <sys/types.h>
+# include <fcntl.h>
+# include <errno.h>
+#elif defined(__SHIVA_WIN32)
 # define MSG_DONTWAIT 0
 # define MSG_NOSIGNAL 0
 # ifndef __SHIVA_WINCE

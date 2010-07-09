@@ -17,11 +17,11 @@ SHVDll subprocesslib;
 
 	if (!SHVModuleList::CheckVersion(__SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE))
 	{
-		SHVConsole::ErrPrintf(_T("WRONG SHIVA VERSION\n"));
+		SHVConsole::ErrPrintf(_S("WRONG SHIVA VERSION\n"));
 	}
-	else if (!subprocesslib.Load(subprocesslib.CreateLibFileName(_T("subprocess"))))
+	else if (!subprocesslib.Load(subprocesslib.CreateLibFileName(_S("subprocess"))))
 	{
-		SHVConsole::ErrPrintf(_T("Could not load subprocess library\n"));
+		SHVConsole::ErrPrintf(_S("Could not load subprocess library\n"));
 	}
 	else
 	{

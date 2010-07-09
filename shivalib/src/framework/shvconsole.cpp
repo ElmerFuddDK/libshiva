@@ -49,8 +49,10 @@ void SHVConsole::Printf(const SHVTChar* str, ...)
 {
 SHVVA_LIST args;
 	SHVVA_START(args,str);
-#ifdef UNICODE
+#if defined(__SHIVA_WINCE)
 	vwprintf(str,args);
+#elif defined(UNICODE)
+	vwprintf((const TCHAR*)str,args);
 #else
 	vprintf(str,args);
 #endif
@@ -65,8 +67,10 @@ void SHVConsole::PrintfList(const SHVTChar* str, SHVVA_LIST args)
 {
 SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
-#ifdef UNICODE
+#if defined(__SHIVA_WINCE)
 	vwprintf(str,argList);
+#elif defined(UNICODE)
+	vwprintf((const TCHAR*)str,argList);
 #else
 	vprintf(str,argList);
 #endif
@@ -81,8 +85,10 @@ void SHVConsole::ErrPrintf(const SHVTChar* str, ...)
 {
 SHVVA_LIST args;
 	SHVVA_START(args,str);
-#ifdef UNICODE
+#if defined(__SHIVA_WINCE)
 	vfwprintf(stderr,str,args);
+#elif defined(UNICODE)
+	vfwprintf(stderr,(const TCHAR*)str,args);
 #else
 	vfprintf(stderr,str,args);
 #endif
@@ -97,8 +103,10 @@ void SHVConsole::ErrPrintfList(const SHVTChar* str, SHVVA_LIST args)
 {
 SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
-#ifdef UNICODE
+#if defined(__SHIVA_WINCE)
 	vfwprintf(stderr,str,argList);
+#elif defined(UNICODE)
+	vfwprintf(stderr,(const TCHAR*)str,argList);
 #else
 	vfprintf(stderr,str,argList);
 #endif
@@ -163,8 +171,10 @@ SHVVA_LIST args;
 	SHVVA_START(args,str);
 #ifdef __SHIVA_LINUX
 	printf("%s", SHVString16C::FormatList(str, args).ToStrT().GetSafeBuffer());
-#else
+#elif defined(__SHIVA_WINCE)
 	vwprintf(str,args);
+#else
+	vwprintf((const TCHAR*)str,args);
 #endif
 	SHVVA_END(args);
 }
@@ -179,8 +189,10 @@ SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
 #ifdef __SHIVA_LINUX
 	printf("%s", SHVString16C::FormatList(str, argList).ToStrT().GetSafeBuffer());
-#else
+#elif defined(__SHIVA_WINCE)
 	vwprintf(str,argList);
+#else
+	vwprintf((const TCHAR*)str,argList);
 #endif
 	SHVVA_END( argList );
 }
@@ -195,8 +207,10 @@ SHVVA_LIST args;
 	SHVVA_START(args,str);
 #ifdef __SHIVA_LINUX
 	fprintf(stderr, "%s", SHVString16C::FormatList(str, args).ToStrT().GetSafeBuffer());
-#else
+#elif defined(__SHIVA_WINCE)
 	vfwprintf(stderr,str,args);
+#else
+	vfwprintf(stderr,(const TCHAR*)str,args);
 #endif
 	SHVVA_END(args);
 }
@@ -211,8 +225,10 @@ SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
 #ifdef __SHIVA_LINUX
 	fprintf(stderr, "%s", SHVString16C::FormatList(str, argList).ToStrT().GetSafeBuffer());
-#else
+#elif defined(__SHIVA_WINCE)
 	vfwprintf(stderr,str,args);
+#else
+	vfwprintf(stderr,(const TCHAR*)str,args);
 #endif
 	SHVVA_END( argList );
 }

@@ -670,8 +670,8 @@ SHVDouble SHVConfigNodeImplRefObj::ToDouble()	{ return ( !Value.IsNull() ? 1.0 :
  *************************************/
 SHVStringBuffer SHVConfigNodeImplInt::ToString() { return ( !Value.IsNull() ? SHVStringC::LongToString(Value) : SHVString().ReleaseBuffer() ); }
 SHVStringBuffer SHVConfigNodeImplString::ToString() { SHVString retVal(Value); return retVal.ReleaseBuffer(); }
-SHVStringBuffer SHVConfigNodeImplPointer::ToString() {SHVString retVal; if (Value) retVal.Format(_T("%p"), Value); return retVal.ReleaseBuffer(); }
-SHVStringBuffer SHVConfigNodeImplRefObj::ToString()	 {SHVString retVal; if (!Value.IsNull()) retVal.Format(_T("%p"), Value.AsConst()); return retVal.ReleaseBuffer(); }
+SHVStringBuffer SHVConfigNodeImplPointer::ToString() {SHVString retVal; if (Value) retVal.Format(_S("%p"), Value); return retVal.ReleaseBuffer(); }
+SHVStringBuffer SHVConfigNodeImplRefObj::ToString()	 {SHVString retVal; if (!Value.IsNull()) retVal.Format(_S("%p"), Value.AsConst()); return retVal.ReleaseBuffer(); }
 
 /*************************************
  * ToPtr
@@ -708,9 +708,9 @@ SHVStringBuffer SHVConfigNodeImplInt::GetStorageString(const SHVStringC name)
 SHVString retVal;
 
 	if (!IsNull())
-		retVal.Format( _T("%s = \"%d\""), name.GetBufferConst(), (int)Value);
+		retVal.Format( _S("%s = \"%d\""), name.GetBufferConst(), (int)Value);
 	else
-		retVal.Format( _T("%s"), name.GetBufferConst());
+		retVal.Format( _S("%s"), name.GetBufferConst());
 
 	return retVal.ReleaseBuffer();
 }
@@ -719,9 +719,9 @@ SHVStringBuffer SHVConfigNodeImplString::GetStorageString(const SHVStringC name)
 SHVString retVal;
 
 	if (!IsNull())
-		retVal.Format( _T("%s = \"%s\""), name.GetBufferConst(), Value.GetBufferConst());
+		retVal.Format( _S("%s = \"%s\""), name.GetBufferConst(), Value.GetBufferConst());
 	else
-		retVal.Format( _T("%s"), name.GetBufferConst());
+		retVal.Format( _S("%s"), name.GetBufferConst());
 
 	return retVal.ReleaseBuffer();
 }

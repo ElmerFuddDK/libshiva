@@ -53,19 +53,19 @@ void DumpRow(SHVTestResult* result, const SHVDataRowC* row)
 		for (size_t idx = 0; idx < Struct.GetColumnCount(); idx++)
 		{
 			if (idx)
-				msg += _T(" ");
+				msg += _S(" ");
 			if (Struct[idx]->GetDataType() == SHVDataVariant::TypeString)
 			{
-				val.Format(_T("%-20s"), row->AsString(idx).GetSafeBuffer());
+				val.Format(_S("%-20s"), row->AsString(idx).GetSafeBuffer());
 			}
 			else
-				val.Format(_T("%12s"), row->AsString(idx).GetSafeBuffer());
+				val.Format(_S("%12s"), row->AsString(idx).GetSafeBuffer());
 			msg += val;
 		}
 		result->AddLog(msg);
 	}
 	else
-		result->AddLog(_T("<Empty row>"));
+		result->AddLog(_S("<Empty row>"));
 }
 
 SHVBool DumpData(SHVTestResult* result, SHVDataRowListC* data)
@@ -96,7 +96,7 @@ public:
 	inline size_t CurrentUsed() { return GetTickCount() - Ticks; }
 	inline ~TimeIt()
 	{
-		Result->AddLog(_T("Test %s took %u seconds"), TestName.GetSafeBuffer(), (GetTickCount() - Ticks) / 1000);
+		Result->AddLog(_S("Test %s took %u seconds"), TestName.GetSafeBuffer(), (GetTickCount() - Ticks) / 1000);
 		Result = NULL;
 	}
 };
@@ -244,7 +244,7 @@ public:
 		while (Iter.MoveNext())
 		{
 			if (!Iter.Get()->GetOk())
-				Result->AddLog(_T("Test thread %s failed"), Iter.Get()->GetName().GetSafeBuffer());
+				Result->AddLog(_S("Test thread %s failed"), Iter.Get()->GetName().GetSafeBuffer());
 			if (retVal)
 				retVal = Iter.Get()->GetOk();
 		}
@@ -286,14 +286,14 @@ SHVDataSessionRef DataSession;
 	if (DataEngine->RegisterTable(unitTable, DataSession) && 
 		DataEngine->RegisterAlias("unittest", "unittest1", true, DataSession))
 	{
-	SHVDataRowListRef rows = DataSession->GetRows("unittest1", _T(""), 0);
+	SHVDataRowListRef rows = DataSession->GetRows("unittest1", _S(""), 0);
 	SHVDataRowListRef copied;
 	SHVDataRowRef r;
 	SHVTime t;
 		t.SetNow();
 		r = rows->AddRow();
 		r->SetInt(0, 1);
-		r->SetString(1, _T("test 1"));
+		r->SetString(1, _S("test 1"));
 		r->SetBool(2, SHVBool::True);
 		r->SetInt(3, 1);
 		r->SetInt64(4, 0x0000100000000001);
@@ -304,7 +304,7 @@ SHVDataSessionRef DataSession;
 		t.AddSeconds(10);
 		r = rows->AddRow();
 		r->SetInt(0, 2);
-		r->SetString(1, _T("test 2"));
+		r->SetString(1, _S("test 2"));
 		r->SetBool(2, SHVBool::True);
 		r->SetInt(3, 2);
 		r->SetInt64(4, 0x0000100000000002);
@@ -348,19 +348,19 @@ SHVDataRowRef DataRow;
 SHVDataRowKeyRef Key;
 SHVBool ok;
 	
-	Owner->Result->AddLog(_T("%s is started"), ThreadName.GetSafeBuffer());
+	Owner->Result->AddLog(_S("%s is started"), ThreadName.GetSafeBuffer());
 	DataSession = Owner->DataEngine->CreateSession();
 	ok = Owner->DataEngine->RegisterAlias("testtable", ThreadName.ToStr8(), true, DataSession);
 	if (!ok)
 	{
-		Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+		Owner->Result->AddLog(_S("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
 	}
 	for (int i = 0; ok && i < Runs; i++)
 	{
-		DataList = DataSession->GetRows(ThreadName.ToStr8(), _T(""), 0);
+		DataList = DataSession->GetRows(ThreadName.ToStr8(), _S(""), 0);
 		if (!DataList->IsOk())
 		{
-			Owner->Result->AddLog(_T("Could not load %s"), ThreadName.GetSafeBuffer());
+			Owner->Result->AddLog(_S("Could not load %s"), ThreadName.GetSafeBuffer());
 		}
 		ok = DataList->StartEdit();
 		if (ok)
@@ -370,12 +370,12 @@ SHVBool ok;
 			{
 				DataRow = DataList->AddRow();
 				DataRow->SetInt(0, (i*10) + j);
-				DataRow->SetString(1, SHVStringC::Format(_T("%s_%d"), ThreadName.GetSafeBuffer(),(i*10) + j));
-				DataRow->SetString(2, SHVStringC::Format(_T("z%d"), (i*10) + j));
+				DataRow->SetString(1, SHVStringC::Format(_S("%s_%d"), ThreadName.GetSafeBuffer(),(i*10) + j));
+				DataRow->SetString(2, SHVStringC::Format(_S("z%d"), (i*10) + j));
 				ok = DataRow->AcceptChanges();
 			}
 			if (!ok)
-				Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+				Owner->Result->AddLog(_S("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
 			ok = DataList->EndEdit();
 			if (ok)
 			{
@@ -387,7 +387,7 @@ SHVBool ok;
 				}
 			}
 			else
-				Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+				Owner->Result->AddLog(_S("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
 			// Lets edit a record
 			if (ok)
 			{
@@ -401,19 +401,19 @@ SHVBool ok;
 					if (DataList->SetPosition(Key))
 					{
 						DataRow = DataList->EditCurrentRow();
-						DataRow->SetString(2, _T("nisse"));
+						DataRow->SetString(2, _S("nisse"));
 						ok = DataRow->AcceptChanges();
 					}
 					if (ok)
 						DataList->EndEdit();
 					else
 					{
-						Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+						Owner->Result->AddLog(_S("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
 						DataList->CancelEdit();
 					}
 				}
 				else
-					Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+					Owner->Result->AddLog(_S("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
 			}
 			// Let delete a record
 			if (ok)
@@ -434,16 +434,16 @@ SHVBool ok;
 						DataList->EndEdit();
 					else
 					{
-						Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+						Owner->Result->AddLog(_S("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
 						DataList->CancelEdit();
 					}
 				}
 				else
-					Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+					Owner->Result->AddLog(_S("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
 			}
 		}
 		else
-			Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+			Owner->Result->AddLog(_S("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
 	}
 	DataSession = NULL;
 	DataList = NULL;
@@ -473,15 +473,15 @@ SHVBool ok;
 SHVDataRowKeyRef Key;
 int id;
 	
-	Owner->Result->AddLog(_T("%s is started"), ThreadName.GetSafeBuffer());
+	Owner->Result->AddLog(_S("%s is started"), ThreadName.GetSafeBuffer());
 	DataSession = Owner->DataEngine->CreateSession();
 	ok = DataSession->SessionValid();
 	for (int i = 0; i < Runs && ok; i++)
 	{
-		DataList = DataSession->GetRows("testtable_nisse", _T(""), 0);
+		DataList = DataSession->GetRows("testtable_nisse", _S(""), 0);
 		if (!DataList->IsOk())
 		{
-			Owner->Result->AddLog(_T("Could not load %s"), ThreadName.GetSafeBuffer());
+			Owner->Result->AddLog(_S("Could not load %s"), ThreadName.GetSafeBuffer());
 		}
 		ok = DataList->StartEdit();
 		if (ok)
@@ -491,20 +491,20 @@ int id;
 				id = (i*10) + j + IdOffset;
 				DataRow = DataList->AddRow();
 				DataRow->SetInt(0, id);
-				DataRow->SetString(1, SHVStringC::Format(_T("%s_%d"), ThreadName.GetSafeBuffer(),id));
-				DataRow->SetString(2, SHVStringC::Format(_T("z%d"), id));
+				DataRow->SetString(1, SHVStringC::Format(_S("%s_%d"), ThreadName.GetSafeBuffer(),id));
+				DataRow->SetString(2, SHVStringC::Format(_S("z%d"), id));
 				ok = DataRow->AcceptChanges();
 			}
 			if (!ok)
 			{
-				Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+				Owner->Result->AddLog(_S("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
 				DataList->CancelEdit();
 			}
 			else
 				ok = DataList->EndEdit();
 		}
 		else
-			Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+			Owner->Result->AddLog(_S("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
 		// Lets edit a record
 		if (ok)
 		{
@@ -517,19 +517,19 @@ int id;
 				if (DataList->SetPosition(Key))
 				{
 					DataRow = DataList->EditCurrentRow();
-					DataRow->SetString(1, _T("nisse"));
+					DataRow->SetString(1, _S("nisse"));
 					ok = DataRow->AcceptChanges();
 				}
 				if (ok)
 					DataList->EndEdit();
 				else
 				{
-					Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+					Owner->Result->AddLog(_S("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
 					DataList->CancelEdit();
 				}
 			}
 			else
-				Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+				Owner->Result->AddLog(_S("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
 		}
 		// Let delete a record
 		if (ok)
@@ -550,12 +550,12 @@ int id;
 					DataList->EndEdit();
 				else
 				{
-					Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+					Owner->Result->AddLog(_S("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
 					DataList->CancelEdit();
 				}
 			}
 			else
-				Owner->Result->AddLog(_T("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
+				Owner->Result->AddLog(_S("Error: %s"), DataSession->GetErrorMessage().GetSafeBuffer());
 		}
 
 	}
@@ -571,14 +571,14 @@ SHVBool ok;
 SHVDataStructRef Struct = DataEngine->CreateStruct();
 SHVDataRowKeyRef Key;
 /*
-TestThreadServer testServer(DataEngine, result, _T("TestSharedExclusiveLocks"));
-TestShareEx ex1(_T("T1"), 10);
-TestShareEx ex2(_T("T2"), 10);
-TestShareEx ex3(_T("T3"), 10);
-TestShareEx ex4(_T("T4"), 10);
-TestShareEx ex5(_T("T5"), 10);
-TestNotMultiInstance tm1(_T("T6"), 10, 0);
-TestNotMultiInstance tm2(_T("T7"), 10, 100);
+TestThreadServer testServer(DataEngine, result, _S("TestSharedExclusiveLocks"));
+TestShareEx ex1(_S("T1"), 10);
+TestShareEx ex2(_S("T2"), 10);
+TestShareEx ex3(_S("T3"), 10);
+TestShareEx ex4(_S("T4"), 10);
+TestShareEx ex5(_S("T5"), 10);
+TestNotMultiInstance tm1(_S("T6"), 10, 0);
+TestNotMultiInstance tm2(_S("T7"), 10, 100);
 
 	Struct->SetTableName("testtable");
 	Struct->Add("id", SHVDataVariant::TypeInt);
@@ -623,7 +623,7 @@ TestNotMultiInstance tm2(_T("T7"), 10, 100);
 
 	*result = testServer.PerformTest();
 */
-UnitTest t(DataEngine, result, _T("Unit test"));
+UnitTest t(DataEngine, result, _S("Unit test"));
 	t.PerformTest();
 }
 
@@ -705,22 +705,22 @@ void SHVDataEngineTest::OnEvent(SHVEvent* event)
 		switch (row->GetRowState())
 		{
 			case SHVDataRow::RowStateAdding:
-				Result->AddLog(_T("Row adding"));
+				Result->AddLog(_S("Row adding"));
 				break;
 			case SHVDataRow::RowStateAdded:
-				Result->AddLog(_T("Row added"));
+				Result->AddLog(_S("Row added"));
 				break;
 			case SHVDataRow::RowStateDeleting:
-				Result->AddLog(_T("Row deleting"));
+				Result->AddLog(_S("Row deleting"));
 				break;
 			case SHVDataRow::RowStateDeleted:
-				Result->AddLog(_T("Row deleted"));
+				Result->AddLog(_S("Row deleted"));
 				break;
 			case SHVDataRow::RowStateChanging:
-				Result->AddLog(_T("Row changing"));
+				Result->AddLog(_S("Row changing"));
 				break;
 			case SHVDataRow::RowStateChanged:
-				Result->AddLog(_T("Row changed"));
+				Result->AddLog(_S("Row changed"));
 				break;
 		}
 		if (row->GetRowState() != SHVDataRow::RowStateAdding && row->RowValid())

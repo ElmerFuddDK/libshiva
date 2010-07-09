@@ -143,7 +143,7 @@ int SHVFontWin32::GetCellHeight()
 int SHVFontWin32::GetApproximateWidth()
 {
 	if (ApproximateWidth == -1)
-		ApproximateWidth = CalculateTextWidth(_T("W"));
+		ApproximateWidth = CalculateTextWidth(_S("W"));
 	return ApproximateWidth;
 }
 
@@ -161,7 +161,7 @@ int retVal;
 
 	::SelectObject(dc,Font);
 	
-	SHVVERIFY(::GetTextExtentPoint(dc,text.GetSafeBuffer(),(int)text.GetLength(),&sz));
+	SHVVERIFY(::GetTextExtentPoint(dc,(const TCHAR*)text.GetSafeBuffer(),(int)text.GetLength(),&sz));
 	retVal = sz.cx;
 
 	::RestoreDC(dc,dcBackup);
@@ -179,7 +179,7 @@ SHVString retVal;
 LOGFONT lf;
 	if  (::GDIGetObject(Font, sizeof(LOGFONT), &lf) != 0)
 	{
-		retVal = lf.lfFaceName;
+		retVal = (const SHVTChar*)lf.lfFaceName;
 	}
 	return retVal.ReleaseBuffer();
 }

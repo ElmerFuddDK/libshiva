@@ -131,11 +131,11 @@ void** tmpData = (void**)::malloc(sizeof(void*)*2);
 	tmpData[0] = (void*)func;
 	tmpData[1] = data;
 
-	if (prefix != _T(""))
-		prefix = _T("SHIVA");
+	if (prefix != _S(""))
+		prefix = _S("SHIVA");
 
 	// create a unique name - this is required in epoc, dunno why
-	tmpName.Format(_T("%s%d-%d"), prefix.GetSafeBuffer(), ((long)this), GetTickCount());
+	tmpName.Format(_S("%s%d-%d"), prefix.GetSafeBuffer(), ((long)this), GetTickCount());
 
 	if (ThreadHandle.Create(tmpName.ToPtr(),&StartupFuncEpoc,KDefaultStackSize,NULL,tmpData) == KErrNone)
 	{

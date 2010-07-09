@@ -119,7 +119,7 @@ void SHVControlImplementerComboBoxWin32::SetText(SHVControlComboBox* owner, cons
 {
 	SHVASSERT(IsCreated());
 
-	SetWindowText(GetHandle(),text.GetSafeBuffer());
+	SetWindowText(GetHandle(),(const TCHAR*)text.GetSafeBuffer());
 }
 
 /*************************************

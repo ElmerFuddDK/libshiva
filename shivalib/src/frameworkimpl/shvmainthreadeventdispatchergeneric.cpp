@@ -33,6 +33,7 @@
 
 #include "../../../include/frameworkimpl/shvmainthreadeventdispatchergeneric.h"
 #include "../../../include/framework/shveventsubscriber.h"
+#include "../../../include/framework/shvconsole.h"
 #include "../../../include/utils/shvdir.h"
 
 
@@ -61,8 +62,8 @@ SHVMainThreadEventDispatcherGeneric::~SHVMainThreadEventDispatcherGeneric()
  *************************************/
 void SHVMainThreadEventDispatcherGeneric::SetupDefaults(SHVModuleList& modules)
 {
-	modules.GetConfig().Set(SHVModuleList::DefaultCfgAppPath,SHVStringC(_T(".")) + SHVDir::Delimiter());
-	modules.GetConfig().Set(SHVModuleList::DefaultCfgAppName,SHVStringC(_T("")));
+	modules.GetConfig().Set(SHVModuleList::DefaultCfgAppPath,SHVStringC(_S(".")) + SHVDir::Delimiter());
+	modules.GetConfig().Set(SHVModuleList::DefaultCfgAppName,SHVStringC(_S("")));
 }
 
 /*************************************
@@ -103,7 +104,7 @@ void SHVMainThreadEventDispatcherGeneric::StopEventLoop(SHVBool errors)
 	if (!errors)
 	{
 	SHVString errStr = Queue->GetModuleList().GetStartupErrors();
-		fprintf(stderr, "\n\nRegistering failed:\n\"%s\"\n\n", errStr.GetSafeBuffer());
+		SHVConsole::ErrPrintf(_S("\n\nRegistering failed:\n\"%s\"\n\n"), errStr.GetSafeBuffer());
 	}
 }
 

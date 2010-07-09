@@ -212,7 +212,7 @@ long rc;
 			IndexTableName.GetSafeBuffer(), cols.GetSafeBuffer(), 
 			cols.GetSafeBuffer(), 
 			Alias.GetSafeBuffer(),
-			(condition.IsNull() || condition == _T("") ? "" : "where"),
+			(condition.IsEmpty() ? "" : "where"),
 			condition.ToStrUTF8().GetSafeBuffer(),
 			orderby8.GetSafeBuffer()
 		);
@@ -285,7 +285,7 @@ SHVSQLiteStatementRef statement;
 		if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 			retVal = SHVBool::True;
 		else
-			SHVTRACE(_T("SHVDataRowListCIndexed::InternalRowChanged failed with %s\n"), GetDataSession()->GetErrorMessage().GetSafeBuffer());
+			SHVTRACE(_S("SHVDataRowListCIndexed::InternalRowChanged failed with %s\n"), GetDataSession()->GetErrorMessage().GetSafeBuffer());
 		if (retVal)
 		{
 			sql.Format("select max(idx) from memdb.%s", IndexTableName.GetSafeBuffer());

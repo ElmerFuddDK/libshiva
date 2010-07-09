@@ -63,7 +63,7 @@ SHVInt SHVModuleFactorySubProcess::GetBuild()
  *************************************/
 SHVStringBuffer SHVModuleFactorySubProcess::GetDescription()
 {
-SHVString retVal(_T("Module library for SubProcess"));
+SHVString retVal(_S("Module library for SubProcess"));
 	return retVal.ReleaseBuffer();
 }
 
@@ -91,5 +91,5 @@ void SHVModuleFactorySubProcess::OnEvent(SHVEvent* event)
 
 SHVStringBuffer SHVModuleFactorySubProcess::GetName()
 {
-	return SHVString(_T("SubProcess")).ReleaseBuffer();
+	return SHVString(_S("SubProcess")).ReleaseBuffer();
 }
