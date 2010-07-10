@@ -163,9 +163,9 @@ void SHVMainThreadEventDispatcherConsole::SetupDefaults(SHVModuleList& modules)
 #elif defined(__SHIVA_WIN32)
 	selfSubs = new SHVEventSubscriber(this,&modules);
 	ModuleList = &modules;
+#else
+	SHVUNUSED_PARAM(modules);
 #endif
-	modules.GetConfig().Set(SHVModuleList::DefaultCfgAppPath,SHVStringC(_S(".")) + SHVDir::Delimiter());
-	modules.GetConfig().Set(SHVModuleList::DefaultCfgAppName,SHVStringC(_S("")));
 }
 
 /*************************************

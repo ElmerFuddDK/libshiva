@@ -62,8 +62,7 @@ SHVMainThreadEventDispatcherGeneric::~SHVMainThreadEventDispatcherGeneric()
  *************************************/
 void SHVMainThreadEventDispatcherGeneric::SetupDefaults(SHVModuleList& modules)
 {
-	modules.GetConfig().Set(SHVModuleList::DefaultCfgAppPath,SHVStringC(_S(".")) + SHVDir::Delimiter());
-	modules.GetConfig().Set(SHVModuleList::DefaultCfgAppName,SHVStringC(_S("")));
+	SHVUNUSED_PARAM(modules);
 }
 
 /*************************************

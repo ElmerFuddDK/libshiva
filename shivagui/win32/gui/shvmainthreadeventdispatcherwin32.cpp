@@ -67,25 +67,6 @@ SHVMainThreadEventDispatcherWin32::~SHVMainThreadEventDispatcherWin32()
  *************************************/
 void SHVMainThreadEventDispatcherWin32::SetupDefaults(SHVModuleList& modules)
 {
-SHVString moduleFileName, appPath, appName;
-long i;
-
-
-	// Set up application path and name
-	moduleFileName.SetBufferSize(_MAX_PATH);
-
-	SHVVERIFY(::GetModuleFileName(NULL,(TCHAR*)moduleFileName.GetBuffer(),_MAX_PATH));
-	appPath = SHVDir::ExtractPath(moduleFileName);
-	appName = SHVDir::ExtractName(moduleFileName);
-
-	i = appName.ReverseFind(_S("."));
-
-	if (i > 0)
-		appName[i] = 0;
-
-	Queue->GetModuleList().GetConfig().Set(SHVModuleList::DefaultCfgAppPath,appPath);
-	Queue->GetModuleList().GetConfig().Set(SHVModuleList::DefaultCfgAppName,appName);
-
 	// Set default instance handle
 	modules.GetConfig(SHVModuleList::CfgGUI).SetPtr(SHVGUIManager::CfgInstanceHandle,::GetModuleHandle(NULL));
 

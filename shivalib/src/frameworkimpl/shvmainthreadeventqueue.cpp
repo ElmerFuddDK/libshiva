@@ -34,6 +34,10 @@
 #include "../../../include/frameworkimpl/shvmainthreadeventqueue.h"
 #include "../../../include/framework/shvmainthreadeventdispatcher.h"
 
+#include "../../../include/framework/shvconsole.h"
+#include "../../../include/utils/shvdir.h"
+
+
 //-=========================================================================================================
 // SHVMainThreadEventQueue class - Interface for the main event queue
 //-=========================================================================================================
@@ -44,9 +48,75 @@
 /// Constructor
 SHVMainThreadEventQueue::SHVMainThreadEventQueue(SHVMainThreadEventDispatcher* dispatcher) : Modules(*this)
 {
+bool resolvedAppPathAndName = false;
 	Dispatcher = dispatcher;
 	Dispatcher->SetEventQueue(this);
 	RunReturnVal = Modules.Initialize();
+
+#ifdef __SHIVA_WIN32
+	{
+	SHVString moduleFileName, appPath, appName;
+	long i;
+
+
+		// Set up application path and name
+		moduleFileName.SetBufferSize(_MAX_PATH);
+
+		SHVVERIFY(::GetModuleFileName(NULL,(TCHAR*)moduleFileName.GetBuffer(),_MAX_PATH));
+		appPath = SHVDir::ExtractPath(moduleFileName);
+		appName = SHVDir::ExtractName(moduleFileName);
+
+		i = appName.ReverseFind(_S("."));
+
+		if (i > 0)
+			appName[i] = 0;
+
+		Modules.GetConfig().Set(SHVModuleList::DefaultCfgAppPath,appPath);
+ 		Modules.GetConfig().Set(SHVModuleList::DefaultCfgAppName,appName);
+		
+		resolvedAppPathAndName = true;
+	}
+#elif defined(__SHIVA_LINUX)
+	{
+	SHVString8 moduleFileName;
+	long pathLen = 512;
+	long i;
+	
+		// Set up application path and name
+		moduleFileName.SetBufferSize(pathLen);
+
+		i = readlink(SHVString8C::Format("/proc/%d/exe",getpid()).GetSafeBuffer(), moduleFileName.GetBuffer(), pathLen);
+		
+		if (i < 0 || i > pathLen)
+		{
+			SHVConsole::ErrPrintf(_S("Error resolving app path and name\n"));
+		}
+		else
+		{
+		SHVString appPath, appName;
+			
+			moduleFileName.GetBuffer()[i] = '\0';
+			
+			appPath = SHVDir::ExtractPath(moduleFileName).ToStrT();
+			appName = SHVDir::ExtractName(moduleFileName).ToStrT();
+
+			SHVConsole::Printf8("App Name Thing %s\n", appName.GetSafeBuffer());
+
+			Modules.GetConfig().Set(SHVModuleList::DefaultCfgAppPath,appPath);
+			Modules.GetConfig().Set(SHVModuleList::DefaultCfgAppName,appName);
+
+			resolvedAppPathAndName = true;
+		}
+	}
+#endif
+
+	if (!resolvedAppPathAndName)
+	{
+		// Setting app path and app name to some default nonsense
+		Modules.GetConfig().Set(SHVModuleList::DefaultCfgAppPath,SHVStringC(_S(".")) + SHVDir::Delimiter());
+		Modules.GetConfig().Set(SHVModuleList::DefaultCfgAppName,SHVStringC(_S("")));
+	}
+
 	Dispatcher->SetupDefaults(Modules);
 	Running = SHVBool::False;
 }
