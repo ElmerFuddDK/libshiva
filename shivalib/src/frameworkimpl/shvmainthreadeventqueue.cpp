@@ -79,7 +79,7 @@ bool resolvedAppPathAndName = false;
 #elif defined(__SHIVA_LINUX)
 	{
 	SHVString8 moduleFileName;
-	long pathLen = 512;
+	long pathLen = 128;
 	long i;
 	
 		// Set up application path and name
@@ -87,7 +87,14 @@ bool resolvedAppPathAndName = false;
 
 		i = readlink(SHVString8C::Format("/proc/%d/exe",getpid()).GetSafeBuffer(), moduleFileName.GetBuffer(), pathLen);
 		
-		if (i < 0 || i > pathLen)
+		while (i >= pathLen)
+		{
+			pathLen += 128;
+			moduleFileName.SetBufferSize(pathLen);
+			i = readlink(SHVString8C::Format("/proc/%d/exe",getpid()).GetSafeBuffer(), moduleFileName.GetBuffer(), pathLen);
+		}
+		
+		if (i < 0 || i >= pathLen)
 		{
 			SHVConsole::ErrPrintf(_S("Error resolving app path and name\n"));
 		}
@@ -99,8 +106,6 @@ bool resolvedAppPathAndName = false;
 			
 			appPath = SHVDir::ExtractPath(moduleFileName).ToStrT();
 			appName = SHVDir::ExtractName(moduleFileName).ToStrT();
-
-			SHVConsole::Printf8("App Name Thing %s\n", appName.GetSafeBuffer());
 
 			Modules.GetConfig().Set(SHVModuleList::DefaultCfgAppPath,appPath);
 			Modules.GetConfig().Set(SHVModuleList::DefaultCfgAppName,appName);
