@@ -260,7 +260,7 @@ SHVStringBuffer16 SHVUUID::ID::ToString16()
 	return ToString8().ToStr16();
 #else
 uuid_t* id = (uuid_t*)&Bytes;
-	return SHVString16C::Format(_S("%8.8x-%4.4x-%4.4x-%2.2x%2.2x-%2.2x%2.2x%2.2x%2.2x%2.2x%2.2x"),
+	return SHVString16C::Format((const SHVWChar*) L"%8.8x-%4.4x-%4.4x-%2.2x%2.2x-%2.2x%2.2x%2.2x%2.2x%2.2x%2.2x",
 								id->time_low,
 								id->time_mid,
 								id->time_hi_and_version,
