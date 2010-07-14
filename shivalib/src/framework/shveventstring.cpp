@@ -73,13 +73,51 @@ void SHVMyModule::OnEvent(SHVEvent* event)
 	SHVRefObjectTemplate<SHVString>* str = (SHVRefObjectTemplate<SHVString>*)event->GetObject();
 
 		if (str)
-			sprintf("Debug: %s\n", str->Object().GetSafeBuffer());
+			SHVConsole::Printf(_S("Debug: %s\n"), str->Object().GetSafeBuffer());
 	}
 }
 \endcode
  */
 bool SHVEventString::Equals(const SHVEvent* event, const char* name)
 {
-	return ( event->GetType() == SHVEvent::TypeString && !::strcmp(name,((SHVEventString*)event)->GetName().GetSafeBuffer()) );
+	return ( event->GetType() == SHVEvent::TypeString &&
+			 (name == NULL || !::strcmp(name,((SHVEventString*)event)->GetName().GetSafeBuffer())) );
 }
 
+/*************************************
+ * Equals
+ *************************************/
+/// Compares a string based id event with a name, and ID
+/**
+ \param event Event to compare with
+ \param name Name of event
+ \param id event ID
+ \return True if event is of type String and has given name and ID
+ *
+ * This function is used for string events that are
+ * identified both by name and ID.\n
+\code
+void SHVMyModule::OnEvent(SHVEvent* event)
+{
+	if (SHVEventString::Equals(event,"Debug",DebugLevelNormal))
+	{
+	SHVRefObjectTemplate<SHVString>* str = (SHVRefObjectTemplate<SHVString>*)event->GetObject();
+
+		if (str)
+			SHVConsole::Printf(_S("Debug: %s\n"), str->Object().GetSafeBuffer());
+	}
+	else if (SHVEventString::Equals(event,"Debug",DebugLevelErr))
+	{
+	SHVRefObjectTemplate<SHVString>* str = (SHVRefObjectTemplate<SHVString>*)event->GetObject();
+
+		if (str)
+			SHVConsole::ErrPrintf(_S("Debug: %s\n"), str->Object().GetSafeBuffer());
+	}
+}
+\endcode
+ \note If NULL is given as name, only id is compared
+ */
+bool SHVEventString::Equals(const SHVEvent* event, const char* name, SHVInt id)
+{
+	return ( SHVEventString::Equals(event,name) && event->GetID() == id );
+}

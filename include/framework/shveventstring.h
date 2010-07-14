@@ -28,6 +28,7 @@ public:
 
 	// comparison
 	static bool Equals(const SHVEvent* event, const char* name);
+	static bool Equals(const SHVEvent* event, const char* name, SHVInt id);
 
 
 protected:
