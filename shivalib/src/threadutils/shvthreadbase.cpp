@@ -38,6 +38,7 @@
 # include <e32hal.h>
 # include <e32base.h>
 #else
+# include <signal.h>
 # include <pthread.h>
 # include <sched.h>
 # include <sys/time.h>
