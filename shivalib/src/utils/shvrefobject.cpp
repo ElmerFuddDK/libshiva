@@ -54,7 +54,7 @@
 SHVRefObject* SHVRefObject::CreateRef()
 {
 	SHVASSERT(!DeleteInProgress);
-	LockedIncrement(References);
+	LockedIncrement(&References);
 	return this;
 }
 
@@ -67,7 +67,7 @@ SHVRefObject* SHVRefObject::CreateRef()
  */
 void SHVRefObject::ReleaseRef()
 {
-	LockedDecrement(References);
+	LockedDecrement(&References);
 } 
 
 /*************************************
@@ -76,7 +76,7 @@ void SHVRefObject::ReleaseRef()
 /// Releases a reference
 void SHVRefObject::DestroyRef()
 {
-	LockedDecrement(References);
+	LockedDecrement(&References);
 	if (References <= 0 && !DeleteInProgress)
 	{
 		DeleteInProgress = true;
@@ -84,16 +84,39 @@ void SHVRefObject::DestroyRef()
 	}
 }
 
+///\cond INTERNAL
+#if defined(__SHIVA_WIN32) && !defined(__SHIVA_WINCE) && !defined(__GNUC__)
+void __fastcall RefObject_Inc(volatile int*)
+{
+	__asm
+	{
+		lock inc dword ptr [ecx]
+	}
+}
+void __fastcall RefObject_Dec(volatile int*)
+{
+	__asm
+	{
+		lock dec dword ptr [ecx]
+	}
+}
+#endif
+///\endcond
+
 /*************************************
  * LockedIncrement
  *************************************/
 /// Thread safe ++
-void SHVRefObject::LockedIncrement(int& ref)
+void SHVRefObject::LockedIncrement(volatile int* ref)
 {
 #ifdef __GNUC__
-	GNUC_NAMESPACE::__atomic_add(&ref,1);
+	GNUC_NAMESPACE::__atomic_add(ref,1);
+#elif defined(__SHIVA_WINCE)
+	InterlockedIncrement((LPLONG)ref); // does not work in 64 bit
+#elif defined(__SHIVA_WIN32)
+	RefObject_Inc(ref);
 #else
-	ref++;
+	(*ref)++;
 #endif
 }
 
@@ -101,11 +124,15 @@ void SHVRefObject::LockedIncrement(int& ref)
  * LockedDecrement
  *************************************/
 /// Thread safe --
-void SHVRefObject::LockedDecrement(int& ref)
+void SHVRefObject::LockedDecrement(volatile int* ref)
 {
 #ifdef __GNUC__
-	GNUC_NAMESPACE::__atomic_add(&ref,-1);
+	GNUC_NAMESPACE::__atomic_add(ref,-1);
+#elif defined(__SHIVA_WINCE)
+	InterlockedDecrement((LPLONG)ref); // does not work in 64 bit
+#elif defined(__SHIVA_WIN32)
+	RefObject_Dec(ref);
 #else
-	ref--;
+	(*ref)++;
 #endif
 }

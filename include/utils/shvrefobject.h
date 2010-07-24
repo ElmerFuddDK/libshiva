@@ -25,8 +25,8 @@ public:
 	inline void ValidateRefCount();
 
 
-	static void LockedIncrement(int& ref);
-	static void LockedDecrement(int& ref);
+	static void LockedIncrement(volatile int* ref);
+	static void LockedDecrement(volatile int* ref);
 
 
 protected:
@@ -36,7 +36,7 @@ protected:
 	inline bool ObjectIsDeleting() const;
 	virtual ~SHVRefObject() {}
 private:
-	int References;
+	volatile int References;
 	bool DeleteInProgress;
 	///\endcond
 };
