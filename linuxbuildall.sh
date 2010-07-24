@@ -56,11 +56,71 @@ function EchoError()
 	echo "$1"
 }
 
+function FindTargetFile()
+{
+	unset TargetType
+	unset TargetFile
+	unset DestDir
+	
+	while read l
+	do
+		type="`echo \"$l\" | awk '{print $1}'`"
+		if test "$type" == "TEMPLATE"
+		then
+			TargetType="`echo \"$l\" | cut -d '=' -f 2 | awk '{print $1}'`"
+		elif test "$type" == "TARGET"
+		then
+			TargetFile="`echo \"$l\" | cut -d '=' -f 2 | awk '{print $1}'`"
+		elif test "$type" == "DESTDIR"
+		then
+			DestDir="/`echo \"$l\" | cut -d '=' -f 2 | awk '{print $1}'`"
+		fi
+	done < "$1"
+	
+	test -z "$TargetFile" && TargetFile="`basename \"$1\" | cut -d '.' -f 1`"
+	if test "$TargetType" == "lib"
+	then
+		tpath="`dirname \"$TargetFile\"`/"
+		test "$tpath" == "./" && unset tpath
+		TargetFile="${tpath}lib`basename \"$TargetFile\"`.so.1.0.0"
+	fi
+	
+	if test -n "$TargetType" -a -n "$TargetFile" -a -n "$StripMode"
+	then
+		TargetFiles[$StripIndex]="`dirname \"$1\"`$DestDir/$TargetFile"
+		TargetTypes[$StripIndex]="$TargetType"
+		StripIndex=$[$StripIndex+1]
+	fi
+}
+
 # Usage : strip "binary file" "ismodulelib"
 function StripBinary()
 {
 	test -n "$2" && strip -K CreateObjectInt -K CreateObjectString "$1" \
 		|| strip "$1"
+}
+
+function FindTargetFiles()
+{
+	StripIndex=1
+	while read fname
+	do
+		FindTargetFile "$fname"
+	done < <(find ./ -name "*.pro" | grep -v "/CVS/")
+}
+
+function StripTargetFiles()
+{
+	i=1
+	while test "$i" -lt "$StripIndex"
+	do
+		if test -e "${TargetFiles[$i]}"
+		then
+			test "${TargetTypes[$i]}" == "lib" && StripBinary "${TargetFiles[$i]}" "1"
+			test "${TargetTypes[$i]}" == "app" && StripBinary "${TargetFiles[$i]}"
+		fi
+		i=$[$i+1]
+	done
 }
 
 # Usage : Compile "qmake file"
@@ -73,7 +133,9 @@ function Compile()
 	cd "`dirname \"$2\"`"
 	make distclean &>/dev/null
 	test -n "$ReleaseMode" && After="-after CONFIG-=debug CONFIG+=release" || unset After
+	test -n "$StripMode" && FindTargetFiles
 	qmake "`basename \"$2\"`" $After &>/dev/null && make clean &>/dev/null && make &>/dev/null || EchoError "  Error building $2"
+	test -n "$StripMode" && StripTargetFiles
 	
 	cd "$OldDir"
 }
