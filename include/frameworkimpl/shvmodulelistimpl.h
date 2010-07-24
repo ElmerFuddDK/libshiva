@@ -81,6 +81,9 @@ public:
 	virtual SHVBool LockEvent();
 	virtual void UnlockEvent();
 
+	// Error value to return
+	virtual void SetReturnError(SHVBool ret);
+	virtual SHVBool GetReturnError();
 
 	// Starts the shutdown process
 	virtual void CloseApp();
@@ -136,6 +139,7 @@ friend class SHVModuleListIteratorImpl;
 	// variables
 	States State;
 	int TagSeed;
+	SHVBool ReturnError;
 
 	SHVEventSubscriberBaseRef InternalSubscriber;
 	SHVMainEventQueue& DefaultEventQueue;

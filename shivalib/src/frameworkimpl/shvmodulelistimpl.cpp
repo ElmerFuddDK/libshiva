@@ -73,6 +73,7 @@ SHVBool retVal(false);
 		StartupErrors.RemoveAll();
 
 		State = StateInitialized;
+		ReturnError = SHVBool::True;
 	}
 
 	return retVal;
@@ -450,6 +451,22 @@ SHVBool SHVModuleListImpl::LockEvent()
 void SHVModuleListImpl::UnlockEvent()
 {
 	DefaultEventQueue.UnlockEvent();
+}
+
+/*************************************
+ * SetReturnError
+ *************************************/
+void SHVModuleListImpl::SetReturnError(SHVBool ret)
+{
+	ReturnError = ret;
+}
+
+/*************************************
+ * GetReturnError
+ *************************************/
+SHVBool SHVModuleListImpl::GetReturnError()
+{
+	return ReturnError;
 }
 
 /*************************************

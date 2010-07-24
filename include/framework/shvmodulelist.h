@@ -102,6 +102,11 @@ public:
 	virtual void UnlockEvent() = 0;
 
 
+	// Error value to return
+	virtual void SetReturnError(SHVBool ret) = 0;
+	virtual SHVBool GetReturnError() = 0;
+
+
 	// Starts the shutdown process
 	virtual void CloseApp() = 0;
 
