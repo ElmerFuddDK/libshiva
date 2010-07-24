@@ -106,6 +106,7 @@ SOURCES += ../../src/framework/shvconsole.cpp \
            ../../src/utils/shvbuffer.cpp \
            ../../src/utils/shvbuffercstream.cpp \
            ../../src/utils/shvdir.cpp \
+           ../../src/utils/shvrefobject.cpp \
            ../../src/utils/shvstringconv.cpp \
            ../../src/utils/shvstring.cpp \
            ../../src/utils/shvstringutf8.cpp \

@@ -401,6 +401,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\src\utils\shvrefobject.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\src\utils\shvstreambufferin.cpp"
 						>
 					</File>

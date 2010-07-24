@@ -19,9 +19,9 @@ public:
 
 
 	// Refcount management
-	inline SHVRefObject* CreateRef();
-	inline void ReleaseRef();
-	inline void DestroyRef();
+	SHVRefObject* CreateRef();
+	void ReleaseRef();
+	void DestroyRef();
 	inline void ValidateRefCount();
 
 
@@ -151,27 +151,6 @@ bool SHVRefObject::ObjectIsDeleting() const { return DeleteInProgress; }
  *************************************/
 /// Returns the number of references to the object
 int SHVRefObject::GetRefCount() { return References; }
-
-/*************************************
- * CreateRef
- *************************************/
-/// Creates a reference, and returns the pointer
-SHVRefObject* SHVRefObject::CreateRef() { SHVASSERT(!DeleteInProgress); References++; return this; }
-
-/*************************************
- * ReleaseRef
- *************************************/
-/// Releases a reference, without validating if the object needs to be deleted
-/**
- * See the documentation for SHVRefObjectContainer<T>::ReleaseReference
- */
-void SHVRefObject::ReleaseRef() { References--; } 
-
-/*************************************
- * DestroyRef
- *************************************/
-/// Releases a reference
-void SHVRefObject::DestroyRef() { if (--References <= 0 && !DeleteInProgress) { DeleteInProgress = true; delete this; } }
 
 /*************************************
  * ValidateRefCount
