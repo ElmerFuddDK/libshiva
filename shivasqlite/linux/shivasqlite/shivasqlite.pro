@@ -39,7 +39,6 @@ SOURCES =shivasqlite.cpp \
 ../../src/sqlite/printf.c \
 ../../src/sqlite/random.c \
 ../../src/sqlite/select.c \
-../../src/sqlite/shell.c \
 ../../src/sqlite/table.c \
 ../../src/sqlite/tokenize.c \
 ../../src/sqlite/trigger.c \
