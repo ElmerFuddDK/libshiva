@@ -89,6 +89,12 @@ public:
 
 	void Clear();
 
+	///\cond INTERNAL
+	static SHVStringBuffer Unescape(const SHVStringC str);
+	static SHVStringBuffer Escape(const SHVStringC str);
+	///\endcond
+	
+	
 private:
 	///\cond INTERNAL
 	SHVString FileName;

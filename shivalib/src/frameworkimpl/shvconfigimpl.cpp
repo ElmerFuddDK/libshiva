@@ -342,7 +342,7 @@ SHVFile file;
 					}
 					else if (strValue.Left(1) == "\"" && strValue.Right(1) == "\"")
 					{
-						Set(name.ToStrT(),SHVStringUTF8C(strValue.Mid(1,strValue.GetLength()-2).GetSafeBuffer()).ToStrT());
+						Set(name.ToStrT(),Unescape(SHVStringUTF8C(strValue.Mid(1,strValue.GetLength()-2).GetSafeBuffer()).ToStrT()));
 					}
 					else
 					{
@@ -602,6 +602,68 @@ void SHVConfigImpl::Clear()
 
 
 ///\cond INTERNAL
+/*************************************
+ * Unescape
+ *************************************/
+SHVStringBuffer SHVConfigImpl::Unescape(const SHVStringC str)
+{
+SHVList<SHVString,SHVStringBuffer> bits;
+SHVString retVal;
+size_t len, pos, strLen;
+
+	if (str.IsNull())
+		return retVal.ReleaseBuffer();
+
+	len = pos = 0;
+	strLen = str.GetLength();
+	
+	while (pos < strLen)
+	{
+		bits.AddTail(str.Tokenize(_S("\\"),pos));
+		len += bits.GetLast().GetLength();
+		if (pos < strLen)
+		{
+			pos++;
+			len++;
+			switch (str.GetBufferConst()[pos-1])
+			{
+			case 'n':
+				bits.AddTail(SHVString(_S("\n")).ReleaseBuffer());
+				break;
+			case '\\':
+				bits.AddTail(SHVString(_S("\\")).ReleaseBuffer());
+				break;
+			default:
+				SHVASSERT(false); // Unknown escape char
+				pos--;
+				len--;
+				break;
+			}
+		}
+	}
+	
+	retVal.SetBufferSize(len+1);
+	retVal[0] = '\0';
+	while (bits.GetCount())
+	{
+		retVal.AddChars(bits.GetFirst().GetBufferConst(),bits.GetFirst().GetLength());
+		bits.RemoveHead();
+	}
+	
+	return retVal.ReleaseBuffer();
+}
+
+/*************************************
+ * Escape
+ *************************************/
+SHVStringBuffer SHVConfigImpl::Escape(const SHVStringC str)
+{
+SHVString val(str);
+	val.Replace("\\", "\\\\");
+	val.Replace("\n", "\\n");
+	return val.ReleaseBuffer();
+}
+
 
 //=========================================================================================================
 // SHVConfigNodeImpl classes
@@ -719,7 +781,7 @@ SHVStringBuffer SHVConfigNodeImplString::GetStorageString(const SHVStringC name)
 SHVString retVal;
 
 	if (!IsNull())
-		retVal.Format( _S("%s = \"%s\""), name.GetBufferConst(), Value.GetBufferConst());
+		retVal.Format( _S("%s = \"%s\""), name.GetBufferConst(), SHVConfigImpl::Escape(Value).GetBufferConst());
 	else
 		retVal.Format( _S("%s"), name.GetBufferConst());
 
