@@ -6,6 +6,9 @@ IF "%QTDIR%." EQU "." (
   IF EXIST "C:\Qt\2010.03\bin\qtenv.bat" (
     CALL "C:\Qt\2010.03\bin\qtenv.bat"
   )
+  ELIF EXIST "C:\Qt\2010.04\bin\qtenv.bat" (
+    CALL "C:\Qt\2010.04\bin\qtenv.bat"
+  )
 )
 
 echo Building libshiva
