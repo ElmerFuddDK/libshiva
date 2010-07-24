@@ -33,6 +33,15 @@
 
 #include "../../../include/utils/shvrefobject.h"
 
+#ifdef __GNUC__
+# include <ext/atomicity.h>
+# ifdef _GLIBCXX_BEGIN_NAMESPACE
+#  define GNUC_NAMESPACE __gnu_cxx
+# else
+#  define GNUC_NAMESPACE
+# endif
+#endif
+
 
 //=========================================================================================================
 // SHVRefObject - base reference counting class
@@ -42,7 +51,12 @@
  * CreateRef
  *************************************/
 /// Creates a reference, and returns the pointer
-SHVRefObject* SHVRefObject::CreateRef() { SHVASSERT(!DeleteInProgress); References++; return this; }
+SHVRefObject* SHVRefObject::CreateRef()
+{
+	SHVASSERT(!DeleteInProgress);
+	LockedIncrement(References);
+	return this;
+}
 
 /*************************************
  * ReleaseRef
@@ -51,10 +65,47 @@ SHVRefObject* SHVRefObject::CreateRef() { SHVASSERT(!DeleteInProgress); Referenc
 /**
  * See the documentation for SHVRefObjectContainer<T>::ReleaseReference
  */
-void SHVRefObject::ReleaseRef() { References--; } 
+void SHVRefObject::ReleaseRef()
+{
+	LockedDecrement(References);
+} 
 
 /*************************************
  * DestroyRef
  *************************************/
 /// Releases a reference
-void SHVRefObject::DestroyRef() { if (--References <= 0 && !DeleteInProgress) { DeleteInProgress = true; delete this; } }
+void SHVRefObject::DestroyRef()
+{
+	LockedDecrement(References);
+	if (References <= 0 && !DeleteInProgress)
+	{
+		DeleteInProgress = true;
+		delete this;
+	}
+}
+
+/*************************************
+ * LockedIncrement
+ *************************************/
+/// Thread safe ++
+void SHVRefObject::LockedIncrement(int& ref)
+{
+#ifdef __GNUC__
+	GNUC_NAMESPACE::__atomic_add(&ref,1);
+#else
+	ref++;
+#endif
+}
+
+/*************************************
+ * LockedDecrement
+ *************************************/
+/// Thread safe --
+void SHVRefObject::LockedDecrement(int& ref)
+{
+#ifdef __GNUC__
+	GNUC_NAMESPACE::__atomic_add(&ref,-1);
+#else
+	ref--;
+#endif
+}

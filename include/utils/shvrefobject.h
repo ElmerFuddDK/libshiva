@@ -25,6 +25,10 @@ public:
 	inline void ValidateRefCount();
 
 
+	static void LockedIncrement(int& ref);
+	static void LockedDecrement(int& ref);
+
+
 protected:
 	///\cond INTERNAL
 	// protect the base class
