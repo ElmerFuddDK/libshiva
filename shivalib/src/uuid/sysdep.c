@@ -86,7 +86,7 @@ void get_random_info(char seed[16])
     QueryPerformanceCounter(&r.pc);
     r.tc = GetTickCount();
     MD5Update(&c, (unsigned char*)&r, sizeof r);
-    MD5Final(seed, &c);
+    MD5Final((unsigned char*)seed, &c);
 }
 
 #elif defined(_WINDOWS_)
