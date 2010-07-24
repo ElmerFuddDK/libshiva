@@ -659,8 +659,8 @@ size_t len, pos, strLen;
 SHVStringBuffer SHVConfigImpl::Escape(const SHVStringC str)
 {
 SHVString val(str);
-	val.Replace("\\", "\\\\");
-	val.Replace("\n", "\\n");
+	val.Replace(_S("\\"), _S("\\\\"));
+	val.Replace(_S("\n"), _S("\\n"));
 	return val.ReleaseBuffer();
 }
 
