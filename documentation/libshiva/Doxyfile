@@ -148,6 +148,7 @@ EXCLUDE_PATTERNS       = */CVS/* \
                          stdafx.h \
                          platformspc.h \
                          */uuid/* \
+                         */libunicode/* \
                          */md5/* \
                          */include/modules/* \
                          */include/gui/* \
