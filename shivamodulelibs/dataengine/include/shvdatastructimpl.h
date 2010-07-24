@@ -61,7 +61,7 @@ public:
 
 	virtual const SHVDataStructColumnC* operator[](size_t idx) const;
 	virtual SHVDataStructColumn* operator[](size_t idx);
-	virtual const SHVBool FindColumnIndex(size_t& index, const SHVString8C& colName) const;
+	virtual SHVBool FindColumnIndex(size_t& index, const SHVString8C& colName) const;
 
 	virtual SHVDataStructColumn* CreateNew();
 	virtual void InsertAt(size_t idx, SHVDataStructColumn& col);
@@ -73,7 +73,7 @@ public:
 	virtual void SetPrimaryIndex(const SHVDataRowKey* key);
 	virtual const SHVDataRowKey* GetIndex(size_t IdxID) const;
 	virtual size_t FindIndex(const SHVDataRowKey* key) const;
-	virtual const size_t IndexCount() const;
+	virtual size_t IndexCount() const;
 	virtual SHVDataRowKey* CreateIndexKey() const;
 	virtual size_t AddIndex(SHVDataRowKey* index);
 	virtual size_t RemoveLastIndex();

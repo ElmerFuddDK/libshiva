@@ -515,7 +515,6 @@ int lockCount = 0;
 void SHVDataFactoryImpl::LockExclusive()
 {
 #ifdef DEBUG
-int lockCount = 0;
 	SharedLocksMutex.Lock();
 	SHVASSERT(!SharedLocks.Find(SHVThreadBase::GetCurrentThreadID()));
 	SharedLocksMutex.Unlock();
@@ -529,7 +528,6 @@ int lockCount = 0;
 SHVBool SHVDataFactoryImpl::TryLockExclusive()
 {
 #ifdef DEBUG
-int lockCount = 0;
 	SharedLocksMutex.Lock();
 	SHVASSERT(!SharedLocks.Find(SHVThreadBase::GetCurrentThreadID()));
 	SharedLocksMutex.Unlock();
@@ -753,7 +751,7 @@ SHVListIterator<SHVDataStructReg> Iter(Alias);
 /*************************************
  * InternalFindStruct
  *************************************/
-const size_t SHVDataFactoryImpl::InternalFindStruct(const SHVString8C& table) const
+size_t SHVDataFactoryImpl::InternalFindStruct(const SHVString8C& table) const
 {
 size_t found = SIZE_T_MAX;
 	((SHVDataFactoryImpl*) this)->LockShared();

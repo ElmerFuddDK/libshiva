@@ -209,7 +209,7 @@ SHVDataStructColumn* SHVDataStructImpl::operator[](size_t idx)
 /*************************************
  * FindColumnIndex
  *************************************/
-const SHVBool SHVDataStructImpl::FindColumnIndex(size_t& index, const SHVString8C& colName) const
+SHVBool SHVDataStructImpl::FindColumnIndex(size_t& index, const SHVString8C& colName) const
 {
 SHVBool retVal(SHVBool::False);
 	for (index = Columns.CalculateCount(); index && !retVal; )
@@ -382,7 +382,7 @@ size_t retVal;
 /*************************************
  * IndexCount
  *************************************/
-const size_t SHVDataStructImpl::IndexCount() const
+size_t SHVDataStructImpl::IndexCount() const
 {
 	return Indexes.CalculateCount();
 }

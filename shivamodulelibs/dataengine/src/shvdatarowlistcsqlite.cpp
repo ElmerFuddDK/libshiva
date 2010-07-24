@@ -43,7 +43,7 @@
 /*************************************
  * Constructor
  *************************************/
-SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(-1), Alias(alias), Ok(true), HasShareLock(false)
+SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias): StructCache((SHVDataStructC*)dataStruct), DataSession(session), Ok(true), RowCount(-1), Alias(alias), HasShareLock(false)
 {
 	AliasID = SHVDataRowListC::GetAliasID(alias);
 }
@@ -63,7 +63,7 @@ SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
 	Bof = true;
 }
 
-SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias, const SHVStringC& condition, size_t index): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(-1), Alias(alias), HasShareLock(false)
+SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias, const SHVStringC& condition, size_t index): StructCache((SHVDataStructC*)dataStruct), DataSession(session), RowCount(-1), Alias(alias), HasShareLock(false)
 {
 SHVStringSQLite rest(NULL);
 SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
@@ -85,7 +85,7 @@ SHVStringUTF8 sql;
 	Bof = true;
 }
 
-SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, const SHVString8C& alias, size_t index): DataSession(session), StructCache((SHVDataStructC*)dataStruct), RowCount(-1), Alias(alias)
+SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, const SHVString8C& alias, size_t index): StructCache((SHVDataStructC*)dataStruct), DataSession(session), RowCount(-1), Alias(alias)
 {
 	SHVASSERT(dataStruct->GetIndex(index));
 	AliasID = SHVDataRowListC::GetAliasID(alias);
@@ -448,6 +448,7 @@ void SHVDataRowListCSQLite::Unlock()
  *************************************/
 SHVBool SHVDataRowListCSQLite::InternalRowChanged(SHVDataRow* row)
 {
+	SHVUNUSED_PARAM(row);
 	return SHVBool::True;
 }
 

@@ -142,7 +142,7 @@ SHVBool retVal(SHVBool::False);
 #elif defined(__SHIVA_LINUX)
 	dlerror(); // reset error
 	hDll = dlopen(libFile.GetBufferConst(), RTLD_NOW);
-	if (hDll == NULL) fprintf(stderr, "dlopen(%s) %d, %s\n", libFile.GetBufferConst(), *(int*)&hDll, dlerror());
+	if (hDll == NULL) fprintf(stderr, "dlopen(%s) %d, %s\n", libFile.GetBufferConst(), (int)reinterpret_cast<long>(hDll), dlerror());
 	retVal = IsLoaded();
 #elif defined(__SHIVA_EPOC)
 TInt errNum;

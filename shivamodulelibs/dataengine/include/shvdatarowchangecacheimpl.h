@@ -23,10 +23,10 @@ public:
 	void AddItem(SHVDataRow* row, bool keepRow);
 	void RemoveItem(const SHVDataRowC* row);
 	void Clear();
-	virtual const size_t GetRowCount() const;
+	virtual size_t GetRowCount() const;
 	virtual const SHVDataRowKey* GetKey(size_t rowNo) const;
 	virtual const SHVDataRowC* GetRow(size_t rowNo) const;
-	virtual const int GetRowState(size_t rowNo) const;
+	virtual int GetRowState(size_t rowNo) const;
 private:
 	SHVDynArray<CacheItem> ChangedItems;
 };
@@ -38,7 +38,7 @@ typedef SHVPtrContainer<SHVDataRowChangeCacheImpl> SHVDataRowChangeCacheImplPtr;
  * CacheItem::Constructor
  *************************************/
 SHVDataRowChangeCacheImpl::CacheItem::CacheItem(SHVDataRowKey* key, int rowState, SHVDataRow* row):
-	Key(key), RowState(rowState), Row(row)
+	Key(key), Row(row), RowState(rowState)
 {
 }
 

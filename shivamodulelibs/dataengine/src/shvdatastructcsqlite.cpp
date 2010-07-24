@@ -131,7 +131,7 @@ const SHVDataStructColumnC* SHVDataStructCSQLite::operator[](size_t idx) const
 /*************************************
  * FindColumnIndex
  *************************************/
-const SHVBool SHVDataStructCSQLite::FindColumnIndex(size_t& index, const SHVString8C& colName) const
+SHVBool SHVDataStructCSQLite::FindColumnIndex(size_t& index, const SHVString8C& colName) const
 {
 	return Struct->FindColumnIndex(index, colName);
 }
@@ -171,7 +171,7 @@ size_t SHVDataStructCSQLite::FindIndex(const SHVDataRowKey* key) const
 /*************************************
  * IndexCount
  *************************************/
-const size_t SHVDataStructCSQLite::IndexCount() const
+size_t SHVDataStructCSQLite::IndexCount() const
 {
 	return Struct->IndexCount();
 }

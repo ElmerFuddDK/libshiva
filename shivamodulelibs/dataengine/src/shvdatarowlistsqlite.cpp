@@ -39,7 +39,7 @@
 /*************************************
  * Constructor
  *************************************/
-SHVDataRowListSQLite::SHVDataRowListSQLite(SHVDataSession* dataSession, SHVDataRowListC *rowList): NonAcceptedEnabled(false), EventsEnabled(false), ReplaceIfDuplicate(false)
+SHVDataRowListSQLite::SHVDataRowListSQLite(SHVDataSession* dataSession, SHVDataRowListC *rowList): EventsEnabled(false), NonAcceptedEnabled(false), ReplaceIfDuplicate(false)
 {
 	RowList = rowList;
 	DataSession = dataSession;
@@ -482,6 +482,7 @@ void SHVDataRowListSQLite::AdjustRowCount(int delta)
  *************************************/
 SHVBool SHVDataRowListSQLite::InternalRowChanged(SHVDataRow* row)
 {
+	SHVUNUSED_PARAM(row);
 	return SHVBool::True;
 }
 

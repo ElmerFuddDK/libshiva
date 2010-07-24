@@ -85,7 +85,7 @@ protected:
 	virtual int GetAliasID(SHVSQLiteWrapper* sqlite, const SHVString8C& alias, bool create);
 	virtual bool TableMatch(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct, const SHVString8C& tableName, bool& exists);
 	virtual SHVDataStructReg* InternalFindAlias(const SHVString8C& table) const;
-	virtual const size_t InternalFindStruct(const SHVString8C& table) const;
+	virtual size_t InternalFindStruct(const SHVString8C& table) const;
 	virtual void SchemaChanged(SHVSQLiteWrapper* sqlite);
 	virtual SHVBool InternalDropAlias(const SHVString8C& table, const SHVString8C& alias, SHVDataStructReg* aliasfound, SHVDataSession* useSession);
 
@@ -129,7 +129,7 @@ friend class SHVDataEngineImpl;
 /*************************************
  * Constructors
  *************************************/
-SHVDataStructReg::SHVDataStructReg(const SHVString8C& name, int aliasID, const SHVDataStructC* datastruct): Alias(name), Struct((SHVDataStructC*) datastruct), Deleted(false), AliasId(aliasID)
+SHVDataStructReg::SHVDataStructReg(const SHVString8C& name, int aliasID, const SHVDataStructC* datastruct): Struct((SHVDataStructC*) datastruct), Alias(name), AliasId(aliasID), Deleted(false)
 {
 }
 

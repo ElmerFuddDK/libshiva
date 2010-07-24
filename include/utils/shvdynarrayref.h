@@ -53,7 +53,7 @@ private:
  * Constructor
  *************************************/
 template< class T >
-SHVDynArrayRef<T>::SHVDynArrayRef(int growSize, int initSize, bool zeroed) : SHVDynArrayBase(growSize,initSize)
+SHVDynArrayRef<T>::SHVDynArrayRef(int growSize, int initSize, bool zeroed) : SHVDynArrayBase(growSize,initSize,zeroed)
 {}
 
 /*************************************

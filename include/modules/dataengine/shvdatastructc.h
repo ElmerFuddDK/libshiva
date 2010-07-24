@@ -40,12 +40,12 @@ public:
 	virtual const SHVString8C& GetTableName() const = 0;
 	virtual bool GetIsMultiInstance() const = 0;
 	virtual const SHVDataStructColumnC* operator[](size_t idx) const = 0;
-	virtual const SHVBool FindColumnIndex(size_t& index, const SHVString8C& colName) const = 0;
+	virtual SHVBool FindColumnIndex(size_t& index, const SHVString8C& colName) const = 0;
 	virtual size_t GetColumnCount() const = 0;
 	virtual const SHVDataRowKey* GetPrimaryIndex() const = 0;
 	virtual const SHVDataRowKey* GetIndex(size_t IdxID) const = 0;
 	virtual size_t FindIndex(const SHVDataRowKey* key) const = 0;
-	virtual const size_t IndexCount() const = 0;
+	virtual size_t IndexCount() const = 0;
 	virtual SHVBool IsEqual(const SHVDataStructC* dataStruct) const = 0;
 	virtual SHVBool IsIndexesEqual(const SHVDataStructC* dataStruct) const = 0;
 

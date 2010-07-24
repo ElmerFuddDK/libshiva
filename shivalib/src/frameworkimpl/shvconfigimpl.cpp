@@ -696,13 +696,17 @@ SHVInt retVal(!Value.IsNull() ? SHVInt(Value.ToLong(&endp)) : SHVInt());
 	SHVString err;
 	double eval = SHVMath::Eval(Value,err);
 		if (err.IsNull())
+		{
 			retVal = (int)eval;
+		}
 		else
+		{
 			SHVASSERT(false); // failed converting the value completely
+		}
 	}
 	return retVal;
 }
-SHVInt SHVConfigNodeImplPointer::ToInt(){ return ( Value != NULL ? SHVInt(*(int*)&Value) : SHVInt() ); }
+SHVInt SHVConfigNodeImplPointer::ToInt(){ return ( Value != NULL ? SHVInt((int)reinterpret_cast<long>(Value)) : SHVInt() ); }
 SHVInt SHVConfigNodeImplRefObj::ToInt()	{ return ( !Value.IsNull() ? 1 : 0 ); }
 
 /*************************************
@@ -718,13 +722,17 @@ SHVDouble retVal(!Value.IsNull() ? SHVDouble(Value.ToDouble(&endp)) : SHVDouble(
 	SHVString err;
 	double eval = SHVMath::Eval(Value,err);
 		if (err.IsNull())
+		{
 			retVal = eval;
+		}
 		else
+		{
 			SHVASSERT(false); // failed converting the value completely
+		}
 	}
 	return retVal;
 }
-SHVDouble SHVConfigNodeImplPointer::ToDouble()	{ return ( Value != NULL ? SHVDouble((double)*(int*)&Value) : SHVDouble() ); }
+SHVDouble SHVConfigNodeImplPointer::ToDouble()	{ return ( Value != NULL ? SHVDouble((double)reinterpret_cast<long>(Value)) : SHVDouble() ); }
 SHVDouble SHVConfigNodeImplRefObj::ToDouble()	{ return ( !Value.IsNull() ? 1.0 : 0.0 ); }
 
 /*************************************

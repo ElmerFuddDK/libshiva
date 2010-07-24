@@ -108,7 +108,7 @@ void SHVDataRowChangeCacheImpl::Clear()
 /*************************************
  * GetRowCount
  *************************************/
-const size_t SHVDataRowChangeCacheImpl::GetRowCount() const
+size_t SHVDataRowChangeCacheImpl::GetRowCount() const
 {
 	return ChangedItems.GetCount();
 }
@@ -132,7 +132,7 @@ const SHVDataRowC* SHVDataRowChangeCacheImpl::GetRow(size_t rowNo) const
 /*************************************
  * GetRowState
  *************************************/
-const int SHVDataRowChangeCacheImpl::GetRowState(size_t rowNo) const
+int SHVDataRowChangeCacheImpl::GetRowState(size_t rowNo) const
 {
 	return ChangedItems[rowNo]->RowState;
 }
