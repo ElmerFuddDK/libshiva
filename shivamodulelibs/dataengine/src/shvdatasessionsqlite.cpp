@@ -198,7 +198,7 @@ SHVDataRowListC* retVal;
 SHVDataRowListC* SHVDataSessionSQLite::QueryTableIndexed(const SHVString8C& tableName, const SHVStringC& condition, size_t index)
 {
 const SHVDataStructC* st; 
-SHVDataRowListC* retVal;
+SHVDataRowListC* retVal = NULL;
 
 	SHVASSERT(SessionValid());
 	if (CheckConnection())
