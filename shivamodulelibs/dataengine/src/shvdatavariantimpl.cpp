@@ -418,7 +418,7 @@ SHVTime SHVDataVariantImpl::AsTime() const
 {
 SHVTime retVal;
 	SHVASSERT(DataType == SHVDataVariant::TypeTime);
-	if (DataType == SHVDataVariant::TypeTime)
+	if (DataType == SHVDataVariant::TypeTime && Data.timeVal)
 	{
 		retVal = *Data.timeVal;
 	}
