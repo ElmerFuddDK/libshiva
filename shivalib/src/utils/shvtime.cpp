@@ -713,9 +713,9 @@ SHVTime retVal;
 }
 
 /*************************************
- * CreateTimeStringNow
+ * CreateDateStringNow
  *************************************/
-SHVStringBuffer SHVTime::CreateTimeStringNow(int diffInSeconds)
+SHVStringBuffer SHVTime::CreateDateStringNow(int diffInSeconds)
 {
 SHVTime now;
 
