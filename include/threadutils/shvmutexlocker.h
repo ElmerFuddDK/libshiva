@@ -10,7 +10,7 @@
 \code
 	void examplefunc()
 	{
-	SHVMutexLock lock(myLock);
+	SHVMutexLocker lock(myLock);
 		doSomething();
 		if (checkSomeThing())
 			return; // While result in "lock" being destroyed and mutex unlocked.
@@ -22,9 +22,9 @@
 class SHVMutexLocker
 {
 public:
-	SHVMutexLocker(const SHVMutex* mutex): Mutex(*(SHVMutex*)mutex) { Mutex.Lock();   }
-	SHVMutexLocker(const SHVMutex& mutex): Mutex(*((SHVMutex*)&mutex))  { Mutex.Lock();   }
-	~SHVMutexLocker()               { Mutex.Unlock(); }
+	inline SHVMutexLocker(const SHVMutex* mutex): Mutex(*(SHVMutex*)mutex) { Mutex.Lock();   }
+	inline SHVMutexLocker(const SHVMutex& mutex): Mutex(*((SHVMutex*)&mutex))  { Mutex.Lock();   }
+	inline ~SHVMutexLocker()               { Mutex.Unlock(); }
 private:
 	SHVMutex& Mutex;
 };
