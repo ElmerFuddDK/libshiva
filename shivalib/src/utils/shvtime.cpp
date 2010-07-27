@@ -708,7 +708,8 @@ tm t = time.Time;
 SHVTime SHVTime::FromDateString(const SHVStringC& dateStr)
 {
 SHVTime retVal;
-	SHVVERIFY(retVal.SetFromDateString(dateStr));
+	if (!dateStr.IsEmpty())
+		SHVVERIFY(retVal.SetFromDateString(dateStr));
 	return retVal;
 }
 
