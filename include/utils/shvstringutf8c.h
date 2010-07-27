@@ -166,7 +166,7 @@ private:
 	///\cond INTERNAL
 	struct Header
 	{
-		int RefCount;
+		volatile int RefCount;
 #ifdef __SHVSTRING_HEAPPROTECT
 		typedef void (*DestroyFunc)(Header*);
 		DestroyFunc DestroyBuffer;

@@ -32,6 +32,7 @@
 #include "../../../include/platformspc.h"
 #include "../../../include/utils/shvstring.h"
 #include "../../../include/utils/shvlist.h"
+#include "../../../include/utils/shvrefobject.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -640,7 +641,7 @@ SHVString8CRef::SHVString8CRef(const SHVString8CRef& buffer) : SHVString8C()
 	Header* header = (Header*)buffer.Buffer;
 		header--; // the actual buffer was stored from the beginning of the string
 
-		header->RefCount++;
+		SHVRefObject::LockedIncrement(& header->RefCount);
 
 	}
 
@@ -657,8 +658,10 @@ SHVString8CRef::~SHVString8CRef()
 	Header* header = (Header*)Buffer;
 		header--; // the actual buffer was stored from the beginning of the string
 
+		SHVRefObject::LockedDecrement(& header->RefCount);
+
 		// dereference and check if we must delete it
-		if ( --header->RefCount <= 0 )
+		if ( header->RefCount <= 0 )
 		{
 #ifdef __SHVSTRING_HEAPPROTECT
 			(header->DestroyBuffer)(header);
@@ -680,8 +683,10 @@ SHVString8CRef& SHVString8CRef::operator=(const SHVString8CRef& str)
 		Header* header = (Header*)Buffer;
 		header--; // the actual buffer was stored from the beginning of the string
 
+		SHVRefObject::LockedDecrement(& header->RefCount);
+
 		// dereference and check if we must delete it
-		if ( --header->RefCount <= 0 )
+		if ( header->RefCount <= 0 )
 		{
 #ifdef __SHVSTRING_HEAPPROTECT
 			(header->DestroyBuffer)(header);
@@ -697,7 +702,7 @@ SHVString8CRef& SHVString8CRef::operator=(const SHVString8CRef& str)
 		Header* header = (Header*)str.Buffer;
 		header--; // the actual buffer was stored from the beginning of the string
 
-		header->RefCount++;
+		SHVRefObject::LockedIncrement(& header->RefCount);
 
 	}
 
