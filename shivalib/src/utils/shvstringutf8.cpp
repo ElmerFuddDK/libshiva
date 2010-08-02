@@ -285,7 +285,7 @@ size_t retVal = 0;
 /*************************************
  * Compare*
  *************************************/
-short SHVStringUTF8C::Compare(const SHVStringUTF8C& str) const
+int SHVStringUTF8C::Compare(const SHVStringUTF8C& str) const
 {
 	if (Buffer == NULL && str.IsNull())
 		return 0;
@@ -293,9 +293,9 @@ short SHVStringUTF8C::Compare(const SHVStringUTF8C& str) const
 		return -1;
 	if (Buffer && str.IsNull())
 		return 1;
-	return (short)StrCmp(Buffer,str.GetBufferConst());
+	return StrCmp(Buffer,str.GetBufferConst());
 }
-short SHVStringUTF8C::CompareNoCase(const SHVStringUTF8C& str) const
+int SHVStringUTF8C::CompareNoCase(const SHVStringUTF8C& str) const
 {
 	if (Buffer == NULL && str.IsNull())
 		return 0;
@@ -303,7 +303,7 @@ short SHVStringUTF8C::CompareNoCase(const SHVStringUTF8C& str) const
 		return -1;
 	if (Buffer && str.IsNull())
 		return 1;
-	return (short)StrCaseCmp(Buffer,str.GetBufferConst());
+	return StrCaseCmp(Buffer,str.GetBufferConst());
 }
 
 /*************************************

@@ -59,8 +59,8 @@ public:
 	bool operator<=(const SHVStringUTF8C& str) const;
 	bool operator>(const SHVStringUTF8C& str) const;
 	bool operator>=(const SHVStringUTF8C& str) const;
-	short Compare(const SHVStringUTF8C& str) const;
-	short CompareNoCase(const SHVStringUTF8C& str) const;
+	int  Compare(const SHVStringUTF8C& str) const;
+	int  CompareNoCase(const SHVStringUTF8C& str) const;
 	friend SHVStringBufferUTF8 SHVAPI operator+(const SHVStringUTF8C& str1, const SHVStringUTF8C& str2);
 
 

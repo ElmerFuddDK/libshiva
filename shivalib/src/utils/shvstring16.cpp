@@ -401,7 +401,7 @@ size_t retVal = 0;
 /*************************************
  * Compare*
  *************************************/
-short SHVString16C::Compare(const SHVString16C& str) const
+int SHVString16C::Compare(const SHVString16C& str) const
 {
 	if (Buffer == NULL && str.IsNull())
 		return 0;
@@ -409,9 +409,9 @@ short SHVString16C::Compare(const SHVString16C& str) const
 		return -1;
 	if (Buffer && str.IsNull())
 		return 1;
-	return (short)StrCmp(Buffer,str.GetBufferConst());
+	return StrCmp(Buffer,str.GetBufferConst());
 }
-short SHVString16C::CompareNoCase(const SHVString16C& str) const
+int SHVString16C::CompareNoCase(const SHVString16C& str) const
 {
 	if (Buffer == NULL && str.IsNull())
 		return 0;
@@ -419,7 +419,7 @@ short SHVString16C::CompareNoCase(const SHVString16C& str) const
 		return -1;
 	if (Buffer && str.IsNull())
 		return 1;
-	return (short)StrCaseCmp(Buffer,str.GetBufferConst());
+	return StrCaseCmp(Buffer,str.GetBufferConst());
 }
 
 /*************************************

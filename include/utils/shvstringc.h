@@ -78,8 +78,8 @@ public:
 	bool operator<=(const SHVString8C& str) const;
 	bool operator>(const SHVString8C& str) const;
 	bool operator>=(const SHVString8C& str) const;
-	short Compare(const SHVString8C& str) const;
-	short CompareNoCase(const SHVString8C& str) const;
+	int  Compare(const SHVString8C& str) const;
+	int  CompareNoCase(const SHVString8C& str) const;
 	friend SHVStringBuffer8 SHVAPI operator+(const SHVString8C& str1, const SHVString8C& str2);
 
 
