@@ -67,6 +67,10 @@ long SHVString16C::StrToL(const SHVWChar* str, SHVWChar** ptr, int base)
 #if defined(__SHIVA_LINUX) || defined(__SHIVA_EPOC)
 long retVal = 0;
 SHVWChar firstVal = *str;
+SHVWChar* dummyPtr;
+
+	if (!ptr)
+		ptr = &dummyPtr;
 
 	if (firstVal == '-' || firstVal == '+')
 		str++;
@@ -97,6 +101,10 @@ SHVInt64Val SHVString16C::StrToInt64(const SHVWChar* str, SHVWChar** ptr, int ba
 #if defined(__SHIVA_LINUX) || defined(__SHIVA_EPOC) || defined(__SHIVA_WINCE)
 SHVInt64Val retVal = 0;
 SHVWChar firstVal = *str;
+SHVWChar* dummyPtr;
+
+	if (!ptr)
+		ptr = &dummyPtr;
 
 	if (firstVal == '-' || firstVal == '+')
 		str++;
