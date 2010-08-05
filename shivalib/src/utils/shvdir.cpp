@@ -314,7 +314,7 @@ SHVBool retVal;
 	long rlen = 512;
 	char buffer[512];
 
-		ok = (filefrom.Open(from) && fileto.Create(to));
+		ok = (filefrom.Open(from,SHVFileBase::FlagOpen|SHVFileBase::FlagRead) && fileto.Create(to));
 		while (ok && rlen == 512)
 		{
 			rlen = filefrom.Read(buffer,512);
