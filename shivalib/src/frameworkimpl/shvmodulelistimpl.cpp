@@ -630,7 +630,7 @@ SHVBool retVal(false);
 	
 		EmitEvent(new SHVEvent(this,SHVModuleList::EventPreRegister));
 	
-		State = StateRegistering;
+		State = ( StartupErrors.GetCount() ? StateError : StateRegistering );
 	
 		while (State == StateRegistering && itr.MoveNext())
 		{
