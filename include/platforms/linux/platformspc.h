@@ -6,7 +6,7 @@
 
 # ifdef DEBUG
 #  include <signal.h>
-#  define SHVBREAKPOINT (raise(SIGTRAP))
+#  define SHVBREAKPOINT (::raise(SIGTRAP))
 # endif
 
 #ifndef va_list
