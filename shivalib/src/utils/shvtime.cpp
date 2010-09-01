@@ -75,7 +75,7 @@ SHVTime& SHVTime::SetLocalTime(bool local, bool convert)
 	if (LocalTime == local)
 		return *this;
 
-	if (convert)
+	if (convert && !IsNull())
 	{
 	time_t ttime;
 
@@ -589,6 +589,12 @@ time_t now = TimeNow() + diffInSeconds;
 void SHVTime::AddSeconds(int seconds)
 {
 time_t ttime;
+
+	if (IsNull())
+	{
+		SHVASSERT(false);
+		return;
+	}
 	
 	if (LocalTime)
 	{
@@ -866,6 +872,7 @@ struct tm* SHVTime::GmTime_r(const time_t *timep, struct tm *result)
 struct tm* retVal = result;
 #if defined(__SHIVA_WINCE) || defined(__SHIVA_EPOC)
 time_t t = *timep;
+time_t daysInYear;
 short year;
 
 	if (t < 0)
@@ -875,17 +882,21 @@ short year;
 	result->tm_min  = t%60;	t/=60;
 	result->tm_hour = t%24;	t/=24;
 
-	result->tm_year = t/365 + 70;
+	year = 1970;
+	do
+	{
+		daysInYear = ( !(year%4) && ( (year%100) || !(year%400) ) ? 366 : 365 );
+		if (t<daysInYear)
+			break;
+		year++;
+		t-=daysInYear;
+	}
+	while (true);
 
-	// deduct leap days
-	year = result->tm_year - 1; // ignore this year
-	t -= (year - 68) / 4;
-	t +=  year / 100;
-	t -= (year +300) / 400;
-	t%=365;
+	result->tm_year = year-1900;
 
-	for (result->tm_mon=0; t>0 && t>DaysInMonth(result->tm_mon+1,result->tm_year+1900);)
-		t-=DaysInMonth(++result->tm_mon,result->tm_year+1900);
+	for (result->tm_mon=0; t>0 && t>=DaysInMonth(result->tm_mon+1,year);)
+		t-=DaysInMonth(++result->tm_mon,year);
 
 	result->tm_mday = t+1;
 
