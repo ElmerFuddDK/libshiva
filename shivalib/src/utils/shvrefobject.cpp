@@ -36,13 +36,14 @@
 #ifdef __GNUC__
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 2))
 #   include <ext/atomicity.h>
+#   ifdef _GLIBCXX_BEGIN_NAMESPACE
+#    define GNUC_NAMESPACE __gnu_cxx
+#   else
+#    define GNUC_NAMESPACE
+#   endif
 # else
 #   include <bits/atomicity.h>
-# endif
-# ifdef _GLIBCXX_BEGIN_NAMESPACE
-#  define GNUC_NAMESPACE __gnu_cxx
-# else
-#  define GNUC_NAMESPACE
+#   define GNUC_NAMESPACE __gnu_cxx
 # endif
 #endif
 
