@@ -34,7 +34,11 @@
 #include "../../../include/utils/shvrefobject.h"
 
 #ifdef __GNUC__
-# include <ext/atomicity.h>
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 2))
+#   include <ext/atomicity.h>
+# else
+#   include <bits/atomicity.h>
+# endif
 # ifdef _GLIBCXX_BEGIN_NAMESPACE
 #  define GNUC_NAMESPACE __gnu_cxx
 # else
