@@ -496,7 +496,7 @@ size_t len;
 				Streamout.WriteString16(quot);
 				break;
 			default:
-				if (text.GetBufferConst()[strpos] < 32)
+				if ((unsigned const SHVWChar)text.GetBufferConst()[strpos] < 32)
 				{
 					Streamout.WriteString16(andhash);
 					Streamout.WriteString16(SHVString16::LongToString(text.GetBufferConst()[strpos]).GetBufferConst());
@@ -538,7 +538,7 @@ size_t len;
 			    Streamout.WriteString8("&quot;");
 			    break;
 			default:
-				if (text.GetBufferConst()[strpos] < 32)
+				if ((unsigned const SHVChar)text.GetBufferConst()[strpos] < 32)
 				{
 					Streamout.WriteString8("&#");
 					Streamout.WriteString8(SHVStringUTF8::LongToString(text.GetBufferConst()[strpos]).GetBufferConst());
@@ -591,7 +591,7 @@ size_t len;
 			    Streamout.WriteString8("&quot;");
 			    break;
 			default:
-				if (text.GetBufferConst()[strpos] < 32)
+				if ((unsigned const SHVChar)text.GetBufferConst()[strpos] < 32)
 				{
 					Streamout.WriteString8("&#");
 					Streamout.WriteString8(SHVStringUTF8::LongToString(text.GetBufferConst()[strpos]).GetBufferConst());
