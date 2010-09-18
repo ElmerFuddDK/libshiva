@@ -127,6 +127,9 @@ public:
 	inline bool IsNull() const;
 	inline void SetToNull();
 
+	// Convenience function
+	inline int IfNull(int override) const;
+
 
 	// operators
 	inline operator int();
@@ -170,6 +173,9 @@ public:
 	inline bool IsNull() const;
 	inline void SetToNull();
 
+	// Convenience function
+	inline SHVInt64Val IfNull(SHVInt64Val override) const;
+
 
 	// operators
 	inline operator SHVInt64Val();
@@ -212,6 +218,9 @@ public:
 	// Properties
 	inline bool IsNull() const;
 	inline void SetToNull();
+
+	// Convenience function
+	inline double IfNull(double override) const;
 
 
 	// operators
@@ -267,6 +276,13 @@ SHVDouble::SHVDouble(double val) : Val(val), Null(false) {}
 
 bool SHVDouble::IsNull() const { return Null; }
 void SHVDouble::SetToNull() { Null = true; Val = 0.0; }
+
+/*************************************
+ * IfNull
+ *************************************/
+int SHVInt::IfNull(int override) const { return (Null ? override : Val); }
+SHVInt64Val SHVInt64::IfNull(SHVInt64Val override) const { return (Null ? override : Val); }
+double SHVDouble::IfNull(double override) const { return (Null ? override : Val); }
 
 /*************************************
  * Operators
