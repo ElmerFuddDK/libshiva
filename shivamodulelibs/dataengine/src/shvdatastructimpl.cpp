@@ -317,7 +317,7 @@ const SHVDataStructC& Struct = *dataStruct;
 		{
 		size_t j;
 			retVal = SHVBool::False;
-			for (j = 0; j < Struct.GetColumnCount() && This[i]->GetColumnName() != This[j]->GetColumnName(); j++);
+			for (j = 0; j < Struct.GetColumnCount() && This[i]->GetColumnName() != Struct[j]->GetColumnName(); j++);
 			if (j != dataStruct->GetColumnCount())
 			{
 				retVal = 
