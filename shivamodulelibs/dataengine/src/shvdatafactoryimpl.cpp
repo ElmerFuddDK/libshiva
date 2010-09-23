@@ -66,13 +66,11 @@ SHVSQLiteWrapperRef SQLite = (useSession ? (SHVSQLiteWrapper*) useSession->GetPr
 SHVDataStructRef orgStruct;
 SHVDataStructRef newStruct = GetInternalStruct((SHVDataStructC*) dataStruct);
 
-
 	found = InternalFindStruct(dataStruct->GetTableName());
 	if (found != SIZE_T_MAX)
 	{
 		drop = create = !dataStruct->IsEqual(Schema[found]);
-		if (drop)
-			orgStruct = GetInternalStruct((SHVDataStructC*) Schema[found]);
+		orgStruct = GetInternalStruct((SHVDataStructC*) Schema[found]);
 		Schema.Replace(found, newStruct);
 	}
 	else
@@ -92,38 +90,25 @@ SHVDataStructRef newStruct = GetInternalStruct((SHVDataStructC*) dataStruct);
 	size_t maxIndex = (orgStruct->IndexCount() < dataStruct->IndexCount() ? 
 		                 orgStruct->IndexCount() : dataStruct->IndexCount());
 	bool equal = true;
-	size_t dropFrom = SIZE_T_MAX;
+	size_t dropFrom;
 
-		for (size_t i = 0; i < maxIndex && equal; i++)
+		for (dropFrom = 0; dropFrom < maxIndex && equal; dropFrom++)
 		{
-			equal = orgStruct->GetIndex(i)->KeyDefEquals(dataStruct->GetIndex(i));			
-			if (!equal)
-				dropFrom = i;
+			equal = orgStruct->GetIndex(dropFrom)->KeyDefEquals(dataStruct->GetIndex(dropFrom));
 		}
-		if (!equal)
+		while (retVal && orgStruct->IndexCount() > dropFrom)
 		{
-			do
-			{
-				sql.Format("drop index if exists %s%05d", dataStruct->GetTableName().GetSafeBuffer(), orgStruct->IndexCount() - 1);
-				SQLite->ExecuteUTF8(retVal, sql, rest);
-				retVal = SHVBool(retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE);
-			} while (retVal && orgStruct->IndexCount()  > dropFrom);
+			sql.Format("drop index if exists %s%05d", dataStruct->GetTableName().GetSafeBuffer(), orgStruct->IndexCount() - 1);
+			SQLite->ExecuteUTF8(retVal, sql, rest);
+			retVal = SHVBool(retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE);
+			if (retVal)
+				orgStruct->RemoveLastIndex();
 		}
 		if (orgStruct->IndexCount() < dataStruct->IndexCount())
 		{
 			for (size_t i = orgStruct->IndexCount(); i < dataStruct->IndexCount(); i++)
 			{
 				CreateIndex(SQLite, dataStruct, i);
-			}
-		}
-		else
-		{
-			if (orgStruct->IndexCount() > dataStruct->IndexCount())
-			{
-				for (size_t i = dataStruct->IndexCount(); i < orgStruct->IndexCount(); i++)
-				{
-					newStruct->AddIndex((SHVDataRowKey*) orgStruct->GetIndex(i));
-				}
 			}
 		}
 	}
