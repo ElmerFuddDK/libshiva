@@ -357,7 +357,11 @@ SHVConfig* retVal;
  *************************************/
 SHVInt SHVModuleListImpl::CreateTag()
 {
-	return TagSeed++;
+int retVal;
+	Lock.Lock();
+	retVal = TagSeed++;
+	Lock.Unlock();
+	return retVal;
 }
 
 /*************************************
