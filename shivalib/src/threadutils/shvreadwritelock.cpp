@@ -158,3 +158,11 @@ bool SHVReadWriteLock::IsExclusiveLocked()
 {
 	return (ExclusiveOwner != SHVMutexBase::InvalidThreadID);
 }
+
+/*************************************
+ * HasExclusiveLock
+ *************************************/
+bool SHVReadWriteLock::HasExclusiveLock()
+{
+	return (ExclusiveOwner == SHVThreadBase::GetCurrentThreadID());
+}

@@ -27,7 +27,7 @@ public:
 	void Unlock();
 
 	bool IsExclusiveLocked();
-
+	bool HasExclusiveLock();
 
 private:
 
