@@ -1,7 +1,6 @@
-#include "stdafx.h"
 #include "shiva/include/platformspc.h"
 #include "shvjsonstreamfactory.h"
-#include "shvjsonstreamimpl.h"
+#include "modules/shvjsonstreamimpl.h"
 
 //=========================================================================================================
 // SHVModuleFactoryJsonStream - factory for module library JsonStream

@@ -1,5 +1,3 @@
-
-#include "stdafx.h"
 #include "shiva/include/platformspc.h"
 
 #include "shiva/include/utils/shvdll.h"

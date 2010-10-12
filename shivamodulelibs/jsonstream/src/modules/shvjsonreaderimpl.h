@@ -1,10 +1,10 @@
 #ifndef __SHIVA_JSONREADERIMPL_H
 #define __SHIVA_JSONREADERIMPL_H
 
-#include "../../../include/utils/shvvector.h"
-#include "../../../include/utils/shvlist.h"
-#include "../../../include/modules/jsonstream/shvjsonreader.h"
-#include "jsonparser/JSON_parser.h"
+#include "shiva/include/utils/shvvector.h"
+#include "shiva/include/utils/shvlist.h"
+#include "shiva/include/modules/jsonstream/shvjsonreader.h"
+#include "../jsonparser/JSON_parser.h"
 
 
 //-=========================================================================================================

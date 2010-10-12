@@ -1,8 +1,8 @@
 #ifndef __SHIVA_JSONWRITERIMPL_H
 #define __SHIVA_JSONWRITERIMPL_H
 
-#include "../../../include/modules/jsonstream/shvjsonwriter.h"
-#include "../../../include/utils/shvlist.h"
+#include "shiva/include/modules/jsonstream/shvjsonwriter.h"
+#include "shiva/include/utils/shvlist.h"
 
 class SHVJsonWriterImpl: public SHVJsonWriter
 {

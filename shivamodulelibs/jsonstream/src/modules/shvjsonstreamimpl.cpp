@@ -1,4 +1,4 @@
-#include "../../../include/platformspc.h"
+#include "shiva/include/platformspc.h"
 #include "shvjsonstreamimpl.h"
 #include "shvjsonreaderimpl.h"
 #include "shvjsonwriterimpl.h"

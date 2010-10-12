@@ -1,6 +1,5 @@
-#include "../../../include/platformspc.h"
+#include "shiva/include/platformspc.h"
 #include "shvjsonwriterimpl.h"
-#include <ctype.h>
 
 //=========================================================================================================
 // SHVJsonWriterImpl - Json writer implementation

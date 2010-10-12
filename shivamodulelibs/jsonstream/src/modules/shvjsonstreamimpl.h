@@ -1,7 +1,7 @@
 #ifndef __SHIVA_JSONSTREAMIMPL_H
 #define __SHIVA_JSONSTREAMIMPL_H
 
-#include "../../../include/modules/jsonstream/shvjsonstream.h"
+#include "shiva/include/modules/jsonstream/shvjsonstream.h"
 
 //-=========================================================================================================
 /// SHVJsonStreamImpl class - Implementation for the shiva json streaming module
