@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if test "$BASH" != "/bin/bash"
+if test "$BASH" != "/usr/local/bin/bash" -a "$BASH" != "/bin/bash"
 then
 	# Not run by bash, fixing ...
     bash "$0" "$@"
@@ -9,12 +9,17 @@ fi
 
 unset ReleaseMode
 unset StripMode
+unset LibIconv
 
 # check for command line input
 
 while test -n "$1"
 do
 	case "$1" in
+	( "libiconv" )
+	{
+		LibIconv="1"
+	} ;;
 	( "debug" )
 	{
 		unset ReleaseMode
@@ -134,6 +139,11 @@ function Compile()
 	make distclean &>/dev/null
 	test -n "$ReleaseMode" && After="-after CONFIG-=debug CONFIG+=release" || unset After
 	test -n "$StripMode" && FindTargetFiles
+	if test "$1" == "libshiva" -a -n "$LibIconv"
+	then
+		test -n "$After" && After="$After LIBS+=-liconv" || After="-after LIBS+=-liconv"
+		echo $After
+	fi
 	qmake "`basename \"$2\"`" $After &>/dev/null && make clean &>/dev/null && make &>/dev/null || EchoError "  Error building $2"
 	test -n "$StripMode" && StripTargetFiles
 	
