@@ -6,7 +6,7 @@
 
 #ifdef __SHIVA_WINCE
 # define GUIMAIN() int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
-# define GUIPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVStringC(lpCmdLine))
+# define GUIPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVStringC((const SHVTChar*)lpCmdLine))
 #elif defined(__SHIVA_WIN32)
 # define GUIMAIN() int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
 # define GUIPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVStringC((const SHVTChar*)lpCmdLine))
