@@ -53,7 +53,7 @@ public:
 
 	inline static bool CheckForNewlines(const SHVStringC str);
 	inline static SHVStringBuffer ConvertNewlinesC(const SHVStringC str);
-	inline static void ConvertNewlines(SHVString& str);
+	inline static void ConvertNewlinesBack(SHVString& str);
 
 };
 
@@ -159,9 +159,9 @@ SHVString retVal(str);
 /*************************************
  * ConvertNewlines
  *************************************/
-void Win32::ConvertNewlines(SHVString& str)
+void Win32::ConvertNewlinesBack(SHVString& str)
 {
-	str.Replace(_S("\n"),_S("\r\n"));
+	str.Replace(_S("\r\n"),_S("\n"));
 }
 
 #endif

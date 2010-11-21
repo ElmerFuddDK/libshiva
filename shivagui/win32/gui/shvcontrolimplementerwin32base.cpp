@@ -224,7 +224,7 @@ SHVString retVal;
 	GetWindowText(GetHandle(),(TCHAR*)retVal.GetBuffer(), (int)retVal.GetBufferLen());
 
 	if (Win32::CheckForNewlines(retVal))
-		Win32::ConvertNewlines(retVal);
+		Win32::ConvertNewlinesBack(retVal);
 
 	return retVal.ReleaseBuffer();
 }
