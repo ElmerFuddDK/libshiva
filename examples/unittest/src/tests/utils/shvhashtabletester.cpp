@@ -51,8 +51,8 @@ SHVHashTableString<SHVString,const SHVStringC> table;
 	ok = true;
 	InsertStrings(table);
 
-	ok = (ok && ( table[_T("string 2")] == _T("string data 2 - really")));
-	ok = (ok && ( !table.Find(_T("string not found"))));
+	ok = (ok && ( table[_S("string 2")] == _S("string data 2 - really")));
+	ok = (ok && ( !table.Find(_S("string not found"))));
 
 	self->AddLine(_S("Test result: %s"), self->Success(modules,ok).GetSafeBuffer());
 	
@@ -64,10 +64,10 @@ SHVHashTableString<SHVString,const SHVStringC> table;
  *************************************/
 void SHVHashTableTester::InsertStrings(SHVHashTableString<SHVString,const SHVStringC>& table)
 {
-	table.Insert(_T("string 1"),_T("string data 1"));
-	table.Insert(_T("string 2"),_T("string data 2"));
-	table.Insert(_T("string 3"),_T("string data 3"));
-	table.Insert(_T("string 4"),_T("string data 4"));
+	table.Insert(_S("string 1"),_S("string data 1"));
+	table.Insert(_S("string 2"),_S("string data 2"));
+	table.Insert(_S("string 3"),_S("string data 3"));
+	table.Insert(_S("string 4"),_S("string data 4"));
 
-	table[_T("string 2")] = _T("string data 2 - really");
+	table[_S("string 2")] = _S("string data 2 - really");
 }

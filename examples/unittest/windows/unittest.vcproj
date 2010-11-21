@@ -219,6 +219,90 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="logger"
+					>
+					<File
+						RelativePath="..\src\logger\shvtestloggerconsole.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\src\logger\shvtestloggergui.cpp"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="tests"
+					>
+					<File
+						RelativePath="..\src\tests\shvtestbase.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\src\tests\shvtestqueued.cpp"
+						>
+					</File>
+					<Filter
+						Name="utils"
+						>
+						<File
+							RelativePath="..\src\tests\utils\shvbooltester.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\utils\shvbuffertester.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\utils\shvdoubletester.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\utils\shvdynarraytester.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\utils\shvfiletester.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\utils\shvhashtabletester.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\utils\shvinttester.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\utils\shvlisttester.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\utils\shvstringtester.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\utils\shvtimetester.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\utils\shvvectortester.cpp"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="threadutils"
+						>
+						<File
+							RelativePath="..\src\tests\threadutils\shvmutextester.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\threadutils\shvthreadtester.cpp"
+							>
+						</File>
+					</Filter>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
@@ -249,6 +333,94 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="logger"
+					>
+					<File
+						RelativePath="..\src\logger\shvtestlogger.h"
+						>
+					</File>
+					<File
+						RelativePath="..\src\logger\shvtestloggerconsole.h"
+						>
+					</File>
+					<File
+						RelativePath="..\src\logger\shvtestloggergui.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="tests"
+					>
+					<File
+						RelativePath="..\src\tests\shvtestbase.h"
+						>
+					</File>
+					<File
+						RelativePath="..\src\tests\shvtestqueued.h"
+						>
+					</File>
+					<Filter
+						Name="utils"
+						>
+						<File
+							RelativePath="..\src\tests\utils\shvbooltester.h"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\utils\shvbuffertester.h"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\utils\shvdoubletester.h"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\utils\shvdynarraytester.h"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\utils\shvfiletester.h"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\utils\shvhashtabletester.h"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\utils\shvinttester.h"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\utils\shvlisttester.h"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\utils\shvstringtester.h"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\utils\shvtimetester.h"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\utils\shvvectortester.h"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="threadutils"
+						>
+						<File
+							RelativePath="..\src\tests\threadutils\shvmutextester.h"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\threadutils\shvthreadtester.h"
+							>
+						</File>
+					</Filter>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
@@ -257,15 +429,15 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
+				RelativePath=".\small.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\unittest.ico"
 				>
 			</File>
 			<File
 				RelativePath=".\unittest.rc"
-				>
-			</File>
-			<File
-				RelativePath=".\small.ico"
 				>
 			</File>
 		</Filter>

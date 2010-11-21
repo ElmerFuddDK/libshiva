@@ -108,7 +108,7 @@ void SHVUnitTest::PostRegister()
 
 	// Do we need to perform something at starup ? (Command line perform option)
 	if (!Modules.GetConfig().Find(_S("perform"))->ToString().IsEmpty())
-		PerformTestFromString(Modules.GetConfig().Find(_S("perform"))->ToString());
+		PerformTestFromString(Modules.GetConfig().Find(_S("perform"))->ToString().ToStr8());
 	
 }
 

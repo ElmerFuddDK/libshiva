@@ -40,7 +40,7 @@ private:
 	
 	struct TestGroup
 	{
-		const SHVStringC Group;
+		const SHVString8C Group;
 		SHVVectorRef<SHVTestBase> Tests;
 		inline TestGroup(SHVTestBase* test) : Group(test->GetGroup()) { Tests.Add(test); }
 	};
