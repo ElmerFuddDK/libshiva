@@ -64,6 +64,10 @@ LIBS += -L../../../shivalib/linux/libshiva \
   -lshiva \
   -lpthread
 
+!isEmpty(ANDROID_PLATFORM) {
+  LIBS -= -lpthread
+}
+
 CONFIG -= release \
 qt
 CONFIG += debug \
