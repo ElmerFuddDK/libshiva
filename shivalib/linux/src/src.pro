@@ -6,10 +6,17 @@
 TARGETDEPS += ../libshiva/libshiva.so 
 LIBS += -ldl \
         -lshiva 
-QMAKE_LIBDIR = ../libshiva 
+QMAKE_LIBDIR += ../libshiva 
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
 TARGET = ../bin/shiva 
 CONFIG = debug \
          warn_on 
-TEMPLATE = app 
+isEmpty(ANDROID_PLATFORM) {
+    TEMPLATE = app 
+} else {
+    QT -= core gui
+    TEMPLATE = lib 
+    CONFIG += dll
+    LIBS -= -llog
+}
 SOURCES += shiva.cpp 
