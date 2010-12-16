@@ -39,8 +39,9 @@
 #elif defined(__SHIVA_EPOC)
 # include <f32file.h>
 # include <charconv.h>
+# define UNICODE_INIT()
 #else
-# ifdef __SHIVA_USELIBUNICODE
+# if defined(__SHIVA_USELIBUNICODE) || defined(__SHIVA_LIBUNICODESTATIC)
 #  include "../libunicode/unicode.h"
 #  define iconv_open unicode_iconv_open
 #  define iconv unicode_iconv
@@ -48,12 +49,33 @@
 #  define iconv_t unicode_iconv_t
 #  define ICONV_IBUFTYPE const char**
 #  define ICONV_ERR -1
+#  ifdef __SHIVA_LIBUNICODESTATIC
+#   include "../../../include/threadutils/shvmutexbase.h"
+	static void UNICODE_INIT()
+	{
+	static int initialized = 0;
+	static SHVMutexBase initLock;
+		if (!initialized)
+		{
+			initLock.Lock();
+			if (!initialized)
+			{
+				unicode_init();
+				initialized++;
+			}
+			initLock.Unlock();
+		}
+	}
+#  else
+#   define UNICODE_INIT()
+#  endif
 # else
 #  include <stdlib.h>
 #  include <errno.h>
 #  include <iconv.h>
 #  define ICONV_IBUFTYPE char**
 #  define ICONV_ERR (size_t)-1
+#  define UNICODE_INIT()
 # endif
 const char* SHVStringC_Get8BitCharSet()
 {
@@ -110,7 +132,9 @@ const char*  iBuf;
 SHVWChar* oBuf;
 size_t iLeft;
 size_t oLeft;
-iconv_t conv = iconv_open("UCS-2",SHVStringC_Get8BitCharSet());
+iconv_t conv;
+	UNICODE_INIT();
+	conv = iconv_open("UCS-2",SHVStringC_Get8BitCharSet());
 
 	if (conv == (iconv_t)-1) // failure, try ascii as fallback
 		conv = iconv_open("UCS-2","ASCII");
@@ -195,7 +219,9 @@ const SHVWChar* iBuf;
 char* oBuf;
 size_t iLeft;
 size_t oLeft;
-iconv_t conv = iconv_open(SHVStringC_Get8BitCharSet(),"UCS-2");
+iconv_t conv;
+	UNICODE_INIT();
+	conv = iconv_open(SHVStringC_Get8BitCharSet(),"UCS-2");
 
 	if (conv == (iconv_t)-1) // failure, try ascii as fallback
 		conv = iconv_open("ASCII","UCS-2");
@@ -274,7 +300,9 @@ const char* iBuf;
 char* oBuf;
 size_t iLeft;
 size_t oLeft;
-iconv_t conv = iconv_open(SHVStringC_Get8BitCharSet(),"UTF-8");
+iconv_t conv;
+	UNICODE_INIT();
+	conv = iconv_open(SHVStringC_Get8BitCharSet(),"UTF-8");
 
 	if (conv == (iconv_t)-1) // failure, try ascii as fallback
 		conv = iconv_open("ASCII","UTF-8");
@@ -380,7 +408,9 @@ const char* iBuf;
 char* oBuf;
 size_t iLeft;
 size_t oLeft;
-iconv_t conv = iconv_open("UCS-2","UTF-8");
+iconv_t conv;
+	UNICODE_INIT();
+	conv = iconv_open("UCS-2","UTF-8");
 
 	if (conv == (iconv_t)-1)
 	{
@@ -501,7 +531,9 @@ const char* iBuf;
 char* oBuf;
 size_t iLeft;
 size_t oLeft;
-iconv_t conv = iconv_open("UTF-8",SHVStringC_Get8BitCharSet());
+iconv_t conv;
+	UNICODE_INIT();
+	conv = iconv_open("UTF-8",SHVStringC_Get8BitCharSet());
 
 	if (conv == (iconv_t)-1) // failure, try ascii as fallback
 		conv = iconv_open("UTF-8","ASCII");
@@ -671,7 +703,9 @@ const char* iBuf;
 char* oBuf;
 size_t iLeft;
 size_t oLeft;
-iconv_t conv = iconv_open("UTF-8","UCS-2");
+iconv_t conv;
+	UNICODE_INIT();
+	conv = iconv_open("UTF-8","UCS-2");
 
 	if (conv == (iconv_t)-1)
 	{
