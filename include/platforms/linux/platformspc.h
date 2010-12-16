@@ -3,6 +3,11 @@
 #include <string.h>
 #include <stdio.h>
 #include <limits.h>
+#include <ctype.h>
+
+#ifdef _S
+# undef _S
+#endif
 
 # ifdef DEBUG
 #  include <signal.h>
