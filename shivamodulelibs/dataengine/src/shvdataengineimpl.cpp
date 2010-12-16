@@ -48,11 +48,7 @@ SHVBool ok;
 SHVString driverPath;
 
 	datapath += SHVDir::Delimiter() + database;
-#if defined(__SHIVA_LINUX) && defined(DEBUG)
-	driverPath = SQLiteDll.CreateLibFileName(_S("shivasqlite"));
-#else
 	driverPath = SQLiteDll.CreateLibFileName(_S("shivasqlite"),modules.GetConfig().Find(SHVModuleList::DefaultCfgAppPath)->ToString());
-#endif
 
 	ok = SQLiteDll.Load(driverPath);
 	if (!ok)
