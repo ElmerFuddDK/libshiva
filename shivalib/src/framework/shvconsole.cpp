@@ -33,7 +33,9 @@
 
 #include "../../../include/framework/shvconsole.h"
 #ifdef __SHIVA_WINCE
-# include "../../../include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
+# ifndef __SHIVAWINCE_EXCLUDE_CONSOLE_SUPPORT
+#  include "../../../include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
+# endif
 #endif
 
 
@@ -174,7 +176,7 @@ SHVVA_LIST args;
 #elif defined(__SHIVA_WINCE)
 	vwprintf(str,args);
 #else
-	vwprintf((const TCHAR*)str,args);
+	vwprintf((const WCHAR*)str,args);
 #endif
 	SHVVA_END(args);
 }
@@ -192,7 +194,7 @@ SHVVA_LIST argList;
 #elif defined(__SHIVA_WINCE)
 	vwprintf(str,argList);
 #else
-	vwprintf((const TCHAR*)str,argList);
+	vwprintf((const WCHAR*)str,argList);
 #endif
 	SHVVA_END( argList );
 }
@@ -210,7 +212,7 @@ SHVVA_LIST args;
 #elif defined(__SHIVA_WINCE)
 	vfwprintf(stderr,str,args);
 #else
-	vfwprintf(stderr,(const TCHAR*)str,args);
+	vfwprintf(stderr,(const WCHAR*)str,args);
 #endif
 	SHVVA_END(args);
 }
@@ -228,7 +230,7 @@ SHVVA_LIST argList;
 #elif defined(__SHIVA_WINCE)
 	vfwprintf(stderr,str,args);
 #else
-	vfwprintf(stderr,(const TCHAR*)str,args);
+	vfwprintf(stderr,(const WCHAR*)str,args);
 #endif
 	SHVVA_END( argList );
 }
@@ -242,14 +244,18 @@ void SHVConsole::vwprintf(const SHVWChar* str, SHVVA_LIST args)
 {
 SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
+# ifndef __SHIVAWINCE_EXCLUDE_CONSOLE_SUPPORT
 	SHVMainThreadEventDispatcherConsole::Print(SHVString16C::FormatList(str,argList));
+# endif
 	SHVVA_END( argList );
 }
 void SHVConsole::vprintf(const SHVChar* str, SHVVA_LIST args)
 {
 SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
+# ifndef __SHIVAWINCE_EXCLUDE_CONSOLE_SUPPORT
 	SHVMainThreadEventDispatcherConsole::Print(SHVString8C::FormatList(str,argList).ToStr16());
+# endif
 	SHVVA_END( argList );
 }
 
@@ -257,7 +263,9 @@ void SHVConsole::vfwprintf(FILE* f, const SHVWChar* str, SHVVA_LIST args)
 {
 SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
+# ifndef __SHIVAWINCE_EXCLUDE_CONSOLE_SUPPORT
 	SHVMainThreadEventDispatcherConsole::Print(SHVString16C::FormatList(str,argList));
+# endif
 	SHVVA_END( argList );
 }
 
@@ -265,7 +273,9 @@ void SHVConsole::vfprintf(FILE* f, const SHVChar* str, SHVVA_LIST args)
 {
 SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
+# ifndef __SHIVAWINCE_EXCLUDE_CONSOLE_SUPPORT
 	SHVMainThreadEventDispatcherConsole::Print(SHVString8C::FormatList(str,argList).ToStr16());
+# endif
 	SHVVA_END( argList );
 }
 
