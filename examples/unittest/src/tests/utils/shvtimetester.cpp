@@ -76,7 +76,7 @@ bool ok;
 	if (ok) // test adding time over dst change days
 	{
 	SHVTime time, time2;
-		time.SetFromDateString(_S("2004-10-30T12:00:00"));
+		time.SetFromDateString(_S("2004-10-30T12:00"));
 		ok = (ok && (!time.IsNull()));
 		time2 = time;
 		time2.AddSeconds(SHVTime::DayInSeconds);
