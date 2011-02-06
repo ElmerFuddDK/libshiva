@@ -35,7 +35,7 @@ public:
 
 	// defines
 	enum Errors {
-		ErrInvalidString
+		ErrInvalidString = 1
 	};
 
 	enum {
