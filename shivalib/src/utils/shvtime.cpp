@@ -265,7 +265,7 @@ bool SHVTime::CalculateIsDst() // Is daylight savings
  *************************************/
 SHVBool SHVTime::SetFromDateString(const SHVStringC& dateStr)
 {
-SHVBool retVal(dateStr.GetLength() > 19 ? (int)SHVBool::True : (int)ErrInvalidString);
+SHVBool retVal(dateStr.GetLength() >= 16 ? (int)SHVBool::True : (int)ErrInvalidString);
 
 	if (retVal)
 	{
