@@ -192,7 +192,7 @@ class SHVAPI SHVBufferCPtr : public SHVBufferC
 public:
 
 	// Constructor
-	inline SHVBufferCPtr(SHVByte* buffer, size_t size);
+	inline SHVBufferCPtr(const SHVByte* buffer, size_t size);
 
 	// Convenience conversion functions
 	inline static SHVBufferCPtr VoidToBuffer(const void* str, size_t len);
@@ -268,8 +268,8 @@ size_t SHVBufferC::GetSize() const
 /*************************************
  * SHVBufferCPtr constructor
  *************************************/
-SHVBufferCPtr::SHVBufferCPtr(SHVByte* buffer, size_t size) : SHVBufferC()
-{ BufferPtr = buffer; BufferSize = size; }
+SHVBufferCPtr::SHVBufferCPtr(const SHVByte* buffer, size_t size) : SHVBufferC()
+{ BufferPtr = (SHVByte*)buffer; BufferSize = size; }
 
 /*************************************
  * Convenience conversion functions
