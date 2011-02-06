@@ -34,6 +34,11 @@
 #include "../../../include/utils/shvstreambufferin.h"
 
 
+//=========================================================================================================
+// SHVStreamBufferIn class - Stream input interface
+//=========================================================================================================
+/// \class SHVStreamBufferIn shvstreambufferin.h "shiva/include/utils/shvstreambufferin.h"
+
 /*************************************
  * Constructor
  *************************************/

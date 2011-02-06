@@ -39,9 +39,9 @@
 
 
 //=========================================================================================================
-// SHVMainThreadEventQueueImpl class - OS specific main thread event queue
+// SHVMainThreadEventDispatcherGeneric class
 //=========================================================================================================
-
+/// \class SHVMainThreadEventDispatcherGeneric shvmainthreadeventdispatchergeneric.h "shiva/include/frameworkimpl/shvmainthreadeventdispatchergeneric.h"
 
 /*************************************
  * Constructor

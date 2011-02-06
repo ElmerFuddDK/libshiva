@@ -38,7 +38,8 @@
 //=========================================================================================================
 /// SHVEventSubscriberDynamic class - Subscriber class for dynamic targets
 //=========================================================================================================
-
+/// \class SHVEventTargetDynamic shveventtargetdynamic.h "shiva/include/framework/shveventtargetdynamic.h"
+/// \class SHVEventSubscriberDynamic shveventsubscriberdynamic.h "shiva/include/framework/shveventsubscriberdynamic.h"
 
 /*************************************
  * Constructor

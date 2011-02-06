@@ -13,8 +13,7 @@ typedef SHVListIterator<SHVString,const SHVStringC> SHVFileListIterator;
 //-=========================================================================================================
 /// SHVDir class - Directory management
 /**
- * Blah blah blah ...\n
- * Ooh, almost forgot : BLAH!
+ * Contains static functions for manipulating directories and files.
  */
 
 class SHVAPI SHVDir

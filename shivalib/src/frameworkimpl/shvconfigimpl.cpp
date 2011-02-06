@@ -43,6 +43,7 @@
 //=========================================================================================================
 // SHVConfigImpl class - implementation of config
 //=========================================================================================================
+/// \class SHVConfigImpl shvconfigimpl.h "shiva/include/frameworkimpl/shvconfigimpl.h"
 
 /*************************************
  * Constructor

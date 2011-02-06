@@ -38,6 +38,7 @@
 //=========================================================================================================
 // SHVEventThread class - Implementation of a simple event thread
 //=========================================================================================================
+/// \class SHVEventThread shveventthread.h "shiva/include/framework/shveventthread.h"
 
 /*************************************
  * Constructor

@@ -37,7 +37,7 @@
 //=========================================================================================================
 // SHVEventSubscriber class - Default event subscriber
 //=========================================================================================================
-
+/// \class SHVEventSubscriber shveventsubscriber.h "shiva/include/framework/shveventsubscriber.h"
 
 /*************************************
  * Constructor

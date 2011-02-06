@@ -305,6 +305,7 @@ SHVBool SHVBufferC::ReadString(SHVString& str, size_t strLen, size_t& pos) const
 { return ReadString8(str,strLen,pos); }
 #endif
 
+/// \class SHVBufferCIterator shvbufferc.h "shiva/include/utils/shvbufferc.h"
 
 /*************************************
  * SHVBufferCIterator constructor

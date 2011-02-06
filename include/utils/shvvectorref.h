@@ -50,6 +50,7 @@ private:
 
 
 // ============================================= implementation ============================================= //
+/// \class SHVVectorRef shvvectorref.h "shiva/include/utils/shvvectorref.h"
 
 
 /*************************************

@@ -58,6 +58,7 @@ static SHVMainThreadEventDispatcherConsole* evDispatcherConsole;
 //=========================================================================================================
 // SHVMainThreadEventDispatcherConsole class - Dispatcher for console user IO
 //=========================================================================================================
+/// \class SHVMainThreadEventDispatcherConsole shvmainthreadeventdispatcherconsole.h "shiva/include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
 
 /*************************************
  * Constructor

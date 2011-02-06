@@ -70,7 +70,7 @@ private:
 
 
 // ============================================= implementation ============================================= //
-
+/// \class SHVDynArray shvdynarray.h "shiva/include/utils/shvdynarray.h"
 
 /*************************************
  * Constructor

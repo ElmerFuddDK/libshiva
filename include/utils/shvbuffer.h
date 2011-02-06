@@ -218,6 +218,8 @@ SHVBool SHVBufferIterator::WriteString16(const SHVString16C str)
 SHVBool SHVBufferIterator::WriteBytes(const SHVByte* buf, size_t bufLen)
 { Field++; return (Error ? Error = Buf()->WriteBytes(buf,bufLen,Pos) : Error); }
 
+/// \class SHVBufferChunk shvbuffer.h "shiva/include/utils/shvbuffer.h"
+
 template<size_t BufferSize>
 SHVBufferChunk<BufferSize>::SHVBufferChunk() : SHVBuffer()
 {}

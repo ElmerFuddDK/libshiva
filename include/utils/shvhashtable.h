@@ -136,6 +136,11 @@ public:
 
 // ============================================= implementation ============================================= //
 
+/// \class SHVHashTable shvhashtable.h "shiva/include/utils/shvhashtable.h"
+/// \class SHVHashTableString shvhashtable.h "shiva/include/utils/shvhashtable.h"
+/// \class SHVHashTableIterator shvhashtable.h "shiva/include/utils/shvhashtable.h"
+/// \class SHVHashTableStringIterator shvhashtable.h "shiva/include/utils/shvhashtable.h"
+
 ///\cond INTERNAL
 template<class K, class D, class CopyK = const K, class CopyD = const D>
 class SHVHashKey : public SHVHashDataBase

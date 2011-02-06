@@ -114,5 +114,7 @@ protected:
 
 
 // ============================================= implementation ============================================= //
+/// \class SHVConfigNode shvconfig.h "shiva/include/framework/shvconfig.h"
+/// \class SHVConfig shvconfig.h "shiva/include/framework/shvconfig.h"
 
 #endif

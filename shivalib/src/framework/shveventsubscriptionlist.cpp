@@ -37,7 +37,7 @@
 //=========================================================================================================
 // SHVEventSubscriptionList class - Contains a list of subscriptions for a specific event
 //=========================================================================================================
-
+/// \class SHVEventSubscriptionList shveventsubscriptionlist.h "shiva/include/framework/shveventsubscriptionlist.h"
 
 /*************************************
  * Constructor

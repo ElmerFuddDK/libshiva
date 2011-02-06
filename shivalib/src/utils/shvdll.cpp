@@ -37,10 +37,12 @@
 //=========================================================================================================
 // SHVDll class - Load and use SHIVA libraries
 //=========================================================================================================
+/// \class SHVDll shvdll.h "shiva/include/utils/shvdll.h"
 
 /*************************************
  * Constructor
  *************************************/
+/// Constructor
 SHVDll::SHVDll() : SHVDllBase()
 {
 	CreateObjectIntPtr = NULL;
@@ -50,6 +52,10 @@ SHVDll::SHVDll() : SHVDllBase()
 /*************************************
  * Desctructor
  *************************************/
+/// Destructor
+/**
+ * Will unload the dll if it is still loaded.
+ */
 SHVDll::~SHVDll()
 {
 	SHVDllBase::Unload();
@@ -108,6 +114,57 @@ void SHVDll::Unload()
 /*************************************
  * CreateObjectInt
  *************************************/
+/// Creates an object according to the class type
+/**
+ \param list An optional SHVModuleList for the system
+ \param classType an enum definition for what class type to create
+ *
+ \see SHVDll::ClassTypes
+ *
+ * The library loaded needs to be a SHIVA library, and implement
+ * the CreateObjectInt/String C functions. An example:
+ \code
+// -> In the program :
+MyClass* CreateMyClassFromDll(SHVDll& dll)
+{
+	return (MyClass*)dll.CreateObjectInt(NULL,ClassTypeUser+0);
+}
+
+// -> In the dll :
+extern "C"
+{
+
+void* CreateObjectInt(SHVModuleList* list, int id)
+{
+	SHVUNUSED_PARAM(list);
+
+	switch (id)
+	{
+	case ClassTypeUser+0:
+		return new MyClass();
+	default:
+		return NULL;
+	}
+}
+
+void* CreateObjectString(SHVModuleList* list, const SHVTChar* classname)
+{
+	SHVUNUSED_PARAM(list);
+	SHVUNUSED_PARAM(classname);
+	return NULL;
+}
+
+}
+ \endcode
+ * Within SHIVA this is used for creating module libraries. In order to
+ * implement a module library the CreateObjectInt function will need to
+ * return a SHVModuleFactory derived class when the classType is
+ * SHVDll::ClassTypeModuleFactory.\n
+ * In case the library contains a main thread event system the
+ * SHVDll::ClassTypeMainThreadDispatcher enum must return a
+ * SHVMainThreadEventDispatcher derived class. This can then be used
+ * for initializing the SHIVA event system.
+ */
 void* SHVDll::CreateObjectInt(SHVModuleList* list, int classType)
 {
 void* retVal = NULL;
@@ -123,6 +180,47 @@ void* retVal = NULL;
 /*************************************
  * CreateObjectString
  *************************************/
+/// Creates an object according to a defined classType string
+/**
+ \param list An optional SHVModuleList for the system
+ \param classType a string definition for what class type to create
+ *
+ * The library loaded needs to be a SHIVA library, and implement
+ * the CreateObjectString C function. An example:
+ \code
+// -> In the program :
+MyClass* CreateMyClassFromDll(SHVDll& dll)
+{
+	return (MyClass*)dll.CreateObjectString(NULL,_S("myclass"));
+}
+
+// -> In the dll :
+extern "C"
+{
+
+void* CreateObjectInt(SHVModuleList* list, int id)
+{
+	SHVUNUSED_PARAM(list);
+	SHVUNUSED_PARAM(id);
+	return NULL;
+}
+
+void* CreateObjectString(SHVModuleList* list, const SHVTChar* classname)
+{
+void* retVal = NULL;
+	SHVUNUSED_PARAM(list);
+
+	if (SHVStringC(classname) == _S("myclass"))
+	{
+		retVal = new MyClass();
+	}
+
+	return retVal;
+}
+
+}
+ \endcode
+ */
 void* SHVDll::CreateObjectString(SHVModuleList* list, const SHVStringC classType)
 {
 void* retVal = NULL;

@@ -37,7 +37,7 @@
 //=========================================================================================================
 // SHVEventEmitter class - Used for event registering and emitting events
 //=========================================================================================================
-
+/// \class SHVEventEmitter shveventemitter.h "shiva/include/framework/shveventemitter.h"
 
 /*************************************
  * Constructor

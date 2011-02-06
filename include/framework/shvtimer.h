@@ -70,6 +70,8 @@ protected:
 
 
 // ============================================= implementation ============================================= //
+/// \class SHVTimerInstance shvtimer.h "shiva/include/framework/shvtimer.h"
+/// \class SHVTimer shvtimer.h "shiva/include/framework/shvtimer.h"
 
 /*************************************
  * Constructor

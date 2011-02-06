@@ -43,6 +43,7 @@ extern "C"
 //=========================================================================================================
 // SHVMd5Sum class - calculates md5 sums
 //=========================================================================================================
+/// \class SHVMd5Sum shvmd5sum.h "shiva/include/utils/shvmd5sum.h"
 
 /*************************************
  * Constructor
@@ -64,6 +65,7 @@ SHVMd5Sum::~SHVMd5Sum()
 /*************************************
  * Initialize
  *************************************/
+/// Initializes the md5 sum
 void SHVMd5Sum::Initialize()
 {
 	if (!Md5Context)
@@ -75,6 +77,7 @@ void SHVMd5Sum::Initialize()
 /*************************************
  * IsInitialized
  *************************************/
+/// Returns true if initialized
 bool SHVMd5Sum::IsInitialized()
 {
 	return (Md5Context ? true : false);
@@ -83,6 +86,7 @@ bool SHVMd5Sum::IsInitialized()
 /*************************************
  * Calculate
  *************************************/
+/// Partial calculation of md5 sum
 void SHVMd5Sum::Calculate(const SHVBufferC* buffer)
 {
 	if (!IsInitialized())
@@ -93,13 +97,14 @@ void SHVMd5Sum::Calculate(const SHVBufferC* buffer)
 /*************************************
  * GetMd5
  *************************************/
+/// Finalizes and creates the md5 sum
 SHVStringBuffer SHVMd5Sum::GetMd5()
 {
 SHVString retVal;
 
 	if (IsInitialized())
 	{
-	SHVTChar hexCiphers[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'  };
+	const SHVTChar hexCiphers[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'  };
 	SHVByte md5[16];
 	SHVByte* md5Ptr;
 	int i, j;
@@ -124,6 +129,7 @@ SHVString retVal;
 /*************************************
  * GetMd5
  *************************************/
+/// Finalizes and creates the md5 sum as binary data
 SHVBuffer* SHVMd5Sum::GetMd5AsBinary()
 {
 SHVBuffer* retVal = NULL;

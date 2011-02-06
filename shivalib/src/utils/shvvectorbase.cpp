@@ -38,8 +38,9 @@
 
 
 //=========================================================================================================
-// SHVDynArrayBase class - A basic dynamic array containing void pointers
+// SHVVectorBase class
 //=========================================================================================================
+/// \class SHVVectorBase shvvectorbase.h "shiva/include/utils/shvvectorbase.h"
 
 /*************************************
  * Constructor

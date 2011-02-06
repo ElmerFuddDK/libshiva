@@ -37,6 +37,7 @@
 //=========================================================================================================
 // SHVBufferCStream class - Constant buffer stream class
 //=========================================================================================================
+/// \class SHVBufferCStream shvbufferc.h "shiva/include/utils/shvbuffercstream.h"
 
 /*************************************
  * Constructor

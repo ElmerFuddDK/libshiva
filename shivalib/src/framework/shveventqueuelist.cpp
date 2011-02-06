@@ -37,6 +37,7 @@
 //=========================================================================================================
 // SHVEventQueueList class - contains the logic for handling event queues
 //=========================================================================================================
+/// \class SHVEventQueueList shveventqueuelist.h "shiva/include/framework/shveventqueuelist.h"
 
 /*************************************
  * Constructor

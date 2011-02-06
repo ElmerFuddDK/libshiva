@@ -55,6 +55,7 @@ typedef SHVPtrContainer<SHVModuleBase> SHVModuleBasePtr;
 
 
 // ============================================= implementation ============================================= //
+/// \class SHVModuleBase shvmodulebase.h "shiva/include/framework/shvmodulebase.h"
 
 /*************************************
  * Constructor

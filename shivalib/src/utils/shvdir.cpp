@@ -53,10 +53,15 @@
 //=========================================================================================================
 // SHVDir class - Directory management
 //=========================================================================================================
+/// \class SHVDir shvdir.h "shiva/include/utils/shvdir.h"
 
 /*************************************
  * Delimiter
  *************************************/
+/// Returns the file delimiter for the platform
+/**
+ * On windows and symbian it will return \\, otherwise /.
+ */
 const SHVStringC SHVDir::Delimiter()
 {
 #ifdef __SHIVA_WIN32
@@ -71,6 +76,12 @@ const SHVStringC SHVDir::Delimiter()
 /*************************************
  * WildcardAll
  *************************************/
+/// Returns the default wildcard for all files
+/**
+ * Some silly plaforms require a file extension when matching
+ * all files. This function can be used to correct this.
+ * On windows it will return "*.*2, otherwise "*".
+ */
 const SHVStringC SHVDir::WildcardAll()
 {
 #ifdef __SHIVA_WIN32
@@ -91,6 +102,7 @@ const SHVStringC SHVDir::WildcardAll()
  \param path Path to look for files in
  \param wildcard Optional wildcard
  \return true if any files were in the path
+ \note The list will be cleared by the function
  */
 SHVBool SHVDir::GetFileList(SHVFileList& list, const SHVStringC path, const SHVStringC wildcard)
 {
@@ -108,6 +120,14 @@ SHVFileList lstDummy;
 /*************************************
  * GetDirList
  *************************************/
+/// Creates a list of sub directories in a path
+/**
+ \param list List to contain the sub directories in the path
+ \param path Path to look for dirs in
+ \param wildcard Optional wildcard
+ \return true if any dirs were in the path
+ \note The list will be cleared by the function
+ */
 SHVBool SHVDir::GetDirList(SHVFileList& list, const SHVStringC path, const SHVStringC wildcard)
 {
 SHVBool retVal;
@@ -124,6 +144,15 @@ SHVFileList lstDummy;
 /*************************************
  * GetDirContent
  *************************************/
+/// Creates a list of sub directories and files in a path
+/**
+ \param dirs List to contain the sub directories in the path
+ \param files List to contain the files in the path
+ \param path Path to look for dirs in
+ \param wildcard Optional wildcard
+ \return true if any files or dirs were in the path
+ \note The list will be cleared by the function
+ */
 SHVBool SHVDir::GetDirContent(SHVFileList& dirs, SHVFileList& files, const SHVStringC path, const SHVStringC wildcard)
 {
 SHVBool retVal(SHVBool::True);
@@ -241,6 +270,7 @@ struct stat fStat;
 /*************************************
  * IsDir
  *************************************/
+/// Returns true if fileName is a directory
 bool SHVDir::IsDir(const SHVStringC fileName)
 {
 SHVFileList dirList;
@@ -250,6 +280,7 @@ SHVFileList dirList;
 /*************************************
  * IsFile
  *************************************/
+/// Returns true if fileName is a regular file
 bool SHVDir::IsFile(const SHVStringC fileName)
 {
 SHVFileList fileList;
@@ -259,6 +290,12 @@ SHVFileList fileList;
 /*************************************
  * Move
  *************************************/
+/// Moves a regular file
+/**
+ \param from Location of file to move from
+ \param to Location of file to move to
+ \return Success
+ */
 SHVBool SHVDir::Move(const SHVStringC from, const SHVStringC to)
 {
 SHVBool retVal;
@@ -292,6 +329,12 @@ SHVBool retVal;
 /*************************************
  * Copy
  *************************************/
+/// Copies a regular file
+/**
+ \param from Location of file to copy
+ \param to Location to copy to
+ \return Success
+ */
 SHVBool SHVDir::Copy(const SHVStringC from, const SHVStringC to)
 {
 SHVBool retVal;
@@ -333,6 +376,7 @@ SHVBool retVal;
 /*************************************
  * CreateDir
  *************************************/
+/// Creates a sub directory
 SHVBool SHVDir::CreateDir(const SHVStringC dirName)
 {
 SHVBool retVal;
@@ -365,6 +409,7 @@ SHVBool retVal;
 /*************************************
  * GetSize
  *************************************/
+/// Obtain file size of a file name
 SHVFilePos SHVDir::GetSize(const SHVStringC fileName)
 {
 SHVFilePos retVal = 0;
@@ -377,8 +422,16 @@ SHVFileBase file;
 }
 
 /*************************************
- * DeleteFile
+ * GetModifyTime
  *************************************/
+/// Obtain a modify time of a file
+/**
+ \param fileName the file to obtaion modify time for
+ \param stamp The variable to put the modify time in to
+ \return Success
+ *
+ * The stamp will be Null on failure.
+ */
 SHVBool SHVDir::GetModifyTime(const SHVStringC fileName, SHVTime& stamp)
 {
 SHVBool retVal(SHVBool::False);
@@ -407,6 +460,7 @@ HANDLE f;
 	}
 #elif defined(UNICODE)
 struct stat fileStat;
+	stamp.SetNull();
 	if (!wstat( fileName.GetSafeBuffer(), &fileStat ))
 	{
 		retVal.SetError(SHVBool::True);
@@ -414,6 +468,7 @@ struct stat fileStat;
 	}
 #else
 struct stat fileStat;
+	stamp.SetNull();
 	if (!stat( fileName.GetSafeBuffer(), &fileStat ))
 	{
 		retVal.SetError(SHVBool::True);
@@ -431,6 +486,7 @@ struct stat fileStat;
 /*************************************
  * DeleteFile
  *************************************/
+/// Deletes a file
 SHVBool SHVDir::DeleteFile(const SHVStringC fileName)
 {
 SHVBool retVal;
@@ -500,6 +556,12 @@ struct stat fileStat;
 /*************************************
  * ExecuteFile
  *************************************/
+/// Executes a file in the shell
+/**
+ \param fileName The file to execute
+ *
+ * The file will be opened with whatever program is associated with it.
+ */
 void SHVDir::ExecuteFile(const SHVStringC fileName)
 {
 #if defined(__SHIVA_WIN32)
@@ -575,6 +637,7 @@ long pos = fileName.ReverseFind(SHVDir::Delimiter());
 /*************************************
  * Execute
  *************************************/
+/// Will execute a program with optional argument string
 void SHVDir::Execute(const SHVStringC program, const SHVStringC args)
 {
 #if defined(__SHIVA_WIN32)
@@ -598,6 +661,7 @@ SHVString execstr;
 /*************************************
  * Execute
  *************************************/
+/// Will execute a program with a provided argument list
 void SHVDir::Execute(const SHVStringC program, SHVFileList& args)
 {
 #if defined(__SHIVA_WIN32)

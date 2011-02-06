@@ -38,6 +38,7 @@ protected:
 
 
 // ============================================= implementation ============================================= //
+/// \class SHVMainThreadEventDispatcher shvmainthreadeventdispatcher.h "shiva/include/framework/shvmainthreadeventdispatcher.h"
 
 /** \fn void SHVMainThreadEventDispatcher::SetupDefaults(SHVModuleList& modules)
  \brief Called when the event queue wants to set up default values

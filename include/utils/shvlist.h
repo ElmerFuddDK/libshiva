@@ -85,6 +85,8 @@ public:
 
 
 // ============================================ implementation ============================================ //
+/// \class SHVList shvlist.h "shiva/include/utils/shvlist.h"
+/// \class SHVListIterator shvlist.h "shiva/include/utils/shvlist.h"
 
 ///\cond INTERNAL
 template<class T, class S = T>

@@ -109,6 +109,7 @@ private:
 
 
 // ====================================== implementation - SHVEventData ===================================== //
+/// \class SHVEventData shveventdata.h "shiva/include/framework/shveventdata.h"
 
 /*************************************
   * Constructors
@@ -142,6 +143,9 @@ T& SHVEventData<T,C>::Get(SHVEvent* event)
 { 
 	return ((SHVEventData<T,C>*) event)->Data; 
 }
+
+// =================================== implementation - SHVEventStringData ================================== //
+/// \class SHVEventStringData shveventdata.h "shiva/include/framework/shveventdata.h"
 
 /*************************************
   * Constructors

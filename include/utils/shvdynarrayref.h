@@ -47,6 +47,7 @@ private:
 
 
 // ============================================= implementation ============================================= //
+/// \class SHVDynArrayRef shvdynarrayref.h "shiva/include/utils/shvdynarrayref.h"
 
 
 /*************************************

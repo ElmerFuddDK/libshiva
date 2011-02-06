@@ -43,4 +43,7 @@ protected:
 };
 typedef SHVPtrContainer<SHVModuleFactory> SHVModuleFactoryPtr;
 
+
+// ============================================= implementation ============================================= //
+/// \class SHVModuleFactory shvmodulefactory.h "shiva/include/framework/shvmodulefactory.h"
 #endif

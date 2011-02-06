@@ -92,4 +92,8 @@ public:
 };
 
 
+// ============================================= implementation ============================================= //
+/// \class SHVModuleLoader shvmoduleloader.h "shiva/include/framework/shvmoduleloader.h"
+/// \class SHVModuleLibrary shvmoduleloader.h "shiva/include/framework/shvmoduleloader.h"
+/// \class SHVModuleLibIterator shvmoduleloader.h "shiva/include/framework/shvmoduleloader.h"
 #endif

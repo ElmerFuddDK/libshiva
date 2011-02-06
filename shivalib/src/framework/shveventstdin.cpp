@@ -38,6 +38,7 @@
 //=========================================================================================================
 // SHVEventStdin class - String based event for distributing stdin lines from console
 //=========================================================================================================
+/// \class SHVEventStdin shveventstdin.h "shiva/include/framework/shveventstdin.h"
 
 /*************************************
  * Constructor

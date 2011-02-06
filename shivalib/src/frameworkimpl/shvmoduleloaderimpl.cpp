@@ -39,6 +39,7 @@
 //=========================================================================================================
 // SHVModuleLoaderImpl class - implementation of module loader
 //=========================================================================================================
+/// \class SHVModuleLoaderImpl shvmoduleloaderimpl.h "shiva/include/frameworkimpl/shvmoduleloaderimpl.h"
 
 /*************************************
  * Constructor

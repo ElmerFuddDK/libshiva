@@ -38,6 +38,7 @@
 //=========================================================================================================
 // SHVTimerImpl module - Implementation of the timer module
 //=========================================================================================================
+/// \class SHVTimerImpl shvtimerimpl.h "shiva/include/frameworkimpl/shvtimerimpl.h"
 
 /*************************************
  * Constructor
@@ -164,6 +165,7 @@ SHVBool gotLock(TimerThread.LockEvent()); // lock if the event system is running
 //=========================================================================================================
 // SHVTimerInstanceImpl class - interface for a timer
 //=========================================================================================================
+/// \class SHVTimerInstanceImpl shvtimerimpl.h "shiva/include/frameworkimpl/shvtimerimpl.h"
 
 /*************************************
  * Constructor
@@ -311,6 +313,7 @@ long retVal;
 //=========================================================================================================
 // SHVTimerThread class - The internal timer thread
 //=========================================================================================================
+/// \class SHVTimerThread shvtimerimpl.h "shiva/include/frameworkimpl/shvtimerimpl.h"
 
 /*************************************
  * Constructor

@@ -41,6 +41,7 @@
 //-=========================================================================================================
 // SHVMainThreadEventQueue class - Interface for the main event queue
 //-=========================================================================================================
+/// \class SHVMainThreadEventQueue shvmainthreadeventqueue.h "shiva/include/frameworkimpl/shvmainthreadeventeventqueue.h"
 
 /*************************************
  * Constructor

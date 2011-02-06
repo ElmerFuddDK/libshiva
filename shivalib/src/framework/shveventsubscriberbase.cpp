@@ -37,6 +37,7 @@
 //=========================================================================================================
 // SHVEventSubscriberBase class - Subscriber interface
 //=========================================================================================================
+/// \class SHVEventSubscriberBase shveventsubscriberbase.h "shiva/include/framework/shveventsubscriberbase.h"
 
 /*************************************
  * EmitNow

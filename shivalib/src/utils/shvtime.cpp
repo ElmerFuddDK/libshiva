@@ -41,6 +41,7 @@
 //=========================================================================================================
 // SHVTime class
 //=========================================================================================================
+/// \class SHVTime shvtime.h "shiva/include/utils/shvtime.h"
 
 #ifdef __SHIVA_EPOC
 # include <string.h>
@@ -49,6 +50,12 @@
 /*************************************
  * Constructor
  *************************************/
+/// Constructor
+/**
+ \param localTime Defaults to false (UTC)
+ *
+ * A constructed SHVTime is Null per default.
+ */
 SHVTime::SHVTime(bool localTime)
 {
 	::memset(&Time,0,sizeof(tm));
@@ -62,6 +69,7 @@ SHVTime::SHVTime(bool localTime)
 /*************************************
  * IsLocalTime
  *************************************/
+/// Returns true if the time is in local time
 bool SHVTime::IsLocalTime() const
 {
 	return LocalTime;
@@ -70,6 +78,21 @@ bool SHVTime::IsLocalTime() const
 /*************************************
  * SetlocalTime
  *************************************/
+/// Sets local time value
+/**
+ \param local New value for local time
+ \param convert Whether to perform conversion of date or not
+ *
+ * If the conversion parameter is set the internal date
+ * information will be converted, according to the local
+ * time zone.\n
+ * examples:\n
+ * SetLocalTime(true,true) Will convert from UTC to local time.
+ * SetLocalTime(true,false) Will set local time to true, but not convert
+ * SetLocalTime(false,true) Will convert from UTC to local time
+ \note SetLocalTime will do nothing if you set local to what it
+ *     already is.
+ */
 SHVTime& SHVTime::SetLocalTime(bool local, bool convert)
 {
 	if (LocalTime == local)
@@ -100,6 +123,7 @@ SHVTime& SHVTime::SetLocalTime(bool local, bool convert)
 /*************************************
  * IsNull
  *************************************/
+/// Returns true if the data is null
 bool SHVTime::IsNull() const
 {
 	return (Time.tm_year == 0);
@@ -108,6 +132,7 @@ bool SHVTime::IsNull() const
 /*************************************
  * SetNull
  *************************************/
+/// Sets the date/time to null
 void SHVTime::SetNull()
 {
 	Time.tm_year = 0;
@@ -116,26 +141,32 @@ void SHVTime::SetNull()
 /*************************************
  * Get*
  *************************************/
+/// Returns Year property
 int SHVTime::GetYear() const
 {
 	return Time.tm_year+1900;
 }
+/// Returns Month property
 int SHVTime::GetMonth() const
 {
 	return Time.tm_mon+1;
 }
+/// Returns Day property
 int SHVTime::GetDay() const
 {
 	return Time.tm_mday;
 }
+/// Returns Hour property
 int SHVTime::GetHour() const
 {
 	return Time.tm_hour;
 }
+/// Returns Minute property
 int SHVTime::GetMinute() const
 {
 	return Time.tm_min;
 }
+/// Returns Second property
 int SHVTime::GetSecond() const
 {
 	return Time.tm_sec;
@@ -144,36 +175,42 @@ int SHVTime::GetSecond() const
 /*************************************
  * Set*
  *************************************/
+/// Set Year property
 void SHVTime::SetYear(int year)
 {
 	Time.tm_wday = -1; // weekday needs to be recalculated
 	Time.tm_isdst = -1; // dst needs to be recalculated
 	Time.tm_year = year-1900;
 }
+/// Set Month property
 void SHVTime::SetMonth(int month)
 {
 	Time.tm_wday = -1; // weekday needs to be recalculated
 	Time.tm_isdst = -1; // dst needs to be recalculated
 	Time.tm_mon = month-1;
 }
+/// Set Day property
 void SHVTime::SetDay(int day)
 {
 	Time.tm_wday = -1; // weekday needs to be recalculated
 	Time.tm_isdst = -1; // dst needs to be recalculated
 	Time.tm_mday = day;
 }
+/// Set Hour property
 void SHVTime::SetHour(int hour)
 {
 	Time.tm_wday = -1; // weekday needs to be recalculated
 	Time.tm_isdst = -1; // dst needs to be recalculated
 	Time.tm_hour = hour;
 }
+/// Set Minute property
 void SHVTime::SetMinute(int minute)
 {
 	Time.tm_wday = -1; // weekday needs to be recalculated
 	Time.tm_isdst = -1; // dst needs to be recalculated
 	Time.tm_min = minute;
 }
+/// Set Second property
 void SHVTime::SetSecond(int second)
 {
 	Time.tm_wday = -1; // weekday needs to be recalculated
@@ -187,6 +224,12 @@ void SHVTime::SetSecond(int second)
 /*************************************
  * CalculateDayOfWeek
  *************************************/
+/// Calculates day of week and returns it
+/**
+ * This function will calculate the day of week property
+ * and return it. It will be cached for further use, until
+ * the date actually changes.
+ */
 int SHVTime::CalculateDayOfWeek() // 0 = sunday and so forth
 {
 	// test if the weekday needs to be calculated
@@ -201,6 +244,23 @@ int SHVTime::CalculateDayOfWeek() // 0 = sunday and so forth
 /*************************************
  * CalculateLeapDayInEffect
  *************************************/
+/// Returns 1 if leap day is in effect
+/**
+ * This function will calculate if the leap day is
+ * in effect at the current date, and return it. This
+ * is useful if you want to take the leap day into
+ * account in calculations. This is why it is returned
+ * as an int.\n
+ * For instance if you want to calculate the days in a
+ * year up to the date you could do:
+ \code
+int DaysInYear(const SHVTime& t)
+{
+	return SHVTime::MonthToDays(t.GetMonth()) + t.GetDay() + t.CalculateLeapDayInEffect();
+}
+ \endcode
+ \note This value is not cached.
+ */
 int SHVTime::CalculateLeapDayInEffect() // returns 1 if leap day is in effect at current date (02/29 excluded) or 0 if not
 {
 int month = GetMonth();
@@ -212,6 +272,12 @@ int year = GetYear();
 /*************************************
  * CalculateWeekNumber
  *************************************/
+/// Calculate the ISO 8601 week number
+/**
+ \return the ISO 8601 week number represented by the date.
+ *
+ \note This value is not cached.
+ */
 int SHVTime::CalculateWeekNumber() // ISO 8601
 {
 SHVTime firstDayOfYear(*this);
@@ -246,6 +312,13 @@ int week = 0;
 /*************************************
  * CalculateIsDst
  *************************************/
+/// Calculate if daylight savings is in effect
+/**
+ \return true if daylight savings is in effect
+ *
+ \note This value is calculated and cached until the
+	   date changes.
+ */
 bool SHVTime::CalculateIsDst() // Is daylight savings
 {
 	// test if the dst needs to be calculated
@@ -263,6 +336,14 @@ bool SHVTime::CalculateIsDst() // Is daylight savings
 /*************************************
  * SetFromDateString
  *************************************/
+/// Sets the date and time from a date string
+/**
+ * Will set the date and time information according to the given
+ * date string. A SHIVA date string is in the following format:\n
+ * YYYY-MM-DDTHH:MM:SS\n
+ * The seconds are optional, and are set to 0 if not provided.
+ * The 'T' represents a separator and can be any character.
+ */
 SHVBool SHVTime::SetFromDateString(const SHVStringC& dateStr)
 {
 SHVBool retVal(dateStr.GetLength() >= 16 ? (int)SHVBool::True : (int)ErrInvalidString);
@@ -297,6 +378,12 @@ SHVBool retVal(dateStr.GetLength() >= 16 ? (int)SHVBool::True : (int)ErrInvalidS
 /*************************************
  * ToDateString
  *************************************/
+/// Returns a date string representation of SHVTime
+/**
+ * Will return a date string in the SHIVA date string format:\n
+ * YYYY-MM-DDTHH:MM:SS
+ \see SHVTime::FromDateString(const SHVStringC& dateStr)
+ */
 SHVStringBuffer SHVTime::ToDateString() const
 {
 SHVString retVal;
@@ -312,6 +399,13 @@ SHVString retVal;
 /*************************************
  * Format
  *************************************/
+/// Date/time format
+/**
+ \return a string representing the date/time, formatted according to the format string.
+ *
+ * This is a frontend to the posix strftime function.
+ \note Currently only a subset is supported on Windows CE.
+ */
 SHVStringBuffer SHVTime::Format(const SHVStringC s) const
 {
 	///\todo Optimize SHVTime::Format for CE, and use that optimized code on all platforms to avoid the output string size limit
@@ -569,6 +663,12 @@ SHVTChar* retVal = new SHVTChar[__SHVTIME_MAXDATESTR];
 /*************************************
  * SetNow
  *************************************/
+/// Sets the date/time to now
+/**
+ \param diffInSeconds Seconds to add to 'now'.
+ *
+ \note This function respects the LocalTime property.
+ */
 void SHVTime::SetNow(int diffInSeconds)
 {
 time_t now = TimeNow() + diffInSeconds;
@@ -586,6 +686,26 @@ time_t now = TimeNow() + diffInSeconds;
 /*************************************
  * AddSeconds
  *************************************/
+/// Adds seconds to the date/time
+/**
+ * This function respects local time. This means if you
+ * add seconds across daylight savings changes time you
+ * might notget the expected result.\n
+ * If you add a day in seconds across the shift to dst
+ * and dst adds an hour you will get +25 hours, not +24.\n
+ * If you don't want this behavior you can do the following:\n
+ \code
+void AddSecondsToLocalTimeAndIgnoreDst(SHVTime& localTime, int seconds)
+{
+bool isLocalTime = localTime.IsLocalTime();
+
+	localTime.SetLocalTime(false,false); // Temporarily disable local time
+	localTime.AddSeconds(seconds);
+	localTime.SetLocalTime(isLocalTime,false); // Restore, but do not convert
+}
+ \endcode
+ * This example will work with local time set to false as well.
+ */
 void SHVTime::AddSeconds(int seconds)
 {
 time_t ttime;
@@ -638,6 +758,10 @@ time_t ttime;
 /*************************************
  * add operator
  *************************************/
+/// Adds seconds to the date/time
+/**
+ \see SHVTime::AddSeconds()
+ */
 SHVTime operator+(const SHVTime& tTime, int diffInSeconds)
 {
 SHVTime retVal(tTime);
@@ -690,6 +814,10 @@ time_t t2 = SHVTime::TimeGm((tm*)&tTime2.Time, false);
 /*************************************
  * FromUnixTime
  *************************************/
+/// returns a SHVTime representation of unixTime
+/**
+ * unixTime is a representation of the unix epoch (seconds since 1970-01-01T00:00:00)
+ */
 SHVTime SHVTime::FromUnixTime(SHVInt64Val unixTime)
 {
 time_t utime = (time_t)unixTime;
@@ -702,6 +830,10 @@ SHVTime retVal;
 /*************************************
  * ToUnixTime
  *************************************/
+/// returns unix time representation of SHVTime
+/**
+ * unix time is a representation of the unix epoch (seconds since 1970-01-01T00:00:00)
+ */
 SHVInt64Val SHVTime::ToUnixTime(const SHVTime& time)
 {
 tm t = time.Time;
@@ -711,6 +843,10 @@ tm t = time.Time;
 /*************************************
  * FromDateString
  *************************************/
+/// returns a SHVTime representation of a SHIVA date string
+/**
+ \see SHVTime::SetFromDateString(const SHVStringC& dateStr)
+ */
 SHVTime SHVTime::FromDateString(const SHVStringC& dateStr)
 {
 SHVTime retVal;
@@ -722,6 +858,12 @@ SHVTime retVal;
 /*************************************
  * CreateDateStringNow
  *************************************/
+/// Creates a SHIVA date string representation of 'now' in UTC
+/**
+ \param diffInSeconds Seconds to add to 'now'
+ *
+ \see SHVTime::SetFromDateString(const SHVStringC& dateStr)
+ */
 SHVStringBuffer SHVTime::CreateDateStringNow(int diffInSeconds)
 {
 SHVTime now;
@@ -734,6 +876,15 @@ SHVTime now;
 /*************************************
  * MonthToDays
  *************************************/
+/// Returns the number of days consumed in a year up to a given month
+/**
+ \param month The month in question
+ *
+ * Example:\n
+ * SHVTime::MonthToDays(1) == 0\n
+ * SHVTime::MonthToDays(2) == 31\n
+ \see SHVTime::CalculateLeapDayInEffect()
+ */
 int SHVTime::MonthToDays(int month)
 {
 static const int month_to_days[12] = {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
@@ -744,6 +895,15 @@ static const int month_to_days[12] = {0, 31, 59, 90, 120, 151, 181, 212, 243, 27
 /*************************************
  * DaysInMonth
  *************************************/
+/// Returns the amount of days in a month
+/**
+ \param month The month in question
+ \param year The year in question
+ *
+ * The reason it takes a year as parameter is because of
+ * leap years. This only has an effect if the month in
+ * question is february.
+ */
 int SHVTime::DaysInMonth(int month, int year)
 {
 	switch(month)
@@ -756,6 +916,7 @@ int SHVTime::DaysInMonth(int month, int year)
 /*************************************
  * GapInSeconds
  *************************************/
+/// Calculates the time between to SHVTimes in seconds
 int SHVTime::GapInSeconds(const SHVTime& from, const SHVTime& to)
 {
 time_t ttime1;

@@ -23,6 +23,7 @@ private:
 
 
 // ============================================= implementation ============================================= //
+/// \class SHVEventDataBool shveventstructs.h "shiva/include/framework/shveventstructs.h"
 
 /*************************************
  * Constructor

@@ -160,6 +160,7 @@ SHVStringUTF8 retVal;
 // ========================================================================================================
 //  SHVStringC class Constant
 // ========================================================================================================
+/// \class SHVStringUTF8C shvstringc.h "shiva/include/utils/shvstringc.h"
 
 /*************************************
  * Comparison operators
@@ -426,6 +427,7 @@ int cpChars = 0;
 //=========================================================================================================
 // SHVStringUTF8CRef class - reference counting constant string
 //=========================================================================================================
+/// \class SHVStringUTF8CRef shvstringc.h "shiva/include/utils/shvstringc.h"
 
 /*************************************
  * Constructors
@@ -560,6 +562,7 @@ void SHVStrUTF8_DestroyBufferFunc(SHVChar* chars) { delete [] chars; }
 // ========================================================================================================
 //  SHVStringBuffer class
 // ========================================================================================================
+/// \class SHVStringBufferUTF8 shvstring.h "shiva/include/utils/shvstring.h"
 
 // constructor
 SHVStringBufferUTF8::SHVStringBufferUTF8(const SHVStringBufferUTF8& buffer) : SHVStringUTF8C()
@@ -591,7 +594,7 @@ SHVStringBufferUTF8& SHVStringBufferUTF8::operator=(SHVStringBufferUTF8& buffer)
 // ========================================================================================================
 //  SHVString class
 // ========================================================================================================
-
+/// \class SHVStringUTF8 shvstring.h "shiva/include/utils/shvstring.h"
 
 /*************************************
  * Copy static

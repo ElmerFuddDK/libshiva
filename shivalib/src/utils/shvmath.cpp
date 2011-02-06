@@ -44,6 +44,8 @@ double shvmath_doeval(const SHVTChar*& str, char level, SHVString& err, SHVMathT
 // ========================================================================================================
 //  SHVMath class
 // ========================================================================================================
+/// \class SHVMathTokenMap shvmathtokenmap.h "shiva/include/utils/shvmathtokenmap.h"
+/// \class SHVMath shvmath.h "shiva/include/utils/shvmath.h"
 
 /*************************************
  * Sin

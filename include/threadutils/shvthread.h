@@ -40,6 +40,7 @@ private:
 
 
 // ============================================= implementation ============================================= //
+/// \class SHVThread shvthread.h "shiva/include/threadutils/shvthread.h"
 
 /*************************************
  * Constructor

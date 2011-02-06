@@ -38,6 +38,7 @@
 //=========================================================================================================
 // SHVHashTableBase class - base class for hashing containers
 //=========================================================================================================
+/// \class SHVHashTableBase shvhashtablebase.h "shiva/include/utils/shvhashtablebase.h"
 
 /*************************************
  * Constructor

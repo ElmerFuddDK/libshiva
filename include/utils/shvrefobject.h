@@ -164,6 +164,7 @@ void SHVRefObject::ValidateRefCount() { if (References <= 0 && !DeleteInProgress
 
 
 // ================================= implementation - SHVRefObjectTemplate ================================ //
+/// \class SHVRefObjectTemplate shvrefobject.h "shiva/include/utils/shvrefobject.h"
 
 /*************************************
  * Constructors
@@ -186,6 +187,7 @@ T& SHVRefObjectTemplate<T>::Object() { return Obj; }
 
 
 // ================================ implementation - SHVRefObjectContainer ================================ //
+/// \class SHVRefObjectContainer shvrefobject.h "shiva/include/utils/shvrefobject.h"
 
 /*************************************
  * Constructors

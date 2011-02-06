@@ -38,7 +38,8 @@
 //=========================================================================================================
 // SHVEvent class - Contains implementation of a basic event
 //=========================================================================================================
-
+/// \class SHVEventTarget shvevent.h "shiva/include/framework/shvevent.h"
+/// \class SHVEvent shvevent.h "shiva/include/framework/shvevent.h"
 
 /*************************************
  * Constructor
@@ -79,6 +80,7 @@ void* SHVEvent::GetData()
 //=========================================================================================================
 // SHVEventQueue class - Interface class for event queues
 //=========================================================================================================
+/// \class SHVEventQueue shvevent.h "shiva/include/framework/shvevent.h"
 
 /*************************************
  * SHVEventEventActiveInQueue

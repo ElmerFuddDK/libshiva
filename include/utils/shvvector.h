@@ -50,12 +50,13 @@ private:
 
 
 // ============================================= implementation ============================================= //
+/// \class SHVVector shvvector.h "shiva/include/utils/shvvector.h"
 
 
 /*************************************
  * Constructor
  *************************************/
-/// Constructs the dynamic array
+/// Constructs the vector
 /**
  * The template value GrowSize indicates the amount of items the vector will
  * grow and shrink by.\n

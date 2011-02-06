@@ -42,10 +42,12 @@
 //=========================================================================================================
 // SHVDllBase class - Base class for loading dlls
 //=========================================================================================================
+/// \class SHVDllBase shvdllbase.h "shiva/include/utils/shvdllbase.h"
 
 /*************************************
  * Constructor
  *************************************/
+/// Constructor
 SHVDllBase::SHVDllBase()
 {
 #if defined(__SHIVA_WIN32)
@@ -60,6 +62,10 @@ SHVDllBase::SHVDllBase()
 /*************************************
  * Desctructor
  *************************************/
+/// Destructor
+/**
+ * Will unload the dll if it is still loaded.
+ */
 SHVDllBase::~SHVDllBase()
 {
 	Unload();
@@ -68,6 +74,7 @@ SHVDllBase::~SHVDllBase()
 /*************************************
  * FileExtension
  *************************************/
+/// Returns the default file dll file extension for the platform
 const SHVStringC SHVDllBase::FileExtension()
 {
 #ifdef __SHIVA_LINUX
@@ -116,6 +123,7 @@ const int extLen = 4;
 /*************************************
  * IsLoaded
  *************************************/
+/// Returns true if there is a dll loaded
 SHVBool SHVDllBase::IsLoaded()
 {
 #if defined(__SHIVA_WIN32)
@@ -130,6 +138,24 @@ SHVBool SHVDllBase::IsLoaded()
 /*************************************
  * Load
  *************************************/
+/// Load a dll
+/**
+ \param libFile The platform specific dll file name to load
+ \return Success
+ *
+ * Attempts to load the dll by the given file name. Use
+ * SHVDllBase::CreateLibFileName to create the file name to
+ * load for cross platform specific code:
+ \code
+SHVBool LoadMyDll(SHVDllBase& dll)
+{
+	// Loads "mylibrary.dll" on windows
+	// Loads "libmylibrary.so" on linux
+	return dll.Load( dll.CreateLibFileName(_S("mylibrary")) );
+}
+ \endcode
+ \note Will Unload an already loaded dll
+ */
 SHVBool SHVDllBase::Load(const SHVStringC libFile)
 {
 SHVBool retVal(SHVBool::False);
@@ -160,6 +186,7 @@ TParse parse;
 /*************************************
  * Unload
  *************************************/
+/// Unloads a dll
 void SHVDllBase::Unload()
 {
 	if (IsLoaded())

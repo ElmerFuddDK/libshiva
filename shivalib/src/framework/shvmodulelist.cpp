@@ -38,6 +38,7 @@
 //=========================================================================================================
 // SHVModuleList class - interface for the module list
 //=========================================================================================================
+/// \class SHVModuleList shvmodulelist.h "shiva/include/framework/shvmodulelist.h"
 
 /*************************************
  * EventSubscribe

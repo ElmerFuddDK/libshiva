@@ -61,7 +61,6 @@
 // ========================================================================================================
 //  convenience functions for easy portability
 // ========================================================================================================
-
 long SHVString16C::StrToL(const SHVWChar* str, SHVWChar** ptr, int base)
 {
 #if defined(__SHIVA_LINUX) || defined(__SHIVA_EPOC)
@@ -275,6 +274,7 @@ SHVString16 retVal;
 // ========================================================================================================
 //  SHVStringC class Constant
 // ========================================================================================================
+/// \class SHVString16C shvstringc.h "shiva/include/utils/shvstringc.h"
 
 /*************************************
  * Comparison operators
@@ -695,6 +695,7 @@ SHVWChar* vCharR;
 //=========================================================================================================
 // SHVString16CRef class - reference counting constant string
 //=========================================================================================================
+/// \class SHVString16CRef shvstringc.h "shiva/include/utils/shvstringc.h"
 
 /*************************************
  * Constructors
@@ -829,6 +830,7 @@ void SHVStr16_DestroyBufferFunc(SHVWChar* chars) { delete [] chars; }
 // ========================================================================================================
 //  SHVStringBuffer class
 // ========================================================================================================
+/// \class SHVStringBuffer16 shvstring.h "shiva/include/utils/shvstring.h"
 
 // constructor
 SHVStringBuffer16::SHVStringBuffer16(const SHVStringBuffer16& buffer) : SHVString16C()
@@ -860,7 +862,7 @@ SHVStringBuffer16& SHVStringBuffer16::operator=(SHVStringBuffer16& buffer)
 // ========================================================================================================
 //  SHVString class
 // ========================================================================================================
-
+/// \class SHVString16 shvstring.h "shiva/include/utils/shvstring.h"
 
 /*************************************
  * Copy static

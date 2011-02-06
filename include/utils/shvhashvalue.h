@@ -27,6 +27,7 @@ private:
 
 
 // ============================================ implementation ============================================ //
+/// \class SHVHashValue shvhashvalue.h "shiva/include/utils/shvhashvalue.h"
 
 /*************************************
  * Constructor

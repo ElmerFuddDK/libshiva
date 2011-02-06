@@ -43,6 +43,7 @@
 //=========================================================================================================
 // SHVModuleListImpl class - implementation of module list
 //=========================================================================================================
+/// \class SHVModuleListImpl shvmodulelistimpl.h "shiva/include/frameworkimpl/shvmodulelistimpl.h"
 
 /*************************************
  * Constructor
