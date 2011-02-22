@@ -324,4 +324,8 @@ bool SHVDouble::operator==(const SHVDouble& val) const { return ( (val.Null && N
 
 SHVDouble SHVDouble::FromDoublePtr(const double* val) { if (val) return SHVDouble(*val); return SHVDouble(); }
 
+/// \class SHVBool shvtypes.h "shiva/include/shvtypes.h"
+/// \class SHVInt shvtypes.h "shiva/include/shvtypes.h"
+/// \class SHVInt64 shvtypes.h "shiva/include/shvtypes.h"
+/// \class SHVDouble shvtypes.h "shiva/include/shvtypes.h"
 #endif
