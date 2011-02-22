@@ -546,9 +546,15 @@ SHVBool SHVDataVariantImpl::IsNull() const
 void SHVDataVariantImpl::SetNull()
 {
 	if (DataType == SHVDataVariant::TypeTime && Data.timeVal)
+	{
 		delete Data.timeVal;
+		Data.timeVal = NULL;
+	}
 	if (DataType == SHVDataVariant::TypeString && Data.stringVal)
+	{
 		delete Data.stringVal;
+		Data.stringVal = NULL;
+	}
 	isNull = true;
 }
 
