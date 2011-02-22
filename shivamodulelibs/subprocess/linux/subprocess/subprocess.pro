@@ -21,3 +21,11 @@ HEADERS += ../../../../include/modules/subprocess/shvsubprocess.h \
  ../../src/shvsubprocessfactory.h
 
 INCLUDEPATH += ../../../../..
+
+!isEmpty(ANDROID_PLATFORM) {
+  QMAKE_CFLAGS += -fno-exceptions -fno-rtti
+  QMAKE_CXXFLAGS += -fno-exceptions -fno-rtti
+  QMAKE_LIBS = -lstdc++ -lsupc++ -llog
+  QMAKE_INCDIR -= $$ANDROID_SOURCES_CXX_STL_INCDIR
+  QMAKE_LIBDIR -= $$ANDROID_SOURCES_CXX_STL_LIBDIR
+}

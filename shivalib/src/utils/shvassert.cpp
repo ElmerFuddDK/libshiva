@@ -37,6 +37,9 @@
 #if defined(__SHIVA_WIN32) && !defined(__SHIVA_WINCE) && !defined(__MINGW32__)
 # include <crtdbg.h>
 #endif
+#ifdef ANDROID
+#include <android/log.h>
+#endif
 
 bool SHVAPI SHVAssert::ReportError(const char* fileName, int lineNo)
 {
@@ -77,11 +80,13 @@ SHVVA_LIST args;
 #if defined(__SHIVA_WIN32) && !defined(__MINGW32__)
 	::OutputDebugString((const TCHAR*)str.GetSafeBuffer());
 #elif defined(__SHIVA_EPOC)
-#else
-	SHVConsole::ErrPrintf(_S("%s"),str.GetSafeBuffer());
 # ifdef __MINGW32__
 	if (str.Find(_S("\n")) >= 0)
 		fflush(stderr);
 # endif
+#elif defined (ANDROID)
+	__android_log_print(ANDROID_LOG_DEBUG,"Shiva", "%s", str.GetSafeBuffer());
+#else
+	SHVConsole::ErrPrintf(_S("%s"),str.GetSafeBuffer());
 #endif
 }

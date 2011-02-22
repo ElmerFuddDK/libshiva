@@ -20,3 +20,11 @@ HEADERS += ../../include/shvsocketimpl.h \
 ../../../../include/modules/socketserver/shvsocketserver.h \
  ../../include/shvsocketserverthread.h \
  ../../src/shvsocketserverfactory.h
+
+!isEmpty(ANDROID_PLATFORM) {
+  QMAKE_CFLAGS += -fno-exceptions -fno-rtti
+  QMAKE_CXXFLAGS += -fno-exceptions -fno-rtti
+  QMAKE_LIBS = -lstdc++ -lsupc++ -llog
+  QMAKE_INCDIR -= $$ANDROID_SOURCES_CXX_STL_INCDIR
+  QMAKE_LIBDIR -= $$ANDROID_SOURCES_CXX_STL_LIBDIR
+}

@@ -5,6 +5,11 @@
 #include <limits.h>
 #include <ctype.h>
 
+#ifdef __SHIVA_ANDROID_STL
+#include <cctype>
+#include <ios>
+#endif
+
 #ifdef _S
 # undef _S
 #endif
