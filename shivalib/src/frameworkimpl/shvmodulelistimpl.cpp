@@ -659,9 +659,14 @@ SHVBool retVal(false);
 		if (StartupErrors.GetCount())
 		{
 		SHVListIterator<SHVModuleBase*> itrReg(registeredModules);
+		int lockCount;
 			State = StateError;
+			lockCount = Lock.UnlockAll(); // When unregistering no threads should be active anymore, but event threads might be shutting down
+
 			while (itrReg.MoveNext())
 				itrReg.Get()->Unregister();
+
+			lockCount = Lock.LockMultiple(lockCount);
 		}
 
 
@@ -740,6 +745,8 @@ SHVInternalListIterator itr(Modules);
 
 		if (EventsActive <= 1) // only UnregisterModules are performing events
 		{
+		int lockCount = Lock.UnlockAll(); // When unregistering no threads should be active anymore, but event threads might be shutting down
+
 			while (itr.MoveNext())
 			{
 				if (itr.Get()->IsRegistered())
@@ -747,6 +754,8 @@ SHVInternalListIterator itr(Modules);
 			}
 
 			State = StateUnregistered;
+
+			Lock.LockMultiple(lockCount);
 		}
 	}
 

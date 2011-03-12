@@ -226,9 +226,13 @@ void SHVEventThread::ThreadFunc()
 	{
 		ThreadSignal.Lock(TimeoutInterval); // wait for signal
 
-		PreEventDispatch();
-		EventList.DispatchEvents(*Modules);
-		PostEventDispatch();
+		if (Modules->EventActiveInQueue())
+		{
+			PreEventDispatch();
+			EventList.DispatchEvents(*Modules);
+			PostEventDispatch();
+			Modules->EventDeactivatedInQueue();
+		}
 	}
 
 	ThreadStopping();
