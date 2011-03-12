@@ -50,6 +50,8 @@ public:
 
 protected:
 
+	inline SHVModuleList* GetModuleList();
+
 	void SetSignalTimeout(int interval=SHVMutexBase::Infinite);
 
 	// stubbed functions for inheritance
@@ -75,5 +77,16 @@ private:
 
 	///\endcond
 };
+
+
+// ============================================= implementation ============================================= //
+
+/*************************************
+ * GetModuleList
+ *************************************/
+SHVModuleList* SHVEventThread::GetModuleList()
+{
+	return Modules;
+}
 
 #endif
