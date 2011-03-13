@@ -119,7 +119,6 @@ public:
 protected:
 friend class SHVEventQueue;
 friend class SHVEventQueueList;
-friend class SHVEventThread;
 
 	// for event control
 	virtual SHVBool EventActiveInQueue() = 0;
