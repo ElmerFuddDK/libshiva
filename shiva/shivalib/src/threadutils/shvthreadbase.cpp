@@ -124,7 +124,10 @@ void** tmpData = (void**)::malloc(sizeof(void*)*2);
 		ResumeThread(ThreadHandle);
 	}
 	else
+	{
+		ThreadHandle = INVALID_HANDLE_VALUE;
 		::free(tmpData);
+	}
 #elif defined(__SHIVA_EPOC)
 SHVStringC prefix(name);
 SHVString tmpName;
