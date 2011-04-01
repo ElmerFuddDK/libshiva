@@ -5,7 +5,7 @@ debug \
  warn_on
 LIBS += -ldl \
  -lshiva \
- -L../../SHVRelPathSHV/shivalib/linux/libshiva
+ -L../../../SHVRelPathSHV/shiva/shivalib/linux/libshiva
 
 TARGET =../bin/shvtemplateshv
 

@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../SHVRelPathSHV/shivalib/windows/$(ConfigurationName)/libshiva.lib"
+				AdditionalDependencies="../../SHVRelPathSHV/shiva/shivalib/windows/$(ConfigurationName)/libshiva.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -137,7 +137,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../SHVRelPathSHV/shivalib/windows/$(ConfigurationName)/libshiva.lib"
+				AdditionalDependencies="../../SHVRelPathSHV/shiva/shivalib/windows/$(ConfigurationName)/libshiva.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -238,7 +238,7 @@
 			>
 		</Filter>
 		<File
-			RelativePath="..\SHVRelPathWinSHV\shivalib\windows\Debug\libshiva.dll"
+			RelativePath="..\..\SHVRelPathWinSHV\shiva\shivalib\windows\Debug\libshiva.dll"
 			>
 			<FileConfiguration
 				Name="Debug|Win32"
@@ -246,7 +246,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Copying libshiva.dll"
-					CommandLine="xcopy /D /Y &quot;..\SHVRelPathWinSHV\shivalib\windows\$(ConfigurationName)\libshiva.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
+					CommandLine="xcopy /D /Y &quot;..\..\SHVRelPathWinSHV\shiva\shivalib\windows\$(ConfigurationName)\libshiva.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
 					Outputs="libshiva.dll"
 				/>
 			</FileConfiguration>
@@ -256,7 +256,7 @@
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Copying libshiva.dll"
-					CommandLine="xcopy /D /Y &quot;..\SHVRelPathWinSHV\shivalib\windows\$(ConfigurationName)\libshiva.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
+					CommandLine="xcopy /D /Y &quot;..\..\SHVRelPathWinSHV\shiva\shivalib\windows\$(ConfigurationName)\libshiva.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
 					Outputs="libshiva.dll"
 				/>
 			</FileConfiguration>

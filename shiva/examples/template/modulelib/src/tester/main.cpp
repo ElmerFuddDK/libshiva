@@ -12,7 +12,7 @@
 
 // The main function -boots up the application
 // Macro exists for windows CE compatibility
-CONSOLEMAIN
+CONSOLEMAIN()
 {
 SHVDll shvtemplateshvlib;
 

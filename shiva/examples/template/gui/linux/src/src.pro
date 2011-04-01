@@ -5,7 +5,7 @@ HEADERS += ../../src/shvshvtemplateshv.h \
 ../../src/forms/shvformmain.h 
 TARGET =../bin/shvtemplateshv
 TEMPLATE = app
-LIBS += -L../../SHVRelPathSHV/shivalib/linux/libshiva \
+LIBS += -L../../../SHVRelPathSHV/shiva/shivalib/linux/libshiva \
 -ldl \
 -lshiva
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG

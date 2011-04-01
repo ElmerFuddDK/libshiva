@@ -3,7 +3,7 @@ SOURCES = ../../src/tester/main.cpp \
 HEADERS += ../../src/tester/shvshvtemplateshvtester.h
 TARGET =../bin/shvtemplateshvtester
 TEMPLATE = app
-LIBS += -L../../SHVRelPathSHV/shivalib/linux/libshiva \
+LIBS += -L../../../SHVRelPathSHV/shiva/shivalib/linux/libshiva \
 -ldl \
 -lshiva
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG

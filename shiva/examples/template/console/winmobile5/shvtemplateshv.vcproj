@@ -64,7 +64,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /subsystem:windowsce,5.01"
-				AdditionalDependencies="&quot;../SHVRelPathSHV/shivalib/winmobile5/$(OutDir)/libshiva.lib&quot;"
+				AdditionalDependencies="&quot;../../SHVRelPathSHV/shiva/shivalib/winmobile5/$(OutDir)/libshiva.lib&quot;"
 				OutputFile="$(OutDir)/shvtemplateshv.exe"
 				LinkIncremental="2"
 				DelayLoadDLLs="$(NOINHERIT)"
@@ -146,7 +146,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /subsystem:windowsce,5.01"
-				AdditionalDependencies="&quot;../SHVRelPathSHV/shivalib/winmobile5/$(OutDir)/libshiva.lib&quot;"
+				AdditionalDependencies="&quot;../../SHVRelPathSHV/shiva/shivalib/winmobile5/$(OutDir)/libshiva.lib&quot;"
 				OutputFile="$(OutDir)/shvtemplateshv.exe"
 				LinkIncremental="1"
 				DelayLoadDLLs="$(NOINHERIT)"
