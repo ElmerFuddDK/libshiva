@@ -498,7 +498,7 @@ SHVBool retVal;
 	else
 	{
 #ifdef __SHIVA_WINCE
-		retVal = (::DeleteFile((const TCHAR*)fileName.GetSafeBuffer()) ? SHVBool::False : SHVBool::True);
+		retVal = (::DeleteFile((const TCHAR*)fileName.GetSafeBuffer()) ? SHVBool::True : SHVBool::False);
 #elif defined(UNICODE)
 		retVal = (wremove((const TCHAR*)fileName.GetSafeBuffer()) ? SHVBool::False : SHVBool::True);
 #else
