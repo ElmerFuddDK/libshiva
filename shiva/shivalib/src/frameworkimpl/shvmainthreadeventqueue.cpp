@@ -37,6 +37,11 @@
 #include "../../../include/framework/shvconsole.h"
 #include "../../../include/utils/shvdir.h"
 
+#ifdef __SHIVA_POSIX_FREEBSD
+# include <sys/sysctl.h>
+# include "../../../include/utils/shvstringutf8.h"
+#endif
+
 
 //-=========================================================================================================
 // SHVMainThreadEventQueue class - Interface for the main event queue
@@ -77,7 +82,7 @@ bool resolvedAppPathAndName = false;
 		
 		resolvedAppPathAndName = true;
 	}
-#elif defined(__SHIVA_LINUX)
+#elif defined(__SHIVA_POSIX_LINUX)
 	{
 	SHVString8 moduleFileName;
 	long pathLen = 128;
@@ -112,6 +117,40 @@ bool resolvedAppPathAndName = false;
 			Modules.GetConfig().Set(SHVModuleList::DefaultCfgAppName,appName);
 
 			resolvedAppPathAndName = true;
+		}
+	}
+#elif defined(__SHIVA_POSIX_FREEBSD)
+	{
+	int mib[4];
+	SHVStringUTF8 path;
+	size_t cb;
+
+		cb = 1024;
+		path.SetBufferSize(cb);
+		path.GetBuffer()[0] = '\0';
+
+		mib[0] = CTL_KERN;
+		mib[1] = KERN_PROC;
+		mib[2] = KERN_PROC_PATHNAME;
+		mib[3] = -1;
+
+		sysctl(mib, 4, path.GetBuffer(), &cb, NULL, 0);
+
+		if (path.GetLength())
+		{
+		SHVString appPath, appName;
+
+			appPath = SHVDir::ExtractPath(path.GetSafeBuffer()).ToStrT();
+			appName = SHVDir::ExtractName(path.GetSafeBuffer()).ToStrT();
+
+			Modules.GetConfig().Set(SHVModuleList::DefaultCfgAppPath,appPath);
+			Modules.GetConfig().Set(SHVModuleList::DefaultCfgAppName,appName);
+
+			resolvedAppPathAndName = true;
+		}
+		else
+		{
+			SHVConsole::ErrPrintf(_S("Error resolving app path and name\n"));
 		}
 	}
 #endif

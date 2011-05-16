@@ -73,7 +73,11 @@
 #  include <stdlib.h>
 #  include <errno.h>
 #  include <iconv.h>
-#  define ICONV_IBUFTYPE char**
+#  ifdef __SHIVA_POSIX_FREEBSD
+#   define ICONV_IBUFTYPE const char**
+#  else
+#   define ICONV_IBUFTYPE char**
+#  endif
 #  define ICONV_ERR (size_t)-1
 #  define UNICODE_INIT()
 # endif

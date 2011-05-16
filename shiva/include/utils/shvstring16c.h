@@ -34,7 +34,7 @@ typedef SHVStringBuffer16 SHVStringBuffer;
 # define _SHVS8(x)  SHVStringC(_S(x)).ToStr8()
 # define _SHVS16(x) SHVString16C(_S(x))
 ///\cond INTERNAL
-# ifdef __SHIVA_LINUX
+# ifdef __SHIVA_POSIX_LINUX
 #  error "Linux is currently UCS4 only - doesn't work with shiva in unicode"
 # endif
 # ifdef _T

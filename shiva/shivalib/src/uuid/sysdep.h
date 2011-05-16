@@ -8,7 +8,11 @@
 #else
 #include <sys/types.h>
 #include <sys/time.h>
+#ifdef __FreeBSD__
+#include "freebsd/sys/sysinfo.h"
+#else
 #include <sys/sysinfo.h>
+#endif
 #endif
 
 /* change to point to where MD5 .h's live; RFC 1321 has sample

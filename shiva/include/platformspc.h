@@ -6,7 +6,9 @@
 
 #undef __SHIVA_WIN32
 #undef __SHIVA_WINCE
-#undef __SHIVA_LINUX
+#undef __SHIVA_POSIX
+#undef __SHIVA_POSIX_LINUX
+#undef __SHIVA_POSIX_FREEBSD
 #undef __SHIVA_EPOC
 
 #undef SHVVA_LIST
@@ -31,9 +33,18 @@
 #elif defined(__EPOC32__) || defined(__SYMBIAN32__)
 # define __SHIVA_EPOC
 # include "platforms/symbian/platformspc.h"
-#else // assume linux for now
-# define __SHIVA_LINUX
+#elif defined(__FreeBSD__)
+# define __SHIVA_POSIX
+# define __SHIVA_POSIX_FREEBSD
+# include "platforms/freebsd/platformspc.h"
+#elif defined(linux) || defined(__linux)
+# define __SHIVA_LINUX // for historic reasons
+# define __SHIVA_POSIX
+# define __SHIVA_POSIX_LINUX
 # include "platforms/linux/platformspc.h"
+#else
+# define __SHIVA_POSIX
+# include "platforms/posix/platformspc.h"
 #endif
 
 #ifndef SHVVA_LIST

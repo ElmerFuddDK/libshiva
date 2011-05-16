@@ -52,7 +52,7 @@ private:
 	SHVSubProcessStreamOut *StreamStdIn;
 	SHVBool LastError;
 	bool NonBlocking;
-#ifdef __SHIVA_LINUX
+#ifdef __SHIVA_POSIX
 	pid_t Pid;
 
 	static void SafeCloseFd(int& fd);

@@ -11,7 +11,7 @@ TEMPLATE = app
 SOURCES += dataengine.cpp
 
 LIBS = -L../../../../shivalib/linux/libshiva/ \
-  -ldl \
+  $$QMAKE_LIBS_DYNLOAD \
   -lshiva
 
 TARGET = tester

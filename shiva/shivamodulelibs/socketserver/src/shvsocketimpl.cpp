@@ -116,7 +116,7 @@ SHVSocketImpl::SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* 
 #ifdef __SHIVA_WIN32
 		unsigned long nonblock = 1;
 		::ioctlsocket(Socket, FIONBIO, &nonblock);
-#elif defined __SHIVA_LINUX
+#elif defined __SHIVA_POSIX
 		::fcntl(Socket,F_SETFL,O_NONBLOCK);
 #endif
 	}
@@ -444,6 +444,10 @@ SHVBool retVal(SHVSocket::ErrGeneric);
 			retVal = SHVBool(WSAIoctl(Socket,SIO_KEEPALIVE_VALS,&data,sizeof(tcp_keepalive),NULL,0,&bytesReturned,NULL,NULL) == 0 ? SHVBool::True : SHVSocket::ErrGeneric);
 		}
 		return retVal;
+#elif defined(__SHIVA_POSIX_FREEBSD)
+	case SHVSocket::SockOptKeepaliveIdle:
+		///\todo Figure out a way to implement SHVSocket::SockOptKeepaliveIdle for FreeBSD
+		return retVal;
 #else
 	case SHVSocket::SockOptKeepaliveIdle:
 		level = IPPROTO_TCP;
@@ -460,7 +464,7 @@ SHVBool retVal(SHVSocket::ErrGeneric);
 		{
 #ifdef __SHIVA_WIN32
 		LINGER ling;
-#elif defined __SHIVA_LINUX
+#elif defined __SHIVA_POSIX
 		linger ling;
 #endif
 			ling.l_linger = val1;
@@ -494,7 +498,7 @@ SHVBool SHVSocketImpl::GetSocketOption(SocketOptions option, int& val1, int& val
 {
 int level, optname, val;
 SHVBool retVal(SHVSocket::ErrGeneric);
-#ifdef __SHIVA_LINUX
+#ifdef __SHIVA_POSIX
 socklen_t len;
 #else
 int len;
@@ -509,6 +513,9 @@ int len;
 		optname = SO_KEEPALIVE;
 		break;
 #ifdef __SHIVA_WIN32
+	case SHVSocket::SockOptKeepaliveIdle:
+		return retVal;
+#elif defined(__SHIVA_POSIX_FREEBSD)
 	case SHVSocket::SockOptKeepaliveIdle:
 		return retVal;
 #else

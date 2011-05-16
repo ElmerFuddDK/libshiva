@@ -16,7 +16,7 @@ CONFIG -= qt \
 thread \
 release
 LIBS += -L../../../../shivalib/linux/libshiva/ \
--ldl \
+$$QMAKE_LIBS_DYNLOAD \
 -lshiva
 HEADERS += ../../include/shvxmlreaderimpl.h \
 ../../include/shvxmlstreamimpl.h \

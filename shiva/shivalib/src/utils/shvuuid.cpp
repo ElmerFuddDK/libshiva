@@ -257,7 +257,7 @@ uuid_t* id = (uuid_t*)&Bytes;
  *************************************/
 SHVStringBuffer16 SHVUUID::ID::ToString16()
 {
-#ifdef __SHIVA_LINUX
+#ifdef __SHIVA_POSIX
 	return ToString8().ToStr16();
 #else
 uuid_t* id = (uuid_t*)&Bytes;

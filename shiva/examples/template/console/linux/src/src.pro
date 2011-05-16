@@ -4,7 +4,7 @@ HEADERS += ../../src/shvshvtemplateshv.h
 TARGET =../bin/shvtemplateshv
 TEMPLATE = app
 LIBS += -L../../../SHVRelPathSHV/shiva/shivalib/linux/libshiva \
--ldl \
+$$QMAKE_LIBS_DYNLOAD \
 -lshiva
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG
 

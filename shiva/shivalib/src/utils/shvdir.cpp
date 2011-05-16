@@ -577,7 +577,7 @@ SHVString path = SHVDir::ExtractPath(fileName);
 	info.nShow = SW_SHOWNORMAL;
 	ShellExecuteEx(&info);
 
-#elif defined(__SHIVA_LINUX)
+#elif defined(__SHIVA_POSIX)
 SHVString execstr;
 	execstr.Format(_S("xdg-open \"%s\" &"), fileName.GetSafeBuffer());
 	::system(execstr.GetSafeBuffer());

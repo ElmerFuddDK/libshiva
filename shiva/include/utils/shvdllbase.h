@@ -60,7 +60,7 @@ public:
 
 #ifdef __SHIVA_WIN32
 	inline HINSTANCE GetNativeHandle();
-#elif defined __SHIVA_LINUX
+#elif defined __SHIVA_POSIX
 	inline void* GetNativeHandle();
 #elif defined __SHIVA_EPOC
 	inline RLibrary* GetNativeHandle();
@@ -71,7 +71,7 @@ private:
 	///\cond INTERNAL
 #ifdef __SHIVA_WIN32
 	HINSTANCE hDll;
-#elif defined __SHIVA_LINUX
+#elif defined __SHIVA_POSIX
 	void* hDll;
 #elif defined __SHIVA_EPOC
 	RLibrary* hDll;
@@ -91,7 +91,7 @@ HINSTANCE SHVDllBase::GetNativeHandle()
 {
 	return hDll;
 }
-#elif defined __SHIVA_LINUX
+#elif defined __SHIVA_POSIX
 void* SHVDllBase::GetNativeHandle()
 {
 	return hDll;

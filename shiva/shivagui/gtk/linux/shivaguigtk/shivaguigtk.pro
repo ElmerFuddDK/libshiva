@@ -5,7 +5,7 @@
 
 LIBS += -lgdk-x11-2.0 \
         -lgtk-x11-2.0 \
-        -ldl \
+        $$QMAKE_LIBS_DYNLOAD \
         -lshiva 
 QMAKE_LIBDIR = ../../../../shivalib/linux/libshiva
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
@@ -112,3 +112,14 @@ INCLUDEPATH += /usr/lib64/gtk-2.0/include \
   /usr/include/glib-2.0 \
   /usr/lib/gtk-2.0/include
 
+unix {
+  system(test "`uname`" = "FreeBSD") {
+	INCLUDEPATH += /usr/local/include/gtk-2.0 \
+	  /usr/local/include/glib-2.0 \
+	  /usr/local/include/atk-1.0 \
+	  /usr/local/include/pango-1.0 \
+	  /usr/local/include/gdk-pixbuf-2.0 \
+	  /usr/local/include/cairo
+	QMAKE_LIBDIR += /usr/local/lib
+  }
+}

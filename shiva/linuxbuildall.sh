@@ -10,6 +10,10 @@ fi
 unset ReleaseMode
 unset StripMode
 unset LibIconv
+unset QMake
+
+which qmake-qt4 &>/dev/null && QMake="qmake-qt4"
+test -z "$QMake" && QMake="qmake"
 
 # check for command line input
 
@@ -144,7 +148,7 @@ function Compile()
 		test -n "$After" && After="$After LIBS+=-liconv" || After="-after LIBS+=-liconv"
 		echo $After
 	fi
-	qmake "`basename \"$2\"`" $After &>/dev/null && make clean &>/dev/null && make &>/dev/null || EchoError "  Error building $2"
+	$QMake "`basename \"$2\"`" $After &>/dev/null && make clean &>/dev/null && make &>/dev/null || EchoError "  Error building $2"
 	test -n "$StripMode" && StripTargetFiles
 	
 	cd "$OldDir"

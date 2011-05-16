@@ -3,7 +3,7 @@ TEMPLATE = lib
 CONFIG = dll \
 debug \
  warn_on
-LIBS += -ldl \
+LIBS += $$QMAKE_LIBS_DYNLOAD \
 -lshiva \
  -L../../../../shivalib/linux/libshiva
 

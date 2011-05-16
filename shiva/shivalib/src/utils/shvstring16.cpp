@@ -49,7 +49,7 @@
 # endif
 #endif
 
-#ifdef __SHIVA_LINUX
+#ifdef __SHIVA_POSIX
 # include <wchar.h>
 # include <stdlib.h>
 # include "../../../include/utils/shvstringutf8.h" // for Format .. horrible hack
@@ -63,7 +63,7 @@
 // ========================================================================================================
 long SHVString16C::StrToL(const SHVWChar* str, SHVWChar** ptr, int base)
 {
-#if defined(__SHIVA_LINUX) || defined(__SHIVA_EPOC)
+#if defined(__SHIVA_POSIX) || defined(__SHIVA_EPOC)
 long retVal = 0;
 SHVWChar firstVal = *str;
 SHVWChar* dummyPtr;
@@ -97,7 +97,7 @@ SHVWChar* dummyPtr;
 }
 SHVInt64Val SHVString16C::StrToInt64(const SHVWChar* str, SHVWChar** ptr, int base)
 {
-#if defined(__SHIVA_LINUX) || defined(__SHIVA_EPOC) || defined(__SHIVA_WINCE)
+#if defined(__SHIVA_POSIX) || defined(__SHIVA_EPOC) || defined(__SHIVA_WINCE)
 SHVInt64Val retVal = 0;
 SHVWChar firstVal = *str;
 SHVWChar* dummyPtr;
@@ -193,7 +193,7 @@ bool dotMode = false;
 }
 size_t SHVString16C::StrLen(const SHVWChar* str)
 {
-#if defined(__SHIVA_LINUX) || defined(__SHIVA_EPOC)
+#if defined(__SHIVA_POSIX) || defined(__SHIVA_EPOC)
 size_t len;
 	for (len=0;str && str[len];len++) ;
 	return len;
@@ -204,7 +204,7 @@ size_t len;
 }
 int SHVString16C::StrCmp(const SHVWChar* str1,const SHVWChar* str2)
 {
-#if defined(__SHIVA_LINUX) || defined(__SHIVA_EPOC)
+#if defined(__SHIVA_POSIX) || defined(__SHIVA_EPOC)
 int retVal;
 SHVWChar *ch1 = (SHVWChar*)str1;
 SHVWChar *ch2 = (SHVWChar*)str2;
@@ -226,7 +226,7 @@ SHVWChar *ch2 = (SHVWChar*)str2;
 }
 int SHVString16C::StrCaseCmp(const SHVWChar* s1,const SHVWChar* s2)
 {
-#if defined(__SHIVA_LINUX) || defined(__SHIVA_EPOC)
+#if defined(__SHIVA_POSIX) || defined(__SHIVA_EPOC)
 SHVString16 str1(s1);
 SHVString16 str2(s2);
 	str1.MakeLower();
@@ -240,7 +240,7 @@ SHVString16 str2(s2);
 }
 SHVWChar* SHVString16C::StrCat(SHVWChar* dest, const SHVWChar* source)
 {
-#if defined(__SHIVA_LINUX) || defined(__SHIVA_EPOC)
+#if defined(__SHIVA_POSIX) || defined(__SHIVA_EPOC)
 size_t sourcelen = StrLen(source);
 	if (sourcelen>0)
 	{
@@ -1141,7 +1141,7 @@ SHVVA_LIST args;
 }
 void SHVString16::FormatList(const SHVWChar* s, SHVVA_LIST args)
 {
-#ifdef __SHIVA_LINUX
+#ifdef __SHIVA_POSIX
 static const SHVWChar pcnt[] = { '%', '\0' };
 SHVString16C str(s);
 SHVList<SHVString16, const SHVString16C> chunks;
@@ -1175,6 +1175,7 @@ long pos = 0;
 		SHVStringUTF8 fStr, tmpStr;
 		bool isString = false;
 		bool running = true;
+		SHVWChar type;
 			for (;running && s[newpos];newpos++)
 			{
 				switch (s[newpos]) {
@@ -1184,10 +1185,12 @@ long pos = 0;
 				case 'e': case 'E': case 'f': case 'F': case 'g': case 'G': case 'a':
 				case 'A': case 'c': case 'p': case 'n': case 'm':
 					running = false;
+					type = s[newpos];
 					break;
 					// panicky exit point ...
 				case '%': // Actually it would be ok to just scan for '%' chars, if it wasn't for 's'
 					SHVASSERT(false);
+					type = s[newpos];
 					newpos--;
 					running = false;
 					break;
@@ -1196,6 +1199,14 @@ long pos = 0;
 			fStr = str.Mid((size_t)pos-1,(size_t)(newpos-pos+1)).ToStrUTF8();
 			if (isString)
 				tmpStr.Format(fStr.GetSafeBuffer(),SHVString16C(SHVVA_ARG(args,const SHVWChar*)).ToStrUTF8().GetSafeBuffer());
+#ifdef __SHIVA_POSIX_FREEBSD
+			else if (type == 'c')
+			{
+			int ch = SHVVA_ARG(args,int);
+				tmpStr = "X";
+				tmpStr.GetBuffer()[0] = (char)ch;
+			}
+#endif
 			else
 			{
 			char buf[64];

@@ -4,7 +4,7 @@
 # Target is an application:  ../bin/shiva
 
 TARGETDEPS += ../libshiva/libshiva.so 
-LIBS += -ldl \
+LIBS += $$QMAKE_LIBS_DYNLOAD \
         -lshiva 
 QMAKE_LIBDIR += ../libshiva 
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG 

@@ -6,7 +6,7 @@
 HEADERS += modules/shvcontroltester.h
 SOURCES += guitester.cpp \
            modules/shvcontroltester.cpp
-LIBS += -ldl \
+LIBS += $$QMAKE_LIBS_DYNLOAD \
 -lshiva
 QMAKE_LIBDIR = ../../../../shivalib/linux/libshiva
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG

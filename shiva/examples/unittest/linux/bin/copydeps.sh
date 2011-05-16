@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/bin/sh
+unset CpOptions
+test "`uname`" = "Linux" && CpOptions="-d"
+test "`uname`" = "FreeBSD" && CpOptions="-R"
 cd "`dirname $0`"
-cp -d ../../../../shivalib/linux/libshiva/libshiva.so* ./ 
-cp -d ../../../../shivagui/gtk/linux/shivaguigtk/libshivaguigtk.so* ./ 
+cp $CpOptions ../../../../shivagui/gtk/linux/shivaguigtk/libshivaguigtk.so* ./ 
+cp $CpOptions ../../../../shivalib/linux/libshiva/libshiva.so* ./ 

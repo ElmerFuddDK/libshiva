@@ -3,7 +3,7 @@ shveventstdin.cpp
 TARGET =../bin/socketserver
 TEMPLATE = app
 LIBS += -L../../../../shivalib/linux/libshiva \
--ldl \
+$$QMAKE_LIBS_DYNLOAD \
 -lshiva
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG
 

@@ -8,7 +8,7 @@ LIBS += -L/usr/lib \
   -L../../../shivalib/linux/libshiva \
   -lmysqlclient \
   -lshiva \
-  -ldl
+  $$QMAKE_LIBS_DYNLOAD
 
 DESTDIR = ../bin
 

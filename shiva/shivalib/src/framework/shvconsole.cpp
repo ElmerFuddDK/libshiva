@@ -172,7 +172,7 @@ void SHVConsole::Printf16(const SHVWChar* str, ...)
 {
 SHVVA_LIST args;
 	SHVVA_START(args,str);
-#ifdef __SHIVA_LINUX
+#ifdef __SHIVA_POSIX
 	printf("%s", SHVString16C::FormatList(str, args).ToStrT().GetSafeBuffer());
 #elif defined(__SHIVA_WINCE)
 	vwprintf(str,args);
@@ -190,7 +190,7 @@ void SHVConsole::PrintfList16(const SHVWChar* str, SHVVA_LIST args)
 {
 SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
-#ifdef __SHIVA_LINUX
+#ifdef __SHIVA_POSIX
 	printf("%s", SHVString16C::FormatList(str, argList).ToStrT().GetSafeBuffer());
 #elif defined(__SHIVA_WINCE)
 	vwprintf(str,argList);
@@ -208,7 +208,7 @@ void SHVConsole::ErrPrintf16(const SHVWChar* str, ...)
 {
 SHVVA_LIST args;
 	SHVVA_START(args,str);
-#ifdef __SHIVA_LINUX
+#ifdef __SHIVA_POSIX
 	fprintf(stderr, "%s", SHVString16C::FormatList(str, args).ToStrT().GetSafeBuffer());
 #elif defined(__SHIVA_WINCE)
 	vfwprintf(stderr,str,args);
@@ -226,7 +226,7 @@ void SHVConsole::ErrPrintfList16(const SHVWChar* str, SHVVA_LIST args)
 {
 SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
-#ifdef __SHIVA_LINUX
+#ifdef __SHIVA_POSIX
 	fprintf(stderr, "%s", SHVString16C::FormatList(str, argList).ToStrT().GetSafeBuffer());
 #elif defined(__SHIVA_WINCE)
 	vfwprintf(stderr,str,args);

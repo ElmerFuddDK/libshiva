@@ -34,7 +34,7 @@
 #include "../../../include/utils/shvdllbase.h"
 #include "../../../include/utils/shvdir.h"
 
-#ifdef __SHIVA_LINUX
+#ifdef __SHIVA_POSIX
 # include <dlfcn.h>
 #endif
 
@@ -52,7 +52,7 @@ SHVDllBase::SHVDllBase()
 {
 #if defined(__SHIVA_WIN32)
 	hDll = NULL;
-#elif defined(__SHIVA_LINUX)
+#elif defined(__SHIVA_POSIX)
 	hDll = NULL;
 #elif defined(__SHIVA_EPOC)
 	hDll = NULL;
@@ -77,7 +77,7 @@ SHVDllBase::~SHVDllBase()
 /// Returns the default file dll file extension for the platform
 const SHVStringC SHVDllBase::FileExtension()
 {
-#ifdef __SHIVA_LINUX
+#ifdef __SHIVA_POSIX
 	return _S("so");
 #else
 	return _S("dll");
@@ -98,7 +98,7 @@ const SHVStringC SHVDllBase::FileExtension()
 SHVStringBuffer SHVDllBase::CreateLibFileName(const SHVStringC libName, const SHVStringC defaultPath)
 {
 SHVString retVal;
-#ifdef __SHIVA_LINUX
+#ifdef __SHIVA_POSIX
 SHVString prefix(libName.Left(3) == _S("lib") ? NULL : _S("lib"));
 SHVString extension(_S(".so"));
 const int extLen = 3;
@@ -128,7 +128,7 @@ SHVBool SHVDllBase::IsLoaded()
 {
 #if defined(__SHIVA_WIN32)
 	return hDll != NULL;
-#elif defined(__SHIVA_LINUX)
+#elif defined(__SHIVA_POSIX)
 	return hDll != NULL;
 #elif defined(__SHIVA_EPOC)
 	return hDll != NULL;
@@ -165,7 +165,7 @@ SHVBool retVal(SHVBool::False);
 #if defined(__SHIVA_WIN32)
 	hDll = ::LoadLibrary((const TCHAR*)libFile.GetBufferConst());
 	retVal = IsLoaded();
-#elif defined(__SHIVA_LINUX)
+#elif defined(__SHIVA_POSIX)
 	dlerror(); // reset error
 	hDll = dlopen(libFile.GetBufferConst(), RTLD_NOW);
 	if (hDll == NULL) fprintf(stderr, "dlopen(%s) %d, %s\n", libFile.GetBufferConst(), (int)reinterpret_cast<long>(hDll), dlerror());
@@ -194,7 +194,7 @@ void SHVDllBase::Unload()
 #if defined(__SHIVA_WIN32)
 		FreeLibrary(hDll);
 		hDll = NULL;
-#elif defined(__SHIVA_LINUX)
+#elif defined(__SHIVA_POSIX)
 		dlclose(hDll);
 		hDll = NULL;
 #elif defined(__SHIVA_EPOC)
@@ -224,7 +224,7 @@ SHVBool retVal(SHVBool::False);
 # else
 		*symbol = (void*)GetProcAddress(hDll,(const TCHAR*)name.GetBufferConst());
 # endif
-#elif defined(__SHIVA_LINUX)
+#elif defined(__SHIVA_POSIX)
 		*symbol = dlsym(hDll, name.GetBufferConst());
 #elif defined(__SHIVA_EPOC)
 #endif
@@ -243,7 +243,7 @@ SHVBool retVal(SHVBool::False);
 	if (IsLoaded())
 	{
 #if defined(__SHIVA_WIN32)
-#elif defined(__SHIVA_LINUX)
+#elif defined(__SHIVA_POSIX)
 #elif defined(__SHIVA_EPOC)
 		*symbol = (void*)hDll->Lookup(id);
 #endif

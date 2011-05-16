@@ -6,7 +6,7 @@ TARGET =shivasqlite
 DESTDIR =../bin
 
 LIBS += -L../../../shivalib/linux/libshiva \
-  -ldl \
+  $$QMAKE_LIBS_DYNLOAD \
   -lshiva \
   -lpthread
 

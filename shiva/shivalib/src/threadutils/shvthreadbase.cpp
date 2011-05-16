@@ -253,7 +253,7 @@ bool retVal = false;
 		Running = false;
 		retVal = true;
 #else
-		pthread_kill(ID,SIGTERM);
+		pthread_kill((pthread_t)ID,SIGTERM);
 		ThreadHandle = 0;
 		retVal = true;
 #endif
@@ -372,7 +372,7 @@ TThreadId tmpId = curThread.Id();
 
 	return retVal;
 #else
-	return pthread_self();
+	return (SHVThreadBase::ThreadID)pthread_self();
 #endif
 }
 

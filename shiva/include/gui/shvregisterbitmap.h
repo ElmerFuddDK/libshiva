@@ -25,7 +25,7 @@ public:
 	inline SHVRegisterBitmap(SHVModuleList& modules, Registration* regs, HINSTANCE hInstance);
 
 	inline static void RegisterBitmaps(SHVModuleList& modules, Registration* regs, HINSTANCE hInstance);
-#elif defined(__SHIVA_LINUX)
+#elif defined(__SHIVA_POSIX)
 	inline SHVRegisterBitmap(SHVModuleList& modules, int resourceID, char ** xpmResource);
 #endif	
 };
@@ -70,7 +70,7 @@ void SHVRegisterBitmap::RegisterBitmaps(SHVModuleList& modules, Registration* re
 		modules.GetConfig(SHVModuleList::CfgBitmapResourceMap).SetRef(regs->BitmapID,new SHVBitmapResourceMapWin32(hInstance,regs->ResourceID));
 	}
 }
-#elif defined(__SHIVA_LINUX)
+#elif defined(__SHIVA_POSIX)
 SHVRegisterBitmap::SHVRegisterBitmap(SHVModuleList& modules, int resourceID, char ** xpmResource)
 {
 	modules.GetConfig(SHVModuleList::CfgBitmapResourceMap).SetPtr(resourceID,xpmResource);

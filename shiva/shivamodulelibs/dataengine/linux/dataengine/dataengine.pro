@@ -53,7 +53,7 @@ SOURCES += dataengine.cpp \
 
 LIBS += -L../../../../shivalib/linux/libshiva/ \
   -lshiva \
-  -ldl
+  $$QMAKE_LIBS_DYNLOAD
 TARGET = dataengine
 
 

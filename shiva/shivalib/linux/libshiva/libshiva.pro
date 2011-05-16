@@ -141,7 +141,7 @@ CONFIG = debug \
 TEMPLATE = lib 
 LIBS += -lm \
   -lrt \
-  -ldl \
+  $$QMAKE_LIBS_DYNLOAD \
   -lpthread
 
 !isEmpty(ANDROID_PLATFORM) {
@@ -165,4 +165,23 @@ LIBS += -lm \
   QMAKE_LIBS = -lstdc++ -lsupc++ -llog
   QMAKE_INCDIR -= $$ANDROID_SOURCES_CXX_STL_INCDIR
   QMAKE_LIBDIR -= $$ANDROID_SOURCES_CXX_STL_LIBDIR
+} else {
+  unix {
+	system(test "`uname`" = "FreeBSD") {
+	  LIBS += -lkvm
+
+	  SOURCES += ../../src/libunicode/convert.c \
+			../../src/libunicode/decomp.c \
+			../../src/libunicode/init.c \
+			../../src/libunicode/iso8859.c \
+			../../src/libunicode/latin1.c \
+			../../src/libunicode/prop.c \
+			../../src/libunicode/sjis.c \
+			../../src/libunicode/ucs2.c \
+			../../src/libunicode/ucs4.c \
+			../../src/libunicode/utf8.c \
+			../../src/libunicode/utf8conv.c
+	  DEFINES += __SHIVA_LIBUNICODESTATIC
+	}
+  }
 }

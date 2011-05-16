@@ -34,7 +34,7 @@
 #include "shvsubprocessimpl.h"
 #include "shiva/include/utils/shvbuffer.h"
 
-#ifdef __SHIVA_LINUX
+#ifdef __SHIVA_POSIX
 # include <sys/types.h>
 # include <unistd.h>
 # include <signal.h>
@@ -61,7 +61,7 @@ SHVSubProcessImpl::SHVSubProcessImpl() : SHVSubProcess(), LastError(ErrNone)
 	StreamStdIn = new SHVSubProcessStreamOut(PipeStdIn[1]);
 	PipeStdOut[0] = PipeStdOut[1] = PipeStdErr[0] = PipeStdErr[1] = PipeStdIn[0] = PipeStdIn[1] = 0;
 	NonBlocking = false;
-#ifdef __SHIVA_LINUX
+#ifdef __SHIVA_POSIX
 	Pid = -1;
 #endif
 }
@@ -82,7 +82,7 @@ SHVSubProcessImpl::~SHVSubProcessImpl()
  *************************************/
 SHVBool SHVSubProcessImpl::IsRunning()
 {
-#ifdef __SHIVA_LINUX
+#ifdef __SHIVA_POSIX
 SHVBool retVal( Pid != -1 ? ErrNone : (LastError ? ErrGeneric : LastError) );
 	if (retVal)
 	{
@@ -136,7 +136,7 @@ SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
 	
 	if (retVal)
 	{
-#ifdef __SHIVA_LINUX
+#ifdef __SHIVA_POSIX
 
 		if (streams&StdOut)
 			pipe(PipeStdOut);
@@ -221,7 +221,7 @@ SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
 	
 	if (retVal)
 	{
-#ifdef __SHIVA_LINUX
+#ifdef __SHIVA_POSIX
 
 		if (streams&StdOut)
 			pipe(PipeStdOut);
@@ -300,7 +300,7 @@ void SHVSubProcessImpl::Shutdown()
 {
 	if (IsRunning())
 	{
-#ifdef __SHIVA_LINUX
+#ifdef __SHIVA_POSIX
 		kill(Pid,SIGTERM);
 #else
 		abort();
@@ -315,7 +315,7 @@ void SHVSubProcessImpl::Kill()
 {
 	if (IsRunning())
 	{
-#ifdef __SHIVA_LINUX
+#ifdef __SHIVA_POSIX
 		kill(Pid,SIGKILL);
 #else
 		abort();
@@ -330,7 +330,7 @@ void SHVSubProcessImpl::WaitForTermination()
 {
 	if (IsRunning())
 	{
-#ifdef __SHIVA_LINUX
+#ifdef __SHIVA_POSIX
 	int status;
 		waitpid(Pid,&status,0);
 		Pid = -1;
@@ -401,7 +401,7 @@ static const SHVWChar newLine[] = { '\n', '\0' };
 }
 
 ///\cond INTERNAL
-#ifdef __SHIVA_LINUX
+#ifdef __SHIVA_POSIX
 /*************************************
  * SafeCloseFd
  *************************************/

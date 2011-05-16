@@ -4,6 +4,10 @@
 #include "globals.h"
 #include <string.h>
 
+#ifdef __FreeBSD__
+#include "freebsd/sysinfo.c"
+#endif
+
 
 /* system dependent call to get IEEE node ID.
    This sample implementation generates a random node ID. */

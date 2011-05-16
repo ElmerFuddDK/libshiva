@@ -41,7 +41,7 @@ HEADERS += ../../src/shvunittest.h \
 TARGET =../bin/unittest
 TEMPLATE = app
 LIBS += -L../../../../shivalib/linux/libshiva \
--ldl \
+$$QMAKE_LIBS_DYNLOAD \
 -lshiva
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG
 
