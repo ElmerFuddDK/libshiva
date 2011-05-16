@@ -439,14 +439,14 @@ SHVBool retVal(SHVBool::False);
 HANDLE f;
 	if ((f = CreateFile((const TCHAR*)fileName.GetSafeBuffer(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL)))
 	{
-	FILETIME aTime;
+	FILETIME mTime;
 
 		stamp = SHVTime();
 
-		if (::GetFileTime(f,NULL,NULL,&aTime))
+		if (::GetFileTime(f,NULL,NULL,&mTime))
 		{
 		SYSTEMTIME sysTime;
-			FileTimeToSystemTime(&aTime,&sysTime);
+			FileTimeToSystemTime(&mTime,&sysTime);
 			stamp.SetYear(sysTime.wYear);
 			stamp.SetMonth(sysTime.wMonth);
 			stamp.SetDay(sysTime.wDay);
@@ -464,7 +464,7 @@ struct stat fileStat;
 	if (!wstat( fileName.GetSafeBuffer(), &fileStat ))
 	{
 		retVal.SetError(SHVBool::True);
-		stamp = SHVTime::FromUnixTime(fileStat.st_atime);
+		stamp = SHVTime::FromUnixTime(fileStat.st_mtime);
 	}
 #else
 struct stat fileStat;
@@ -472,7 +472,7 @@ struct stat fileStat;
 	if (!stat( fileName.GetSafeBuffer(), &fileStat ))
 	{
 		retVal.SetError(SHVBool::True);
-		stamp = SHVTime::FromUnixTime(fileStat.st_atime);
+		stamp = SHVTime::FromUnixTime(fileStat.st_mtime);
 	}
 #endif
 	else
