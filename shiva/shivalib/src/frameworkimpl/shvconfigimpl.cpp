@@ -345,6 +345,10 @@ SHVFile file;
 					{
 						Set(name.ToStrT(),Unescape(SHVStringUTF8C(strValue.Mid(1,strValue.GetLength()-2).GetSafeBuffer()).ToStrT()));
 					}
+					else if (strValue.Left(1) == "'" && strValue.Right(1) == "'")
+					{
+						Set(name.ToStrT(),SHVStringUTF8C(strValue.Mid(1,strValue.GetLength()-2).GetSafeBuffer()).ToStrT());
+					}
 					else
 					{
 						Set(name.ToStrT(),SHVStringUTF8C(strValue.GetSafeBuffer()).ToStrT());
@@ -635,10 +639,8 @@ size_t len, pos, strLen;
 				bits.AddTail(SHVString(_S("\\")).ReleaseBuffer());
 				break;
 			default:
-				SHVASSERT(false); // Unknown escape char
-				pos--;
-				len--;
-				break;
+				SHVASSERT(false); // Unknown escape char - fallback to no escape mode
+				return SHVString(str).ReleaseBuffer();
 			}
 		}
 	}
