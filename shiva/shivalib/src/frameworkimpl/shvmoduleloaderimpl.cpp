@@ -75,8 +75,18 @@ SHVListIterator<SHVModuleLibraryImplPtr,SHVModuleLibraryImpl*> itr(ModuleLibs);
  *************************************/
 void SHVModuleLoaderImpl::AddModuleLibs(const SHVStringC modulePath)
 {
-	///\todo implement SHVModuleLoaderImpl::AddModuleLibs
-	SHVUNUSED_PARAM(modulePath);
+SHVFileList fileList;
+
+	if (SHVDir::GetFileList(fileList,modulePath, SHVStringC(_S("*.")) + SHVDllBase::FileExtension()))
+	{
+	SHVFileListIterator itr(fileList);
+	SHVStringC delim( modulePath.Right(1) == SHVDir::Delimiter() ? _S("") : SHVDir::Delimiter() );
+
+		while (itr.MoveNext())
+		{
+			AddModuleLib(modulePath + delim + itr.Get());
+		}
+	}
 }
 
 /*************************************
@@ -202,24 +212,27 @@ SHVBool inUse;
 
 	while (symbolItr.MoveNext())
 	{
-		if (!moduleItr.Get()->ModuleFactory.IsNull())
+		while (moduleItr.MoveNext())
 		{
-			// Mark the module as "in use"
-			if (moduleItr.Get()->ModuleFactory->ResolveModules(symbolItr.Get())
-				&& UnusedModules.Find(moduleItr.Get()))
+			if (!moduleItr.Get()->ModuleFactory.IsNull())
 			{
-				UnusedModules.Remove(moduleItr.Get());
-				moduleItr.Get()->Used = SHVBool::True;
-			}
+				// Mark the module as "in use"
+				if (moduleItr.Get()->ModuleFactory->ResolveModules(symbolItr.Get())
+					&& UnusedModules.Find(moduleItr.Get()))
+				{
+					UnusedModules.Remove(moduleItr.Get());
+					moduleItr.Get()->Used = SHVBool::True;
+				}
 
-			if (moduleItr.Get()->Used)
-			{
-				ModulesInUse.AddTail(moduleItr.Get());
+				if (moduleItr.Get()->Used)
+				{
+					ModulesInUse.AddTail(moduleItr.Get());
+				}
 			}
-		}
-		else
-		{
-			moduleItr.Get()->Used = SHVBool::False;
+			else
+			{
+				moduleItr.Get()->Used = SHVBool::False;
+			}
 		}
 	}
 
