@@ -1,13 +1,13 @@
 #ifndef __SHIVA_TESTS_UTILS_VECTORTESTER_H
 #define __SHIVA_TESTS_UTILS_VECTORTESTER_H
 
-#include "../shvtestbase.h"
+#include "shiva/include/unittest/src/shvtest.h"
 
 #include "shiva/include/utils/shvstring.h"
 #include "shiva/include/utils/shvvector.h"
 
 
-class SHVVectorTester : public SHVTestBase
+class SHVVectorTester : public SHVTest
 {
 public:
 

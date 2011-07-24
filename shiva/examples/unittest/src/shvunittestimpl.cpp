@@ -4,17 +4,17 @@
 #include "shiva/include/framework/shveventstdin.h"
 #include "logger/shvtestloggerconsole.h"
 
-#include "shvunittest.h"
+#include "shvunittestimpl.h"
 
 
 //=========================================================================================================
-// SHVUnitTest class
+// SHVUnitTestImpl class
 //=========================================================================================================
 
 /*************************************
  * Constructor
  *************************************/
-SHVUnitTest::SHVUnitTest(SHVModuleList& modules) : SHVModule(modules,"UnitTest")
+SHVUnitTestImpl::SHVUnitTestImpl(SHVModuleList& modules) : SHVUnitTest(modules)
 {
 	Performing = false;
 }
@@ -22,16 +22,16 @@ SHVUnitTest::SHVUnitTest(SHVModuleList& modules) : SHVModule(modules,"UnitTest")
 /*************************************
  * Register
  *************************************/
-SHVBool SHVUnitTest::Register()
+SHVBool SHVUnitTestImpl::Register()
 {
 	// resolve the GUI manager
 	SHVModuleResolver<SHVGUIManager>(Modules,GUIManager,"GUIManager");
 
 	Modules.EventSubscribe(__EVENT_GLOBAL_STDIN, new SHVEventSubscriber(this));
 
-	TestResultSubs = new SHVEventSubscriberFunc<SHVUnitTest>(this,&SHVUnitTest::OnTestResult);
-	TestResultShowSubs = new SHVEventSubscriberFunc<SHVUnitTest>(this,&SHVUnitTest::OnTestResultShow,&Modules);
-	MenuSubs = new SHVEventSubscriberFunc<SHVUnitTest>(this,&SHVUnitTest::OnMenuEvent,&Modules);
+	TestResultSubs = new SHVEventSubscriberFunc<SHVUnitTestImpl>(this,&SHVUnitTestImpl::OnTestResult);
+	TestResultShowSubs = new SHVEventSubscriberFunc<SHVUnitTestImpl>(this,&SHVUnitTestImpl::OnTestResultShow,&Modules);
+	MenuSubs = new SHVEventSubscriberFunc<SHVUnitTestImpl>(this,&SHVUnitTestImpl::OnMenuEvent,&Modules);
 
 	return SHVModule::Register();
 }
@@ -39,7 +39,7 @@ SHVBool SHVUnitTest::Register()
 /*************************************
  * PostRegister
  *************************************/
-void SHVUnitTest::PostRegister()
+void SHVUnitTestImpl::PostRegister()
 {
 	SHVModule::PostRegister();
 
@@ -115,7 +115,7 @@ void SHVUnitTest::PostRegister()
 /*************************************
  * Unregister
  *************************************/
-void SHVUnitTest::Unregister()
+void SHVUnitTestImpl::Unregister()
 {
 	SHVModule::Unregister();
 	
@@ -128,7 +128,7 @@ void SHVUnitTest::Unregister()
 /*************************************
  * OnEvent
  *************************************/
-void SHVUnitTest::OnEvent(SHVEvent* event)
+void SHVUnitTestImpl::OnEvent(SHVEvent* event)
 {
 	if (SHVEventString::Equals(event,__EVENT_GLOBAL_STDIN))
 	{
@@ -187,7 +187,7 @@ void SHVUnitTest::OnEvent(SHVEvent* event)
 /*************************************
  * RegisterTest
  *************************************/
-void SHVUnitTest::RegisterTest(SHVTestBase* test)
+void SHVUnitTestImpl::RegisterTest(SHVTestBase* test)
 {
 	if (Modules.IsRegistered())
 	{
@@ -218,7 +218,7 @@ void SHVUnitTest::RegisterTest(SHVTestBase* test)
 /*************************************
  * IsPerforming
  *************************************/
-bool SHVUnitTest::IsPerforming()
+bool SHVUnitTestImpl::IsPerforming()
 {
 bool performing = Performing;
 SHVListPos pos;
@@ -237,7 +237,7 @@ size_t i, count;
 /*************************************
  * PerformTestFromString
  *************************************/
-void SHVUnitTest::PerformTestFromString(const SHVString8C str)
+void SHVUnitTestImpl::PerformTestFromString(const SHVString8C str)
 {
 int dot = str.Find(".");
 SHVString8 groupID, testID, actionID;
@@ -306,7 +306,7 @@ SHVListIterator<TestGroupPtr, TestGroup*> testItr(TestGroups);
 /*************************************
  * OnMenuEvent
  *************************************/
-void SHVUnitTest::OnMenuEvent(SHVEvent* event)
+void SHVUnitTestImpl::OnMenuEvent(SHVEvent* event)
 {
 	if (event->GetSubID() == SHVInt(MenuQuit))
 	{
@@ -345,7 +345,7 @@ void SHVUnitTest::OnMenuEvent(SHVEvent* event)
 /*************************************
  * OnTestResult
  *************************************/
-void SHVUnitTest::OnTestResult(SHVEvent* event)
+void SHVUnitTestImpl::OnTestResult(SHVEvent* event)
 {
 SHVEventQueue* q = TestResultShowSubs->Emit(Modules,event);
 
@@ -359,7 +359,7 @@ SHVEventQueue* q = TestResultShowSubs->Emit(Modules,event);
 /*************************************
  * OnTestResultShow
  *************************************/
-void SHVUnitTest::OnTestResultShow(SHVEvent* event)
+void SHVUnitTestImpl::OnTestResultShow(SHVEvent* event)
 {
 	if (event->GetType() == SHVEvent::TypeBase)
 	{

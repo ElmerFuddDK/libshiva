@@ -1,9 +1,9 @@
-#ifndef __SHIVA_TESTS_TESTQUEUED_H
-#define __SHIVA_TESTS_TESTQUEUED_H
+#ifndef __SHIVA_UNITTEST_SRC_TESTQUEUED_H
+#define __SHIVA_UNITTEST_SRC_TESTQUEUED_H
 
-#include "shvtestbase.h"
-#include "shiva/include/framework/shveventdata.h"
-#include "shiva/include/utils/shvhashtable.h"
+#include "shvtest.h"
+#include "../../framework/shveventdata.h"
+#include "../../utils/shvhashtable.h"
 
 
 //-=========================================================================================================
@@ -15,7 +15,7 @@
  * You will need to override at least 3 functions : GetID, GetTitle and GetActions.
  */
 
-class SHVTestQueued : public SHVTestBase
+class SHVTestQueued : public SHVTest
 {
 public:
 

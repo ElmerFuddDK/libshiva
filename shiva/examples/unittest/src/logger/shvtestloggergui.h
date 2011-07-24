@@ -1,7 +1,7 @@
 #ifndef __SHIVA_TESTLOGGERCONSOLE_H
 #define __SHIVA_TESTLOGGERCONSOLE_H
 
-#include "shvtestlogger.h"
+#include "shiva/include/unittest/shvtestlogger.h"
 #include "shiva/include/gui/shvcontroledit.h"
 
 

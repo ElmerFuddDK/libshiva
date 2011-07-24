@@ -1,8 +1,8 @@
-#ifndef __SHIVA_TESTLOGGER_H
-#define __SHIVA_TESTLOGGER_H
+#ifndef __SHIVA_UNITTEST_TESTLOGGER_H
+#define __SHIVA_UNITTEST_TESTLOGGER_H
 
-#include "shiva/include/utils/shvstring.h"
-#include "shiva/include/utils/shvrefobject.h"
+#include "../utils/shvstring.h"
+#include "../utils/shvrefobject.h"
 
 
 class SHVTestLogger : public SHVRefObject

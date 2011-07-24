@@ -1,12 +1,12 @@
 #ifndef __SHIVA_TESTS_UTILS_STRINGTESTER_H
 #define __SHIVA_TESTS_UTILS_STRINGTESTER_H
 
-#include "../shvtestbase.h"
+#include "shiva/include/unittest/src/shvtest.h"
 
 #include "shiva/include/utils/shvstring.h"
 
 
-class SHVStringTester : public SHVTestBase
+class SHVStringTester : public SHVTest
 {
 public:
 

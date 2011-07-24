@@ -1,11 +1,11 @@
 #ifndef __SHIVA_TESTS_UTILS_TIMETESTER_H
 #define __SHIVA_TESTS_UTILS_TIMETESTER_H
 
-#include "../shvtestbase.h"
+#include "shiva/include/unittest/src/shvtest.h"
 
 
 
-class SHVTimeTester : public SHVTestBase
+class SHVTimeTester : public SHVTest
 {
 public:
 

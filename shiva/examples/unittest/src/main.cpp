@@ -9,8 +9,10 @@
 #include "shiva/include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
 #include "shiva/include/frameworkimpl/shvconfigimpl.h"
 #include "shiva/include/utils/shvdll.h"
+#include "shiva/include/utils/shvdir.h"
+#include "shiva/include/frameworkimpl/shvmoduleloaderimpl.h"
 
-#include "shvunittest.h"
+#include "shvunittestimpl.h"
 
 #include "tests/utils/shvbooltester.h"
 #include "tests/utils/shvbuffertester.h"
@@ -70,15 +72,16 @@ SHVMainThreadEventDispatcher* dispatcher = NULL;
 	
 	if (dispatcher)
 	{
-	SHVUnitTest* unitTest;
+	SHVUnitTestImpl* unitTest;
 	// Initialize the main thread event queue
 	SHVMainThreadEventQueue mainqueue(dispatcher);
+	SHVModuleLoaderImpl ModuleLoader(mainqueue.GetModuleList());
 
 		// Parse any command line arguments into default config
 		GUIPARSEARGS(mainqueue.GetModuleList().GetConfig());
 
 		// Add our application modules
-		mainqueue.GetModuleList().AddModule(unitTest = new SHVUnitTest(mainqueue.GetModuleList()));
+		mainqueue.GetModuleList().AddModule(unitTest = new SHVUnitTestImpl(mainqueue.GetModuleList()));
 
 		// Add the tests
 		unitTest->RegisterTest(new SHVBoolTester());
@@ -95,6 +98,12 @@ SHVMainThreadEventDispatcher* dispatcher = NULL;
 
 		unitTest->RegisterTest(new SHVMutexTester(mainqueue.GetModuleList()));
 		unitTest->RegisterTest(new SHVThreadTester(mainqueue.GetModuleList()));
+
+		// Load unit tests from module libraries
+		ModuleLoader.AddModuleLibs(mainqueue.GetModuleList().GetConfig().Find(SHVModuleList::DefaultCfgAppPath)->ToString() + SHVDir::Delimiter() + _S("modules"));
+		ModuleLoader.AddSymbol(__MODULESYMBOL_DEFAULTS);
+		ModuleLoader.AddSymbol(__MODULESYMBOL_UNITTESTS);
+		ModuleLoader.LoadModules();
 
 		// run the application
 		retVal = mainqueue.Run().GetError();

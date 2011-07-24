@@ -1,13 +1,13 @@
 #ifndef __SHIVA_TESTS_UTILS_DYNARRAYTESTER_H
 #define __SHIVA_TESTS_UTILS_DYNARRAYTESTER_H
 
-#include "../shvtestbase.h"
+#include "shiva/include/unittest/src/shvtest.h"
 
 #include "shiva/include/utils/shvstring.h"
 #include "shiva/include/utils/shvdynarray.h"
 
 
-class SHVDynArrayTester : public SHVTestBase
+class SHVDynArrayTester : public SHVTest
 {
 public:
 

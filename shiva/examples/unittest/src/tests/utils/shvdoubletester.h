@@ -1,10 +1,10 @@
 #ifndef __SHIVA_TESTS_UTILS_DOUBLETESTER_H
 #define __SHIVA_TESTS_UTILS_DOUBLETESTER_H
 
-#include "../shvtestbase.h"
+#include "shiva/include/unittest/src/shvtest.h"
 
 
-class SHVDoubleTester : public SHVTestBase
+class SHVDoubleTester : public SHVTest
 {
 public:
 

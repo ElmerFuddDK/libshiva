@@ -1,7 +1,7 @@
 #ifndef __SHIVA_TESTS_THREADUTILS_MUTEX_H
 #define __SHIVA_TESTS_THREADUTILS_MUTEX_H
 
-#include "../shvtestqueued.h"
+#include "shiva/include/unittest/src/shvtestqueued.h"
 
 #include "shiva/include/threadutils/shvmutex.h"
 #include "shiva/include/framework/shveventthread.h"

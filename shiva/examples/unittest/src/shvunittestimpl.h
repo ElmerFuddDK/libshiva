@@ -1,24 +1,22 @@
-#ifndef __SHIVA_MODULES_UNITTEST_H
-#define __SHIVA_MODULES_UNITTEST_H
+#ifndef __SHIVA_MODULES_UNITTEST_IMPL_H
+#define __SHIVA_MODULES_UNITTEST_IMPL_H
 
-#include "shiva/include/framework/shvmodule.h"
+#include "shiva/include/unittest/shvunittest.h"
 #include "shiva/include/utils/shvvectorref.h"
 #include "shiva/include/utils/shvhashtable.h"
 #include "forms/shvformmain.h"
-#include "logger/shvtestlogger.h"
-#include "tests/shvtestbase.h"
 
 
 //-=========================================================================================================
-/// SHVUnitTest class
+/// SHVUnitTestImpl class
 /**
  */
 
-class SHVUnitTest : public SHVModule
+class SHVUnitTestImpl : public SHVUnitTest
 {
 public:
 
-	SHVUnitTest(SHVModuleList& modules);
+	SHVUnitTestImpl(SHVModuleList& modules);
 
 	virtual SHVBool Register();
 	virtual void PostRegister();
@@ -26,9 +24,8 @@ public:
 
 	virtual void OnEvent(SHVEvent* event);
 
-	void RegisterTest(SHVTestBase* test);
-
-	bool IsPerforming();
+	virtual void RegisterTest(SHVTestBase* test);
+	virtual bool IsPerforming();
 
 private:
 

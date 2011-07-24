@@ -1,18 +1,18 @@
 #include "stdafx.h"
-#include "shiva/include/platformspc.h"
-#include "shiva/include/threadutils/shvmutexlocker.h"
+#include "../../platformspc.h"
+#include "../../threadutils/shvmutexlocker.h"
 
-#include "shvtestbase.h"
+#include "shvtest.h"
 
 
 //=========================================================================================================
-// SHVTestBase class
+// SHVTest class
 //=========================================================================================================
 
 /*************************************
  * Constructor
  *************************************/
-SHVTestBase::SHVTestBase()
+SHVTest::SHVTest()
 {
 	OK = true;
 }
@@ -20,7 +20,7 @@ SHVTestBase::SHVTestBase()
 /*************************************
  * Perform
  *************************************/
-SHVBool SHVTestBase::Perform(SHVModuleList& modules, int actionFlags, SHVEventSubscriberBase* result)
+SHVBool SHVTest::Perform(SHVModuleList& modules, int actionFlags, SHVEventSubscriberBase* result)
 {
 	if (InitializePerform())
 	{
@@ -39,7 +39,7 @@ SHVBool SHVTestBase::Perform(SHVModuleList& modules, int actionFlags, SHVEventSu
 /*************************************
  * IsPerforming
  *************************************/
-bool SHVTestBase::IsPerforming()
+bool SHVTest::IsPerforming()
 {
 	return false;
 }
@@ -47,7 +47,7 @@ bool SHVTestBase::IsPerforming()
 /*************************************
  * DisplayResult
  *************************************/
-void SHVTestBase::DisplayResult(SHVTestLogger* logger)
+void SHVTest::DisplayResult(SHVTestLogger* logger)
 {
 SHVMutexLocker lock(LogLock);
 	AddLine(_S(""));
@@ -73,7 +73,7 @@ SHVMutexLocker lock(LogLock);
 /*************************************
  * InitializePerform
  *************************************/
-bool SHVTestBase::InitializePerform()
+bool SHVTest::InitializePerform()
 {
 SHVMutexLocker l(LogLock);
 
@@ -90,7 +90,7 @@ SHVMutexLocker l(LogLock);
 /*************************************
  * PerformAction
  *************************************/
-void SHVTestBase::PerformAction(SHVModuleList& modules, const Action* action)
+void SHVTest::PerformAction(SHVModuleList& modules, const Action* action)
 {
 bool result;
 	AddHeader(_S("%s:"), action->Name);
@@ -101,7 +101,7 @@ bool result;
 /*************************************
  * EmitPerformedEvent
  *************************************/
-void SHVTestBase::EmitPerformedEvent(SHVModuleList& modules, SHVEventSubscriberBase* result)
+void SHVTest::EmitPerformedEvent(SHVModuleList& modules, SHVEventSubscriberBase* result)
 {
 	result->EmitNow(modules,new SHVEventString(NULL,"performed",SHVInt(),SHVInt(),this));
 }
@@ -109,7 +109,7 @@ void SHVTestBase::EmitPerformedEvent(SHVModuleList& modules, SHVEventSubscriberB
 /*************************************
  * AddHeader
  *************************************/
-void SHVTestBase::AddHeader(const SHVStringC str)
+void SHVTest::AddHeader(const SHVStringC str)
 {
 SHVMutexLocker lock(LogLock);
 	Log.Add(new LogString(LogTypeHeader, SHVString(str).ReleaseBuffer()));
@@ -118,7 +118,7 @@ SHVMutexLocker lock(LogLock);
 /*************************************
  * AddHeader
  *************************************/
-void SHVTestBase::AddHeader(const SHVTChar* s, ...)
+void SHVTest::AddHeader(const SHVTChar* s, ...)
 {
 SHVString str;
 	SHVVA_LIST args;
@@ -131,7 +131,7 @@ SHVString str;
 /*************************************
  * AddLine
  *************************************/
-void SHVTestBase::AddLine(const SHVStringC str)
+void SHVTest::AddLine(const SHVStringC str)
 {
 SHVMutexLocker lock(LogLock);
 	Log.Add(new LogString(LogTypeLine, SHVString(str).ReleaseBuffer()));
@@ -140,7 +140,7 @@ SHVMutexLocker lock(LogLock);
 /*************************************
  * AddLine
  *************************************/
-void SHVTestBase::AddLine(const SHVTChar* s, ...)
+void SHVTest::AddLine(const SHVTChar* s, ...)
 {
 SHVString str;
 	SHVVA_LIST args;
@@ -153,39 +153,9 @@ SHVString str;
 /*************************************
  * Success
  *************************************/
-SHVStringBuffer SHVTestBase::Success(SHVModuleList& modules, bool ok)
+SHVStringBuffer SHVTest::Success(SHVModuleList& modules, bool ok)
 {
 	if (ok)
 		return modules.GetConfig().Find(_S("success.true"), _S("yay"))->ToString();
 	return modules.GetConfig().Find(_S("success.false"), _S("nay"))->ToString();
 }
-
-// ============================================== documentation ============================================= //
-
-// GetID
-/** \fn const SHVString8C SHVTestBase::GetID() const
- \brief Must return the ID for the test, for command line test, eg "thread"
- */
-
-// GetTitle
-/** \fn const SHVStringC SHVTestBase::GetTitle() const
- \brief Must return the title of this test, eg "Thread test"
- */
-
-// GetActions
-/** \fn const SHVTestBase::Action* SHVTestBase::GetActions() const
- \brief Return a list of actions that define this test
- *
- * Must return a static list of actions that defines the actions this test can perform, eg:
-\code
-const SHVTestBase::Action* SHVMyTest::GetActions() const
-{
-const SHVTestBase::Action actions[] = {
-	{ 1, "test1", _S("My first test"), _S("This is my first test function"), &SHVMyTest::MyTest1 },
-	{ 2, "test2", _S("My second test"), _S("Yet another test function"), &SHVMyTest::MyTest2 },
-	{ 4, "test3", _S("My third test"), _S("This is getting old now"), &SHVMyTest::MyTest3 },
-	{ 0, NULL, NULL, NULL, NULL } }; // Termination
-	return actions;
-}
-\endcode
- */

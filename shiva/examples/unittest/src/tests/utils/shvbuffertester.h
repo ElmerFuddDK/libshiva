@@ -1,13 +1,13 @@
 #ifndef __SHIVA_TESTS_UTILS_BUFFERTESTER_H
 #define __SHIVA_TESTS_UTILS_BUFFERTESTER_H
 
-#include "../shvtestbase.h"
+#include "shiva/include/unittest/src/shvtest.h"
 
 #include "shiva/include/utils/shvbuffer.h"
 #include "shiva/include/utils/shvbuffercstream.h"
 
 
-class SHVBufferTester : public SHVTestBase
+class SHVBufferTester : public SHVTest
 {
 public:
 

@@ -1,11 +1,11 @@
 #ifndef __SHIVA_TESTS_UTILS_INTTESTER_H
 #define __SHIVA_TESTS_UTILS_INTTESTER_H
 
-#include "../shvtestbase.h"
+#include "shiva/include/unittest/src/shvtest.h"
 
 
 
-class SHVIntTester : public SHVTestBase
+class SHVIntTester : public SHVTest
 {
 public:
 

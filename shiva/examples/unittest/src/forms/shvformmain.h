@@ -3,7 +3,7 @@
 
 #include "shiva/include/gui/shvform.h"
 #include "shiva/include/gui/shvguimanager.h"
-#include "../logger/shvtestlogger.h"
+#include "shiva/include/unittest/shvtestlogger.h"
 
 
 //-=========================================================================================================

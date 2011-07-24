@@ -1,10 +1,7 @@
 SOURCES = ../../src/main.cpp \
-    ../../src/shvunittest.cpp \
     ../../src/forms/shvformmain.cpp \
     ../../src/logger/shvtestloggerconsole.cpp \
     ../../src/logger/shvtestloggergui.cpp \
-    ../../src/tests/shvtestbase.cpp \
-    ../../src/tests/shvtestqueued.cpp \
     ../../src/tests/threadutils/shvmutextester.cpp \
     ../../src/tests/threadutils/shvthreadtester.cpp \
     ../../src/tests/utils/shvbooltester.cpp \
@@ -17,14 +14,14 @@ SOURCES = ../../src/main.cpp \
     ../../src/tests/utils/shvinttester.cpp \
     ../../src/tests/utils/shvhashtabletester.cpp \
     ../../src/tests/utils/shvfiletester.cpp \
-    ../../src/tests/utils/shvbuffertester.cpp
-HEADERS += ../../src/shvunittest.h \
+    ../../src/tests/utils/shvbuffertester.cpp \
+    ../../../../include/unittest/src/shvtestqueued.cpp \
+    ../../../../include/unittest/src/shvtest.cpp \
+    ../../src/shvunittestimpl.cpp
+HEADERS += \
     ../../src/forms/shvformmain.h \
     ../../src/logger/shvtestloggerconsole.h \
     ../../src/logger/shvtestloggergui.h \
-    ../../src/logger/shvtestlogger.h \
-    ../../src/tests/shvtestbase.h \
-    ../../src/tests/shvtestqueued.h \
     ../../src/tests/threadutils/shvmutextester.h \
     ../../src/tests/threadutils/shvthreadtester.h \
     ../../src/tests/utils/shvbooltester.h \
@@ -37,7 +34,13 @@ HEADERS += ../../src/shvunittest.h \
     ../../src/tests/utils/shvinttester.h \
     ../../src/tests/utils/shvhashtabletester.h \
     ../../src/tests/utils/shvfiletester.h \
-    ../../src/tests/utils/shvbuffertester.h
+    ../../src/tests/utils/shvbuffertester.h \
+    ../../../../include/unittest/shvtestbase.h \
+    ../../../../include/unittest/src/shvtestqueued.h \
+    ../../../../include/unittest/src/shvtest.h \
+    ../../../../include/unittest/shvtestlogger.h \
+    ../../../../include/unittest/shvunittest.h \
+    ../../src/shvunittestimpl.h
 TARGET =../bin/unittest
 TEMPLATE = app
 LIBS += -L../../../../shivalib/linux/libshiva \

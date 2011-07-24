@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "shiva/include/platformspc.h"
-#include "shiva/include/framework/shveventsubscriber.h"
+#include "../../platformspc.h"
+#include "../../framework/shveventsubscriber.h"
 
 #include "shvtestqueued.h"
 
@@ -11,7 +11,7 @@
 /*************************************
  * Constructor
  *************************************/
-SHVTestQueued::SHVTestQueued() : SHVTestBase()
+SHVTestQueued::SHVTestQueued() : SHVTest()
 {
 }
 

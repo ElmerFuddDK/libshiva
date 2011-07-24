@@ -1,10 +1,10 @@
 #ifndef __SHIVA_TESTS_UTILS_BOOLTESTER_H
 #define __SHIVA_TESTS_UTILS_BOOLTESTER_H
 
-#include "../shvtestbase.h"
+#include "shiva/include/unittest/src/shvtest.h"
 
 
-class SHVBoolTester : public SHVTestBase
+class SHVBoolTester : public SHVTest
 {
 public:
 

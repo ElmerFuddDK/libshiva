@@ -1,38 +1,23 @@
-#ifndef __SHIVA_TESTS_TESTBASE_H
-#define __SHIVA_TESTS_TESTBASE_H
+#ifndef __SHIVA_UNITTEST_SRC_TEST_H
+#define __SHIVA_UNITTEST_SRC_TEST_H
 
-#include "shiva/include/framework/shvmodulelist.h"
-#include "shiva/include/utils/shvstring.h"
-#include "shiva/include/utils/shvrefobject.h"
-#include "shiva/include/utils/shvvector.h"
-#include "shiva/include/threadutils/shvmutex.h"
-#include "../logger/shvtestlogger.h"
+#include "../shvtestbase.h"
+#include "../../framework/shvmodulelist.h"
+#include "../../utils/shvvector.h"
+#include "../../threadutils/shvmutex.h"
+#include "../shvtestlogger.h"
 
 
 //-=========================================================================================================
-/// SHVTestBase class
+/// SHVTest class
 /**
  * Inherit from this class to create a unit test.\n
  * You will need to override at least 3 functions : GetID, GetTitle and GetActions.
  */
 
-class SHVTestBase : public SHVRefObject
+class SHVTest : public SHVTestBase
 {
 public:
-
-	typedef bool (*PerformFunc)(SHVModuleList& modules, SHVTestBase* self, int flag);
-	
-	enum { FlagAll = 0x7FFFFFFF };
-
-	struct Action
-	{
-		int Flag;
-		const SHVChar* ActionID;
-		const SHVTChar* Name;
-		const SHVTChar* Description;
-		PerformFunc Func;
-	};
-
 
 	virtual const SHVString8C GetGroup() const = 0;
 	virtual const SHVString8C GetID() const = 0;
@@ -47,19 +32,16 @@ public:
 
 
 	// For use within the tests to add log to the end result
-	void AddHeader(const SHVStringC str);
-	void AddHeader(const SHVTChar* s, ...);
-	void AddLine(const SHVStringC str);
-	void AddLine(const SHVTChar* s, ...);
-	SHVStringBuffer Success(SHVModuleList& modules, bool ok);
-
-
-	inline static SHVTestBase* FromTestEvent(SHVEvent* event);
+	virtual void AddHeader(const SHVStringC str);
+	virtual void AddHeader(const SHVTChar* s, ...);
+	virtual void AddLine(const SHVStringC str);
+	virtual void AddLine(const SHVTChar* s, ...);
+	virtual SHVStringBuffer Success(SHVModuleList& modules, bool ok);
 
 
 protected:
 
-	SHVTestBase();
+	SHVTest();
 
 	bool InitializePerform();
 
@@ -79,13 +61,5 @@ private:
 	SHVVector<LogString> Log;
 	bool OK;
 };
-
-
-// ============================================= implementation ============================================= //
-
-SHVTestBase* SHVTestBase::FromTestEvent(SHVEvent* event)
-{
-	return (SHVTestBase*)event->GetObject();
-}
 
 #endif
