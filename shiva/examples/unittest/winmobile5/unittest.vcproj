@@ -219,7 +219,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\src\shvunittest.cpp"
+					RelativePath="..\src\shvunittestimpl.cpp"
 					>
 				</File>
 				<Filter
@@ -233,14 +233,6 @@
 				<Filter
 					Name="tests"
 					>
-					<File
-						RelativePath="..\src\tests\shvtestbase.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\src\tests\shvtestqueued.cpp"
-						>
-					</File>
 					<Filter
 						Name="utils"
 						>
@@ -315,6 +307,22 @@
 					</File>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="shiva"
+				>
+				<Filter
+					Name="unittest"
+					>
+					<File
+						RelativePath="..\..\..\include\unittest\src\shvtest.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\unittest\src\shvtestqueued.cpp"
+						>
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -333,7 +341,7 @@
 				Name="src"
 				>
 				<File
-					RelativePath="..\src\shvunittest.h"
+					RelativePath="..\src\shvunittestimpl.h"
 					>
 				</File>
 				<Filter
@@ -347,14 +355,6 @@
 				<Filter
 					Name="tests"
 					>
-					<File
-						RelativePath="..\src\tests\shvtestbase.h"
-						>
-					</File>
-					<File
-						RelativePath="..\src\tests\shvtestqueued.h"
-						>
-					</File>
 					<Filter
 						Name="utils"
 						>
@@ -419,10 +419,6 @@
 				<Filter
 					Name="logger"
 					>
-					<File
-						RelativePath="..\src\logger\shvtestlogger.h"
-						>
-					</File>
 					<File
 						RelativePath="..\src\logger\shvtestloggerconsole.h"
 						>
