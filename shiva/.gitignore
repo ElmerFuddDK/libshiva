@@ -3,3 +3,17 @@ Makefile
 *.so*
 *.pro.user
 *~
+*.obj
+*.vcl
+*.vco
+*.vcb
+*.ncb
+*.suo
+*.dll
+*.lib
+*.pch
+*.tmp
+*.tmp.user
+ArmRel
+Debug
+Release
