@@ -70,7 +70,7 @@ bool SHVTestQueued::IsPerforming()
  *************************************/
 void SHVTestQueued::OnPerformActionEvent(SHVEvent* event)
 {
-PerformActionData& data(SHVEventAction::Get(event));
+PerformActionData& data = SHVEventAction::Get(event);
 SHVListPos pos = PerformingActions.Find(event->GetID());
 
 	PerformAction(*data.modules,data.action);
