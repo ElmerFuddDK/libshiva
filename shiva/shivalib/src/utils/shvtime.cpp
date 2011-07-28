@@ -986,13 +986,13 @@ short year;
 	// all done
 	return retVal;
 #else
-int isdst = t->tm_isdst;
-int gmtoff = t->tm_gmtoff;
-time_t retVal = ::timegm(t);
-	if (!setDst)
+struct tm tmpTm = *t;
+time_t retVal = ::timegm(&tmpTm);
+	if (setDst)
 	{
-		t->tm_isdst = isdst;
-		t->tm_gmtoff = gmtoff;
+		MkTime(&tmpTm);
+		t->tm_isdst = tmpTm.tm_isdst;
+		t->tm_gmtoff = tmpTm.tm_gmtoff;
 	}
 	return retVal;
 #endif
