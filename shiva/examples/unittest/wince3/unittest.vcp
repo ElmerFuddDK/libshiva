@@ -289,6 +289,7 @@ DEP_CPP_MAIN_=\
 	"..\src\stdafx.h"\
 	"..\src\tests\threadutils\shvmutextester.h"\
 	"..\src\tests\threadutils\shvthreadtester.h"\
+	"..\src\tests\utils\shvbase64tester.h"\
 	"..\src\tests\utils\shvbooltester.h"\
 	"..\src\tests\utils\shvbuffertester.h"\
 	"..\src\tests\utils\shvdoubletester.h"\
@@ -1389,6 +1390,173 @@ DEP_CPP_SHVTES=\
 # Begin Group "utils"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\src\tests\utils\shvbase64tester.cpp
+
+!IF  "$(CFG)" == "UnitTest - Win32 (WCE ARM) Release"
+
+DEP_CPP_SHVBO=\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\platforms\freebsd\platformspc.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\posix\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\threadutils\shvmutex.h"\
+	"..\..\..\include\threadutils\shvmutexbase.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\unittest\shvtestbase.h"\
+	"..\..\..\include\unittest\shvtestlogger.h"\
+	"..\..\..\include\unittest\src\shvtest.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvlist.h"\
+	"..\..\..\include\utils\shvlistbase.h"\
+	"..\..\..\include\utils\shvmathtokenmap.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\..\..\include\utils\shvvector.h"\
+	"..\..\..\include\utils\shvvectorbase.h"\
+	"..\src\tests\utils\shvbase64tester.h"\
+	"..\src\tests\utils\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "UnitTest - Win32 (WCE ARM) Debug"
+
+DEP_CPP_SHVBO=\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\platforms\freebsd\platformspc.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\posix\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\threadutils\shvmutex.h"\
+	"..\..\..\include\threadutils\shvmutexbase.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\unittest\shvtestbase.h"\
+	"..\..\..\include\unittest\shvtestlogger.h"\
+	"..\..\..\include\unittest\src\shvtest.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvlist.h"\
+	"..\..\..\include\utils\shvlistbase.h"\
+	"..\..\..\include\utils\shvmathtokenmap.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\..\..\include\utils\shvvector.h"\
+	"..\..\..\include\utils\shvvectorbase.h"\
+	"..\src\tests\utils\shvbase64tester.h"\
+	"..\src\tests\utils\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "UnitTest - Win32 (WCE x86) Release"
+
+DEP_CPP_SHVBO=\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\platforms\freebsd\platformspc.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\posix\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\threadutils\shvmutex.h"\
+	"..\..\..\include\threadutils\shvmutexbase.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\unittest\shvtestbase.h"\
+	"..\..\..\include\unittest\shvtestlogger.h"\
+	"..\..\..\include\unittest\src\shvtest.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvlist.h"\
+	"..\..\..\include\utils\shvlistbase.h"\
+	"..\..\..\include\utils\shvmathtokenmap.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\..\..\include\utils\shvvector.h"\
+	"..\..\..\include\utils\shvvectorbase.h"\
+	"..\src\tests\utils\shvbase64tester.h"\
+	"..\src\tests\utils\stdafx.h"\
+	
+
+!ELSEIF  "$(CFG)" == "UnitTest - Win32 (WCE x86) Debug"
+
+DEP_CPP_SHVBO=\
+	"..\..\..\include\framework\shvconfig.h"\
+	"..\..\..\include\framework\shvevent.h"\
+	"..\..\..\include\framework\shveventstring.h"\
+	"..\..\..\include\framework\shveventsubscriberbase.h"\
+	"..\..\..\include\framework\shvmodulebase.h"\
+	"..\..\..\include\framework\shvmodulelist.h"\
+	"..\..\..\include\platforms\freebsd\platformspc.h"\
+	"..\..\..\include\platforms\linux\platformspc.h"\
+	"..\..\..\include\platforms\posix\platformspc.h"\
+	"..\..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\..\include\platforms\win32\platformspc.h"\
+	"..\..\..\include\platforms\wince\platformspc.h"\
+	"..\..\..\include\platformspc.h"\
+	"..\..\..\include\shvtypes.h"\
+	"..\..\..\include\threadutils\shvmutex.h"\
+	"..\..\..\include\threadutils\shvmutexbase.h"\
+	"..\..\..\include\threadutils\shvthreadbase.h"\
+	"..\..\..\include\unittest\shvtestbase.h"\
+	"..\..\..\include\unittest\shvtestlogger.h"\
+	"..\..\..\include\unittest\src\shvtest.h"\
+	"..\..\..\include\utils\shvassert.h"\
+	"..\..\..\include\utils\shvhashvalue.h"\
+	"..\..\..\include\utils\shvlist.h"\
+	"..\..\..\include\utils\shvlistbase.h"\
+	"..\..\..\include\utils\shvmathtokenmap.h"\
+	"..\..\..\include\utils\shvptrcontainer.h"\
+	"..\..\..\include\utils\shvrefobject.h"\
+	"..\..\..\include\utils\shvstring.h"\
+	"..\..\..\include\utils\shvstring16.h"\
+	"..\..\..\include\utils\shvstring16c.h"\
+	"..\..\..\include\utils\shvstringc.h"\
+	"..\..\..\include\utils\shvvector.h"\
+	"..\..\..\include\utils\shvvectorbase.h"\
+	"..\src\tests\utils\shvbase64tester.h"\
+	"..\src\tests\utils\stdafx.h"\
+	
+
+!ENDIF 
+
+# End Source File
 # Begin Source File
 
 SOURCE=..\src\tests\utils\shvbooltester.cpp

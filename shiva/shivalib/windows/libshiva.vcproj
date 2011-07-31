@@ -295,6 +295,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\utils\shvbase64.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\utils\shvbuffer.cpp"
 					>
 				</File>
@@ -649,6 +653,10 @@
 					>
 					<File
 						RelativePath="..\..\include\utils\shvassert.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\utils\shvbase64.h"
 						>
 					</File>
 					<File

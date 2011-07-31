@@ -14,6 +14,7 @@
 
 #include "shvunittestimpl.h"
 
+#include "tests/utils/shvbase64tester.h"
 #include "tests/utils/shvbooltester.h"
 #include "tests/utils/shvbuffertester.h"
 #include "tests/utils/shvdoubletester.h"
@@ -84,6 +85,7 @@ SHVMainThreadEventDispatcher* dispatcher = NULL;
 		mainqueue.GetModuleList().AddModule(unitTest = new SHVUnitTestImpl(mainqueue.GetModuleList()));
 
 		// Add the tests
+		unitTest->RegisterTest(new SHVBase64Tester());
 		unitTest->RegisterTest(new SHVBoolTester());
 		unitTest->RegisterTest(new SHVBufferTester());
 		unitTest->RegisterTest(new SHVDoubleTester());

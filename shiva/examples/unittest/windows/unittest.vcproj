@@ -238,6 +238,10 @@
 						Name="utils"
 						>
 						<File
+							RelativePath="..\src\tests\utils\shvbase64tester.cpp"
+							>
+						</File>
+						<File
 							RelativePath="..\src\tests\utils\shvbooltester.cpp"
 							>
 						</File>
@@ -359,6 +363,10 @@
 					<Filter
 						Name="utils"
 						>
+						<File
+							RelativePath="..\src\tests\utils\shvbase64tester.h"
+							>
+						</File>
 						<File
 							RelativePath="..\src\tests\utils\shvbooltester.h"
 							>
