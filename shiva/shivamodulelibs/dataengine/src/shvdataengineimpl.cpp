@@ -171,6 +171,14 @@ SHVDataStruct* SHVDataEngineImpl::CreateStruct() const
 }
 
 /*************************************
+ * CopyStruct
+ *************************************/
+SHVDataStruct* SHVDataEngineImpl::CopyStruct(const SHVDataStructC *struc)
+{
+	return Factory->CopyStruct(struc);
+}
+
+/*************************************
  * CreateVariant
  *************************************/
 SHVDataVariant* SHVDataEngineImpl::CreateVariant() const
@@ -264,3 +272,4 @@ void SHVDataEngineImpl::RowChanged(SHVDataRow* row)
 {
 	EmitEvent(new SHVEventDataRowChanged(row, this, SHVDataFactory::EventRowChanged, SHVInt(), Factory));
 }
+

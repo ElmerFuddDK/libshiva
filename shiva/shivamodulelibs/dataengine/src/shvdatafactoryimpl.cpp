@@ -363,6 +363,28 @@ SHVDataStruct* SHVDataFactoryImpl::CreateStruct() const
 }
 
 /*************************************
+ * CopyStruct
+ *************************************/
+SHVDataStruct * SHVDataFactoryImpl::CopyStruct(const SHVDataStructC *struc)
+{
+SHVDataStruct* retVal = CreateStruct();
+const SHVDataStructC& dStruc = *struc;
+	retVal->SetTableName(struc->GetTableName());
+	for (size_t c = 0; c < struc->GetColumnCount(); c++)
+	{
+		retVal->Add(dStruc[c]->GetColumnName(),
+					dStruc[c]->GetDataType(),
+					dStruc[c]->GetDataLength(),
+					false,
+					dStruc[c]->GetAllowNull(),
+					dStruc[c]->GetAutoInc());
+	}
+	for (size_t i = 0; i < struc->IndexCount(); i++)
+		retVal->AddIndex(CopyKey(struc->GetIndex(i)));
+	return retVal;
+}
+
+/*************************************
  * CreateVariant
  *************************************/
 SHVDataVariant* SHVDataFactoryImpl::CreateVariant() const
@@ -1005,3 +1027,4 @@ int SHVDataFactoryImpl::GetAliasID(const SHVDataSession *dataSession, const SHVS
 {
 	return ((SHVDataFactoryImpl*) this)->GetAliasID((SHVSQLiteWrapper*) ((SHVDataSession*) dataSession)->GetProvider(), alias, false);
 }
+

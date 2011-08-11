@@ -35,6 +35,7 @@ public:
 
 	virtual SHVDataSession* CreateSession() = 0;
 	virtual SHVDataStruct* CreateStruct() const = 0;
+	virtual SHVDataStruct* CopyStruct(const SHVDataStructC* struc) = 0;
 	virtual SHVDataVariant* CreateVariant() const = 0;
 	virtual SHVDataRowKey* CreateKey() const = 0;
 	virtual SHVDataRowKey* CopyKey(const SHVDataRowKey* key) const = 0;
