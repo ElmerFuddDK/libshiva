@@ -41,6 +41,7 @@
 #else
 # include <unistd.h>
 # include <arpa/inet.h>
+# include <errno.h>
 # include <fcntl.h>
 #endif
 
@@ -246,7 +247,12 @@ SHVListIterator<SHVSocketImplRef,SHVSocketImpl*> pendingListItr(pendingList);
 		{
 			continue;
 		}
-		else if (retVal == -1) // ERROR!
+		else if (
+				retVal == -1
+# ifdef __SHIVA_POSIX
+				&& errno != EINTR
+#endif
+				) // ERROR!
 		{
 			// insert error handling here
 			KillSignal = true;
