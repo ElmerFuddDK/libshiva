@@ -71,6 +71,9 @@ private:
 	SHVListNode* First;
 	SHVListNode* Last;
 	long Nodes;
+	///\cond INTERNAL
+	SHV_DISABLE_COPY_AND_ASSIGNMENT(SHVListBase);
+	///\endcond
 };
 
 

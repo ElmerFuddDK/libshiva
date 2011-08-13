@@ -36,6 +36,9 @@ public:
 private:
 
 	void* Md5Context;
+	///\cond INTERNAL
+	SHV_DISABLE_COPY_AND_ASSIGNMENT(SHVMd5Sum);
+	///\endcond
 };
 
 

@@ -71,6 +71,10 @@
 # define SHVAPI
 #endif
 
+#define SHV_DISABLE_COPY_AND_ASSIGNMENT(className) private: \
+  inline className(const className& ) {} \
+  inline className& operator=(const className& ) {return *this;}
+
 #ifndef SHVUNUSED_PARAM
 # define SHVUNUSED_PARAM(x) (void) x
 #endif

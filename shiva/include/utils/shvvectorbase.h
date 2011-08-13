@@ -47,6 +47,9 @@ public:
 private:
 	void** Array;
 	void** ArrayEnd;
+	///\cond INTERNAL
+	SHV_DISABLE_COPY_AND_ASSIGNMENT(SHVVectorBase);
+	///\endcond
 };
 
 

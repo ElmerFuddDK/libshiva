@@ -68,6 +68,7 @@ private:
 	static void* StartupFuncPosix(void* d);
 #endif
 	ThreadID ID;
+	SHV_DISABLE_COPY_AND_ASSIGNMENT(SHVThreadBase);
 	///\endcond
 };
 

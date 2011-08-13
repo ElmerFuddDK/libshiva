@@ -80,6 +80,7 @@ private:
 	SHVString FileName;
 	FILE* File;
 	int Flags;
+	SHV_DISABLE_COPY_AND_ASSIGNMENT(SHVFileBase);
 	///\endcond
 };
 

@@ -50,8 +50,9 @@ private:
 	size_t RemainingDataBuffer;
 	unsigned char Workset[3];
 	int WorksetIndex;
-	///\endcond
 
+	SHV_DISABLE_COPY_AND_ASSIGNMENT(SHVBase64Encoder);
+	///\endcond
 };
 
 
@@ -106,8 +107,9 @@ private:
 	unsigned char Workset[4];
 	int WorksetIndex;
 	SHVBool Error;
-	///\endcond
 
+	SHV_DISABLE_COPY_AND_ASSIGNMENT(SHVBase64Decoder);
+	///\endcond
 };
 
 

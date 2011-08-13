@@ -76,6 +76,7 @@ private:
 #elif defined __SHIVA_EPOC
 	RLibrary* hDll;
 #endif
+	SHV_DISABLE_COPY_AND_ASSIGNMENT(SHVDllBase);
 	///\endcond
 };
 

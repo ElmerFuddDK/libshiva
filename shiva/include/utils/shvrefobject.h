@@ -35,6 +35,8 @@ protected:
 	inline SHVRefObject();
 	inline bool ObjectIsDeleting() const;
 	virtual ~SHVRefObject() {}
+	inline SHVRefObject(const SHVRefObject&);
+	inline SHVRefObject& operator=(const SHVRefObject&);
 private:
 	volatile int References;
 	bool DeleteInProgress;
@@ -148,6 +150,16 @@ SHVRefObject::SHVRefObject() { References = 0; DeleteInProgress = false; }
  * ObjectIsDeleting
  *************************************/
 bool SHVRefObject::ObjectIsDeleting() const { return DeleteInProgress; }
+
+/*************************************
+ * Copy constructor
+ *************************************/
+SHVRefObject::SHVRefObject(const SHVRefObject&) { References = 0; DeleteInProgress = false; }
+
+/*************************************
+ * Assignment operator
+ *************************************/
+SHVRefObject& SHVRefObject::operator=(const SHVRefObject&) { References = 0; DeleteInProgress = false; return *this; }
 ///\endcond
 
 /*************************************

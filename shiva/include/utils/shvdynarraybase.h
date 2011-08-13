@@ -66,6 +66,9 @@ private:
 	size_t Items,ArrayLen;
 	int GrowSize;
 	bool Zeroed;
+	///\cond INTERNAL
+	SHV_DISABLE_COPY_AND_ASSIGNMENT(SHVDynArrayBase);
+	///\endcond
 };
 
 

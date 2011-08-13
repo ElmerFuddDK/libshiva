@@ -60,6 +60,7 @@ private:
 	///\cond INTERNAL
 	void* Globals;
 	static int CharToInt(bool& ok, const char ch);
+	SHV_DISABLE_COPY_AND_ASSIGNMENT(SHVUUID);
 	///\endcond
 };
 
