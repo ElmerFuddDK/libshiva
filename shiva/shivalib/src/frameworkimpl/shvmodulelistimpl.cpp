@@ -865,6 +865,7 @@ void SHVModuleListImpl::OnInternalEvent(SHVEvent* event)
 //=========================================================================================================
 // SHVModuleListIteratorImpl class - implementation of module list iterator
 //=========================================================================================================
+/// \class SHVModuleListIteratorImpl shvmodulelistimpl.h "shiva/include/frameworkimpl/shvmodulelistimpl.h"
 
 /*************************************
  * Constructor

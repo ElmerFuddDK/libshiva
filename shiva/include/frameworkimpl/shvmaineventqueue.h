@@ -39,4 +39,10 @@ protected:
 	inline SHVMainEventQueue() {}
 };
 
+
+
+// ============================================== documentation ============================================= //
+
+/// \class SHVMainEventQueue shvmaineventqueue.h "shiva/include/framework/shvmaineventqueue.h"
+
 #endif

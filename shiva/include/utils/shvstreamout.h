@@ -52,4 +52,9 @@ SHVBool SHVStreamOut::WriteChar(SHVTChar ch)
 #endif
 }
 
+
+// ============================================== documentation ============================================= //
+
+/// \class SHVStreamOut shvstreamout.h "shiva/include/utils/shvstreamout.h"
+
 #endif

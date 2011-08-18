@@ -71,6 +71,8 @@ SHVTestBase* SHVTestBase::FromTestEvent(SHVEvent* event)
 
 // ============================================== documentation ============================================= //
 
+/// \class SHVTestBase shvtestbase.h "shiva/include/unittest/shvtestbase.h"
+
 // GetGroup
 /** \fn const SHVString8C SHVTestBase::GetGroup() const
  \brief Must return the group for the test, for command line test, eg "threadutils"
@@ -102,6 +104,28 @@ const SHVTestBase::Action actions[] = {
 	return actions;
 }
 \endcode
+ */
+
+// Perform
+/** \fn SHVBool SHVTestBase::Perform(SHVModuleList& modules, int actionFlags, SHVEventSubscriberBase* result)
+ \brief Attempt to start tests
+ \param modules Module list for the application
+ \param actionFlags Test actions to perform
+ \param result Event subscriber to emit the result to
+ *
+ * Must perform actions listed from GetActions. Inherit from either SHVTest
+ * or SHVTestQueued since they implement this functionality.
+ */
+
+// IsPerforming
+/** \fn bool SHVTestBase::IsPerforming()
+ \brief Returns true if the test is busy performing
+ */
+
+/** \struct SHVTestBase::Action shvtestbase.h "shiva/include/unittest/shvtestbase.h"
+ \brief Contains info about a specific test to perform
+ *
+ \see SHVTestBase::GetActions
  */
 
 #endif

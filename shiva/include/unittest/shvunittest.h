@@ -24,4 +24,9 @@ protected:
 	inline SHVUnitTest(SHVModuleList& modules) : SHVModule(modules,"UnitTest") {}
 };
 
+
+// ============================================== documentation ============================================= //
+
+/// \class SHVUnitTest shvunittest.h "shiva/include/unittest/shvunittest.h"
+
 #endif

@@ -53,4 +53,9 @@ SHVTChar SHVStreamIn::ReadChar()
 #endif
 }
 
+
+// ============================================== documentation ============================================= //
+
+/// \class SHVStreamIn shvstreamin.h "shiva/include/utils/shvstreamin.h"
+
 #endif

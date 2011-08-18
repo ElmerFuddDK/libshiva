@@ -243,6 +243,7 @@ SHVBool inUse;
 //=========================================================================================================
 // SHVModuleLibraryImpl class - implementation of module library for module loader
 //=========================================================================================================
+/// \class SHVModuleLibraryImpl shvmoduleloaderimpl.h "shiva/include/frameworkimpl/shvmoduleloaderimpl.h"
 
 /*************************************
  * Constructor
@@ -346,6 +347,7 @@ SHVModuleFactory* SHVModuleLibraryImpl::GetFactory()
 //=========================================================================================================
 // SHVModuleLibIteratorImpl class - iterator for module libraries
 //=========================================================================================================
+/// \class SHVModuleLibIteratorImpl shvmoduleloaderimpl.h "shiva/include/frameworkimpl/shvmoduleloaderimpl.h"
 
 /*************************************
  * Constructor

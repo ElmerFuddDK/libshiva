@@ -301,4 +301,10 @@ void SHVModuleList::EventSubscribe(const SHVChar* name, SHVEventSubscriberBase* 
  */
 
 
+/// \class SHVModuleListIterator shvmodulelist.h "shiva/include/framework/shvmodulelist.h"
+
+
+/// \class SHVModuleResolver shvmodulelist.h "shiva/include/framework/shvmodulelist.h"
+
+
 #endif

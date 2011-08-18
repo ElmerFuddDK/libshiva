@@ -190,6 +190,8 @@ SHVBool SHVBuffer::WriteString(const SHVStringC str, size_t& pos)
 #endif
 
 
+/// \class SHVBufferIterator shvbuffer.h "shiva/include/utils/shvbuffer.h"
+
 SHVBufferIterator::SHVBufferIterator(SHVBuffer& buffer) : SHVBufferCIterator()
 { Buffer = (SHVBufferC*)&buffer; }
 // Write functions

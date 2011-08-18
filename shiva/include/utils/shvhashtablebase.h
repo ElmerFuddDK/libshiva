@@ -138,4 +138,13 @@ void SHVHashTableBase::OverrideCreateHashFunc(CreateHashFunc func)
 { CreateHash = func; }
 void SHVHashTableBase::OverrideDestroyFunc(DestroyFunc func)
 { Destroy = func; }
+
+
+
+// ============================================== documentation ============================================= //
+
+/// \class SHVHashDataBase shvhashtablebase.h "shiva/include/utils/shvhashtablebase.h"
+
+/// \class SHVHashIteratorBase shvhashtablebase.h "shiva/include/utils/shvhashtablebase.h"
+
 #endif

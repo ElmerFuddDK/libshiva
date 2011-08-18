@@ -12,7 +12,8 @@
  * Inherit from this class to create a queued unit test.\n
  * A queued unit test will have it's actions performed in an event queue, most likely
  * a different thread than the main thread.\n
- * You will need to override at least 3 functions : GetID, GetTitle and GetActions.
+ * You will need to override at least 4 functions : GetID, GetGroup, GetTitle and GetActions.\n
+ * Please look in the unittest example project for examples. All threadutils tests are queued.
  */
 
 class SHVTestQueued : public SHVTest
@@ -47,13 +48,14 @@ protected:
 	SHVTestQueued();
 
 private:
-
+	///\cond INTERNAL
 	void OnPerformActionEvent(SHVEvent* event);
 
 	SHVEventSubscriberBaseRef ResultSubscriber;
 	SHVEventSubscriberBaseRef PerformSubscriber;
 
 	SHVList<int> PerformingActions;
+	///\endcond
 };
 
 #endif

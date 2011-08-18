@@ -41,6 +41,8 @@
 #include <android/log.h>
 #endif
 
+/// \class SHVAssert shvassert.h "shiva/include/utils/shvassert.h"
+
 bool SHVAPI SHVAssert::ReportError(const char* fileName, int lineNo)
 {
 #if defined(__SHIVA_WINCE)

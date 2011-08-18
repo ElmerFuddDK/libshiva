@@ -23,4 +23,10 @@ protected:
 };
 typedef SHVRefObjectContainer<SHVTestLogger> SHVTestLoggerRef;
 
+
+
+// ============================================== documentation ============================================= //
+
+/// \class SHVTestLogger shvtestlogger.h "shiva/include/unittest/shvtestlogger.h"
+
 #endif

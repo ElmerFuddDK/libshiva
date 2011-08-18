@@ -12,7 +12,8 @@
 /// SHVTest class
 /**
  * Inherit from this class to create a unit test.\n
- * You will need to override at least 3 functions : GetID, GetTitle and GetActions.
+ * You will need to override at least 4 functions : GetID, GetGroup, GetTitle and GetActions.\n
+ * Please look in the unittest example project for examples.
  */
 
 class SHVTest : public SHVTestBase
@@ -51,6 +52,7 @@ protected:
 	SHVMutex LogLock;
 
 private:
+	///\cond INTERNAL
 	enum LogTypes { LogTypeTitle, LogTypeHeader, LogTypeLine };
 	struct LogString
 	{
@@ -60,6 +62,7 @@ private:
 	};
 	SHVVector<LogString> Log;
 	bool OK;
+	///\endcond
 };
 
 #endif

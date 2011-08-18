@@ -29,4 +29,10 @@ private:
 	SHVMutex& Mutex;
 };
 
+
+
+// ============================================== documentation ============================================= //
+
+/// \class SHVMutexLocker shvmutexlocker.h "shiva/include/threadutils/shvmutexlocker.h"
+
 #endif

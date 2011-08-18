@@ -7,6 +7,7 @@
 //=========================================================================================================
 // SHVTestQueued class
 //=========================================================================================================
+/// \class SHVTestQueued shvtestqueued.h "shiva/include/unittest/src/shvtestqueued.h"
 
 /*************************************
  * Constructor
@@ -18,6 +19,17 @@ SHVTestQueued::SHVTestQueued() : SHVTest()
 /*************************************
  * Perform
  *************************************/
+/// Perform tests
+/**
+ \param modules Module list for the application
+ \param actionFlags Test actions to perform
+ \param result Event subscriber to emit the result to
+ *
+ * This function will queue up action events on the event queue
+ * returned by GetQueue(). Otherwise the performing functions
+ * will be called as normal.
+ \see SHVTestBase::Perform
+ */
 SHVBool SHVTestQueued::Perform(SHVModuleList& modules, int actionFlags, SHVEventSubscriberBase* result)
 {
 	LogLock.Lock();
@@ -65,6 +77,7 @@ bool SHVTestQueued::IsPerforming()
 	return (!ResultSubscriber.IsNull());
 }
 
+///\cond INTERNAL
 /*************************************
  * OnPerformActionEvent
  *************************************/
@@ -83,3 +96,6 @@ SHVListPos pos = PerformingActions.Find(event->GetID());
 		EmitPerformedEvent(*data.modules,subs);
 	}
 }
+///\endcond
+
+/// \struct SHVTestQueued::PerformActionData shvtestqueued.h "shiva/include/unittest/src/shvtestqueued.h"

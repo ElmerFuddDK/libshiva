@@ -220,4 +220,10 @@ template <class T>
 void SHVPtrContainer<T>::ClearPtr() const { ((SHVPtrContainer<T>*)this)->Obj = NULL; }
 ///\endcond
 
+
+
+// ============================================== documentation ============================================= //
+
+/// \class SHVPtrContainer shvptrcontainer.h "shiva/include/utils/shvptrcontainer.h"
+
 #endif

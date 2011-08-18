@@ -34,6 +34,11 @@
 #include "../../../include/utils/shvbufferstream.h"
 
 
+//=========================================================================================================
+// SHVBufferStream class - Writeable buffer stream class
+//=========================================================================================================
+/// \class SHVBufferStream shvbufferstream.h "shiva/include/utils/shvbufferstream.h"
+
 /*************************************
  * Constructor
  *************************************/
