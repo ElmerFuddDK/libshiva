@@ -42,8 +42,8 @@
 /*************************************
  * Constructor
  *************************************/
-SHVThreadPoolBase::SHVThreadPoolBase(int initialCount, int maxCount, short priority)
-	: MaxCount(maxCount), Priority(priority)
+SHVThreadPoolBase::SHVThreadPoolBase(int initialCount, int maxCount, short priority, SHVInt stackSize)
+	: MaxCount(maxCount), Priority(priority), StackSize(stackSize)
 {
 	ThreadsStarting = 0;
 	Running = false;
@@ -97,7 +97,7 @@ bool err = false;
 			threadFuncData->Data->Func = func;
 			threadFuncData->Data->Data = data;
 			
-			SHVVERIFY(threadFuncData->Data->Thread.Start((SHVThreadBase::ThreadFunc)&SHVThreadPoolBase::PoolThreadFunc,threadFuncData,Priority));
+			SHVVERIFY(threadFuncData->Data->Thread.Start((SHVThreadBase::ThreadFunc)&SHVThreadPoolBase::PoolThreadFunc,threadFuncData,Priority,NULL,StackSize));
 		}
 		
 		// If there still is no thread, wait for one to be available
@@ -146,7 +146,7 @@ bool err = false;
  * Start
  *************************************/
 /// Starts the thread pool
-bool SHVThreadPoolBase::Start(int initialCount, int maxCount, short priority)
+bool SHVThreadPoolBase::Start(int initialCount, int maxCount, short priority, SHVInt stackSize)
 {
 PoolThreadFuncData* threadFuncData;
 bool retVal = false;
@@ -159,6 +159,8 @@ bool retVal = false;
 	if (!Running && initialCount >= 0)
 	{
 		MaxCount = maxCount;
+		if (!stackSize.IsNull())
+			StackSize = stackSize;
 		ThreadsStarting = 0;
 		ThreadInitLock.Lock();
 		Running = true;
@@ -176,7 +178,7 @@ bool retVal = false;
 			threadFuncData->Data->Func = NULL;
 			threadFuncData->Data->Data = NULL;
 			ThreadsStarting++;
-			SHVVERIFY(threadFuncData->Data->Thread.Start((SHVThreadBase::ThreadFunc)&SHVThreadPoolBase::PoolThreadFunc,threadFuncData,Priority));
+			SHVVERIFY(threadFuncData->Data->Thread.Start((SHVThreadBase::ThreadFunc)&SHVThreadPoolBase::PoolThreadFunc,threadFuncData,Priority,NULL,StackSize));
 		}
 		Lock.Unlock();
 		

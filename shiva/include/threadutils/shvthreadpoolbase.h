@@ -18,10 +18,10 @@ class SHVThreadPoolBase
 {
 public:
 
-	SHVThreadPoolBase(int initialCount = -1, int maxCount = -1, short priority = SHVThreadBase::PrioNormal);
+	SHVThreadPoolBase(int initialCount = -1, int maxCount = -1, short priority = SHVThreadBase::PrioNormal, SHVInt stackSize = SHVInt());
 	~SHVThreadPoolBase();
 
-	bool Start(int initialCount = 5, int maxCount = 25, short priority = SHVThreadBase::PrioNormal);
+	bool Start(int initialCount = 5, int maxCount = 25, short priority = SHVThreadBase::PrioNormal, SHVInt stackSize = SHVInt());
 	void Stop();
 
 	SHVThreadBase::ThreadID Execute(SHVThreadBase::ThreadFunc func, void* data);
@@ -32,6 +32,7 @@ private:
 	bool Running;
 	int MaxCount;
 	short Priority;
+	SHVInt StackSize;
 	struct PoolThreadData{ SHVThreadBase Thread; SHVMutexBase Lock; SHVThreadBase::ThreadFunc Func; void* Data; };
 	struct PoolThreadWaitData{ SHVMutexBase Lock; SHVThreadBase::ThreadFunc Func; void* Data; PoolThreadData* PoolThread; };
 	struct PoolThreadFuncData{ PoolThreadData* Data; SHVThreadPoolBase* Self; };

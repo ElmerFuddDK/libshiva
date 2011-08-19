@@ -40,7 +40,7 @@ public:
 	SHVThreadBase();
 	~SHVThreadBase();
 
-	bool Start(ThreadFunc func, void* data, short priority = PrioNormal, const SHVStringC& name = NULL);
+	bool Start(ThreadFunc func, void* data, short priority = PrioNormal, const SHVStringC& name = NULL, SHVInt stackSize = SHVInt());
 	bool Kill();
 
 	bool IsRunning();

@@ -82,6 +82,7 @@ SHVThreadBase::~SHVThreadBase()
  \param data Data pointer to be used as paramater in func
  \param priority One of the Prio* enum priorities (optional)
  \param name The name of the thread, for debugging (optional)
+ \param stackSize Optional stack size
  \return Success
  *
  * If the thread is not already running, it will start the thread as func(data).
@@ -90,12 +91,13 @@ SHVThreadBase::~SHVThreadBase()
  * it is already running.
  * NOTE: name is not supported on all platforms. It is meant as an aid for debugging.
  */
-bool SHVThreadBase::Start(ThreadFunc func, void* data, short priority, const SHVStringC& name)
+bool SHVThreadBase::Start(ThreadFunc func, void* data, short priority, const SHVStringC& name, SHVInt stackSize)
 {
 bool retVal = false;
 #ifdef __SHIVA_WIN32
 int prio;
 DWORD threadID;
+DWORD creationFlags = CREATE_SUSPENDED;
 void** tmpData = (void**)::malloc(sizeof(void*)*2);
 
 	tmpData[0] = (void*)func;
@@ -113,7 +115,14 @@ void** tmpData = (void**)::malloc(sizeof(void*)*2);
 	case PrioNormal:	prio = THREAD_PRIORITY_NORMAL;		 break;
 	}
 
-	ThreadHandle = CreateThread(NULL,0,&StartupFuncWin32,tmpData,CREATE_SUSPENDED,&threadID);
+#ifdef __SHIVA_WINCE
+	SHVASSERT(stackSize.IsNull()); // Stack size cannot be set on WinCE ... Yay M$!
+#else
+	if (!stackSize.IsNull())
+		creationFlags |= STACK_SIZE_PARAM_IS_A_RESERVATION;
+#endif
+
+	ThreadHandle = CreateThread(NULL,stackSize.IfNull(0),&StartupFuncWin32,tmpData,creationFlags,&threadID);
 
 	retVal = (ThreadHandle ? true : false);
 
@@ -142,7 +151,7 @@ void** tmpData = (void**)::malloc(sizeof(void*)*2);
 	// create a unique name - this is required in epoc, dunno why
 	tmpName.Format(_S("%s%d-%d"), prefix.GetSafeBuffer(), ((long)this), GetTickCount());
 
-	if (ThreadHandle.Create(tmpName.ToPtr(),&StartupFuncEpoc,KDefaultStackSize,NULL,tmpData) == KErrNone)
+	if (ThreadHandle.Create(tmpName.ToPtr(),&StartupFuncEpoc,stackSize.IfNull(KDefaultStackSize),NULL,tmpData) == KErrNone)
 	{
 	TThreadId tmpId = ThreadHandle.Id();
 	TThreadPriority prio;
@@ -204,6 +213,7 @@ void** tmpData = (void**)::malloc(sizeof(void*)*3);
 		param.sched_priority = priority;
 		pthread_attr_setschedparam(&attr, &param);
 	}
+	SHVVERIFY(pthread_attr_setstacksize(&attr,(size_t)stackSize.IfNull(0x100000)) == 0); // 1 MB standard - 12 MB is simply too much
 
 	ThreadHandle = (pthread_create( (pthread_t*)&ID, &attr, StartupFuncPosix, (void*)tmpData) ? 0/*error*/ : 1/*ok*/ );
 

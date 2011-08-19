@@ -22,7 +22,7 @@ public:
 
 	SHVThread();
 
-	bool Start(T* owner, ThreadFunc func, short priority = SHVThreadBase::PrioNormal, const SHVStringC& name=NULL);
+	bool Start(T* owner, ThreadFunc func, short priority = SHVThreadBase::PrioNormal, const SHVStringC& name=NULL, SHVInt stackSize = SHVInt());
 
 	inline bool Kill();
 
@@ -58,6 +58,7 @@ SHVThread<T>::SHVThread()
  \param func Pointer to the function to be called on owner
  \param priority One of the Prio* enum priorities (optional)
  \param name The name of the thread, for debugging (optional)
+ \param stackSize Optional stack size
  \return Success
  *
  * If the thread is not already running, it will start the thread as owner->func().
@@ -90,7 +91,7 @@ public:
 \endcode
  */
 template<class T>
-bool SHVThread<T>::Start(T* owner, ThreadFunc func, short priority, const SHVStringC& name)
+bool SHVThread<T>::Start(T* owner, ThreadFunc func, short priority, const SHVStringC& name, SHVInt stackSize)
 {
 StartThreadData* data = (StartThreadData*)::malloc(sizeof(StartThreadData));
 bool retVal;
@@ -99,7 +100,7 @@ bool retVal;
 	data->func = func;
 	data->self = owner;
 
-	retVal = SHVThreadBase::Start(&StartThreadFunc,data,priority,name);
+	retVal = SHVThreadBase::Start(&StartThreadFunc,data,priority,name, stackSize);
 
 	if (!retVal)
 		::free(data);
