@@ -24,7 +24,7 @@ public:
 	// Event handling
 	void EnqueueEvent(SHVModuleList& modules, SHVEvent* event, SHVEventSubscriberBase* subscriber);
 	void DispatchEvents(SHVModuleList& modules);
-	void Clear();
+	void Clear(SHVModuleList& modules);
 
 	bool PendingEvents();
 

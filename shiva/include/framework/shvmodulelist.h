@@ -21,7 +21,7 @@
 
 class SHVModuleListIterator;
 class SHVEventQueueList;
-class SHVEventThread;
+class SHVEventSubscriptionList;
 typedef SHVPtrContainer<SHVModuleListIterator> SHVModuleListIteratorPtr;
 
 //-=========================================================================================================
@@ -119,6 +119,7 @@ public:
 protected:
 friend class SHVEventQueue;
 friend class SHVEventQueueList;
+friend class SHVEventSubscriptionList;
 
 	// for event control
 	virtual SHVBool EventActiveInQueue() = 0;

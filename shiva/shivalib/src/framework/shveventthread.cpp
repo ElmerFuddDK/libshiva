@@ -225,7 +225,6 @@ void SHVEventThread::ThreadFunc()
 	while (!KillSignal)
 	{
 		ThreadSignal.Lock(TimeoutInterval); // wait for signal
-
 		if (EventActiveInQueue(*GetModuleList()))
 		{
 			PreEventDispatch();
@@ -233,10 +232,14 @@ void SHVEventThread::ThreadFunc()
 			PostEventDispatch();
 			EventDeactivatedInQueue(*GetModuleList());
 		}
+		else
+		{
+			EventList.Clear(*Modules);
+		}
 	}
 
 	ThreadStopping();
 
-	EventList.Clear();
+	EventList.Clear(*Modules);
 }
 ///\endcond

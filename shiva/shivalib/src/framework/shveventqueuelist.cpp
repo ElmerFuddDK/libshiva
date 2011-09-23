@@ -109,10 +109,14 @@ void SHVEventQueueList::DispatchEvents(SHVModuleList& modules)
 /*************************************
  * ClearList
  *************************************/
-void SHVEventQueueList::Clear()
+void SHVEventQueueList::Clear(SHVModuleList& modules)
 {
 	EventLock.Lock();
-	EventList.RemoveAll();
+	while (EventList.GetCount())
+	{
+		EventList.RemoveHead();
+		modules.EventDeactivatedInQueue();
+	}
 	EventLock.Unlock();
 }
 

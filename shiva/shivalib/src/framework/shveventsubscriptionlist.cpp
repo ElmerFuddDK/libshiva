@@ -90,7 +90,7 @@ bool SHVEventSubscriptionList::operator==(const SHVEvent* event)
 bool SHVEventSubscriptionList::EmitEvent(SHVModuleList& modules, SHVEvent* event)
 {
 SHVEventRef eLock = event;
-bool retVal = modules.LockEvent();
+bool retVal = modules.EventActiveInQueue(); // Make sure the module list doesn't close whilst distributing the event
 
 	if (retVal)
 	{
@@ -124,12 +124,11 @@ bool retVal = modules.LockEvent();
 			}
 		}
 
-		modules.UnlockEvent();
-
-
 		// signal event queues
 		while (queueItr.MoveNext())
 			queueItr.Get()->SignalDispatcher();
+
+		modules.EventDeactivatedInQueue(); // Now we are done
 	}
 
 	return retVal;
