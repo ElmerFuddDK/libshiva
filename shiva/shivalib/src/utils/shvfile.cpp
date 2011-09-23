@@ -145,7 +145,7 @@ bool retVal = (IsOpen() && (GetFlags()&FlagRead));
 bool SHVFile::WriteLine8(const SHVString8C& str)
 {
 SHVString8C newLine(SHVFileBase::LineSeparator8());
-	return (WriteString8(str) && WriteString8(newLine));
+	return ((str.IsEmpty() ? true : WriteString8(str)) && WriteString8(newLine));
 }
 
 #ifndef __SHVSTRING_EXCLUDE_UNICODE
@@ -245,7 +245,7 @@ bool retVal = (IsOpen() && (GetFlags()&FlagRead));
 bool SHVFile::WriteLine16(const SHVString16C& str)
 {
 SHVString16C newLine(SHVFileBase::LineSeparator16());
-	return (WriteString16(str) && WriteString16(newLine));
+	return ((str.IsEmpty() ? true : WriteString16(str)) && WriteString16(newLine));
 }
 #endif
 
