@@ -62,12 +62,17 @@ SHVSQLiteWrapperImpl::~SHVSQLiteWrapperImpl(void)
  *************************************/
 SHVBool SHVSQLiteWrapperImpl::OpenUTF8(const SHVStringUTF8C& fileName, int option)
 {
+SHVBool retVal;
 	SHVTHREADCHECK(OwnerThread);
 	if (Sqlite)
 	{
 		sqlite3_close(Sqlite);
 	}
-	return SHVBool(sqlite3_open_v2(fileName.GetSafeBuffer(), &Sqlite, option, NULL));
+	retVal = SHVBool(sqlite3_open_v2(fileName.GetSafeBuffer(), &Sqlite, option, NULL));
+	if (Sqlite &&  retVal)
+		sqlite3_busy_timeout(Sqlite, 500);
+
+	return retVal;
 }
 
 /*************************************
@@ -81,6 +86,17 @@ SHVBool SHVSQLiteWrapperImpl::OpenInMemory()
 		sqlite3_close(Sqlite);
 	}
 	return SHVBool(sqlite3_open(":memory", &Sqlite));
+}
+
+/*************************************
+ * SetBusyTimeout
+ *************************************/
+SHVBool SHVSQLiteWrapperImpl::SetBusyTimeout(int ms)
+{
+	SHVTHREADCHECK(OwnerThread);
+	if (Sqlite)
+		sqlite3_busy_timeout(Sqlite, ms);
+	return Sqlite != NULL;
 }
 
 /*************************************
@@ -157,4 +173,5 @@ SHVStringUTF8C SHVSQLiteWrapperImpl::GetErrorMsgUTF8()
 	else
 		return "Database is not open";
 }
+
 

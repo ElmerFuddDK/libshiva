@@ -63,6 +63,7 @@ protected:
 public:
 	virtual SHVBool OpenUTF8(const SHVStringUTF8C& fileName, int option = 6) = 0;
 	inline SHVBool Open(const SHVStringC& fileName, int option = 6);
+	virtual SHVBool SetBusyTimeout(int ms) = 0;
 	virtual SHVBool OpenInMemory() = 0;
 	virtual SHVBool Close() = 0;
 	virtual SHVSQLiteStatement* PrepareUTF8(SHVBool& ok, const SHVStringUTF8C& sql, SHVStringSQLite& notparsed) = 0;
