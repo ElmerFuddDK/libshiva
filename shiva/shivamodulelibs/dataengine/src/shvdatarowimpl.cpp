@@ -215,6 +215,7 @@ void SHVDataRowImpl::SetNull(size_t colIdx)
 void SHVDataRowImpl::SetCorr(const SHVDataRowC* row)
 {
 size_t destCol;
+	SetChanged();
 	for (size_t col = 0; col < row->GetStruct()->GetColumnCount(); col++)
 	{
 		destCol = row->ColumnIndex((*row->GetStruct())[col]->GetColumnName());
