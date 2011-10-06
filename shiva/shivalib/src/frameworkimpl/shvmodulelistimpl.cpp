@@ -889,12 +889,16 @@ SHVBool SHVModuleListIteratorImpl::MoveNext()
 {
 bool retVal = false;
 
-	while (!retVal && List)
+	while (!retVal)
 	{
 		if (List.MoveNext())
 		{
 			if (List.Get()->GetGroup() == Group)
 				retVal = true;
+		}
+		else
+		{
+			break;
 		}
 	}
 
