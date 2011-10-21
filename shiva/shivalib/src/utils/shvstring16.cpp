@@ -954,6 +954,7 @@ SHVWChar* buf = Buffer;
 void SHVString16::SetToNull()
 {
 	BUFFER_DESTROY(Buffer);
+	BufferLen = 0;
 }
 
 

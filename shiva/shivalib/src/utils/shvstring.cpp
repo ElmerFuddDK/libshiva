@@ -870,6 +870,7 @@ SHVChar* buf = Buffer;
 void SHVString8::SetToNull()
 {
 	BUFFER_DESTROY(Buffer);
+	BufferLen = 0;
 }
 
 

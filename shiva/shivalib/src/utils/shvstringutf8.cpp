@@ -686,6 +686,7 @@ SHVChar* buf = Buffer;
 void SHVStringUTF8::SetToNull()
 {
 	BUFFER_DESTROY(Buffer);
+	BufferLen = 0;
 }
 
 
