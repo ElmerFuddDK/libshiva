@@ -80,7 +80,10 @@ SHVBool SHVControlImplementerComboBoxGtk::Create(SHVControl* owner, SHVControlIm
 			SetHandle(gtk_combo_box_new_text());
 #endif
 		gtk_container_add(GTK_CONTAINER (parent->GetNative()), GetHandle());
-		
+
+		g_signal_connect (G_OBJECT (GetHandle()), "changed",
+						  G_CALLBACK (SHVControlImplementerComboBoxGtk::on_changed), owner);
+
 		owner->SetFont(NULL,true);
 		owner->SetFlag(flags);
 		
@@ -278,3 +281,16 @@ void SHVControlImplementerComboBoxGtk::SetDropdownHeight(SHVControlComboBox* own
 	SHVUNUSED_PARAM(lines);
 	// Unavailable in GTK
 }
+
+///\cond INTERNAL
+/*************************************
+ * WndProc
+ *************************************/
+void SHVControlImplementerComboBoxGtk::on_changed(GtkComboBox* combobox, gpointer user_data)
+{
+SHVControlComboBox* owner = (SHVControlComboBox*)user_data;
+//SHVControlImplementerComboBoxGtk* self = (SHVControlImplementerComboBoxGtk*)owner->GetImplementor();
+	SHVUNUSED_PARAM(combobox);
+	owner->PerformSelectedChanged();
+}
+///\endcond

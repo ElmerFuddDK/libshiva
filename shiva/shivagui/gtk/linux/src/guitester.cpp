@@ -245,6 +245,12 @@ public:
 		}
 	}
 
+	void OnComboBoxEvent(SHVEvent* event)
+	{
+		SHVUNUSED_PARAM(event);
+		GUIManager->ShowMessageBox(SHVStringC::Format(_S("Selected item : %s"), ComboBox->GetText().GetSafeBuffer()));
+	}
+
 	SHVBool Register()
 	{
 		printf("In register\n");
@@ -277,10 +283,11 @@ public:
 		Button->SubscribeClicked(new SHVEventSubscriberFunc<SHVTest>(this,&SHVTest::OnClick));
 
 		ComboBox = GUIManager->NewComboBox(SHVControlComboBox::SubTypeList)->SetParent(GUIManager->GetMainWindow());
-		ComboBox->AddItem(_S("1"));
-		ComboBox->AddItem(_S("2"));
-		ComboBox->AddItem(_S("3"));
-		ComboBox->AddItem(_S("4"));
+		ComboBox->AddItem(_S("1"))
+				->AddItem(_S("2"))
+				->AddItem(_S("3"))
+				->AddItem(_S("4"))
+				->SubscribeSelectedChanged(new SHVEventSubscriberFunc<SHVTest>(this,&SHVTest::OnComboBoxEvent));
 
 		//Label = GUIManager->NewLabel()->SetParent(GUIManager->GetMainWindow(),0);
 		Label = GUIManager->NewLabelCustomDraw(new SHVEventSubscriberFunc<SHVTest>(this,&SHVTest::OnCustomDraw))->SetParent(GUIManager->GetMainWindow(),0);
