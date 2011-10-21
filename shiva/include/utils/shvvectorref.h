@@ -138,7 +138,7 @@ const T* SHVVectorRef<T,GrowSize>::operator[](size_t index) const
 template<class T, int GrowSize>
 size_t SHVVectorRef<T,GrowSize>::Add(T* item)
 {
-	return SHVVectorBase::Add(item->CreateRef(), GrowSize);
+	return SHVVectorBase::Add(item ? item->CreateRef() : NULL, GrowSize);
 }
 
 /*************************************
