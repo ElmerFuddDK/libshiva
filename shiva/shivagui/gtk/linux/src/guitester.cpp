@@ -166,6 +166,7 @@ public:
 	SHVGUIManager* GUIManager;
 	SHVControlLabelRef Label;
 	SHVControlButtonRef Button;
+	SHVControlComboBoxRef ComboBox;
 	SHVControlEditRef Edit;
 	SHVFormTestRef NewWindow;
 	int Counter;
@@ -189,7 +190,7 @@ public:
 				Label->SetFlag(SHVControl::FlagVisible);
 				Label->SetText(SHVStringC::Format(_S("Label text : %d and counting"), Counter));
 			}
-			rgn->Move(Button)->Bottom(5)->AlignHorizontal(NULL,NULL,SHVRegion::AlignHCenter,5)->ClipBottom();
+			rgn->Move(ComboBox)->CtrlWidth(20)->RightOf(Button)->And(Button)->Bottom(5)->AlignHorizontal(NULL,NULL,SHVRegion::AlignHCenter,5)->ClipBottom();
 			rgn->Move(Label)
 				->FillHorizontal(NULL,NULL,SHVRegion::AlignHCenter)
 				->AlignVertical(NULL,NULL,SHVRegion::AlignBottom,10)
@@ -274,7 +275,13 @@ public:
 			->SetParent(GUIManager->GetMainWindow())
 			->SetText(_S("Click me"));
 		Button->SubscribeClicked(new SHVEventSubscriberFunc<SHVTest>(this,&SHVTest::OnClick));
-		
+
+		ComboBox = GUIManager->NewComboBox(SHVControlComboBox::SubTypeList)->SetParent(GUIManager->GetMainWindow());
+		ComboBox->AddItem(_S("1"));
+		ComboBox->AddItem(_S("2"));
+		ComboBox->AddItem(_S("3"));
+		ComboBox->AddItem(_S("4"));
+
 		//Label = GUIManager->NewLabel()->SetParent(GUIManager->GetMainWindow(),0);
 		Label = GUIManager->NewLabelCustomDraw(new SHVEventSubscriberFunc<SHVTest>(this,&SHVTest::OnCustomDraw))->SetParent(GUIManager->GetMainWindow(),0);
 		Label->SetFont(GUIManager->GetMainWindow()->GetFont(),true);

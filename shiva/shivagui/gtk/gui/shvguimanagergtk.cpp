@@ -44,6 +44,7 @@
 #include "shvcontrolimplementereditgtk.h"
 #include "shvcontrolimplementereditmultigtk.h"
 #include "shvcontrolimplementerbuttongtk.h"
+#include "shvcontrolimplementercomboboxgtk.h"
 #include "shvmenugtkpopup.h"
 #include "../../../include/gui/shvcontrolcreator.h"
 #include "../../../include/gui/shvcontrolcreatorsubtype.h"
@@ -85,6 +86,11 @@ SHVGUIManagerGtk::SHVGUIManagerGtk(SHVModuleList& modules) : SHVGUIManagerImpl(m
 
 	RegisterFactory(SHVControl::TypeButton,SHVControlButton::SubTypeDefault,
 		new SHVControlCreator<SHVControlButton,SHVControlImplementerButtonGtk>());
+
+	RegisterFactory(SHVControl::TypeComboBox,SHVControlComboBox::SubTypeEdit,
+		new SHVControlCreatorSubType<SHVControlComboBox,SHVControlImplementerComboBoxGtk,SHVControlComboBox::SubTypeEdit>());
+	RegisterFactory(SHVControl::TypeComboBox,SHVControlComboBox::SubTypeList,
+		new SHVControlCreatorSubType<SHVControlComboBox,SHVControlImplementerComboBoxGtk,SHVControlComboBox::SubTypeList>());
 
 
 

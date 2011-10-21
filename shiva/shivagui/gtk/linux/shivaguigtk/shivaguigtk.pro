@@ -71,7 +71,8 @@ HEADERS += ../../../gui/shvformimpl.h \
  ../../gui/shvmenugtkcontainer.h \
  ../../gui/shvmenugtksub.h \
  ../../gui/shvmenugtkroot.h \
- ../../gui/shvmenugtkpopup.h
+ ../../gui/shvmenugtkpopup.h \
+    ../../gui/shvcontrolimplementercomboboxgtk.h
 SOURCES += ../../../gui/shvcontrolbutton.cpp \
            ../../../gui/shvcontrolcontainer.cpp \
            ../../../gui/shvcontrol.cpp \
@@ -101,7 +102,9 @@ SOURCES += ../../../gui/shvcontrolbutton.cpp \
  ../../gui/shvcontrolimplementercontainerwindowgtk.cpp \
  ../../gui/shvmenugtkcontainer.cpp \
  ../../gui/shvmenugtksub.cpp \
- ../../gui/shvmenugtkpopup.cpp
+ ../../gui/shvmenugtkpopup.cpp \
+    ../../gui/shvcontrolimplementercomboboxgtk.cpp \
+    ../../../gui/shvcontrolcombobox.cpp
 INCLUDEPATH += /usr/lib64/gtk-2.0/include \
   /usr/lib64/glib-2.0/include \
   /usr/include/atk-1.0 \
@@ -123,3 +126,6 @@ unix {
 	QMAKE_LIBDIR += /usr/local/lib
   }
 }
+
+
+
