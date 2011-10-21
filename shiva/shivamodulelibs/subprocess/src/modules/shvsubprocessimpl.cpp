@@ -198,7 +198,7 @@ SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
 			SafeCloseFd(PipeStdOut[1]);
 			SafeCloseFd(PipeStdErr[1]);
 			
-			if (LastError) // then execution failed of the external program
+			if (!LastError) // then execution failed of the external program
 			{
 				WaitForTermination();
 			}
