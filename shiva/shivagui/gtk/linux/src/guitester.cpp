@@ -168,6 +168,7 @@ public:
 	SHVControlButtonRef Button;
 	SHVControlComboBoxRef ComboBox;
 	SHVControlEditRef Edit;
+	SHVControlListViewRef ListView;
 	SHVFormTestRef NewWindow;
 	int Counter;
 	
@@ -196,7 +197,9 @@ public:
 				->AlignVertical(NULL,NULL,SHVRegion::AlignBottom,10)
 				->ClipBottom();
 			rgn->Move(Edit)
-				->FillPercent(0,0,100,100, SHVRect(2,2,2,2));
+				->FillPercent(0,0,50,100, SHVRect(2,2,2,2));
+			rgn->Move(ListView)
+				->FillPercent(50,0,50,100, SHVRect(2,2,2,2));
 		}
 	}
 
@@ -276,7 +279,12 @@ public:
 		
 		Edit = GUIManager->NewEdit(SHVControlEdit::SubTypeMultiLine)->SetParent(GUIManager->GetMainWindow(),SHVControl::FlagVisible);
 		Edit->SetFont(GUIManager->GetMainWindow()->GetFont(),true);
-		
+		ListView = GUIManager->NewListView()->SetParent(GUIManager->GetMainWindow(), SHVControl::FlagVisible);
+		ListView->AddColumn(_S("Col 1"), 150);
+		ListView->AddColumn(_S("Col 2"), 200);
+		ListView->AddItem(_S("Item 1"))->SetItemText(_S("Col 2"),0,1);
+		ListView->AddItem(_S("Item 2"))->SetItemText(_S("Col 2"),1,1);
+
 		Button = GUIManager->NewButton()
 			->SetParent(GUIManager->GetMainWindow())
 			->SetText(_S("Click me"));
