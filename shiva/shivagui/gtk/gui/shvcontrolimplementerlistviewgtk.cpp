@@ -35,6 +35,10 @@
 #include "shvcontrolimplementerlistviewgtk.h"
 #include "utils/shvdrawgtk.h"
 
+#ifndef G_VALUE_INIT
+# define G_VALUE_INIT { 0 }
+#endif
+
 
 //=========================================================================================================
 // SHVControlImplementerListViewGtk
@@ -46,6 +50,7 @@
 SHVControlImplementerListViewGtk::SHVControlImplementerListViewGtk(int subType) : SHVControlImplementerGtkWidget<SHVControlImplementerListViewCustomDraw>()
 {
 	SubType = subType;
+	TreeView = NULL;
 }
 
 /*************************************
@@ -55,10 +60,18 @@ SHVBool SHVControlImplementerListViewGtk::Create(SHVControl* owner, SHVControlIm
 {
 	if (!IsCreated() && parent && parent->IsCreated())
 	{
-		SetHandle(gtk_tree_view_new());
+	GtkTreeSelection* sel;
+		SetHandle(gtk_scrolled_window_new(NULL,NULL));
+		gtk_container_add(GTK_CONTAINER (GetHandle()), TreeView = gtk_tree_view_new());
 		gtk_container_add(GTK_CONTAINER (parent->GetNative()), GetHandle());
+		gtk_widget_show(TreeView);
+		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW (GetHandle()), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+		gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW (GetHandle()), GTK_SHADOW_ETCHED_IN);
 
-		// g_signal_connect (G_OBJECT (GetHandle()), "expose-event", G_CALLBACK (SHVControlImplementerListViewGtk::expose_event), owner);
+		sel = gtk_tree_view_get_selection(GTK_TREE_VIEW (TreeView));
+		gtk_tree_selection_set_mode(sel, GTK_SELECTION_SINGLE);
+
+		// g_signal_connect (G_OBJECT (TreeView), "expose-event", G_CALLBACK (SHVControlImplementerListViewGtk::expose_event), owner);
 		owner->SetFont(NULL,true);
 		owner->SetFlag(flags);
 
@@ -66,6 +79,36 @@ SHVBool SHVControlImplementerListViewGtk::Create(SHVControl* owner, SHVControlIm
 	}
 	
 	return SHVBool::False;
+}
+
+/*************************************
+ * Destroy
+ *************************************/
+SHVBool SHVControlImplementerListViewGtk::Destroy(SHVControl* owner)
+{
+	if (TreeView)
+	{
+		gtk_widget_destroy(TreeView);
+		TreeView = NULL;
+	}
+
+	return SHVControlImplementerGtkWidget<SHVControlImplementerListViewCustomDraw>::Destroy(owner);
+}
+
+/*************************************
+ * SetFont
+ *************************************/
+SHVBool SHVControlImplementerListViewGtk::SetFont(SHVControl* owner, SHVFont* font, bool resetHeight)
+{
+SHVBool retVal(SHVControlImplementerGtkWidget<SHVControlImplementerListViewCustomDraw>::SetFont(owner,font,resetHeight));
+
+	if (retVal && font)
+	{
+	SHVFontGtk* gtkFont = (SHVFontGtk*)font;
+		gtk_widget_modify_font(TreeView,gtkFont->GetFont());
+	}
+
+	return retVal;
 }
 
 /*************************************
@@ -105,17 +148,15 @@ SHVString retVal;
 SHVUNUSED_PARAM(owner);
 	if (IsCreated())
 	{
-	GtkTreeModel* store = gtk_tree_view_get_model(GTK_TREE_VIEW (GetHandle()));
+	GtkTreeModel* store = gtk_tree_view_get_model(GTK_TREE_VIEW (TreeView));
 	GtkTreeIter iter;
-	GValue* val = NULL;
+	GValue val = G_VALUE_INIT;
 		if (gtk_tree_model_get_iter_from_string(store, &iter, SHVStringC::LongToString((long)index).GetSafeBuffer()))
 		{
-			gtk_tree_model_get_value(store, &iter, col, val);
-			if (val)
-			{
-				retVal = SHVStringBufferUTF8::Encapsulate(g_strdup_value_contents(val)).ToStrT();
-				g_value_unset(val);
-			}
+			gtk_tree_model_get_value(store, &iter, col, &val);
+			retVal = SHVStringBufferUTF8::Encapsulate(g_strdup_value_contents(&val)).ToStrT();
+			g_value_unset(&val);
+			retVal = retVal.Mid(1,retVal.GetLength()-2);
 		}
 	}
 
@@ -138,7 +179,7 @@ void SHVControlImplementerListViewGtk::AddItem(SHVControlListView* owner, const 
 	SHVUNUSED_PARAM(owner);
 	if (IsCreated() && CachedCols.CalculateCount())
 	{
-	GtkTreeModel* store = gtk_tree_view_get_model(GTK_TREE_VIEW (GetHandle()));
+	GtkTreeModel* store = gtk_tree_view_get_model(GTK_TREE_VIEW (TreeView));
 	GtkTreeIter iter;
 		gtk_list_store_append(GTK_LIST_STORE (store), &iter);
 		gtk_list_store_set(GTK_LIST_STORE (store), &iter, 0, str.ToStrUTF8().GetSafeBuffer(), -1);
@@ -157,7 +198,7 @@ void SHVControlImplementerListViewGtk::SetItemText(SHVControlListView* owner, co
 {
 	if (IsCreated() && index < GetItemCount(owner) && col < CachedCols.CalculateCount())
 	{
-	GtkTreeModel* store = gtk_tree_view_get_model(GTK_TREE_VIEW (GetHandle()));
+	GtkTreeModel* store = gtk_tree_view_get_model(GTK_TREE_VIEW (TreeView));
 	GtkTreeIter iter;
 		if (gtk_tree_model_get_iter_from_string(store, &iter, SHVStringC::LongToString((long)index).GetSafeBuffer()))
 		{
@@ -195,7 +236,7 @@ void SHVControlImplementerListViewGtk::AddColumn(SHVControlListView* owner, cons
 			gtk_tree_view_column_set_sizing(col,GTK_TREE_VIEW_COLUMN_FIXED);
 			gtk_tree_view_column_set_fixed_width(col,width);
 		}
-		gtk_tree_view_insert_column(GTK_TREE_VIEW (GetHandle()), col, -1);
+		gtk_tree_view_insert_column(GTK_TREE_VIEW (TreeView), col, -1);
 		CachedCols.Add(new CachedCol(colName,width));
 		RecreateModel();
 	}
@@ -206,9 +247,22 @@ void SHVControlImplementerListViewGtk::AddColumn(SHVControlListView* owner, cons
  *************************************/
 SHVInt SHVControlImplementerListViewGtk::GetSelected(SHVControlListView* owner)
 {
+SHVInt retVal;
+
 	SHVUNUSED_PARAM(owner);
-	///\todo Implement selection stuff
-	return SHVInt();
+
+	if (IsCreated())
+	{
+	GtkTreeSelection* sel = gtk_tree_view_get_selection(GTK_TREE_VIEW (TreeView));
+	GtkTreeIter iter;
+	GtkTreeModel* model;
+		if (gtk_tree_selection_get_selected(sel,&model,&iter))
+		{
+			retVal = SHVStringBufferUTF8::Encapsulate(gtk_tree_model_get_string_from_iter(model,&iter)).ToLong();
+		}
+	}
+
+	return retVal;
 }
 
 /*************************************
@@ -216,9 +270,20 @@ SHVInt SHVControlImplementerListViewGtk::GetSelected(SHVControlListView* owner)
  *************************************/
 void SHVControlImplementerListViewGtk::SetSelected(SHVControlListView* owner, SHVInt index)
 {
-	if (IsCreated() && index < (int)GetItemCount(owner))
+	if (IsCreated())
 	{
-		///\todo Implement selection stuff
+	GtkTreeSelection* sel = gtk_tree_view_get_selection(GTK_TREE_VIEW (TreeView));
+
+		if (index.IsNull() || index >= (int)GetItemCount(owner))
+		{
+			gtk_tree_selection_unselect_all(sel);
+		}
+		else
+		{
+		GtkTreePath* path = gtk_tree_path_new_from_string( SHVStringC::LongToString(index).GetSafeBuffer() );
+			gtk_tree_selection_select_path(sel, path);
+			gtk_tree_path_free(path);
+		}
 	}
 }
 
@@ -284,7 +349,7 @@ GType* types;
 
 	::free(types);
 
-	gtk_tree_view_set_model(GTK_TREE_VIEW (GetHandle()), GTK_TREE_MODEL (store));
+	gtk_tree_view_set_model(GTK_TREE_VIEW (TreeView), GTK_TREE_MODEL (store));
 	g_object_unref(store);
 }
 ///\endcond

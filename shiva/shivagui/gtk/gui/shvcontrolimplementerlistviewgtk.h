@@ -23,6 +23,9 @@ public:
 	// From SHVControlImplementer
 	virtual int GetSubType(SHVControl* owner);
 	virtual SHVBool Create(SHVControl* owner, SHVControlImplementer* parent, int flags);
+	virtual SHVBool Destroy(SHVControl* owner);
+
+	virtual SHVBool SetFont(SHVControl* owner, SHVFont* font, bool resetHeight);
 
 	// From SHVControlImplementerListView
 	virtual size_t GetItemCount(SHVControlListView* owner);
@@ -53,6 +56,7 @@ private:
 	};
 	SHVVector<CachedCol> CachedCols;
 	SHVVectorRef<SHVRefObject> ItemObjects;
+	GtkWidget* TreeView;
 //	static gboolean expose_event(GtkWidget *widget, GdkEvent* event, gpointer user_data);
 	void RecreateModel(bool clearRows = false);
 
