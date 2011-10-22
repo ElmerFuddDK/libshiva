@@ -35,10 +35,6 @@
 #include "shvcontrolimplementercomboboxgtk.h"
 #include "utils/shvdrawgtk.h"
 
-#ifdef GTK_TYPE_COMBO_BOX_TEXT
-sdfggsdfgfd
-#endif
-
 
 //=========================================================================================================
 // SHVControlImplementerComboBoxGtk
@@ -208,7 +204,7 @@ void SHVControlImplementerComboBoxGtk::SetSelected(SHVControlComboBox* owner, SH
 size_t SHVControlImplementerComboBoxGtk::GetItemCount(SHVControlComboBox* owner)
 {
 	SHVUNUSED_PARAM(owner);
-	return Items.CalculateCount();
+	return ItemObjects.CalculateCount();
 }
 
 /*************************************
@@ -225,7 +221,7 @@ void SHVControlImplementerComboBoxGtk::ClearItems(SHVControlComboBox* owner)
 		for (size_t i = GetItemCount(owner); i; i--)
 			gtk_combo_box_remove_text(GTK_COMBO_BOX (GetHandle()), 0);
 #endif
-		Items.Clear();
+		ItemObjects.Clear();
 	}
 }
 
@@ -248,7 +244,7 @@ SHVString retVal;
  *************************************/
 SHVRefObject* SHVControlImplementerComboBoxGtk::GetItemData(SHVControlComboBox* owner, size_t index)
 {
-	return (index < GetItemCount(owner) ? Items[index] : NULL);
+	return (index < GetItemCount(owner) ? ItemObjects[index] : NULL);
 }
 
 /*************************************
@@ -264,7 +260,7 @@ void SHVControlImplementerComboBoxGtk::AddItem(SHVControlComboBox* owner, const 
 #else
 		gtk_combo_box_append_text(GTK_COMBO_BOX (GetHandle()), str.ToStrUTF8().GetSafeBuffer());
 #endif
-		Items.Add(data);
+		ItemObjects.Add(data);
 	}
 	else if (data)
 	{

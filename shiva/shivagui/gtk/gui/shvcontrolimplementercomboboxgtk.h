@@ -47,7 +47,7 @@ private:
 	///\cond INTERNAL
 	static void on_changed(GtkComboBox* combobox, gpointer user_data);
 	int SubType;
-	SHVVectorRef<SHVRefObject> Items;
+	SHVVectorRef<SHVRefObject> ItemObjects;
 	///\endcond
 };
 
