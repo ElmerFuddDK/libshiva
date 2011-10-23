@@ -37,7 +37,7 @@
 
 ///\cond INTERNAL
 #define SHVMATH_PI 3.14159265358979323846
-double shvmath_doeval(const SHVTChar*& str, char level, SHVString& err, SHVMathTokenMap* map);
+double shvmath_doeval(const SHVTChar*& str, char level, SHVString& err, SHVMathTokenMap* map, bool gotNumber = false, double retVal = 0.0);
 ///\endcond
 
 
@@ -146,6 +146,8 @@ int SHVMath::Rand(SHVInt& seed)
 void foo()
 {
 	if (SHVMath::Eval(_S("2+2")) == 4)
+		printf("baz\n");
+	if (SHVMath::Eval(_S("3*6 < 20")))
 		printf("bar\n");
 }
  \endcode
@@ -294,7 +296,7 @@ double shvmath_calculate(SHVTChar op, double a, double b, SHVString& err)
 {
 	if (!err.IsNull())
 		return a;
-	
+
 	switch (op)
 	{
 		case '+':	return a+b;
@@ -302,6 +304,14 @@ double shvmath_calculate(SHVTChar op, double a, double b, SHVString& err)
 		case '*':	return a*b;
 		case '/':	return a/b;
 		case '^':	return SHVMath::Pow(a,b);
+		case '>':	return (a>b ? 1.0 : 0.0);
+		case 'G':	return (a>=b ? 1.0 : 0.0);
+		case '<':	return (a<b ? 1.0 : 0.0);
+		case 'L':	return (a<=b ? 1.0 : 0.0);
+		case '=':	return (a==b ? 1.0 : 0.0);
+		case '!':	return (a!=b ? 1.0 : 0.0);
+		case '|':	return (a||b ? 1.0 : 0.0);
+		case '&':	return (a&&b ? 1.0 : 0.0);
 		default:
 			err.Format(_S("Invalid operant '%c'"), op);
 	}
@@ -315,7 +325,7 @@ double shvmath_calculate(SHVTChar op, double a, double b, SHVString& err)
 SHVStringBuffer shvmath_gettoken(const SHVTChar*& str)
 {
 const SHVTChar* start;
-static const SHVTChar charStopStr[] = {' ','(',')','+','-','*','/','^','\t','\r','\n','\0'};
+static const SHVTChar charStopStr[] = {' ','(',')','+','-','*','/','^','\t','\r','\n','>','<','=','!','|','&','\0'};
 SHVStringC stopStr(charStopStr);
 	
 	shvmath_trim(str);
@@ -328,6 +338,88 @@ SHVStringC stopStr(charStopStr);
 	}
 	
 	return SHVStringC(start).Left(str-start);
+}
+
+/*************************************
+ * shvmath_getop
+ *************************************/
+SHVTChar shvmath_getop(const SHVTChar*& str, SHVTChar& targetLevel)
+{
+SHVTChar retVal;
+
+	switch (*str)
+	{
+	case '&':
+	case '|':
+	case '>':
+	case '<':
+	case '=':
+	case '!':
+	case '+':
+	case '-':
+	case '/':
+	case '*':
+	case '^':
+		retVal = *str;
+		break;
+	default:
+		retVal = '\0';
+	}
+
+	// check for level
+	switch (*str)
+	{
+	case '&':
+	case '|':
+		targetLevel = 0;
+	case '>':
+	case '<':
+	case '=':
+	case '!':
+		targetLevel = 1;
+		break;
+	case '+':
+	case '-':
+		targetLevel = 2;
+		break;
+	case '/':
+	case '*':
+		targetLevel = 3;
+		break;
+	case '^':
+		targetLevel = 4;
+		break;
+	}
+
+	switch (retVal)
+	{
+	case '>':
+		if (str[1] == '=')
+			retVal = 'G';
+		break;
+	case '<':
+		if (str[1] == '=')
+			retVal = 'L';
+		break;
+	case 'G':
+		retVal = 'g';
+		break;
+	case 'L':
+		retVal = 'l';
+		break;
+	}
+
+	return retVal;
+}
+
+/*************************************
+ * shvmath_skipop
+ *************************************/
+void shvmath_skipop(const SHVTChar*& str)
+{
+	str++;
+	if (*str == '=' || *str == '&' || *str == '|')
+		str++;
 }
 
 /*************************************
@@ -372,14 +464,16 @@ double shvmath_performfunc(const SHVStringC token, double val, SHVString& err)
 /*************************************
  * shvmath_getnumber
  *************************************/
-// level : 0 == +-
-// level : 1 == */
-// level : 2 == ^
+// level : 0 == |&
+// level : 1 == <>=!
+// level : 2 == +-
+// level : 3 == */
+// level : 4 == ^
 double shvmath_getnumber(const SHVTChar*& str, char level, SHVString& err, SHVMathTokenMap* map)
 {
 SHVTChar* endp;
 double retVal;
-	
+
 	if (!err.IsNull())
 		return 0.0;
 	
@@ -444,29 +538,16 @@ double retVal;
 	if (err.IsNull())
 	{
 	SHVTChar op;
+	char targetLevel = level;
 		
 		shvmath_trim(str);
 		
-		op = *str;
+		op = shvmath_getop(str,targetLevel);
 		
-		// elevate level according to operant
-		switch (op)
+		if (targetLevel > level)
 		{
-		case '/':
-		case '*':
-			if (level < 1)
-			{
-				str++;
-				retVal = shvmath_calculate(op,retVal,shvmath_doeval(str,1,err,map),err);
-			}
-			break;
-		case '^':
-			if (level < 2)
-			{
-				str++;
-				retVal = shvmath_calculate(op,retVal,shvmath_doeval(str,2,err,map),err);
-			}
-			break;
+			shvmath_skipop(str);
+			retVal = shvmath_calculate(op,retVal,shvmath_doeval(str,targetLevel,err,map),err);
 		}
 	}
 	
@@ -476,14 +557,14 @@ double retVal;
 /*************************************
  * shvmath_doeval
  *************************************/
-// level : 0 == +-
-// level : 1 == */
-// level : 2 == ^
-double shvmath_doeval(const SHVTChar*& str, char level, SHVString& err, SHVMathTokenMap* map)
+// level : 0 == |&
+// level : 1 == <>=!
+// level : 2 == +-
+// level : 3 == */
+// level : 4 == ^
+double shvmath_doeval(const SHVTChar*& str, char level, SHVString& err, SHVMathTokenMap* map, bool gotNumber, double retVal)
 {
-double retVal = 0.0;
 double temp;
-bool gotNumber = false;
 SHVTChar operant = '\0';
 
 	while(str != NULL && *str != '\0' && *str != ')' && err.IsNull() && level > -1)
@@ -503,28 +584,26 @@ SHVTChar operant = '\0';
 		}
 		else // operator mode
 		{
+		char targetLevel = level;
 			shvmath_trim(str);
 			
-			operant = *str;
-			str++;
-			
-			// check end of level
-			switch (operant)
+			operant = shvmath_getop(str, targetLevel);
+
+			if (level > targetLevel)
 			{
-			case '+':
-			case '-':
-				if (level > 0)
-					level = -1; // exit loop
-				break;
-			case '/':
-			case '*':
-				if (level > 1)
-					level = -1; // exit loop
-				break;
-			case '^':
-				if (level > 2)
-					level = -1; // exit loop
-				break;
+				level = -1; // exit loop
+			}
+			else
+			{
+				if (targetLevel > level)
+				{
+					gotNumber = !gotNumber;
+					retVal = shvmath_doeval(str,targetLevel,err,map,true,retVal);
+				}
+				else
+				{
+					shvmath_skipop(str);
+				}
 			}
 		}
 		gotNumber = !gotNumber;
