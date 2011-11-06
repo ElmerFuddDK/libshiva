@@ -343,7 +343,7 @@ SHVStringC stopStr(charStopStr);
 /*************************************
  * shvmath_getop
  *************************************/
-SHVTChar shvmath_getop(const SHVTChar*& str, SHVTChar& targetLevel)
+SHVTChar shvmath_getop(const SHVTChar*& str, char& targetLevel)
 {
 SHVTChar retVal;
 
