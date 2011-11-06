@@ -85,7 +85,7 @@ SHVStringUTF8 sql;
 	Bof = true;
 }
 
-SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, const SHVString8C& alias, size_t index): StructCache((SHVDataStructC*)dataStruct), DataSession(session), RowCount(-1), Alias(alias)
+SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, const SHVString8C& alias, size_t index): StructCache((SHVDataStructC*)dataStruct), DataSession(session), RowCount(-1), Alias(alias), HasShareLock(false)
 {
 	SHVASSERT(dataStruct->GetIndex(index));
 	AliasID = SHVDataRowListC::GetAliasID(alias);
@@ -153,7 +153,7 @@ int SHVDataRowListCSQLite::GetAliasID() const
  *************************************/
 int SHVDataRowListCSQLite::GetRowCount() const
 {
-	SHVASSERT(HasShareLock);
+	SHVASSERT(!HasShareLock);
 	if (RowCount == -1 && !HasShareLock)
 	{
 	SHVDataRowListCSQLite* self = (SHVDataRowListCSQLite*)this;
