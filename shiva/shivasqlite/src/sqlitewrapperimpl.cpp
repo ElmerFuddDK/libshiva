@@ -70,7 +70,7 @@ SHVBool retVal;
 	}
 	retVal = SHVBool(sqlite3_open_v2(fileName.GetSafeBuffer(), &Sqlite, option, NULL));
 	if (Sqlite &&  retVal)
-		sqlite3_busy_timeout(Sqlite, 500);
+		sqlite3_busy_timeout(Sqlite, 10000);
 
 	return retVal;
 }
