@@ -54,6 +54,10 @@ public:
 	virtual SHVStringBuffer Success(SHVModuleList& modules, bool ok) = 0;
 
 
+	// For automated testing
+	virtual bool PerformedOK() = 0;
+
+
 	inline static SHVTestBase* FromTestEvent(SHVEvent* event);
 
 

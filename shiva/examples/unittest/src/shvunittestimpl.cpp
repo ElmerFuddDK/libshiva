@@ -176,8 +176,17 @@ void SHVUnitTestImpl::OnEvent(SHVEvent* event)
 			SHVConsole::Printf8("In order to perform a test, write its ID\n"
 								"\n"
 								"Commands available:\n"
-								" /list         Will list the available test IDs\n"
-								" /quit         Quit program\n"
+								" /list              Lists the available test IDs\n"
+								" /quit              Quit program\n"
+								"\n");
+			SHVConsole::Printf8("It is possible to do automated tests using the following\n"
+								"on the command line:\n"
+								"\n"
+								" -console 1         Don't use gui mode\n"
+								" -perform <string>  Perform a test - see /list\n"
+								" -closeafter 1      Will exit with the result\n"
+								"Eg. the following will exit 0 if the test succeeded:\n"
+								" unittest -console 1 -closeafter 1 -perform utils.all\n"
 								"\n");
 		}
 		
@@ -246,6 +255,7 @@ bool allMode, allGroupMode;
 SHVListIterator<TestGroupPtr, TestGroup*> testItr(TestGroups);
 
 	Performing = true;
+	AllOK = true;
 
 	if (dot > 0)
 	{
@@ -296,7 +306,15 @@ SHVListIterator<TestGroupPtr, TestGroup*> testItr(TestGroups);
 	}
 	
 	if (!flag)
+	{
 		SHVConsole::ErrPrintf8("Invalid test : %s\n  For a list of tests, try /list\n", str.GetSafeBuffer());
+		AllOK = false;
+		if (!Modules.GetConfig().Find(_S("perform"))->ToString().IsEmpty() && Modules.GetConfig().Find(_S("closeafter"))->ToInt().IfNull(0))
+		{
+			Modules.SetReturnError(AllOK);
+			Modules.CloseApp();
+		}
+	}
 
 	Performing = false;
 	if (!IsPerforming() && flag)
@@ -325,6 +343,7 @@ void SHVUnitTestImpl::OnMenuEvent(SHVEvent* event)
 	ActionMenuItem* item = ActionMenuItems[event->GetSubID()];
 
 		Performing = true;
+		AllOK = true;
 
 		if (item->Group)
 		{
@@ -349,6 +368,8 @@ void SHVUnitTestImpl::OnTestResult(SHVEvent* event)
 {
 SHVEventQueue* q = TestResultShowSubs->Emit(Modules,event);
 
+	AllOK = AllOK && ((SHVTestBase*)event->GetObject())->PerformedOK();
+
 	if (!IsPerforming())
 		TestResultShowSubs->Emit(Modules,new SHVEvent(this,-1));
 
@@ -365,6 +386,11 @@ void SHVUnitTestImpl::OnTestResultShow(SHVEvent* event)
 	{
 		TestLogger->AddHeader(_S("\n--"));
 		TestLogger->AddLine(_S("All done"));
+		if (!Modules.GetConfig().Find(_S("perform"))->ToString().IsEmpty() && Modules.GetConfig().Find(_S("closeafter"))->ToInt().IfNull(0))
+		{
+			Modules.SetReturnError(AllOK);
+			Modules.CloseApp();
+		}
 	}
 	else
 	{

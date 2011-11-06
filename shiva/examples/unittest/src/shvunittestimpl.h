@@ -62,6 +62,7 @@ private:
 	SHVTestLoggerRef TestLogger;
 
 	bool Performing;
+	bool AllOK;
 	
 	SHVEventSubscriberBaseRef TestResultSubs, TestResultShowSubs;
 	SHVEventSubscriberBaseRef MenuSubs;

@@ -160,3 +160,11 @@ SHVStringBuffer SHVTest::Success(SHVModuleList& modules, bool ok)
 		return modules.GetConfig().Find(_S("success.true"), _S("yay"))->ToString();
 	return modules.GetConfig().Find(_S("success.false"), _S("nay"))->ToString();
 }
+
+/*************************************
+ * PerformedOK
+ *************************************/
+bool SHVTest::PerformedOK()
+{
+	return OK;
+}

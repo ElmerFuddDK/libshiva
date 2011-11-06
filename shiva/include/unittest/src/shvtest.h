@@ -40,6 +40,10 @@ public:
 	virtual SHVStringBuffer Success(SHVModuleList& modules, bool ok);
 
 
+	// For automated testing
+	virtual bool PerformedOK();
+
+
 protected:
 
 	SHVTest();
