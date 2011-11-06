@@ -305,6 +305,7 @@ char* oBuf;
 size_t iLeft;
 size_t oLeft;
 iconv_t conv;
+size_t charLen;
 	UNICODE_INIT();
 	conv = iconv_open(SHVStringC_Get8BitCharSet(),"UTF-8");
 
@@ -322,7 +323,8 @@ iconv_t conv;
 
 	while (*utf8Str)
 	{
-		if (!((*utf8Str)&0x80))
+		charLen = SHVStringUTF8C::GetUTF8CharLen(*utf8Str);
+		if (charLen < 2)
 		{
 			*buffer = *utf8Str;
 			buffer++;
@@ -331,7 +333,7 @@ iconv_t conv;
 		else
 		{
 			endch = utf8Str+1;
-			for (bytes=1;((*(utf8Str+bytes))&0xC0) == 0x80;bytes++) endch++;
+			for (bytes=1;charLen && ((*(utf8Str+bytes))&0xC0) == 0x80;bytes++, charLen--) endch++;
 
 #ifdef __SHIVA_WIN32
 			MultiByteToWideChar(CP_UTF8,0,utf8Str,(int)bytes,&ch,1);
@@ -413,6 +415,7 @@ char* oBuf;
 size_t iLeft;
 size_t oLeft;
 iconv_t conv;
+size_t charLen;
 	UNICODE_INIT();
 	conv = iconv_open("UCS-2","UTF-8");
 
@@ -427,7 +430,8 @@ iconv_t conv;
 	
 	while (*utf8Str)
 	{
-		if (!((*utf8Str)&0x80))
+		charLen = SHVStringUTF8C::GetUTF8CharLen(*utf8Str);
+		if (charLen < 2)
 		{
 			*buffer = *utf8Str;
 			buffer++;
@@ -436,7 +440,7 @@ iconv_t conv;
 		else
 		{
 			endch = utf8Str+1;
-			for (bytes=1;((*(utf8Str+bytes))&0xC0) == 0x80;bytes++) endch++;
+			for (bytes=1;charLen && ((*(utf8Str+bytes))&0xC0) == 0x80;bytes++, charLen--) endch++;
 
 #ifdef __SHIVA_WIN32
 			MultiByteToWideChar(CP_UTF8,0,utf8Str,(int)bytes,(WCHAR*)buffer,1);

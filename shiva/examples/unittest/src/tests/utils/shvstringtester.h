@@ -18,6 +18,7 @@ public:
 		ActionTokenizeTrim = 0x08,
 		ActionFindLocate = 0x10,
 		ActionReplaceFormat = 0x20,
+		ActionUTF8Encoding = 0x40,
 	};
 
 	virtual const SHVString8C GetGroup() const;
@@ -33,6 +34,7 @@ private:
 	static bool TestTokenizeTrim(SHVModuleList& modules, SHVTestBase* self, int flag);
 	static bool TestFindLocate(SHVModuleList& modules, SHVTestBase* self, int flag);
 	static bool TestReplaceFormat(SHVModuleList& modules, SHVTestBase* self, int flag);
+	static bool TestUTF8Encoding(SHVModuleList& modules, SHVTestBase* self, int flag);
 
 	// helpers
 private:

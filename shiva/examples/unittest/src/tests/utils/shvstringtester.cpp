@@ -40,6 +40,7 @@ static const SHVTestBase::Action actions[] = {
 	{ ActionTokenizeTrim, "tokenizetrim", _S("TokenizeTrim"), _S("This will test Tokenize and Trim"), &SHVStringTester::TestTokenizeTrim },
 	{ ActionFindLocate, "findlocate", _S("FindLocate"), _S("This will test Find and Locate"), &SHVStringTester::TestFindLocate },
 	{ ActionReplaceFormat, "replaceformat", _S("ReplaceFormat"), _S("This will test replace and format"), &SHVStringTester::TestReplaceFormat },
+	{ ActionUTF8Encoding, "utf8encoding", _S("UTF8Encoding"), _S("Tests utf8 encoding handling"), &SHVStringTester::TestUTF8Encoding },
 	{ 0, NULL, NULL, NULL, NULL } }; // Termination
 	
 	return actions;
@@ -220,16 +221,20 @@ bool ok = true;
 		// log.AddLine(_S("Result for SHVString16: %s"), log.Success(ok));
 	}
 	{
-	SHVString8 str(SHVStringUTF8C("hejÃ¥ noget").ToStr8());
-	SHVString8 testStr(_SHVS8("hejå noget"));
+	static const char utf8str[] = { 'h', 'e', 'j', 0xC3, 0xA5, ' ', 'n', 'o', 'g', 'e', 't', '\0' };
+	static const char iso8859str[] = { 'h', 'e', 'j', 0xE5, ' ', 'n', 'o', 'g', 'e', 't', '\0' };
+	SHVString8 str(SHVStringUTF8C(utf8str).ToStr8());
+	SHVString8 testStr(iso8859str);
 
 		ok = (ok && (testStr == str));
 
 		// log.AddLine(_S("Result for SHVString8(UTF8): %s"), log.Success(ok));
 	}
 	{
-	SHVString16 str(SHVStringUTF8C("hejÃ¥ noget").ToStr16());
-	SHVString16 testStr(_SHVS16("hejå noget"));
+	static const char utf8str[] = { 'h', 'e', 'j', 0xC3, 0xA5, ' ', 'n', 'o', 'g', 'e', 't', '\0' };
+	static const char iso8859str[] = { 'h', 'e', 'j', 0xE5, ' ', 'n', 'o', 'g', 'e', 't', '\0' };
+	SHVString16 str(SHVStringUTF8C(utf8str).ToStr16());
+	SHVString16 testStr(SHVString8C(iso8859str).ToStr16());
 
 		ok = (ok && (testStr == str));
 
@@ -485,6 +490,52 @@ bool ok = true;
 		}
 
 		// log.AddLine(_S("Result for SHVString16: %s"), log.Success(ok));
+	}
+#endif
+
+	self->AddLine(_S("Test result: %s"), self->Success(modules,ok).GetSafeBuffer());
+
+	return ok;
+}
+bool SHVStringTester::TestUTF8Encoding(SHVModuleList& modules, SHVTestBase* self, int )
+{
+bool ok = true;
+
+#ifndef __SHVSTRING_EXCLUDE_UNICODE
+	{
+	static const char iso8859str[] = { 0xE6, 0xE8, 0xA2, 0xE5, 'q', 'a', 0 };
+	static const char utf8str[] = { 0xC3, 0xA6, 0xC3, 0xA8, 0xC2, 0xA2, 0xC3, 0xA5, 'q', 'a', 0 };
+
+		ok = (ok && (SHVString8C::StrLen(iso8859str) == 6));
+		ok = (ok && (SHVStringUTF8C::StrLen(iso8859str) == 5));
+		ok = (ok && (SHVStringUTF8C(iso8859str).ToStr8().GetLength() == 5));
+		ok = (ok && (SHVStringUTF8C::StrLen(utf8str) == 6));
+		ok = (ok && (SHVString8C(iso8859str).ToStrUTF8() == SHVStringUTF8C(utf8str)));
+		ok = (ok && (SHVString8C(iso8859str).Left(3).ToStrUTF8() == SHVStringUTF8C(utf8str).Left(3)));
+		ok = (ok && (SHVString8C(iso8859str).Right(5).ToStrUTF8() == SHVStringUTF8C(utf8str).Right(5)));
+		ok = (ok && (SHVString8C(iso8859str).ToStrUTF8() == SHVStringUTF8C(utf8str).Right(10))); // tests char count
+		ok = (ok && (SHVString8C(iso8859str).ToStrUTF8() == SHVStringUTF8C(utf8str).Left(10)));  // tests char count function
+		ok = (ok && (SHVStringUTF8C::SizeOfCharsReverse(iso8859str,3) == 3));
+		ok = (ok && (SHVStringUTF8C::SizeOfCharsReverse(iso8859str,4) == 5));
+		ok = (ok && (SHVStringUTF8C::SizeOfCharsReverse(utf8str,3) == 4));
+		ok = (ok && !SHVStringUTF8C::IsValidUTF8(iso8859str));
+		ok = (ok && SHVStringUTF8C::IsValidUTF8(utf8str));
+
+		// log.AddLine(_S("Result for SHVString8:  %s"), log.Success(ok));
+	}
+	{
+	static const SHVWChar ucs2str[] = { 0xE6, 0xE8, 0xA2, 0xE5, 'q', 'a', 0 };
+	static const char utf8str[] = { 0xC3, 0xA6, 0xC3, 0xA8, 0xC2, 0xA2, 0xC3, 0xA5, 'q', 'a', 0 };
+
+		ok = (ok && (SHVString16C::StrLen(ucs2str) == 6));
+		ok = (ok && (SHVStringUTF8C::StrLen(utf8str) == 6));
+		ok = (ok && (SHVString16C(ucs2str).ToStrUTF8() == SHVStringUTF8C(utf8str)));
+		ok = (ok && (SHVString16C(ucs2str).Left(3).ToStrUTF8() == SHVStringUTF8C(utf8str).Left(3)));
+		ok = (ok && (SHVString16C(ucs2str).Right(5).ToStrUTF8() == SHVStringUTF8C(utf8str).Right(5)));
+		ok = (ok && (SHVString16C(ucs2str).ToStrUTF8() == SHVStringUTF8C(utf8str).Right(10))); // tests char count
+		ok = (ok && (SHVString16C(ucs2str).ToStrUTF8() == SHVStringUTF8C(utf8str).Left(10)));  // tests char count function
+
+		// log.AddLine(_S("Result for SHVString8:  %s"), log.Success(ok));
 	}
 #endif
 

@@ -78,14 +78,16 @@ double SHVStringUTF8C::StrToDouble(const SHVChar* str, SHVChar** ptr)
 size_t SHVStringUTF8C::StrLen(const SHVChar* str)
 {
 size_t retVal = 0;
+size_t charLen;
 
 	if (!str)
 		return 0;
 
-	for(;*str;str++)
+	while (*str)
 	{
-		if ( ((*str)&0xC0) != 0xC0 )
-			retVal++;
+		charLen = GetUTF8CharLen(*str);
+		while (charLen && *str) { charLen--; str++; if ((*str&0xC0) != 0x80) { break; } }
+		retVal++;
 	}
 
 	return retVal;
@@ -93,11 +95,13 @@ size_t retVal = 0;
 size_t SHVStringUTF8C::SizeOfChars(const char* str, size_t chars)
 {
 const char* offset = str;
+size_t charLen;
 
-	for(;*offset && chars;offset++)
+	while (*offset && chars)
 	{
-		if ( ((*offset)&0xC0) != 0xC0 )
-			chars--;
+		charLen = GetUTF8CharLen(*str);
+		while (charLen && *offset) { charLen--; offset++; if ((*offset&0xC0) != 0x80) { break; } }
+		chars--;
 	}
 	
 	return offset-str;
@@ -106,6 +110,8 @@ size_t SHVStringUTF8C::SizeOfCharsReverse(const char* str, size_t chars)
 {
 const char* end = str + SHVString8C::StrLen(str);
 const char* offset = end;
+size_t utf8Chars;
+size_t charLen;
 
 	for(;offset > str && chars;)
 	{
@@ -113,7 +119,27 @@ const char* offset = end;
 		chars--;
 
 		// move past unicode chars
-		for(;offset > str && ((*(offset-1))&0xC0) == 0xC0;offset--) ;
+		if ( ((*offset)&0xC0) == 0x80 )
+		{
+			// Scan for char header
+			for (utf8Chars=0;offset > str;)
+			{
+				utf8Chars++;
+				offset--;
+				if ( ((*offset)&0xC0) == 0x00 ) // invalid utf8 char, rollback
+				{
+					offset+=utf8Chars;
+					break;
+				}
+				else if ( ((*offset)&0xC0) == 0xC0 ) // start char
+				{
+					charLen = GetUTF8CharLen(*offset);
+					if (charLen <= utf8Chars) // too many bytes, rollback
+						offset+=utf8Chars;
+					break;
+				}
+			}
+		}
 	}
 	
 	return end-offset;
@@ -154,6 +180,43 @@ SHVStringBufferUTF8 SHVStringUTF8C::FormatList(const SHVChar* str, SHVVA_LIST ar
 SHVStringUTF8 retVal;
 	retVal.FormatList(str,args);
 	return retVal.ReleaseBuffer();
+}
+size_t SHVStringUTF8C::GetUTF8CharLen(const SHVChar ch)
+{
+	if ( (ch&0x80) == 0x00 ) return 1;
+	if ( (ch&0xE0) == 0xC0 ) return 2;
+	if ( (ch&0xF0) == 0xE0 ) return 3;
+	if ( (ch&0xF8) == 0xF0 ) return 4;
+	if ( (ch&0xFC) == 0xF8 ) return 5;
+	if ( (ch&0xFE) == 0xFC ) return 6;
+	return 1; // invalid char
+}
+bool SHVStringUTF8C::IsValidUTF8(const SHVChar* str)
+{
+bool retVal = true;
+size_t tlen;
+
+	if (!str)
+		return retVal;
+
+	while (*str && retVal)
+	{
+		if ( ((*str)&0x80) )
+		{
+			tlen = GetUTF8CharLen(*str);
+			retVal = (tlen > 1);
+			for (str++, tlen--; *str && retVal && tlen; str++, tlen--)
+			{
+				retVal = ( ((*str)&0xC0) == 0x80 );
+			}
+		}
+		else
+		{
+			str++;
+		}
+	}
+
+	return retVal;
 }
 
 

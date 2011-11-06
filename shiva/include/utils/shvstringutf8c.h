@@ -118,6 +118,11 @@ public:
 	static SHVStringBufferUTF8 FormatList(const SHVChar* str, SHVVA_LIST args);
 
 
+	// For validating UTF encoding
+	static size_t GetUTF8CharLen(const SHVChar ch);
+	static bool IsValidUTF8(const SHVChar* str);
+
+
 protected:
 friend class SHVStringUTF8;
 friend class SHVStringBufferUTF8;
