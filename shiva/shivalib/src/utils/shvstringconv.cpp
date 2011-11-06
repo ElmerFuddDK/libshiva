@@ -286,6 +286,7 @@ bool SHVStringUTF8C::ConvertBufferToChar(SHVChar* buffer, size_t len) const
 const char* utf8Str = Buffer;
 const char* endch;
 size_t bytes;
+size_t charLen;
 #ifdef __SHIVA_WIN32
 WCHAR ch;
 #elif defined(__SHIVA_EPOC)
@@ -305,7 +306,6 @@ char* oBuf;
 size_t iLeft;
 size_t oLeft;
 iconv_t conv;
-size_t charLen;
 	UNICODE_INIT();
 	conv = iconv_open(SHVStringC_Get8BitCharSet(),"UTF-8");
 
@@ -400,6 +400,7 @@ bool SHVStringUTF8C::ConvertBufferToWChar(SHVWChar* buffer, size_t len) const
 const char* utf8Str = Buffer;
 const char* endch;
 size_t bytes;
+size_t charLen;
 #ifdef __SHIVA_WIN32
 #elif defined(__SHIVA_EPOC)
 CCnvCharacterSetConverter* cnvToUnicode = CCnvCharacterSetConverter::NewLC();
@@ -415,7 +416,6 @@ char* oBuf;
 size_t iLeft;
 size_t oLeft;
 iconv_t conv;
-size_t charLen;
 	UNICODE_INIT();
 	conv = iconv_open("UCS-2","UTF-8");
 
