@@ -43,6 +43,13 @@ void SHVSubProcessTester::Unregister()
 		SubProcess->Shutdown();
 		SubProcess = NULL;
 	}
+	if (Thread.IsRunning())
+	{
+		ThreadSubProcess->Shutdown();
+	}
+	while (Thread.IsRunning())
+		SHVThreadBase::Sleep(50);
+	ThreadSubProcess = NULL;
 }
 
 /*************************************
@@ -62,9 +69,18 @@ void SHVSubProcessTester::OnEvent(SHVEvent* event)
 		{
 			SHVConsole::Printf8("Commands available:\n"
 								" /launch       Will launch a test application to interact with\n"
+								" /thread       Will launch the test application in a thread\n"
 								" /quit         Will quit ...\n"
 								" /help         Displays this info\n"
 								"\n");
+		}
+		else if (str == SHVString8C("/thread"))
+		{
+			if (!Thread.IsRunning())
+			{
+				ThreadSubProcess = SubProcessServer->New();
+				Thread.Start(this,&SHVSubProcessTester::ThreadProcess);
+			}
 		}
 		else if (str == SHVString8C("/launch"))
 		{
@@ -79,8 +95,6 @@ void SHVSubProcessTester::OnEvent(SHVEvent* event)
 			args.AddTail("-c");
 			args.AddTail("awk 'BEGIN {print \"starting ...\"; fflush()}; /exit/ {print \"Subprocess exiting\"; fflush(); exit}; /$/ { print \"Subprocess got \" $0; fflush() }'");
 			if (!SubProcess->Start("sh",args, SHVSubProcess::StdIn))
-			//args.AddTail("BEGIN {print \"starting ...\"; fflush()}; /exit/ {print \"Subprocess exiting\"; fflush(); exit}; /$/ { print \"Subprocess got \" $0; fflush() }");
-			//if (!SubProcess->Start("awk",args, SHVSubProcess::StdIn))
 			{
 				SHVConsole::Printf8("Failed to start awk\n");
 			}
@@ -93,16 +107,45 @@ void SHVSubProcessTester::OnEvent(SHVEvent* event)
 			}
 			else
 			{
+			bool running = false;
 				if (!SubProcess.IsNull())
 				{
 					SubProcess->WriteLine8(str);
+					running = true;
 				}
-				else
+				if (!ThreadSubProcess.IsNull())
 				{
-					SHVConsole::Printf8("Subprocess not running\n");
+					ThreadSubProcess->WriteLine8(str);
+					running = true;
+				}
+				if (!running)
+				{
+					SHVConsole::Printf8("Subprocesses not running\n");
 				}
 			}
 		}
 	}
 }
 
+/*************************************
+ * ThreadProcess
+ *************************************/
+void SHVSubProcessTester::ThreadProcess()
+{
+SHVFileList args;
+	args.AddTail("BEGIN {print \"starting ...\"; fflush()}; /exit/ {print \"Subprocess exiting\"; fflush(); exit}; /$/ { print \"Subprocess got \" $0; fflush() }");
+	if (!ThreadSubProcess->Start("awk",args))
+	{
+		SHVConsole::Printf8("Failed to start subprocess\n");
+	}
+	else
+	{
+	SHVString8 str;
+		while (ThreadSubProcess->ReadLine8(str))
+		{
+			SHVConsole::Printf8("Thread got : %s\n", str.GetSafeBuffer());
+		}
+		SHVConsole::Printf8("ThreadProcess done\n");
+		ThreadSubProcess->Shutdown();
+	}
+}

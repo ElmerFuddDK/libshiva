@@ -3,6 +3,7 @@
 
 #include "shiva/include/framework/shvmodule.h"
 #include "shiva/include/modules/subprocess/shvsubprocessserver.h"
+#include "shiva/include/threadutils/shvthread.h"
 
 //-=========================================================================================================
 /// SHVSubProcessTester class
@@ -23,8 +24,13 @@ public:
 
 private:
 
+	void ThreadProcess();
+
 	SHVSubProcessServer* SubProcessServer;
 	SHVSubProcessPtr SubProcess;
+
+	SHVThread<SHVSubProcessTester> Thread;
+	SHVSubProcessPtr ThreadSubProcess;
 };
 
 #endif
