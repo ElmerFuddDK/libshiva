@@ -47,6 +47,9 @@ public:
 
 private:
 	///\cond INTERNAL
+	void ParseArgs(SHVFileList& argList, const SHVStringC args);
+	void Trim(const SHVTChar*& ch);
+
 	int PipeStdOut[2], PipeStdErr[2], PipeStdIn[2];
 	SHVSubProcessStreamIn *StreamStdOut, *StreamStdErr;
 	SHVSubProcessStreamOut *StreamStdIn;

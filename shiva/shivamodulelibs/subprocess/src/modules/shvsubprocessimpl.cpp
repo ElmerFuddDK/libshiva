@@ -132,84 +132,9 @@ SHVStreamOut& SHVSubProcessImpl::GetStdIn()
  *************************************/
 SHVBool SHVSubProcessImpl::Start(const SHVStringC program, const SHVStringC args, int streams, bool nonBlocking)
 {
-SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
-	
-	if (retVal)
-	{
-#ifdef __SHIVA_POSIX
-
-		if (streams&StdOut)
-			pipe(PipeStdOut);
-		if (streams&StdErr)
-			pipe(PipeStdErr);
-		if (streams&StdIn)
-			pipe(PipeStdIn);
-		
-		if ((nonBlocking = NonBlocking))
-		{
-			fcntl(PipeStdIn[1], F_SETFL, O_NONBLOCK);
-		}
-
-		LastError.SetError(ErrNone);
-		Pid = vfork(); ///\todo Use clone instead of vfork
-		
-		if (Pid == 0) // Then we are the sub-process
-		{
-		char** argList;
-		SHVString argStr(args);
-		SHVString script;
-		
-			if (PipeStdIn[0])
-				dup2(PipeStdIn[0], 0); // stdin
-			if (PipeStdOut[1])
-				dup2(PipeStdOut[1], 1); // stdout
-			if (PipeStdErr[1])
-				dup2(PipeStdErr[1], 2); // stderr
-			
-			argStr.Replace("\"","\\\"");
-			script.Format("echo \"%s\" | xargs \"%s\"", argStr.GetSafeBuffer(), program.GetSafeBuffer());
-			
-			argList = (char**)malloc(sizeof(char*)*4);
-			argList[0] = (char*)"sh";
-			argList[1] = (char*)"-c";
-			argList[2] = (char*)script.GetSafeBuffer();
-			argList[3] = NULL;
-			
-			execvp(argList[0],argList);
-			// If we reach here it means the execute failed
-			LastError.SetError(ErrUnknownProgram);
-			_exit(-1);
-		}
-		else if (Pid == -1) // we failed to start the process
-		{
-			LastError.SetError(ErrGeneric);
-			
-			SafeCloseFd(PipeStdIn[0]);
-			SafeCloseFd(PipeStdIn[1]);
-			SafeCloseFd(PipeStdOut[0]);
-			SafeCloseFd(PipeStdOut[1]);
-			SafeCloseFd(PipeStdErr[0]);
-			SafeCloseFd(PipeStdErr[1]);
-		}
-		else // we are the parent process
-		{
-			// close the other end of the streams
-			SafeCloseFd(PipeStdIn[0]);
-			SafeCloseFd(PipeStdOut[1]);
-			SafeCloseFd(PipeStdErr[1]);
-			
-			if (!LastError) // then execution failed of the external program
-			{
-				WaitForTermination();
-			}
-		}
-		
-#endif
-	
-		retVal = LastError = IsRunning();
-	}
-	
-	return retVal;
+SHVFileList argList;
+	ParseArgs(argList,args);
+	return Start(program,argList,streams,nonBlocking);
 }
 
 /*************************************
@@ -244,12 +169,35 @@ SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
 		SHVListPos pos = NULL;
 		
 			if (PipeStdIn[0])
+			{
 				dup2(PipeStdIn[0], 0); // stdin
+				close(PipeStdIn[0]);
+			}
+			else
+			{
+				freopen("/dev/null", "r", stdin);
+			}
 			if (PipeStdOut[1])
+			{
 				dup2(PipeStdOut[1], 1); // stdout
+				close(PipeStdOut[1]);
+				setlinebuf(stdout);
+			}
 			if (PipeStdErr[1])
+			{
 				dup2(PipeStdErr[1], 2); // stderr
-			
+				close(PipeStdErr[1]);
+				setlinebuf(stderr);
+			}
+#ifdef F_CLOSEM
+			fcntl(3, F_CLOSEM);
+#elif HAVE_CLOSEFROM
+			closefrom(3);
+#else
+		int open_max = sysconf (_SC_OPEN_MAX);
+			for (int i = 3; i < open_max; i++)
+				close(i);
+#endif
 			argList = (char**)malloc(sizeof(char*)*(args.GetCount()+2));
 			argList[0] = (char*)program.GetSafeBuffer();
 			for (int i=1;args.MoveNext(pos);i++)
@@ -399,6 +347,95 @@ static const SHVWChar newLine[] = { '\n', '\0' };
 	else
 		return StreamStdIn->WriteString16(SHVString16(line + newLine).GetSafeBuffer());
 }
+
+/*************************************
+ * ParseArgs
+ *************************************/
+void SHVSubProcessImpl::ParseArgs(SHVFileList& argList, const SHVStringC args)
+{
+const SHVTChar* c = args.GetSafeBuffer();
+long pos;
+SHVString val;
+	Trim(c);
+	while (*c)
+	{
+		if (*c == '"')
+		{
+		SHVStringC cStr(++c);
+		bool escaping = false;
+		bool running = true;
+
+			val = SHVStringC(NULL);
+			for (pos=0; c[pos] && running; pos++)
+			{
+				if (escaping)
+				{
+					escaping = false;
+					switch (c[pos])
+					{
+					case '\\': val += _S("\\"); break;
+					case 'n':  val += _S("\n"); break;
+					case '"':  val += _S("\""); break;
+					case 't':  val += _S("\t"); break;
+					default:
+						running = false;
+						break;
+					}
+				}
+				else if (c[pos] == '\\')
+				{
+					escaping = true;
+				}
+				else if (c[pos] == '"')
+				{
+					running = false;
+				}
+				else
+				{
+					val.AddChars(c+pos,1);
+				}
+			}
+
+			c += pos;
+		}
+		else
+		{
+		SHVStringC cStr(c);
+			pos = cStr.Find(_S(" "));
+			if (pos < 0)
+			{
+				val = cStr;
+				c += val.GetLength();
+			}
+			else
+			{
+				val = cStr.Mid(0,(size_t)pos);
+				c += val.GetLength();
+			}
+		}
+		argList.AddTail(val);
+		Trim(c);
+	}
+}
+
+/*************************************
+ * Trim
+ *************************************/
+void SHVSubProcessImpl::Trim(const SHVTChar*& ch)
+{
+	while (*ch)
+	{
+		switch (*ch)
+		{
+		case ' ':
+		case '\t':
+			break;
+		default:
+			return;
+		}
+	}
+}
+
 
 ///\cond INTERNAL
 #ifdef __SHIVA_POSIX
