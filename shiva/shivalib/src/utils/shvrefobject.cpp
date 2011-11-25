@@ -38,7 +38,7 @@
 #elif defined(__GNUC__)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 2))
 #   include <ext/atomicity.h>
-#   ifdef _GLIBCXX_BEGIN_NAMESPACE	
+#   if defined(_GLIBCXX_BEGIN_NAMESPACE) || defined(_GLIBCXX_BEGIN_NAMESPACE_VERSION)
 #    define GNUC_NAMESPACE __gnu_cxx
 #   else
 #    define GNUC_NAMESPACE
