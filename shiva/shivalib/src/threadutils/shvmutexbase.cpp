@@ -231,11 +231,19 @@ bool retVal = false;
 		if (timeout != Infinite)
 		{
 
+#if _POSIX_TIMERS > 0
 			if (clock_gettime(CLOCK_REALTIME, &spc))
 			{
 				fprintf(stderr,"MUTEX TIMER ERROR\n");
 				abort();
 			}
+#else
+#warning "Review the implementation"
+			struct timeval tv;
+			gettimeofday(&tv, NULL);
+			spc.tv_sec = tv.tv_sec;
+			spc.tv_nsec = tv.tv_usec*1000;
+#endif
 			spc.tv_sec  += timeout/1000;
 			spc.tv_nsec += (timeout%1000)*1000000UL;
 			if ( spc.tv_nsec >= 1000000000L )

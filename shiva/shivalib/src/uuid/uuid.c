@@ -19,9 +19,9 @@ static int read_state(void* globals, unsigned16 *clockseq, uuid_time_t *timestam
     uuid_node_t *node);
 static void write_state(void* globals, unsigned16 clockseq, uuid_time_t timestamp,
     uuid_node_t node);
-static void format_uuid_v1(uuid_t *uuid, unsigned16 clockseq,
+static void format_uuid_v1(shv_uuid_t *uuid, unsigned16 clockseq,
     uuid_time_t timestamp, uuid_node_t node);
-static void format_uuid_v3or5(uuid_t *uuid, unsigned char hash[16],
+static void format_uuid_v3or5(shv_uuid_t *uuid, unsigned char hash[16],
     int v);
 static void get_current_time(void* globals, uuid_time_t *timestamp);
 static unsigned16 true_random(void);
@@ -36,7 +36,7 @@ void* init_globals()
 }
 
 /* uuid_create -- generator a UUID */
-int uuid_create(void* globals, uuid_t *uuid)
+int uuid_create(void* globals, shv_uuid_t *uuid)
 {
      uuid_time_t timestamp, last_time;
      unsigned16 clockseq;
@@ -70,7 +70,7 @@ int uuid_create(void* globals, uuid_t *uuid)
 
 /* format_uuid_v1 -- make a UUID from the timestamp, clockseq,
                      and node ID */
-void format_uuid_v1(uuid_t* uuid, unsigned16 clock_seq,
+void format_uuid_v1(shv_uuid_t* uuid, unsigned16 clock_seq,
                     uuid_time_t timestamp, uuid_node_t node)
 {
     /* Construct a version 1 uuid with the information we've gathered
@@ -174,12 +174,12 @@ static unsigned16 true_random(void)
 
 /* uuid_create_md5_from_name -- create a version 3 (MD5) UUID using a
    "name" from a "name space" */
-void uuid_create_md5_from_name(void* globals, uuid_t *uuid, uuid_t nsid, void *name,
+void uuid_create_md5_from_name(void* globals, shv_uuid_t *uuid, shv_uuid_t nsid, void *name,
                                int namelen)
 {
     MD5_CTX c;
     unsigned char hash[16];
-    uuid_t net_nsid;
+    shv_uuid_t net_nsid;
 
     (void) globals; // unused parameter
 
@@ -201,7 +201,7 @@ void uuid_create_md5_from_name(void* globals, uuid_t *uuid, uuid_t nsid, void *n
 
 /* format_uuid_v3or5 -- make a UUID from a (pseudo)random 128-bit
    number */
-void format_uuid_v3or5(uuid_t *uuid, unsigned char hash[16], int v)
+void format_uuid_v3or5(shv_uuid_t *uuid, unsigned char hash[16], int v)
 {
     /* convert UUID to local byte order */
     memcpy(uuid, hash, sizeof *uuid);
@@ -218,7 +218,7 @@ void format_uuid_v3or5(uuid_t *uuid, unsigned char hash[16], int v)
 
 /* uuid_compare --  Compare two UUID's "lexically" and return */
 #define CHECK(f1, f2) if (f1 != f2) return f1 < f2 ? -1 : 1;
-int uuid_compare(uuid_t *u1, uuid_t *u2)
+int uuid_compare(shv_uuid_t *u1, shv_uuid_t *u2)
 {
     int i;
 

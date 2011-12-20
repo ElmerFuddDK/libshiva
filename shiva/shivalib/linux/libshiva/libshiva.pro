@@ -146,7 +146,26 @@ LIBS += -lm \
   $$QMAKE_LIBS_DYNLOAD \
   -lpthread
 
-!isEmpty(ANDROID_PLATFORM) {
+ios|macx {
+	DEFINES += _POSIX_C_SOURCE=200112L _XOPEN_SOURCE=500 _REENTRANT _THREAD_SAFE
+	DEFINES += _DARWIN_C_SOURCE
+	LIBS -= -lrt
+
+	SOURCES += ../../src/libunicode/convert.c \
+			../../src/libunicode/decomp.c \
+			../../src/libunicode/init.c \
+			../../src/libunicode/iso8859.c \
+			../../src/libunicode/latin1.c \
+			../../src/libunicode/prop.c \
+			../../src/libunicode/sjis.c \
+			../../src/libunicode/ucs2.c \
+			../../src/libunicode/ucs4.c \
+			../../src/libunicode/utf8.c \
+			../../src/libunicode/utf8conv.c
+	 DEFINES += __SHIVA_LIBUNICODESTATIC
+}
+
+!isEmpty(ANDROID_PLATFORM){
   SOURCES += ../../src/libunicode/convert.c \
 			../../src/libunicode/decomp.c \
 			../../src/libunicode/init.c \
@@ -169,6 +188,7 @@ LIBS += -lm \
   QMAKE_LIBDIR -= $$ANDROID_SOURCES_CXX_STL_LIBDIR
 } else {
   unix {
+
 	system(test "`uname`" = "FreeBSD") {
 	  LIBS += -lkvm
 

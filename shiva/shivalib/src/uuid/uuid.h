@@ -1,5 +1,6 @@
 #include "copyrt.h"
-#undef uuid_t
+
+#undef shv_uuid_t
 
 #ifdef __GNUC__
 typedef struct  __attribute__((packed)) {
@@ -9,7 +10,7 @@ typedef struct  __attribute__((packed)) {
     unsigned8   clock_seq_hi_and_reserved;
     unsigned8   clock_seq_low;
     byte        node[6];
-} uuid_t;
+} shv_uuid_t;
 #else
 typedef struct {
     unsigned32  time_low;
@@ -18,20 +19,20 @@ typedef struct {
     unsigned8   clock_seq_hi_and_reserved;
     unsigned8   clock_seq_low;
     byte        node[6];
-} uuid_t;
+} shv_uuid_t;
 #endif
 
 void* init_globals();
 
 /* uuid_create -- generate a UUID */
-int uuid_create(void* globals, uuid_t * uuid);
+int uuid_create(void* globals, shv_uuid_t * uuid);
 
 /* uuid_create_md5_from_name -- create a version 3 (MD5) UUID using a
    "name" from a "name space" */
 void uuid_create_md5_from_name(
     void* globals,
-    uuid_t *uuid,         /* resulting UUID */
-    uuid_t nsid,          /* UUID of the namespace */
+    shv_uuid_t *uuid,         /* resulting UUID */
+    shv_uuid_t nsid,          /* UUID of the namespace */
     void *name,           /* the name from which to generate a UUID */
     int namelen           /* the length of the name */
 );
@@ -42,4 +43,4 @@ void uuid_create_md5_from_name(
          1   u1 is lexically after u2
    Note that lexical ordering is not temporal ordering!
 */
-int uuid_compare(uuid_t *u1, uuid_t *u2);
+int uuid_compare(shv_uuid_t *u1, shv_uuid_t *u2);

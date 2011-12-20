@@ -37,6 +37,10 @@
 # define __SHIVA_POSIX
 # define __SHIVA_POSIX_FREEBSD
 # include "platforms/freebsd/platformspc.h"
+#elif defined(__APPLE__)
+# define __SHIVA_POSIX
+# define __SHIVA_POSIX_OSX
+# include "platforms/osx/platformspc.h"
 #elif defined(linux) || defined(__linux)
 # define __SHIVA_LINUX // for historic reasons
 # define __SHIVA_POSIX

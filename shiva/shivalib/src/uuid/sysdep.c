@@ -163,6 +163,23 @@ void get_system_time(uuid_time_t *uuid_time)
 /* Sample code, not for use in production; see RFC 1750 */
 void get_random_info(char seed[16])
 {
+#ifdef __APPLE__
+	///\todo REWRITE!!
+	//FIXME
+    MD5_CTX c;
+    struct {
+        //struct sysinfo s;
+        struct timeval t;
+        char hostname[257];
+    } r;
+
+    MD5Init(&c);
+    //sysinfo(&r.s);
+    gettimeofday(&r.t, (struct timezone *)0);
+    gethostname(r.hostname, 256);
+	MD5Update(&c, (unsigned char*)&r, sizeof r);
+	MD5Final((unsigned char*)seed, &c);
+#else	
     MD5_CTX c;
     struct {
         struct sysinfo s;
@@ -176,6 +193,7 @@ void get_random_info(char seed[16])
     gethostname(r.hostname, 256);
 	MD5Update(&c, (unsigned char*)&r, sizeof r);
 	MD5Final((unsigned char*)seed, &c);
+#endif
 }
 
 #endif

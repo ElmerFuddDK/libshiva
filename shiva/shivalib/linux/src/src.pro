@@ -3,7 +3,7 @@
 # Subdir relative project main directory: ./src
 # Target is an application:  ../bin/shiva
 
-TARGETDEPS += ../libshiva/libshiva.so 
+#TARGETDEPS += ../libshiva/libshiva.so 
 LIBS += $$QMAKE_LIBS_DYNLOAD \
         -lshiva 
 QMAKE_LIBDIR += ../libshiva 

@@ -11,7 +11,9 @@
 #ifdef __FreeBSD__
 #include "freebsd/sys/sysinfo.h"
 #else
+#ifndef __APPLE__
 #include <sys/sysinfo.h>
+#endif
 #endif
 #endif
 

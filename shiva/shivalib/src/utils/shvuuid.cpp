@@ -56,7 +56,7 @@ SHVUUID::SHVUUID()
 	Globals = init_globals();
 
 	// debug code check for size of uuid_t being equal to our fake type
-	SHVASSERT(sizeof(SHVUUID::ID) == sizeof(uuid_t));
+	SHVASSERT(sizeof(SHVUUID::ID) == sizeof(shv_uuid_t));
 }
 
 /*************************************
@@ -118,7 +118,7 @@ SHVUUID::ID retVal;
 SHVUUID::ID SHVUUID::Create()
 {
 SHVUUID::ID retVal;
-	uuid_create(Globals,(uuid_t*)&retVal);
+	uuid_create(Globals,(shv_uuid_t*)&retVal);
 	return retVal;
 }
 
@@ -128,9 +128,9 @@ SHVUUID::ID retVal;
 SHVUUID::ID SHVUUID::CreateMd5FromNamespace8(const SHVUUID::ID& namespc, const SHVString8C name)
 {
 SHVUUID::ID retVal;
-uuid_t n;
-	::memcpy(&n,&namespc,sizeof(uuid_t));
-	uuid_create_md5_from_name(Globals,(uuid_t*)&retVal,n, (void*)name.GetSafeBuffer(), (int)name.GetLength()*sizeof(SHVChar));
+shv_uuid_t n;
+	::memcpy(&n,&namespc,sizeof(shv_uuid_t));
+	uuid_create_md5_from_name(Globals,(shv_uuid_t*)&retVal,n, (void*)name.GetSafeBuffer(), (int)name.GetLength()*sizeof(SHVChar));
 	return retVal;
 }
 
@@ -140,9 +140,9 @@ uuid_t n;
 SHVUUID::ID SHVUUID::CreateMd5FromNamespace16(const SHVUUID::ID& namespc, const SHVString16C name)
 {
 SHVUUID::ID retVal;
-uuid_t n;
-	::memcpy(&n,&namespc,sizeof(uuid_t));
-	uuid_create_md5_from_name(Globals,(uuid_t*)&retVal,n, (void*)name.GetSafeBuffer(), (int)name.GetLength()*sizeof(SHVWChar));
+shv_uuid_t n;
+	::memcpy(&n,&namespc,sizeof(shv_uuid_t));
+	uuid_create_md5_from_name(Globals,(shv_uuid_t*)&retVal,n, (void*)name.GetSafeBuffer(), (int)name.GetLength()*sizeof(SHVWChar));
 	return retVal;
 }
 
@@ -152,7 +152,7 @@ uuid_t n;
 SHVUUID::ID SHVUUID::FromString8(const SHVString8C uuid)
 {
 SHVUUID::ID retVal(Null());
-uuid_t* id = (uuid_t*)&retVal.Bytes;
+shv_uuid_t* id = (shv_uuid_t*)&retVal.Bytes;
 size_t count = uuid.GetLength();
 bool ok = ( count == 36);
 const SHVChar* str = uuid.GetSafeBuffer();
@@ -238,7 +238,7 @@ int SHVUUID::CharToInt(bool& ok, const char ch)
  *************************************/
 SHVStringBuffer8 SHVUUID::ID::ToString8()
 {
-uuid_t* id = (uuid_t*)&Bytes;
+shv_uuid_t* id = (shv_uuid_t*)&Bytes;
 	return SHVString8C::Format("%8.8x-%4.4x-%4.4x-%2.2x%2.2x-%2.2x%2.2x%2.2x%2.2x%2.2x%2.2x",
 								id->time_low,
 								id->time_mid,
@@ -261,7 +261,7 @@ SHVStringBuffer16 SHVUUID::ID::ToString16()
 #ifdef __SHIVA_POSIX
 	return ToString8().ToStr16();
 #else
-uuid_t* id = (uuid_t*)&Bytes;
+shv_uuid_t* id = (shv_uuid_t*)&Bytes;
 	return SHVString16C::Format((const SHVWChar*) L"%8.8x-%4.4x-%4.4x-%2.2x%2.2x-%2.2x%2.2x%2.2x%2.2x%2.2x%2.2x",
 								id->time_low,
 								id->time_mid,
