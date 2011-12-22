@@ -279,6 +279,7 @@ All parts but the ones listed here are covered by the license at the bottom:\n
  - expat in shivamodulelibs/xmlstream/src/expat
  - UUID generation in shivalib/src/uuid
  - md5 generation in shivalib/src/md5
+ - libunicode in shivalib/src/libunicode
 
 \n
 Copyright (C) 2008 by Lars Eriksen and others\n
