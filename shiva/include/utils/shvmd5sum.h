@@ -8,7 +8,37 @@
 //-=========================================================================================================
 /// SHVMd5Sum class - calculates md5 sums
 /**
- * Will calculate an md5 sum for one or more buffers.
+ * Will calculate an md5 sum for one or more buffers.\n
+ * The md5 sum is calculated by initializing the md5sum object,
+ * and the subsequently calling one of the Calculate functions
+ * until all data has been calculated. Finalizing the calculation
+ * is done automatically by calling either GetMd5 or
+ * GetMd5AsBinary:
+\code
+void CalcData(const SHVStringC data)
+{
+SHVMd5Sum md5;
+
+	md5.Initialize();
+
+	if (!data.IsEmpty())
+		md5.CalculateString(data);
+
+	SHVConsole::Printf(_S("Md5 sum : %s\n"), md5.GetMd5().GetSafeBuffer());
+}
+\endcode
+ * However it is not necessary to call Initialize in simple cases
+ * where you are certain that calculate will be called at least
+ * once:
+\code
+void CalcDataSimple()
+{
+SHVMd5Sum md5;
+
+	md5.CalculateString8("Some text");
+	SHVConsole::Printf(_S("Md5 sum : %s\n"), md5.GetMd5().GetSafeBuffer());
+}
+\endcode
  */
 
 class SHVAPI SHVMd5Sum
@@ -48,6 +78,11 @@ private:
 /*************************************
  * CalculateString8
  *************************************/
+/**
+ \param str String to calculate md5 data for
+ *
+ * Adds to the md5 sum calculation. Finalize with either GetMd5 or GetMd5AsBinary.
+ */
 void SHVMd5Sum::CalculateString8(const SHVString8C str)
 {
 SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetLength());
@@ -57,6 +92,11 @@ SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetLength());
 /*************************************
  * CalculateString16
  *************************************/
+/**
+ \param str String to calculate md5 data for
+ *
+ * Adds to the md5 sum calculation. Finalize with either GetMd5 or GetMd5AsBinary.
+ */
 void SHVMd5Sum::CalculateString16(const SHVString16C str)
 {
 SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetLength()*sizeof(SHVWChar));
@@ -66,6 +106,11 @@ SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetLength()*sizeof(SHVWChar)
 /*************************************
  * CalculateString
  *************************************/
+/**
+ \param str String to calculate md5 data for
+ *
+ * Adds to the md5 sum calculation. Finalize with either GetMd5 or GetMd5AsBinary.
+ */
 void SHVMd5Sum::CalculateString(const SHVStringC str)
 {
 SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetLength()*sizeof(SHVTChar));

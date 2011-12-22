@@ -87,6 +87,11 @@ bool SHVMd5Sum::IsInitialized()
  * Calculate
  *************************************/
 /// Partial calculation of md5 sum
+/**
+ \param buffer Buffer to calculate md5 data for
+ *
+ * Adds to the md5 sum calculation. Finalize with either GetMd5 or GetMd5AsBinary.
+ */
 void SHVMd5Sum::Calculate(const SHVBufferC* buffer)
 {
 	if (!IsInitialized())
@@ -98,6 +103,12 @@ void SHVMd5Sum::Calculate(const SHVBufferC* buffer)
  * GetMd5
  *************************************/
 /// Finalizes and creates the md5 sum
+/**
+ \return Returns the md5 sum as string
+ *
+ \note Will uninitialize the object. This means you can only call
+       either this or SHVMd5Sum::GetMd5AsBinary once.
+ */
 SHVStringBuffer SHVMd5Sum::GetMd5()
 {
 SHVString retVal;
@@ -127,9 +138,15 @@ SHVString retVal;
 }
 
 /*************************************
- * GetMd5
+ * GetMd5AsBinary
  *************************************/
 /// Finalizes and creates the md5 sum as binary data
+/**
+ \return Returns a buffer with the md5 sum as binary
+ *
+ \note Will uninitialize the object. This means you can only call
+       either this or SHVMd5Sum::GetMd5 once.
+ */
 SHVBuffer* SHVMd5Sum::GetMd5AsBinary()
 {
 SHVBuffer* retVal = NULL;
