@@ -23,6 +23,7 @@
 #include "tests/utils/shvhashtabletester.h"
 #include "tests/utils/shvinttester.h"
 #include "tests/utils/shvlisttester.h"
+#include "tests/utils/shvmd5sumtester.h"
 #include "tests/utils/shvstringtester.h"
 #include "tests/utils/shvtimetester.h"
 #include "tests/utils/shvvectortester.h"
@@ -93,6 +94,7 @@ SHVMainThreadEventDispatcher* dispatcher = NULL;
 		unitTest->RegisterTest(new SHVFileTester());
 		unitTest->RegisterTest(new SHVHashTableTester());
 		unitTest->RegisterTest(new SHVIntTester());
+		unitTest->RegisterTest(new SHVMd5SumTester());
 		unitTest->RegisterTest(new SHVListTester());
 		unitTest->RegisterTest(new SHVStringTester());
 		unitTest->RegisterTest(new SHVTimeTester());

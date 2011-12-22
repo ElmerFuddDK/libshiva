@@ -18,7 +18,8 @@ SOURCES = ../../src/main.cpp \
     ../../../../include/unittest/src/shvtestqueued.cpp \
     ../../../../include/unittest/src/shvtest.cpp \
     ../../src/shvunittestimpl.cpp \
-    ../../src/tests/utils/shvbase64tester.cpp
+    ../../src/tests/utils/shvbase64tester.cpp \
+    ../../src/tests/utils/shvmd5sumtester.cpp
 HEADERS += \
     ../../src/forms/shvformmain.h \
     ../../src/logger/shvtestloggerconsole.h \
@@ -42,7 +43,8 @@ HEADERS += \
     ../../../../include/unittest/shvtestlogger.h \
     ../../../../include/unittest/shvunittest.h \
     ../../src/shvunittestimpl.h \
-    ../../src/tests/utils/shvbase64tester.h
+    ../../src/tests/utils/shvbase64tester.h \
+    ../../src/tests/utils/shvmd5sumtester.h
 TARGET =../bin/unittest
 TEMPLATE = app
 LIBS += -L../../../../shivalib/linux/libshiva \
