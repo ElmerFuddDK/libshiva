@@ -96,6 +96,8 @@ public:
 	virtual SHVRegionAction* CtrlMaxWidth(int width);
 	virtual SHVRegionAction* CtrlWidth(int width);
 	virtual SHVRegionAction* CtrlFixedWidth();
+	virtual SHVRegionAction* CtrlMaxHeight(int height);
+	virtual SHVRegionAction* CtrlHeight(int height);
 	virtual SHVRegionAction* CtrlFixedHeight();
 
 	// Unify the boundaries of all added controls

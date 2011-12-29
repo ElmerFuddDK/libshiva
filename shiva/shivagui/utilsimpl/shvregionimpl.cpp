@@ -299,6 +299,38 @@ SHVRegionAction* SHVRegionActionImpl::CtrlFixedWidth()
 }
 
 /*************************************
+ * CtrlMaxHeight
+ *************************************/
+SHVRegionAction* SHVRegionActionImpl::CtrlMaxHeight(int height)
+{
+	if (Wnds.GetCount())
+	{
+		CalculateVMargin(height);
+
+		Wnds.GetLast()->FixedHeight = false;
+		Wnds.GetLast()->MaxHeight = height;
+	}
+	
+	return this;
+}
+
+/*************************************
+ * CtrlHeight
+ *************************************/
+SHVRegionAction* SHVRegionActionImpl::CtrlHeight(int height)
+{
+	if (Wnds.GetCount())
+	{
+		CalculateVMargin(height);
+
+		Commit();
+		Wnds.GetLast()->Rect.SetHeight(height);
+	}
+	
+	return this;
+}
+
+/*************************************
  * CtrlFixedHeight
  *************************************/
 SHVRegionAction* SHVRegionActionImpl::CtrlFixedHeight()
