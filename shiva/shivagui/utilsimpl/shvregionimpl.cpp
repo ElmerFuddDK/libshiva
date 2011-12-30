@@ -181,17 +181,17 @@ SHVRegion* SHVRegionImpl::ClipRightInPixels(int pixels)
 /*************************************
  * Move a window
  *************************************/
-SHVRegionActionPtr SHVRegionImpl::Move(SHVControl* wnd)
+SHVRegionActionPtr SHVRegionImpl::Move(SHVControl* wnd, bool ignoreIfHidden)
 {
-	return new SHVRegionActionImpl(*this,wnd,true);
+	return new SHVRegionActionImpl(*this,wnd,true,ignoreIfHidden);
 }
 
 /*************************************
  * Move a window (in pixels)
  *************************************/
-SHVRegionActionPtr SHVRegionImpl::MoveInPixels(SHVControl* wnd)
+SHVRegionActionPtr SHVRegionImpl::MoveInPixels(SHVControl* wnd, bool ignoreIfHidden)
 {
-	return new SHVRegionActionImpl(*this,wnd,false);
+	return new SHVRegionActionImpl(*this,wnd,false,ignoreIfHidden);
 }
 
 
@@ -204,12 +204,12 @@ SHVRegionActionPtr SHVRegionImpl::MoveInPixels(SHVControl* wnd)
  * Constructor
  *************************************/
 ///\cond INTERNAL
-SHVRegionActionImpl::SHVRegionActionImpl(SHVRegionImpl& region, SHVControl* wnd, bool lfumode) : Region(region)
+SHVRegionActionImpl::SHVRegionActionImpl(SHVRegionImpl& region, SHVControl* wnd, bool lfumode, bool ignoreIfHidden) : Region(region)
 {
 	Initialized = false;
 	LFUMode = lfumode;
 
-	And(wnd);
+	And(wnd,ignoreIfHidden);
 }
 ///\endcond
 
@@ -241,9 +241,9 @@ SHVListWndIterator itr(Wnds);
 /*************************************
  * And
  *************************************/
-SHVRegionAction* SHVRegionActionImpl::And(SHVControl* extraControl)
+SHVRegionAction* SHVRegionActionImpl::And(SHVControl* extraControl, bool ignoreIfHidden)
 {
-	if (extraControl && extraControl->IsCreated() && extraControl->GetFlag(SHVControl::FlagVisible))
+	if (extraControl && extraControl->IsCreated() && (!ignoreIfHidden || extraControl->GetFlag(SHVControl::FlagVisible)))
 	{
 		Commit();
 		Wnds.AddTail(new Control(extraControl));

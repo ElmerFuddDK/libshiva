@@ -54,8 +54,8 @@ public:
 	virtual SHVRegion* ClipRightInPixels(int pixels);
 
 	// Start placing a window
-	virtual SHVRegionActionPtr Move(SHVControl* wnd);
-	virtual SHVRegionActionPtr MoveInPixels(SHVControl* wnd);
+	virtual SHVRegionActionPtr Move(SHVControl* wnd, bool ignoreIfHidden = true);
+	virtual SHVRegionActionPtr MoveInPixels(SHVControl* wnd, bool ignoreIfHidden = true);
 
 
 private:
@@ -89,7 +89,7 @@ public:
 
 
 	// add a control to a combined sub region
-	virtual SHVRegionAction* And(SHVControl* extraControl);
+	virtual SHVRegionAction* And(SHVControl* extraControl, bool ignoreIfHidden = true);
 
 
 	// Sets boundaries for the recently added control
@@ -147,7 +147,7 @@ private:
 	SHVList<ControlPtr,Control*> Wnds;
 	typedef SHVListIterator<ControlPtr,Control*> SHVListWndIterator;
 
-	SHVRegionActionImpl(SHVRegionImpl& region, SHVControl* wnd, bool lfumode);
+	SHVRegionActionImpl(SHVRegionImpl& region, SHVControl* wnd, bool lfumode, bool ignoreIfHidden = true);
 
 	bool Initialize();
 	void Commit();

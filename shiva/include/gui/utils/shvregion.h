@@ -73,8 +73,8 @@ public:
 
 
 	// Start placing a window
-	virtual SHVRegionActionPtr Move(SHVControl* wnd) = 0;
-	virtual SHVRegionActionPtr MoveInPixels(SHVControl* wnd) = 0;
+	virtual SHVRegionActionPtr Move(SHVControl* wnd, bool ignoreIfHidden = true) = 0;
+	virtual SHVRegionActionPtr MoveInPixels(SHVControl* wnd, bool ignoreIfHidden = true) = 0;
 
 
 protected:
@@ -96,7 +96,7 @@ public:
 
 
 	// add a control to a combined sub region
-	virtual SHVRegionAction* And(SHVControl* extraControl) = 0;
+	virtual SHVRegionAction* And(SHVControl* extraControl, bool ignoreIfHidden = true) = 0;
 
 
 	// Sets boundaries for the recently added control
