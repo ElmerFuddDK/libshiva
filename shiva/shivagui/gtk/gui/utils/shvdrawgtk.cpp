@@ -49,6 +49,25 @@
 SHVDrawGtk::SHVDrawGtk(SHVGUIManager* manager, GdkGC* gc, GdkWindow* window, SHVControl* control)
 : SHVDraw(manager), Control(control), Widget(Gtk::GetHandle(control)), WindowArea(control->GetRect())
 {
+SHVControlContainer* parent = control->GetParent();
+SHVRect parentRect;
+
+	// Adjust for the offset caused by any window containers
+	while (parent)
+	{
+		switch(parent->GetImplementor()->GetSubType(parent))
+		{
+		case SHVControlContainer::SubTypeWindow:
+		case SHVControlContainer::SubTypeCustomDraw:
+			parentRect = parent->GetRect();
+			WindowArea.MoveBy(parentRect.GetX(),parentRect.GetY());
+			parent = parent->GetParent();
+			break;
+		default:
+			parent = NULL;
+		}
+	}
+
 	GC = gc;
 	Window = window;
 	SetClipRect();
