@@ -429,6 +429,7 @@ void SHVSubProcessImpl::Trim(const SHVTChar*& ch)
 		{
 		case ' ':
 		case '\t':
+			ch++;
 			break;
 		default:
 			return;
