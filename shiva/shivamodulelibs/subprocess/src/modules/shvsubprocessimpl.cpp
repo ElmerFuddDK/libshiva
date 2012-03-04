@@ -198,6 +198,7 @@ SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
 			for (int i = 3; i < open_max; i++)
 				close(i);
 #endif
+			setpgrp(); // make our own process group
 			argList = (char**)malloc(sizeof(char*)*(args.GetCount()+2));
 			argList[0] = (char*)program.GetSafeBuffer();
 			for (int i=1;args.MoveNext(pos);i++)
@@ -264,7 +265,8 @@ void SHVSubProcessImpl::Kill()
 	if (IsRunning())
 	{
 #ifdef __SHIVA_POSIX
-		kill(Pid,SIGKILL);
+		kill(-Pid,SIGKILL);
+		///\todo Run through the process tree and properly kill childs that have their own group
 #else
 		abort();
 #endif
