@@ -79,6 +79,7 @@ SHVBool SHVSocketServerImpl::Register()
 #endif
 	if (!SocketServerThread.StartThread(Modules))
 		return Modules.AddStartupError(_S("Failed starting socket server thread"));
+	SSLFactory = new SHVSSLSocketFactory();
 
 	return SHVSocketServer::Register();
 }
@@ -107,7 +108,8 @@ SHVListIterator<SHVSocketImplRef,SHVSocketImpl*> sockItr(SocketList);
 	SocketServerLock.Unlock();
 
 	// this will delete the objects, handy when in noselect mode (prevents deadlocks)
-	tmpSocketList.RemoveAll();
+	tmpSocketList.RemoveAll();	
+	SSLFactory = NULL;
 }
 
 /*************************************
@@ -123,10 +125,14 @@ SHVEventQueue* SHVSocketServerImpl::GetQueue()
  *************************************/
 SHVSocket* SHVSocketServerImpl::CreateSocket(SHVEventSubscriberBase* subs, SHVSocket::Types type, size_t bufferSize)
 {
-SHVSocketImplRef sock = new SHVSocketImpl(subs,this,type);
+SHVSocketImplRef sock = NULL;
 
-	sock->SetReceiveBufferSize(bufferSize);
-	AddToList(sock);
+	if (SocketTypeSupported(type))
+	{
+		sock = new SHVSocketImpl(subs,this,type);
+		sock->SetReceiveBufferSize(bufferSize);
+		AddToList(sock);
+	}
 
 	return sock;
 }
@@ -202,6 +208,15 @@ SHVIPv4Addr retVal = Inetv4Addr(host);
 	return retVal;
 }
 
+/*************************************
+ * SocketTypeSupported
+ *************************************/
+bool SHVSocketServerImpl::SocketTypeSupported(SHVSocket::Types type)
+{
+	return (type != SHVSocket::TypeSSL || SSLFactory->IsSupported());
+}
+
+
 ///\cond INTERNAL
 /*************************************
  * AddToList
@@ -236,4 +251,5 @@ bool running = true;
 	}
 	SocketServerLock.Unlock();
 }
+
 ///\endcond

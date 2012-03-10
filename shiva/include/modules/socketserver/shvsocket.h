@@ -40,7 +40,9 @@ public:
 		ErrInvalidSubscriber = 2,		///< The provided subscriber on creation was NULL
 		ErrClosed = 3,					///< Closed and not active
 		ErrBinding = 4,					///< Could not bind socket
-		ErrListening = 5				///< Could not listen on binded socket
+		ErrListening = 5,				///< Could not listen on bound socket
+		ErrListeningSSL = 6,            ///< Could not negotiate SSL connection on bound socket
+		ErrSSLConnection = 7			///< Could not create client ssl connection (Negotiation failed)
 	};
 
 	enum SocketOptions {
@@ -53,7 +55,8 @@ public:
 	
 	enum Types {
 		TypeTCP,
-		TypeUDP
+		TypeUDP,
+		TypeSSL
 	};
 
 
@@ -83,6 +86,8 @@ public:
 
 	virtual SHVBool SetSocketOption(SocketOptions option, int val1, int val2 = 0) = 0;
 	virtual SHVBool GetSocketOption(SocketOptions option, int& val1, int& val2) = 0;
+
+	virtual SHVBool SetServerCertificate(const SHVStringC keyfile, const SHVStringC certFile) = 0;
 
 protected:
 	///\cond INTERNAL

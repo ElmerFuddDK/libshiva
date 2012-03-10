@@ -2,6 +2,7 @@
 #define __SHIVA_SOCKETSERVERIMPL_SOCKETSERVER_H
 
 #include "shvsocketserverthread.h"
+#include "shvsslsocket.h"
 
 
 //-=========================================================================================================
@@ -37,6 +38,7 @@ public:
 	virtual SHVStringBuffer Inetv4ToAddr(SHVIPv4Addr ip);
 	virtual SHVIPv4Addr Inetv4ResolveHost(const SHVStringC host);
 
+	virtual bool SocketTypeSupported(SHVSocket::Types type);
 
 private:
 friend class SHVSocketServerThread;
@@ -57,6 +59,7 @@ friend class SHVSocketImpl;
 	SHVList<SHVSocketImplRef,SHVSocketImpl*> SocketList;
 
 	SHVSocketServerThread SocketServerThread;
+	SHVSSLSocketFactoryRef SSLFactory;
 	///\endcond
 };
 

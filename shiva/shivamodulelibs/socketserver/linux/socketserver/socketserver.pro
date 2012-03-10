@@ -13,13 +13,15 @@ SOURCES += ../../src/shvsocketimpl.cpp \
 ../../src/shvsocketserverimpl.cpp \
  ../../src/shvsocketserverthread.cpp \
  ../../src/shvsocketserverfactory.cpp \
- ../../src/shvsocketserverexports.cpp
+ ../../src/shvsocketserverexports.cpp \
+    ../../src/shvsslsocket.cpp
 HEADERS += ../../include/shvsocketimpl.h \
 ../../include/shvsocketserverimpl.h \
 ../../../../include/modules/socketserver/shvsocket.h \
 ../../../../include/modules/socketserver/shvsocketserver.h \
  ../../include/shvsocketserverthread.h \
- ../../src/shvsocketserverfactory.h
+ ../../src/shvsocketserverfactory.h \
+	../../include/shvsslsocket.h
 
 !isEmpty(ANDROID_PLATFORM) {
   QMAKE_CFLAGS += -fno-exceptions -fno-rtti
@@ -28,3 +30,5 @@ HEADERS += ../../include/shvsocketimpl.h \
   QMAKE_INCDIR -= $$ANDROID_SOURCES_CXX_STL_INCDIR
   QMAKE_LIBDIR -= $$ANDROID_SOURCES_CXX_STL_LIBDIR
 }
+
+

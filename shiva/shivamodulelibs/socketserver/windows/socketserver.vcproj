@@ -229,6 +229,10 @@
 					RelativePath="..\src\shvsocketserverthread.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\src\shvsslsocket.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -253,6 +257,10 @@
 				</File>
 				<File
 					RelativePath="..\include\shvsocketserverthread.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\shvsslsocket.h"
 					>
 				</File>
 			</Filter>

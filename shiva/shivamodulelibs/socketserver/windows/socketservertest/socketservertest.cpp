@@ -35,6 +35,7 @@
 #include "../../../../include/frameworkimpl/shvmainthreadeventdispatchergeneric.h"
 #include "../../../../include/shvversion.h"
 #include "../../../../include/utils/shvdll.h"
+#include "../../../../include/utils/shvdir.h"
 #include "../../../../include/modules/socketserver/shvsocketserver.h"
 
 #include "../../../../include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
@@ -200,6 +201,37 @@ public:
 					SHVConsole::Printf(_S("Attempting to start server at %d\n"), port);
 					SHVASSERT(Socket->BindAndListen(port ? port : 1234));
 				}
+				else if (str.Left(11) == SHVString8C("/serverssl "))
+				{
+				SHVChar* c;
+				SHVIPv4Port port = (SHVIPv4Port)SHVString8C::StrToL(str.GetSafeBuffer() + 11, &c);
+				
+					if (!Socket.IsNull())
+					{
+						Socket->Close();
+						Socket = NULL;
+					}
+					
+					Socket = SocketServer->CreateSocket(SocketSubscriber, SHVSocket::TypeSSL);
+					if (Socket.IsNull())
+					{
+						SHVConsole::Printf(_S("SSL not supported\n"));
+					}
+					else
+					{
+						if (!Socket->SetServerCertificate(Modules.GetConfig().Find(SHVModuleList::DefaultCfgAppPath)->ToString() + SHVDir::Delimiter() + _S("server.key"),
+														  Modules.GetConfig().Find(SHVModuleList::DefaultCfgAppPath)->ToString() + SHVDir::Delimiter() + _S("server.crt")))
+						{
+							Socket = NULL;
+							SHVConsole::Printf(_S("Error setting up certificate\n"));
+						}
+						else
+						{
+							printf("Attempting to start server at %d\n", port);
+							SHVASSERT(Socket->BindAndListen(port ? port : 1234));
+						}
+					}
+				}
 				else if (str.Left(9) == SHVString8C("/connect "))
 				{
 				SHVString8 ip(str.GetSafeBuffer()+9);
@@ -232,6 +264,46 @@ public:
 						Socket = SocketServer->CreateSocket(SocketSubscriber);
 						SHVConsole::Printf(_S("Attempting connect to \"%s\" port %d\n"), ip.ToStrT().GetSafeBuffer(), port);
 						SHVVERIFY(Socket->Connect(SocketServer->Inetv4ResolveHost(ip.ToStrT()),port ? port : 1234));
+					}
+				}
+				else if (str.Left(12) == SHVString8C("/sslconnect "))
+				{
+				SHVString8 ip(str.GetSafeBuffer()+12);
+				SHVIPv4Port port = 0;
+				int space;
+				
+					if ( (space = ip.ReverseFind(" ")) > 0)
+					{
+					SHVChar* c;
+						port = (SHVIPv4Port)SHVString8C::StrToL(ip.GetSafeBuffer() + space, &c);
+						ip[space] = 0;
+					}
+					
+					if (!Socket.IsNull() && Socket->GetType() == SHVSocket::TypeUDP)
+					{
+						UdpIP = SocketServer->Inetv4ResolveHost(ip.ToStrT());
+						UdpPort = port;
+						
+						if (Socket->GetState() == SHVSocket::StateNone) // not connected
+							Socket->ConnectAny(0);
+					}
+					else
+					{
+						if (!Socket.IsNull())
+						{
+							Socket->Close();
+							Socket = NULL;
+						}
+						
+						Socket = SocketServer->CreateSocket(SocketSubscriber, SHVSocket::TypeSSL);
+						if (Socket.IsNull())
+						{
+							SHVConsole::Printf(_S("SSL not supported\n"));
+						}
+						{
+							SHVConsole::Printf(_S("Attempting connect to \"%s\" port %d\n"), ip.ToStrT().GetSafeBuffer(), port);
+							SHVVERIFY(Socket->Connect(SocketServer->Inetv4ResolveHost(ip.ToStrT()),port ? port : 1234));
+						}
 					}
 				}
 				else if (str == SHVString8C("/udp"))

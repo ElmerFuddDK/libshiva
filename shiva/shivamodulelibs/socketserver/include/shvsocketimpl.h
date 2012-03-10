@@ -14,10 +14,11 @@
 # include "../../../include/threadutils/shvthread.h"
 # include "../../../include/threadutils/shvmutexbase.h"
 #endif
-
+#include "shvsslsocket.h"
 
 class SHVSocketServerImpl;
 class SHVSocketServerThread;
+
 //-=========================================================================================================
 /// SHVSocketImpl class - Implementation of sockets interface
 //-=========================================================================================================
@@ -29,7 +30,11 @@ class SHVSocketServerThread;
 class SHVSocketImpl : public SHVSocket
 {
 public:
-
+	enum SSLStates {
+		SSLStateNone = -1,
+		SSLStateAccepting = 1001,
+		SSLStateConnecting = 1002
+	};
 
 	// properties
 	virtual Types GetType();
@@ -54,10 +59,12 @@ public:
 	virtual SHVBool SetSocketOption(SocketOptions option, int val1, int val2 = 0);
 	virtual SHVBool GetSocketOption(SocketOptions option, int& val1, int& val2);
 
+	virtual SHVBool SetServerCertificate(const SHVStringC keyfile, const SHVStringC certFile);
 
 protected:
 friend class SHVSocketServerImpl;
 friend class SHVSocketServerThread;
+friend class SHVSSLSocket;
 
 	///\cond INTERNAL
 	SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* socketServer, SHVSocket::Types type);
@@ -69,6 +76,7 @@ friend class SHVSocketServerThread;
 	void PerformEvent();
 	SHVBool SetError(SHVBool err = ErrGeneric);
 	int RetreiveSocketError();
+	SHVBool SSLAccept(const char* keyFile, const char* certFile);
 
 	SHVEventSubscriberBaseRef EventSubscriber;
 	SHVSocketServerImpl* SocketServer;
@@ -89,6 +97,10 @@ friend class SHVSocketServerThread;
 	size_t BufferSize;
 	size_t BytesRead;
 	bool RecvPending;
+	SHVSSLSocketRef SSL;
+	SSLStates SSLState;
+	SHVString8 KeyFile;
+	SHVString8 CertFile;
 
 #ifdef __SHIVASOCKETS_NOSELECTMODE
 	bool IsPending;

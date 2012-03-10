@@ -23,7 +23,8 @@ SOURCES += ../src/shvsocketimpl.cpp \
            ../src/shvsocketserverimpl.cpp \
            ../src/shvsocketserverthread.cpp \
            ../src/shvsocketserverfactory.cpp \
-           ../src/shvsocketserverexports.cpp
+           ../src/shvsocketserverexports.cpp \
+           ../src/shvsslsocket.cpp
 
 
 DEF_FILE = socketserver.def

@@ -30,7 +30,7 @@
 
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
-
+#include "../../../include/utils/shvdir.h"
 
 #include "../include/shvsocketserverimpl.h"
 
@@ -74,7 +74,7 @@ struct tcp_keepalive { u_long  onoff; u_long  keepalivetime; u_long  keepalivein
  * Constructor
  *************************************/
 SHVSocketImpl::SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* socketServer, SHVSocket::Types type, SHVSOCKTYPE sock)
-	: SHVSocket(socketServer->GetModules().CreateTag(),SHVSocket::StateConnected), EventSubscriber(subs), Type(type)
+	: SHVSocket(socketServer->GetModules().CreateTag(),SHVSocket::StateConnected), EventSubscriber(subs), Type(type), SSLState(SHVSocketImpl::SSLStateNone)
 {
 	SocketServer = socketServer;
 	Socket = sock;
@@ -89,7 +89,7 @@ SHVSocketImpl::SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* 
 #endif
 }
 SHVSocketImpl::SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* socketServer, SHVSocket::Types type)
-	: SHVSocket(socketServer->GetModules().CreateTag(),SHVSocket::StateNone), EventSubscriber(subs), Type(type)
+	: SHVSocket(socketServer->GetModules().CreateTag(),SHVSocket::StateNone), EventSubscriber(subs), Type(type), SSLState(SHVSocketImpl::SSLStateNone)
 {
 	SocketServer = socketServer;
 	RecvPending = false;
@@ -109,7 +109,7 @@ SHVSocketImpl::SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* 
 		return;
 	}
 
-	Socket = ::socket( PF_INET, (Type == SHVSocket::TypeTCP ? SOCK_STREAM : SOCK_DGRAM), 0 );
+	Socket = ::socket( PF_INET, (Type == SHVSocket::TypeTCP || Type == SHVSocket::TypeSSL ? SOCK_STREAM : SOCK_DGRAM), 0 );
 
 	if (Socket != InvalidSocket)
 	{
@@ -128,6 +128,7 @@ SHVSocketImpl::SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* 
  *************************************/
 SHVSocketImpl::~SHVSocketImpl()
 {
+	SSL = NULL;
 	if (Socket != InvalidSocket)
 	{
 		if (State == StateConnected)
@@ -177,7 +178,7 @@ SHVBool retVal;
 	int status;
 		
 		retVal = SHVSocket::ErrNone;
-		
+
 		sockAddr.sin_port   = htons(port);
 		sockAddr.sin_family = AF_INET;
 #ifdef __SHIVA_WIN32
@@ -188,12 +189,12 @@ SHVBool retVal;
 		status = ::bind(Socket, (sockaddr*) &sockAddr, sizeof(sockaddr_in));
 #endif
 	
-		if (Type == SHVSocket::TypeTCP)
+		if (Type == SHVSocket::TypeTCP || Type == SHVSocket::TypeSSL)
 		{
 			if (!status)
 			{
 				status = ::listen(Socket, 5);
-				
+
 				if (!status)
 				{
 					State = SHVSocket::StateListening;
@@ -248,6 +249,7 @@ SHVBool retVal;
 SHVBool SHVSocketImpl::Send(const SHVBufferC& buf)
 {
 SHVBool retVal(SHVSocket::ErrInvalidOperation);
+bool retry = false;
 	
 	SocketServer->SocketServerLock.Lock();
 	if (State == SHVSocket::StateConnected)
@@ -256,16 +258,27 @@ SHVBool retVal(SHVSocket::ErrInvalidOperation);
 
 		for (int i=0; i<__SHVSOCKET_SENDTIMEOUT*10 && err == 0; i++)
 		{
-			err = ::send(Socket,buf.GetBufferConst(),(int)buf.GetSize(),MSG_NOSIGNAL);
+			retry = false;
+			if (!SSL.IsNull())
+			{
+				err = SSL->send(buf.GetBufferConst(),(int)buf.GetSize(), retry);
+				if (err < 0)
+					err *= -1;
+			}
+			else
+			{
+				err = ::send(Socket,buf.GetBufferConst(),(int)buf.GetSize(),MSG_NOSIGNAL);
+			}
 			if (err < 0)
 			{
 #ifdef __SHIVA_WIN32
-				err = WSAGetLastError();
-				if (err == WSAEWOULDBLOCK)
+				if (SSL.IsNull() || err == SSL_ERROR_SYSCALL)
+					retry = WSAGetLastError() == WSAEWOULDBLOCK;
 #else
-				err = errno;
-				if (err == EAGAIN || err == EWOULDBLOCK)
+				if (SSL.IsNull() || err == SSL_ERROR_SYSCALL)
+					retry = (err = errno) == EAGAIN || err == EWOULDBLOCK;
 #endif
+				if(retry)
 				{
 					SHVThreadBase::Sleep(100);
 					err = 0;
@@ -561,11 +574,45 @@ int len;
 }
 
 /*************************************
+ * SetServerCertificate
+ *************************************/
+SHVBool SHVSocketImpl::SetServerCertificate(const SHVStringC keyfile, const SHVStringC certFile)
+{
+SHVBool retVal(true);
+	if (Type == SHVSocket::TypeSSL)
+	{
+		if (SHVDir::FileExist(keyfile))
+		{
+			KeyFile = keyfile.ToStr8();
+		}
+		else
+		{
+			retVal = false;
+		}
+		if (SHVDir::FileExist(certFile))
+		{
+			CertFile = certFile.ToStr8();
+		}
+		else
+		{
+			retVal = false;
+		}
+	}
+	else
+	{
+		retVal = false;
+	}
+	return retVal;
+}
+
+
+/*************************************
  * Close
  *************************************/
 SHVBool SHVSocketImpl::Close()
 {
 	SocketServer->SocketServerLock.Lock();
+	SSL = NULL;
 	if (Socket != InvalidSocket)
 	{
 	int tempUnlocks;
@@ -583,7 +630,6 @@ SHVBool SHVSocketImpl::Close()
 #else
 		::close(sock);
 #endif
-		
 		SocketServer->SocketServerLock.LockMultiple(tempUnlocks);
 	}
 	SocketServer->SocketServerLock.Unlock();
@@ -698,17 +744,29 @@ int sockerr;
 int sz;
 SHVIPv4Addr fromip = InvalidIPv4;
 SHVIPv4Port fromport = 0;
+int state = (SSLState != SHVSocketImpl::SSLStateNone ? (int) SSLState : (int) State);
+bool retry;
 
 	// After we got this lock DO NOT PERFORM ANYTHING BLOCKING OR SOMETHING THAT INVOLVES OTHER LOCKS!
 	SocketServer->SocketServerLock.Lock();
 	
 	// Handle the event, collecting data for the emission after unlocking
-	switch  (State)
+	switch  (state)
 	{
 	case SHVSocket::StateListening:
 		sockObj = new SHVSocketImpl(EventSubscriber,SocketServer,Type,::accept(Socket, NULL, NULL));
+		if (Type == SHVSocket::TypeSSL)
+		{
+			if (!sockObj->SSLAccept(KeyFile.GetBufferConst(), CertFile.GetBufferConst()))
+			{
+				if (sockObj->SSLState == SHVSocketImpl::SSLStateAccepting)
+					doEvent = false;
+				else
+					sockObj->Socket = InvalidSocket;
+			}
+		}
 		sockObj->SetReceiveBufferSize(BufferSize);
-		if (sockObj->Socket < 0)
+		if (sockObj->Socket < 0 && sockObj->GetError() == SHVSocket::ErrNone)
 		{
 			sockObj->Socket = InvalidSocket;
 			sockObj->SetError(SHVSocket::ErrGeneric);
@@ -729,13 +787,38 @@ SHVIPv4Port fromport = 0;
 		}
 		else
 		{
-			State = SHVSocket::StateConnected;
+			if (Type == SHVSocket::TypeSSL)
+			{
+				SSL = SocketServer->SSLFactory->CreateSSLSocket();
+				if (!SSL->Connect(this, retry))
+				{					
+					if (retry)
+					{
+						SSLState = SHVSocketImpl::SSLStateConnecting;
+						doEvent = false;
+					}
+					else
+					{
+						SetError(SHVSocket::ErrSSLConnection);
+					}
+				}
+				else
+				{
+					State = SHVSocket::StateConnected;
+					subID = State;
+				}
+			}
+			else
+			{
+				State = SHVSocket::StateConnected;
+				subID = State;
+			}
 		}
-		subID = State;
 		break;
 	case SHVSocket::StateConnected: // received something
 		bufPtr = new SHVBufferPtr();
 		bufPtr->SetBufferSize(BufferSize);
+		retry = false;
 
 		if (Type == TypeUDP)
 		{
@@ -757,26 +840,73 @@ SHVIPv4Port fromport = 0;
 		}
 		else
 		{
+			if (!SSL.IsNull())
+			{
+				sz = SSL->recv((char*)bufPtr->GetBufferAsVoid(),(int)BufferSize, retry);
+			}
+			else
+			{
 #ifdef __SHIVA_WIN32
-			sz = ::recv(Socket,(char*)bufPtr->GetBufferAsVoid(),(int)BufferSize,MSG_DONTWAIT);
+				sz = ::recv(Socket,(char*)bufPtr->GetBufferAsVoid(),(int)BufferSize,MSG_DONTWAIT);
 #else
-			sz = ::recv(Socket,bufPtr->GetBufferAsVoid(),BufferSize,MSG_DONTWAIT);
+				sz = ::recv(Socket,bufPtr->GetBufferAsVoid(),BufferSize,MSG_DONTWAIT);
 #endif
+			}
 		}
 		
-		if (sz<=0) // error
+		if (!retry)
 		{
-			delete bufPtr;
-			Close();
-			SetError(SHVSocket::ErrGeneric);
+			if (sz<=0) // error
+			{
+				delete bufPtr;
+				Close();
+				SetError(SHVSocket::ErrGeneric);
+			}
+			else
+			{
+				ReceiveBuffers.AddTail(BufferInstance(bufPtr,(size_t)sz,fromip,fromport));
+				BytesRead += (size_t)sz;
+				evCode = SHVSocketServer::EventSockDataRead;
+			}
+			subID = State;
+		}
+		else
+			doEvent = false;
+		break;
+	case SHVSocketImpl::SSLStateAccepting:
+		SSLState = SHVSocketImpl::SSLStateNone;
+		if (!SSLAccept(KeyFile.GetBufferConst(), CertFile.GetBufferConst()))
+		{
+			if (SSLState == SHVSocketImpl::SSLStateAccepting)
+				doEvent = false;
+			else
+				Socket = InvalidSocket;
 		}
 		else
 		{
-			ReceiveBuffers.AddTail(BufferInstance(bufPtr,(size_t)sz,fromip,fromport));
-			BytesRead += (size_t)sz;
-			evCode = SHVSocketServer::EventSockDataRead;
+			retValObj = this;
+			evCode = SHVSocketServer::EventSockIncomingConn;
 		}
-		subID = State;
+		break;
+	case SHVSocketImpl::SSLStateConnecting:
+		if (!SSL->Connect(this, retry))
+		{
+			if (retry)
+			{
+				SSLState = SHVSocketImpl::SSLStateConnecting;
+				doEvent = false;
+			}
+			else
+			{
+				SetError(SHVSocket::ErrSSLConnection);
+			}
+		}
+		else
+		{
+			SSLState = SHVSocketImpl::SSLStateNone;
+			State = SHVSocket::StateConnected;
+			subID = State;
+		}
 		break;
 	default:
 		Close();
@@ -827,6 +957,43 @@ socklen_t len = sizeof(sockerr);
 #endif
 	return sockerr;
 }
+
+/*************************************
+ * SSLAccept
+ *************************************/
+SHVBool SHVSocketImpl::SSLAccept(const char *keyFile, const char *certFile)
+{
+SHVBool retVal(true);
+bool retry;
+
+	if (Socket != InvalidSocket)
+	{
+		if (!SSL)
+			SSL = SocketServer->SSLFactory->CreateSSLSocket();
+		retVal = SSL->Accept(this, keyFile, certFile, retry);
+		if (!retVal)
+		{
+			if (retry)
+			{
+				SSLState = SHVSocketImpl::SSLStateAccepting;
+			}
+			else
+			{
+				retVal = SetError(SHVSocket::ErrListeningSSL);
+			}
+		}
+		else
+		{
+			State = SHVSocket::StateConnected;
+			SSLState = SHVSocketImpl::SSLStateNone;
+		}
+	}
+	else
+		retVal = SetError(SHVSocket::ErrListening);
+
+	return retVal;
+}
+
 
 
 #ifdef __SHIVASOCKETS_NOSELECTMODE

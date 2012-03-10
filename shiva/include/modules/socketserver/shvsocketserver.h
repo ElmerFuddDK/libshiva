@@ -42,6 +42,7 @@ public:
 	virtual SHVStringBuffer Inetv4ToAddr(SHVIPv4Addr ip) = 0;
 	virtual SHVIPv4Addr Inetv4ResolveHost(const SHVStringC host) = 0;
 
+	virtual bool SocketTypeSupported(SHVSocket::Types type) = 0;
 
 	// Obtain socket from a socket server event
 	inline static SHVSocket* SocketFromEvent(SHVEvent* event);
