@@ -406,6 +406,14 @@ long SHVThreadBase::GetTickCount()
 	return ::GetTickCount();
 #elif defined(__SHIVA_EPOC)
 	return User::TickCount();
+#elif _POSIX_TIMERS > 0
+struct timespec n;
+	if (clock_gettime(CLOCK_MONOTONIC, &n))
+	{
+		fprintf(stderr,"GETTICKCOUNT ERROR\n");
+		abort();
+	}
+	return long(n.tv_sec*1000000L + n.tv_nsec/1000L);
 #else
 timeval val;
 	gettimeofday(&val,NULL);
@@ -428,7 +436,16 @@ long SHVThreadBase::GetTicksInMilliSecs()
 TTimeIntervalMicroSeconds32 t = 1;
 	UserHal::TickPeriod(t);
 	return User::TickCount()*t.Int();
+#elif _POSIX_TIMERS > 0
+struct timespec n;
+	if (clock_gettime(CLOCK_MONOTONIC, &n))
+	{
+		fprintf(stderr,"GETTICKCOUNT ERROR\n");
+		abort();
+	}
+	return long(n.tv_sec*1000L + n.tv_nsec/1000000L);
 #else
+# warning GetTicksInMilliSecs is not relative to system time
 timeval val;
 	gettimeofday(&val,NULL);
 	return (val.tv_sec*1000)+(val.tv_usec/1000);
