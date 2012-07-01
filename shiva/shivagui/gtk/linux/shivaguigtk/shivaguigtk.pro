@@ -116,6 +116,7 @@ INCLUDEPATH += /usr/lib64/gtk-2.0/include \
   /usr/lib/glib-2.0/include \
   /usr/include/pango-1.0 \
   /usr/include/glib-2.0 \
+  /usr/include/gdk-pixbuf-2.0 \
   /usr/lib/gtk-2.0/include
 
 unix {

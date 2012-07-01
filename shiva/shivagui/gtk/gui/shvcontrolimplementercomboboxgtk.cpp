@@ -216,7 +216,9 @@ void SHVControlImplementerComboBoxGtk::ClearItems(SHVControlComboBox* owner)
 	if (IsCreated())
 	{
 #ifdef GTK_TYPE_COMBO_BOX_TEXT
-		gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT (GetHandle()));
+		for (size_t i = GetItemCount(owner); i; i--)
+			gtk_combo_box_text_remove(GTK_COMBO_BOX_TEXT (GetHandle()), 0);
+		//gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT (GetHandle()));
 #else
 		for (size_t i = GetItemCount(owner); i; i--)
 			gtk_combo_box_remove_text(GTK_COMBO_BOX (GetHandle()), 0);

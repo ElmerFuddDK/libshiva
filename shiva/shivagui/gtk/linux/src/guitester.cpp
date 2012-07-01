@@ -371,7 +371,7 @@ int retVal = -1;
 	else
 	{
 	SHVMainThreadEventQueue mainqueue((SHVMainThreadEventDispatcher*)guilib.CreateObjectInt(NULL,SHVDll::ClassTypeMainThreadDispatcher));
-	SHVRegisterBitmap::SHVRegisterBitmap(mainqueue.GetModuleList(),1,(char**)heyyou_xpm);
+	SHVRegisterBitmap(mainqueue.GetModuleList(),1,(char**)heyyou_xpm);
 
 // 		mainqueue.GetModuleList().AddModule(new SHVControlTester(mainqueue.GetModuleList()));
  		mainqueue.GetModuleList().AddModule(new SHVTest(mainqueue.GetModuleList()));
