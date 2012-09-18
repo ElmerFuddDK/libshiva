@@ -2,6 +2,7 @@
 #include "shiva/include/platformspc.h"
 #include "shvstringtester.h"
 #include "shiva/include/utils/shvstringutf8.h"
+#include "shiva/include/utils/shvstringstream.h"
 
 
 /*************************************
@@ -41,6 +42,7 @@ static const SHVTestBase::Action actions[] = {
 	{ ActionFindLocate, "findlocate", _S("FindLocate"), _S("This will test Find and Locate"), &SHVStringTester::TestFindLocate },
 	{ ActionReplaceFormat, "replaceformat", _S("ReplaceFormat"), _S("This will test replace and format"), &SHVStringTester::TestReplaceFormat },
 	{ ActionUTF8Encoding, "utf8encoding", _S("UTF8Encoding"), _S("Tests utf8 encoding handling"), &SHVStringTester::TestUTF8Encoding },
+	{ ActionStreaming, "stream", _S("Stream"), _S("Tests SHVStringStream"), &SHVStringTester::TestStringStream },
 	{ 0, NULL, NULL, NULL, NULL } }; // Termination
 	
 	return actions;
@@ -536,6 +538,75 @@ bool ok = true;
 		ok = (ok && (SHVString16C(ucs2str).ToStrUTF8() == SHVStringUTF8C(utf8str).Left(10)));  // tests char count function
 
 		// log.AddLine(_S("Result for SHVString8:  %s"), log.Success(ok));
+	}
+#endif
+
+	self->AddLine(_S("Test result: %s"), self->Success(modules,ok).GetSafeBuffer());
+
+	return ok;
+}
+bool SHVStringTester::TestStringStream(SHVModuleList& modules, SHVTestBase* self, int )
+{
+bool ok = true;
+
+	{
+	SHVStringStream8 stream(16);
+		ok = (ok && stream.WriteString8("This is a stream string of more than 16 bytes."));
+		ok = (ok && stream.WriteString8("With some more stream data coming along."));
+		ok = (ok && stream.WriteString8("123456"));
+		ok = (ok && stream.WriteString8("789012"));
+		ok = (ok && stream.WriteString8("345678"));
+		
+		stream.Finalize();
+		ok = (ok && stream == "This is a stream string of more than 16 bytes.With some more stream data coming along.123456789012345678");
+	}
+
+#ifndef __SHVSTRING_EXCLUDE_UNICODE
+	{
+	static const char utf8str[] = { 0xC3, 0xA6, 0xC3, 0xA8, 0xC2, 0xA2, 0xC3, 0xA5, 'q', 'a', 0 };
+	static const char iso8859str[] = { 0xE6, 0xE8, 0xA2, 0xE5, 'q', 'a', 0 };
+	SHVStringStream8 stream(16);
+		ok = (ok && stream.WriteString16(_SHVS16("This is a stream string of more than 16 bytes.")));
+		ok = (ok && stream.WriteStringUTF8(utf8str));
+		
+		stream.Finalize();
+		ok = (ok && stream == SHVString8C("This is a stream string of more than 16 bytes.") + iso8859str);
+	}
+	{
+	static const char utf8str[] = { 0xC3, 0xA6, 0xC3, 0xA8, 0xC2, 0xA2, 0xC3, 0xA5, 'q', 'a', 0 };
+	SHVStringStream16 stream(16);
+		ok = (ok && stream.WriteString16(_SHVS16("This is a stream string of more than 16 bytes.")));
+		ok = (ok && stream.WriteString8("With some more stream data coming along."));
+		ok = (ok && stream.WriteStringUTF8("123456"));
+		ok = (ok && stream.WriteStringUTF8("789012"));
+		ok = (ok && stream.WriteStringUTF8(utf8str));
+		
+		stream.Finalize();
+		ok = (ok && stream == _SHVS16("This is a stream string of more than 16 bytes.With some more stream data coming along.123456789012")+SHVStringUTF8C(utf8str).ToStr16());
+	}
+	{
+	static const SHVWChar ucs2str[] = { 0xE6, 0xE8, 0xA2, 0xE5, 'q', 'a', 0 };
+	static const SHVWChar ucs2result[] = { 0xE6, 0xE8, 0xA2, 0xE5, 'q', 'a', 0xE6, 0xE8, 0xA2, 0xE5, 'q', 'a', 0xE6, 0xE8, 0xA2, 0xE5, 'q', 'a', 0xE6, 0xE8, 0xA2, 0xE5, 'q', 'a', 0 };
+	SHVStringStreamUTF8 stream(16);
+		ok = (ok && stream.WriteString16(_SHVS16("This is a stream string of more than 16 bytes.")));
+		ok = (ok && stream.WriteString8("With some more stream data coming along."));
+		ok = (ok && stream.WriteString16(_SHVS16("123456")));
+		ok = (ok && stream.WriteStringUTF8("789012"));
+		ok = (ok && stream.WriteString16(_SHVS16("345678")));
+		
+		stream.Finalize();
+		ok = (ok && stream == "This is a stream string of more than 16 bytes.With some more stream data coming along.123456789012345678");
+		
+		// This part tests situations where there isn't enough room for the multibyte char
+		// in the buffer, but there is still buffer left
+		stream.Reset();
+		ok = (ok && stream.WriteString16(ucs2str));
+		ok = (ok && stream.WriteString16(ucs2str));
+		ok = (ok && stream.WriteString16(ucs2str));
+		ok = (ok && stream.WriteString16(ucs2str));
+		
+		stream.Finalize();
+		ok = (ok && stream.ToStr16() == ucs2result);
 	}
 #endif
 

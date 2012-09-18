@@ -19,6 +19,7 @@ public:
 		ActionFindLocate = 0x10,
 		ActionReplaceFormat = 0x20,
 		ActionUTF8Encoding = 0x40,
+		ActionStreaming = 0x80,
 	};
 
 	virtual const SHVString8C GetGroup() const;
@@ -35,6 +36,7 @@ private:
 	static bool TestFindLocate(SHVModuleList& modules, SHVTestBase* self, int flag);
 	static bool TestReplaceFormat(SHVModuleList& modules, SHVTestBase* self, int flag);
 	static bool TestUTF8Encoding(SHVModuleList& modules, SHVTestBase* self, int flag);
+	static bool TestStringStream(SHVModuleList& modules, SHVTestBase* self, int flag);
 
 	// helpers
 private:

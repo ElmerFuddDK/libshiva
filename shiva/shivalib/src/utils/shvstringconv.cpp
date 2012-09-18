@@ -30,6 +30,7 @@
 
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
+#include "../../../include/utils/shvstringconv.h"
 #include "../../../include/utils/shvstring.h"
 #include "../../../include/utils/shvstringutf8.h"
 
@@ -90,6 +91,260 @@ const char* retVal = getenv("CHARSET");
 }
 #endif
 
+//=========================================================================================================
+// SHVStringConv class - Conversion between strings
+//=========================================================================================================
+/// \class SHVStringConv shvstringconv.h "shiva/include/utils/shvstringconv.h"
+
+/*************************************
+ * Constructor
+ *************************************/
+/// Constructor
+/**
+ \param from Input encoding
+ \param to Output encoding
+ *
+ * Initializes a conversion routine between from and to.
+ */
+SHVStringConv::SHVStringConv(Enc from, Enc to) : From(from), To(to)
+{
+#ifdef __SHIVA_WIN32
+#elif defined(__SHIVA_EPOC)
+	convTo = convFrom = NULL;
+	fs.Connect();
+#else
+	UNICODE_INIT();
+	iconvData = -1;
+	
+	SHVASSERT(sizeof(iconv_t) == sizeof(iconvData)); // They have to be of same size
+
+#endif
+	
+	switch (From)
+	{
+	case Enc8:
+		switch (To)
+		{
+		case Enc16:
+#ifdef __SHIVA_WIN32
+#elif defined(__SHIVA_EPOC)
+			convTo = CCnvCharacterSetConverter::NewLC();
+			((CCnvCharacterSetConverter*)convTo)->PrepareToConvertToOrFromL(KCharacterSetIdentifierCodePage1252, fs);
+#else
+			iconvData = (size_t)iconv_open("UCS-2",SHVStringC_Get8BitCharSet());
+		
+			if (iconvData == (size_t)-1) // failure, try ascii as fallback
+				iconvData = (size_t)iconv_open("UCS-2","ASCII");
+		
+			if (iconvData == (size_t)-1)
+				fprintf(stderr, "local->UNICODE conversion error %d\n", errno);
+#endif
+			break;
+		case EncUtf8:
+#ifdef __SHIVA_WIN32
+#elif defined(__SHIVA_EPOC)
+			convTo = CCnvCharacterSetConverter::NewLC();
+			convFrom = CCnvCharacterSetConverter::NewLC();
+			((CCnvCharacterSetConverter*)convTo)->PrepareToConvertToOrFromL(KCharacterSetIdentifierCodePage1252, fs);
+			((CCnvCharacterSetConverter*)convFrom)->PrepareToConvertToOrFromL(KCharacterSetIdentifierUtf8, fs);
+#else
+			iconvData = (size_t)iconv_open("UTF-8",SHVStringC_Get8BitCharSet());
+		
+			if (iconvData == (size_t)-1) // failure, try ascii as fallback
+				iconvData = (size_t)iconv_open("UTF-8","ASCII");
+		
+			if (iconvData == (size_t)-1)
+				fprintf(stderr, "UTF-8 conversion error %d\n", errno);
+#endif
+			break;
+		default:
+			SHVASSERT(false);
+		}
+		break;
+	case Enc16:
+		switch (To)
+		{
+		case Enc8:
+#ifdef __SHIVA_WIN32
+#elif defined(__SHIVA_EPOC)
+			convTo = CCnvCharacterSetConverter::NewLC();
+			((CCnvCharacterSetConverter*)convTo)->PrepareToConvertToOrFromL(KCharacterSetIdentifierCodePage1252, fs);
+#else
+			iconvData = (size_t)iconv_open(SHVStringC_Get8BitCharSet(),"UCS-2");
+		
+			if (iconvData == (size_t)-1) // failure, try ascii as fallback
+				iconvData = (size_t)iconv_open("ASCII","UCS-2");
+		
+			if (iconvData == (size_t)-1)
+				fprintf(stderr, "UNICODE->local conversion error %d\n", errno);
+#endif
+			break;
+		case EncUtf8:
+#ifdef __SHIVA_WIN32
+#elif defined(__SHIVA_EPOC)
+			convTo = CCnvCharacterSetConverter::NewLC();
+			((CCnvCharacterSetConverter*)convTo)->PrepareToConvertToOrFromL(KCharacterSetIdentifierUtf8, fs);
+#else
+			iconvData = (size_t)iconv_open("UTF-8","UCS-2");
+		
+			if (iconvData == (size_t)-1)
+				fprintf(stderr, "UTF-8 conversion error %d\n", errno);
+#endif
+			break;
+		default:
+			SHVASSERT(false);
+		}
+		break;
+	case EncUtf8:
+		switch (To)
+		{
+		case Enc8:
+#ifdef __SHIVA_WIN32
+#elif defined(__SHIVA_EPOC)
+			convTo = CCnvCharacterSetConverter::NewLC();
+			convFrom = CCnvCharacterSetConverter::NewLC();
+			((CCnvCharacterSetConverter*)convTo)->PrepareToConvertToOrFromL(KCharacterSetIdentifierUtf8, fs);
+			((CCnvCharacterSetConverter*)convFrom)->PrepareToConvertToOrFromL(KCharacterSetIdentifierCodePage1252, fs);
+#else
+			iconvData = (size_t)iconv_open(SHVStringC_Get8BitCharSet(),"UTF-8");
+		
+			if (iconvData == (size_t)-1) // failure, try ascii as fallback
+				iconvData = (size_t)iconv_open("ASCII","UTF-8");
+		
+			if (iconvData == (size_t)-1)
+				fprintf(stderr, "UTF-8 conversion error %d\n", errno);
+#endif
+			break;
+		case Enc16:
+#ifdef __SHIVA_WIN32
+#elif defined(__SHIVA_EPOC)
+			convTo = CCnvCharacterSetConverter::NewLC();
+			((CCnvCharacterSetConverter*)convTo)->PrepareToConvertToOrFromL(KCharacterSetIdentifierUtf8, fs);
+#else
+			iconvData = (size_t)iconv_open("UCS-2","UTF-8");
+		
+			if (iconvData == (size_t)-1)
+				fprintf(stderr, "UTF-8 conversion error %d\n", errno);
+#endif
+			break;
+		default:
+			SHVASSERT(false);
+		}
+		break;
+	}
+}
+
+/*************************************
+ * Destructor
+ *************************************/
+SHVStringConv::~SHVStringConv()
+{
+#ifdef __SHIVA_WIN32
+#elif defined(__SHIVA_EPOC)
+	if (convTo)
+		CleanupStack::PopAndDestroy(); // convTo
+	if (convFrom)
+		CleanupStack::PopAndDestroy(); // convTo
+	fs.Close();
+#else
+	if (iconvData != (size_t)-1)
+		iconv_close((iconv_t)iconvData);
+#endif
+}
+
+/*************************************
+ * IsValid
+ *************************************/
+/// Validates the conversion class
+/**
+ \return True if the from and to encodings matches a valid routine.
+ *
+ * This is really only useful in assertions.
+ */
+bool SHVStringConv::IsValid()
+{
+#ifdef __SHIVA_WIN32
+	return true;
+#elif defined(__SHIVA_EPOC)
+	if (convTo)
+		reteurn true;
+#else
+	if (iconvData != (size_t)-1)
+		return true;
+#endif
+	return false;
+}
+
+/*************************************
+ * Convert
+ *************************************/
+/// Converts between the 2 encodings
+/**
+ \param inBuffer Input buffer
+ \param outBuffer Output buffer
+ \param len Length of output buffer
+ \param charsWritten Optional output var of chars written
+ \return The next byte not converted
+ *
+ \note In Utf8 output mode the chars written are actual bytes written, not Utf8 chars.\n
+ * 
+ * Unknown chars are written as ?.\n
+ * The input buffer must be null terminated the case of the output buffer being
+ * longer than the input buffer, in characters.\n
+ * The conversion stops when input buffer hits a null char or there is not room in
+ * the output buffer for any more characters.\n
+ * Please note that when writing utf8 characters it is not guaranteed that the
+ * output buffer is completely filled, due to the fact that utf8 characters have
+ * variable length.
+ */
+const SHVByte* SHVStringConv::Convert(const SHVByte* inBuffer, void* outBuffer, size_t len, size_t* charsWritten)
+{
+	switch (From)
+	{
+	case Enc8:
+		switch (To)
+		{
+		case Enc16:
+			return (const SHVByte*)Convert8To16((const SHVChar*)inBuffer,(SHVWChar*)outBuffer,len, charsWritten);
+		case EncUtf8:
+			return (const SHVByte*)Convert8ToUTF8((const SHVChar*)inBuffer,(SHVChar*)outBuffer,len, charsWritten);
+		default:
+			SHVASSERT(false);
+		}
+	case Enc16:
+		switch (To)
+		{
+		case Enc8:
+			return (const SHVByte*)Convert16To8((const SHVWChar*)inBuffer,(SHVChar*)outBuffer,len, charsWritten);
+		case EncUtf8:
+			return (const SHVByte*)Convert16ToUTF8((const SHVWChar*)inBuffer,(SHVChar*)outBuffer,len, charsWritten);
+		default:
+			SHVASSERT(false);
+		}
+	case EncUtf8:
+		switch (To)
+		{
+		case Enc8:
+			return (const SHVByte*)ConvertUTF8To8((const SHVChar*)inBuffer,(SHVChar*)outBuffer,len, charsWritten);
+		case Enc16:
+			return (const SHVByte*)ConvertUTF8To16((const SHVChar*)inBuffer,(SHVWChar*)outBuffer,len, charsWritten);
+		default:
+			SHVASSERT(false);
+		}
+	default:
+		SHVASSERT(false); // unknown encoding variant
+	}
+	
+	if (charsWritten)
+		*charsWritten = 0;
+	
+	return 0;
+}
+
+
+
+//=========================================================================================================
+
 /*************************************
  * ToStr16
  *************************************/
@@ -109,71 +364,64 @@ SHVString16 retVal;
  *************************************/
 bool SHVString8C::ConvertBufferToWChar(SHVWChar* outBuffer, size_t len) const
 {
-bool retVal = true;
+SHVStringConv conv(SHVStringConv::Enc8,SHVStringConv::Enc16);
+bool retVal = *conv.Convert((const SHVByte*)Buffer,outBuffer,len,&len) == 0;
+	if (outBuffer)
+		outBuffer[len] = 0;
+	return retVal;
+}
+const SHVChar* SHVStringConv::Convert8To16(const SHVChar* inBuffer, SHVWChar* outBuffer, size_t len, size_t* charsWritten)
+{
+size_t written;
+	if (!charsWritten) charsWritten = &written;
+	*charsWritten = 0;
+	if (!IsValid()) return inBuffer;
+	if (!outBuffer) { *charsWritten = SHVString8C::StrLen(inBuffer); return inBuffer + *charsWritten; }
 #ifdef __SHIVA_WIN32
-
-	if (len) ::mbstowcs((wchar_t*)outBuffer,Buffer,len);
-	outBuffer[len] = 0;
+	if (len)
+	{
+		*charsWritten = ::mbstowcs((wchar_t*)outBuffer,inBuffer,len);
+		SHVASSERT(*charsWritten != (size_t)-1);
+		if (*charsWritten == (size_t)-1) // invalid char encountered
+			*charsWritten = 0;
+	}
+	inBuffer += *charsWritten;
 #elif defined(__SHIVA_EPOC)
-CCnvCharacterSetConverter* cnv = CCnvCharacterSetConverter::NewLC();
-RFs fs;
 TPtr16 unicode( outBuffer, len );
-TPtrC8  ascii( (TUint8*)Buffer, len );
+TPtrC8  ascii( (TUint8*)inBuffer, SHVString8C::StrLen(inBuffer) );
 TInt aState = CCnvCharacterSetConverter::KStateDefault;
 TInt result;
 
-	fs.Connect();
-	cnv->PrepareToConvertToOrFromL(KCharacterSetIdentifierCodePage1252, fs);
-	result = cnv->ConvertToUnicode( unicode, ascii, aState);
-	outBuffer[len] = 0;
-
-	fs.Close();
-
-	CleanupStack::PopAndDestroy(); // cnv
-
+	result = ((CCnvCharacterSetConverter*)convTo)->ConvertToUnicode( unicode, ascii, aState);
+	SHVASSERT(result >= 0);
+	if (result < 0) // error
+		*charsWritten = 0;
+	else
+		*charsWritten = (size_t)(ascii.Length()-result);
+	inBuffer += charsWritten;
 #else
 const char*  iBuf;
 SHVWChar* oBuf;
 size_t iLeft;
 size_t oLeft;
-iconv_t conv;
-	UNICODE_INIT();
-	conv = iconv_open("UCS-2",SHVStringC_Get8BitCharSet());
 
-	if (conv == (iconv_t)-1) // failure, try ascii as fallback
-		conv = iconv_open("UCS-2","ASCII");
-
-	if (conv == (iconv_t)-1)
+	for (size_t i=0; i<len && *inBuffer; i++)
 	{
-		fprintf(stderr, "local->UNICODE conversion error %d\n", errno);
-		outBuffer[0] = 0;
-		return retVal;
-	}
-
-	for (size_t i=0; i<len; i++)
-	{
-		iBuf = Buffer+i;
-		oBuf = outBuffer+i;
-		outBuffer[i]=0;
+		iBuf = inBuffer;
+		oBuf = outBuffer;
 		iLeft  = 1;
 		oLeft  = 2;
-		if ( iconv(conv,(ICONV_IBUFTYPE)&iBuf,&iLeft,(char**)&oBuf,&oLeft) == ICONV_ERR)
+		if ( iconv((iconv_t)iconvData,(ICONV_IBUFTYPE)&iBuf,&iLeft,(char**)&oBuf,&oLeft) == ICONV_ERR)
 		{
-			switch (Buffer[i])
-			{
-			default:
-				//fprintf(stderr, "UNKNOWN CHAR: %c %d\n",buf[i],(short)buf[i]);
-				outBuffer[i] = (short)'?';
-				break;
-			}
+			//fprintf(stderr, "UNKNOWN CHAR: %c %d\n",buf[i],(short)buf[i]);
+			*outBuffer = (short)'?';
 		}
+		(*charsWritten)++;
+		inBuffer++;
+		outBuffer++;
 	}
-
-	outBuffer[len] = 0;
-
-	iconv_close(conv);
 #endif
-	return retVal;
+	return inBuffer;
 }
 
 /*************************************
@@ -195,71 +443,67 @@ SHVString8 retVal;
  *************************************/
 bool SHVString16C::ConvertBufferToChar(SHVChar* outBuffer, size_t len) const
 {
-	bool retVal = true;
+SHVStringConv conv(SHVStringConv::Enc16,SHVStringConv::Enc8);
+bool retVal = *conv.Convert((const SHVByte*)Buffer,outBuffer,len,&len) == 0;
+	if (outBuffer)
+		outBuffer[len] = 0;
+	return retVal;
+}
+const SHVWChar* SHVStringConv::Convert16To8(const SHVWChar* inBuffer, SHVChar* outBuffer, size_t len, size_t* charsWritten)
+{
+size_t written;
+	if (!charsWritten) charsWritten = &written;
+	*charsWritten = 0;
+	if (!IsValid()) return inBuffer;
+	if (!outBuffer) { *charsWritten = SHVString16C::StrLen(inBuffer); return inBuffer + *charsWritten; }
 #ifdef __SHIVA_WIN32
-
-	::wcstombs(outBuffer,(const wchar_t*)Buffer,len);
-	outBuffer[len] = '\0';
-
+	if (len)
+	{
+		*charsWritten = ::wcstombs(outBuffer,(const wchar_t*)inBuffer,len);
+		SHVASSERT(*charsWritten != (size_t)-1);
+		if (*charsWritten == (size_t)-1) // invalid char encountered
+			*charsWritten = 0;
+	}
+	outBuffer[*charsWritten] = 0;
+	inBuffer += *charsWritten;
 #elif defined(__SHIVA_EPOC)
-
-CCnvCharacterSetConverter* cnv = CCnvCharacterSetConverter::NewLC();
-RFs fs;
-TPtrC16 unicode( Buffer, len );
+TPtrC16 unicode( inBuffer, SHVString16C::StrLen(inBuffer) );
 TPtr8   ascii( (TUint8*)outBuffer, len );
 TInt aState = CCnvCharacterSetConverter::KStateDefault;
+TInt result;
 
-	fs.Connect();
-	cnv->PrepareToConvertToOrFromL(KCharacterSetIdentifierCodePage1252, fs);
-	cnv->ConvertFromUnicode( ascii, unicode, aState );
-	outBuffer[len] = '\0';
-
-	fs.Close();
-
-	CleanupStack::PopAndDestroy(); // cnv
-
+	result = ((CCnvCharacterSetConverter*)convTo)->ConvertFromUnicode( ascii, unicode, aState);
+	SHVASSERT(result >= 0);
+	if (result < 0) // error
+		*charsWritten = 0;
+	else
+		*charsWritten = (size_t)(ascii.Length()-result);
+	outBuffer[*charsWritten] = 0;
+	inBuffer += charsWritten;
 #else
 const SHVWChar* iBuf;
 char* oBuf;
 size_t iLeft;
 size_t oLeft;
-iconv_t conv;
-	UNICODE_INIT();
-	conv = iconv_open(SHVStringC_Get8BitCharSet(),"UCS-2");
 
-	if (conv == (iconv_t)-1) // failure, try ascii as fallback
-		conv = iconv_open("ASCII","UCS-2");
-
-	if (conv == (iconv_t)-1)
+	for (size_t i=0; i<len && *inBuffer; i++)
 	{
-		fprintf(stderr, "UNICODE->local conversion error %d\n", errno);
-		outBuffer[0] = '\0';
-		return retVal;
-	}
-
-	for (size_t i=0; i<len; i++)
-	{
-		iBuf = Buffer+i;
-		oBuf = outBuffer+i;
+		iBuf = inBuffer;
+		oBuf = outBuffer;
 		iLeft  = 2;
 		oLeft  = 1;
-		if ( iconv(conv,(ICONV_IBUFTYPE)&iBuf,&iLeft,&oBuf,&oLeft) == ICONV_ERR)
+		if ( iconv((iconv_t)iconvData,(ICONV_IBUFTYPE)&iBuf,&iLeft,&oBuf,&oLeft) == ICONV_ERR)
 		{
-			switch (Buffer[i])
-			{
-			default:
-				outBuffer[i] = '?';
-				break;
-			}
+			*outBuffer = '?';
 		}
+		(*charsWritten)++;
+		inBuffer++;
+		outBuffer++;
 	}
 
-	outBuffer[len] = '\0';
-
-	iconv_close(conv);
 #endif
 
-	return retVal;
+	return inBuffer;
 }
 
 /*************************************
@@ -283,97 +527,78 @@ SHVString8 retVal;
  *************************************/
 bool SHVStringUTF8C::ConvertBufferToChar(SHVChar* buffer, size_t len) const
 {
-const char* utf8Str = Buffer;
+SHVStringConv conv(SHVStringConv::EncUtf8,SHVStringConv::Enc8);
+bool retVal = *conv.Convert((const SHVByte*)Buffer,buffer,len,&len) == 0;
+	if (buffer)
+		buffer[len] = 0;
+	return retVal;
+}
+const SHVChar* SHVStringConv::ConvertUTF8To8(const SHVChar* inBuffer, SHVChar* outBuffer, size_t len, size_t* charsWritten)
+{
+size_t written;
+	if (!charsWritten) charsWritten = &written;
+	*charsWritten = 0;
+	if (!IsValid()) return inBuffer;
+	if (!outBuffer) { *charsWritten = SHVStringUTF8C::StrLen(inBuffer); return inBuffer + SHVString8C::StrLen(inBuffer); } // lazy solution
 const char* endch;
 size_t bytes;
 size_t charLen;
 #ifdef __SHIVA_WIN32
 WCHAR ch;
 #elif defined(__SHIVA_EPOC)
-CCnvCharacterSetConverter* cnvToUnicode = CCnvCharacterSetConverter::NewLC();
-CCnvCharacterSetConverter* cnvFromUnicode = CCnvCharacterSetConverter::NewLC();
-RFs fs;
-TInt aState;
 SHVWChar ch;
-
-	fs.Connect();
-
-	cnvToUnicode->PrepareToConvertToOrFromL(KCharacterSetIdentifierUtf8, fs);
-	cnvFromUnicode->PrepareToConvertToOrFromL(KCharacterSetIdentifierCodePage1252, fs);
 #else
 const char* iBuf;
 char* oBuf;
 size_t iLeft;
 size_t oLeft;
-iconv_t conv;
-	UNICODE_INIT();
-	conv = iconv_open(SHVStringC_Get8BitCharSet(),"UTF-8");
-
-	if (conv == (iconv_t)-1) // failure, try ascii as fallback
-		conv = iconv_open("ASCII","UTF-8");
-
-	if (conv == (iconv_t)-1)
-	{
-		fprintf(stderr, "UTF-8 conversion error %d\n", errno);
-		return false;
-	}
 #endif
 
-	SHVUNUSED_PARAM(len);
-
-	while (*utf8Str)
+	while (*inBuffer && *charsWritten < len)
 	{
-		charLen = SHVStringUTF8C::GetUTF8CharLen(*utf8Str);
+		(*charsWritten)++;
+		charLen = SHVStringUTF8C::GetUTF8CharLen(*inBuffer);
 		if (charLen < 2)
 		{
-			*buffer = *utf8Str;
-			buffer++;
-			utf8Str++;
+			*outBuffer = *inBuffer;
+			outBuffer++;
+			inBuffer++;
 		}
 		else
 		{
-			endch = utf8Str+1;
-			for (bytes=1;charLen && ((*(utf8Str+bytes))&0xC0) == 0x80;bytes++, charLen--) endch++;
+			endch = inBuffer+1;
+			for (bytes=1;charLen && ((*(inBuffer+bytes))&0xC0) == 0x80;bytes++, charLen--) endch++;
 
 #ifdef __SHIVA_WIN32
-			MultiByteToWideChar(CP_UTF8,0,utf8Str,(int)bytes,&ch,1);
-			WideCharToMultiByte(CP_ACP,0,&ch,1,buffer,1,"?",NULL);
+			MultiByteToWideChar(CP_UTF8,0,inBuffer,(int)bytes,&ch,1);
+			WideCharToMultiByte(CP_ACP,0,&ch,1,outBuffer,1,"?",NULL);
 #elif defined(__SHIVA_EPOC)
 			aState = CCnvCharacterSetConverter::KStateDefault;
 			{
 			TPtr16 unicodePtr((TUint16*)&ch,1);
-			TPtr8 utf8Ptr((TUint8*)buffer,1);
-				if (cnvToUnicode->ConvertToUnicode( unicodePtr, TPtrC8((const TUint8*)utf8Str,bytes), aState ) != 0 ||
-					cnvFromUnicode->ConvertFromUnicode( utf8Ptr, TPtrC16((const TUint16*)&ch,1), aState ) != 0)
+			TPtr8 utf8Ptr((TUint8*)outBuffer,1);
+				if (((CCnvCharacterSetConverter*)convTo)->ConvertToUnicode( unicodePtr, TPtrC8((const TUint8*)inBuffer,bytes), aState ) != 0 ||
+					((CCnvCharacterSetConverter*)convFrom)->ConvertFromUnicode( utf8Ptr, TPtrC16((const TUint16*)&ch,1), aState ) != 0)
 				{
 					*buffer = '?';
 				}
 			}
 #else
-			iBuf = (char*)utf8Str;
-			oBuf = (char*)buffer;
+			iBuf = (char*)inBuffer;
+			oBuf = (char*)outBuffer;
 			iLeft  = bytes;
 			oLeft  = 1;
 
-			if ( iconv(conv,(ICONV_IBUFTYPE)&iBuf,&iLeft,&oBuf,&oLeft) == ICONV_ERR)
-				*buffer = '?';
+			if ( iconv((iconv_t)iconvData,(ICONV_IBUFTYPE)&iBuf,&iLeft,&oBuf,&oLeft) == ICONV_ERR)
+				*outBuffer = '?';
 #endif
 
-			buffer++;
-			utf8Str=endch;
+			outBuffer++;
+			inBuffer=endch;
 		}
 	}
-	*buffer = '\0';
 
-#ifdef __SHIVA_WIN32
-#elif defined(__SHIVA_EPOC)
-	fs.Close();
-	CleanupStack::PopAndDestroy(2); // cnv's
-#else
-	iconv_close(conv);
-#endif
-
-	return true;
+	return inBuffer;
 }
 
 /*************************************
@@ -397,87 +622,73 @@ SHVString16 retVal;
  *************************************/
 bool SHVStringUTF8C::ConvertBufferToWChar(SHVWChar* buffer, size_t len) const
 {
-const char* utf8Str = Buffer;
+SHVStringConv conv(SHVStringConv::EncUtf8,SHVStringConv::Enc16);
+bool retVal = *conv.Convert((const SHVByte*)Buffer,buffer,len,&len) == 0;
+	if (buffer)
+		buffer[len] = 0;
+	return retVal;
+}
+const SHVChar* SHVStringConv::ConvertUTF8To16(const SHVChar* inBuffer, SHVWChar* outBuffer, size_t len, size_t* charsWritten)
+{
+size_t written;
+	if (!charsWritten) charsWritten = &written;
+	*charsWritten = 0;
+	if (!IsValid()) return inBuffer;
+	if (!outBuffer) { *charsWritten = SHVStringUTF8C::StrLen(inBuffer); return inBuffer + SHVString8C::StrLen(inBuffer); } // lazy solution
 const char* endch;
 size_t bytes;
 size_t charLen;
 #ifdef __SHIVA_WIN32
 #elif defined(__SHIVA_EPOC)
-CCnvCharacterSetConverter* cnvToUnicode = CCnvCharacterSetConverter::NewLC();
-RFs fs;
-TInt aState;
-
-	fs.Connect();
-
-	cnvToUnicode->PrepareToConvertToOrFromL(KCharacterSetIdentifierUtf8, fs);
 #else
 const char* iBuf;
 char* oBuf;
 size_t iLeft;
 size_t oLeft;
-iconv_t conv;
-	UNICODE_INIT();
-	conv = iconv_open("UCS-2","UTF-8");
-
-	if (conv == (iconv_t)-1)
-	{
-		fprintf(stderr, "UTF-8 conversion error %d\n", errno);
-		return false;
-	}
 #endif
 
-	SHVUNUSED_PARAM(len);
-	
-	while (*utf8Str)
+	while (*inBuffer && *charsWritten < len)
 	{
-		charLen = SHVStringUTF8C::GetUTF8CharLen(*utf8Str);
+		(*charsWritten)++;
+		charLen = SHVStringUTF8C::GetUTF8CharLen(*inBuffer);
 		if (charLen < 2)
 		{
-			*buffer = *utf8Str;
-			buffer++;
-			utf8Str++;
+			*outBuffer = *inBuffer;
+			outBuffer++;
+			inBuffer++;
 		}
 		else
 		{
-			endch = utf8Str+1;
-			for (bytes=1;charLen && ((*(utf8Str+bytes))&0xC0) == 0x80;bytes++, charLen--) endch++;
+			endch = inBuffer+1;
+			for (bytes=1;charLen && ((*(inBuffer+bytes))&0xC0) == 0x80;bytes++, charLen--) endch++;
 
 #ifdef __SHIVA_WIN32
-			MultiByteToWideChar(CP_UTF8,0,utf8Str,(int)bytes,(WCHAR*)buffer,1);
+			MultiByteToWideChar(CP_UTF8,0,inBuffer,(int)bytes,(WCHAR*)outBuffer,1);
 #elif defined(__SHIVA_EPOC)
 			aState = CCnvCharacterSetConverter::KStateDefault;
 			{
-			TPtr16 unicodePtr((TUint16*)buffer,1);
-				if (cnvToUnicode->ConvertToUnicode( unicodePtr, TPtrC8((const TUint8*)utf8Str,bytes), aState ) != 0)
+			TPtr16 unicodePtr((TUint16*)outBuffer,1);
+				if (cnvToUnicode->ConvertToUnicode( unicodePtr, TPtrC8((const TUint8*)inBuffer,bytes), aState ) != 0)
 				{
 					*buffer = '?';
 				}
 			}
 #else
-			iBuf = (char*)utf8Str;
-			oBuf = (char*)buffer;
+			iBuf = (char*)inBuffer;
+			oBuf = (char*)outBuffer;
 			iLeft  = bytes;
 			oLeft  = 2;
 
-			if ( iconv(conv,(ICONV_IBUFTYPE)&iBuf,&iLeft,&oBuf,&oLeft) == ICONV_ERR)
-				*buffer = '?';
+			if ( iconv((iconv_t)iconvData,(ICONV_IBUFTYPE)&iBuf,&iLeft,&oBuf,&oLeft) == ICONV_ERR)
+				*outBuffer = '?';
 #endif
 
-			buffer++;
-			utf8Str=endch;
+			outBuffer++;
+			inBuffer=endch;
 		}
 	}
-	*buffer = '\0';
 
-#ifdef __SHIVA_WIN32
-#elif defined(__SHIVA_EPOC)
-	fs.Close();
-	CleanupStack::PopAndDestroy(1); // cnv
-#else
-	iconv_close(conv);
-#endif
-
-	return true;
+	return inBuffer;
 }
 
 
@@ -517,139 +728,140 @@ size_t retVal = 0;
  *************************************/
 bool SHVString8C::ConvertBufferToUTF8(SHVChar* str, size_t& len) const
 {
-const SHVChar* buffer = Buffer;
+SHVStringConv conv(SHVStringConv::Enc8,SHVStringConv::EncUtf8);
+bool retVal = *conv.Convert((const SHVByte*)Buffer,str,len,&len) == 0;
+	if (str)
+		str[len] = 0;
+	return retVal;
+}
+const SHVChar* SHVStringConv::Convert8ToUTF8(const SHVChar* inBuffer, SHVChar* outBuffer, size_t len, size_t* charsWritten)
+{
+size_t written;
+	if (!charsWritten) charsWritten = &written;
+	*charsWritten = 0;
+	if (!IsValid()) return inBuffer;
 char utf8Str[5];
-size_t retVal = 0;
 #ifdef __SHIVA_WIN32
 WCHAR ch;
 int bytes;
 #elif defined(__SHIVA_EPOC)
-CCnvCharacterSetConverter* cnvToUnicode = CCnvCharacterSetConverter::NewLC();
-CCnvCharacterSetConverter* cnvFromUnicode = CCnvCharacterSetConverter::NewLC();
-RFs fs;
-TInt aState;
 SHVWChar ch;
-
-	fs.Connect();
-
-	cnvToUnicode->PrepareToConvertToOrFromL(KCharacterSetIdentifierCodePage1252, fs);
-	cnvFromUnicode->PrepareToConvertToOrFromL(KCharacterSetIdentifierUtf8, fs);
 #else
 const char* iBuf;
 char* oBuf;
 size_t iLeft;
 size_t oLeft;
-iconv_t conv;
-	UNICODE_INIT();
-	conv = iconv_open("UTF-8",SHVStringC_Get8BitCharSet());
-
-	if (conv == (iconv_t)-1) // failure, try ascii as fallback
-		conv = iconv_open("UTF-8","ASCII");
-
-	if (conv == (iconv_t)-1)
-	{
-		fprintf(stderr, "UTF-8 conversion error %d\n", errno);
-		return false;
-	}
 #endif
 
-	while (*buffer)
+	// hack to make sure we can ignore outBuffer in the while check
+	if (!outBuffer)
+		len = SIZE_T_MAX;
+
+	while (*inBuffer && *charsWritten < len)
 	{
-		if (!((*buffer)&0x80))
+		if (!((*inBuffer)&0x80))
 		{
-			if (str)
+			if (outBuffer)
 			{
-				*str = *buffer;
-				str++;
+				*outBuffer = *inBuffer;
+				outBuffer++;
 			}
-			buffer++;
-			retVal++;
+			inBuffer++;
+			(*charsWritten)++;
 		}
 		else
 		{
 #ifdef __SHIVA_WIN32
-			MultiByteToWideChar(CP_ACP,0,buffer,1,&ch,1);
-			bytes = WideCharToMultiByte(CP_UTF8,0,&ch,1,str ? str : utf8Str,5,NULL,NULL);
+			MultiByteToWideChar(CP_ACP,0,inBuffer,1,&ch,1);
+			bytes = WideCharToMultiByte(CP_UTF8,0,&ch,1,outBuffer ? outBuffer : utf8Str, outBuffer ? int(len-*charsWritten) : 4,NULL,NULL);
 			if (bytes)
 			{
-				retVal += bytes;
-				if (str)
-					str += bytes;
+				*charsWritten += bytes;
+				if (outBuffer)
+					outBuffer += bytes;
 			}
 			else
 			{
-				if (str)
+				if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
 				{
-					*str = '?';
-					str++;
+					break;
 				}
-				retVal++;
+				else if (outBuffer)
+				{
+					*outBuffer = '?';
+					outBuffer++;
+				}
+				(*charsWritten)++;
 			}
 #elif defined(__SHIVA_EPOC)
 			aState = CCnvCharacterSetConverter::KStateDefault;
 			{
 			TPtr16 unicodePtr((TUint16*)&ch,1);
-			TPtr8 utf8Ptr((TUint8*)(str ? str : utf8Str),4);
-				if (cnvToUnicode->ConvertToUnicode( unicodePtr, TPtrC8((const TUint8*)utf8Str,bytes), aState ) != 0 ||
-					cnvFromUnicode->ConvertFromUnicode( utf8Ptr, TPtrC16((const TUint16*)&ch,1), aState ) != 0)
+			TPtr8 utf8Ptr((TUint8*)(outBuffer ? outBuffer : utf8Str),outBuffer ? len-*charsWritten : 4);
+			TInt errNo;
+				if (((CCnvCharacterSetConverter*)convTo)->ConvertToUnicode( unicodePtr, TPtrC8((const TUint8*)inBuffer,1), aState ) != 0)
 				{
-					retVal++;
-					if (str)
+					(*charsWritten)++;
+					if (outBuffer)
 					{
-						*str = '?';
-						str++;
+						*outBuffer = '?';
+						outBuffer++;
 					}
 				}
 				else
 				{
-					retVal += SHVString8C::StrLen(utf8Str);
-					if (str)
-						str += SHVString8C::StrLen(utf8Str);
+					errNo = ((CCnvCharacterSetConverter*)convFrom)->ConvertFromUnicode( utf8Ptr, TPtrC16((const TUint16*)&ch,1), aState );
+					if (errNo < 0)
+					{
+						///\todo detect lack of output buffer and break
+						SHVASSERT(false);
+						(*charsWritten)++;
+						if (outBuffer)
+						{
+							*outBuffer = '?';
+							outBuffer++;
+						}
+					}
+					else
+					{
+						*charsWritten += 4-errNo;
+						if (outBuffer)
+							outBuffer += 4-errNo;
+					}
 				}
 			}
 #else
-			iBuf = (char*)buffer;
-			oBuf = (char*)(str ? str : utf8Str);
+			iBuf = (char*)inBuffer;
+			oBuf = (char*)(outBuffer ? outBuffer : utf8Str);
 			iLeft  = 1;
-			oLeft  = 4;
+			oLeft  = (outBuffer ? len-*charsWritten : 4);
 
-			if ( iconv(conv,(ICONV_IBUFTYPE)&iBuf,&iLeft,&oBuf,&oLeft) == ICONV_ERR)
+			if ( iconv((iconv_t)iconvData,(ICONV_IBUFTYPE)&iBuf,&iLeft,&oBuf,&oLeft) == ICONV_ERR)
 			{
-				retVal++;
-				if (str)
+				if (errno == E2BIG)
 				{
-					*str = '?';
-					str++;
+					break;
+				}
+				(*charsWritten)++;
+				if (outBuffer)
+				{
+					*outBuffer = '?';
+					outBuffer++;
 				}
 			}
 			else
 			{
-				retVal += 4 - oLeft;
-				if (str)
-				{
-					str += 4 - oLeft;
-				}
+				if (outBuffer)
+					outBuffer += len-*charsWritten - oLeft;
+				*charsWritten += (outBuffer ? len-*charsWritten : 4) - oLeft;
 			}
 #endif
 
-			buffer++;
+			inBuffer++;
 		}
 	}
 
-	if (str)
-		*str = '\0';
-
-#ifdef __SHIVA_WIN32
-#elif defined(__SHIVA_EPOC)
-	fs.Close();
-	CleanupStack::PopAndDestroy(2); // cnv's
-#else
-	iconv_close(conv);
-#endif
-
-	len = retVal;
-
-	return true;
+	return inBuffer;
 }
 
 /*************************************
@@ -693,129 +905,123 @@ size_t retVal = 0;
  *************************************/
 bool SHVString16C::ConvertBufferToUTF8(SHVChar* str, size_t& len) const
 {
-const SHVWChar* buffer = Buffer;
+SHVStringConv conv(SHVStringConv::Enc16,SHVStringConv::EncUtf8);
+bool retVal = *conv.Convert((const SHVByte*)Buffer,str,len,&len) == 0;
+	if (str)
+		str[len] = 0;
+	return retVal;
+}
+const SHVWChar* SHVStringConv::Convert16ToUTF8(const SHVWChar* inBuffer, SHVChar* outBuffer, size_t len, size_t* charsWritten)
+{
+size_t written;
+	if (!charsWritten) charsWritten = &written;
+	*charsWritten = 0;
+	if (!IsValid()) return inBuffer;
 char utf8Str[5];
-size_t retVal = 0;
 #ifdef __SHIVA_WIN32
 int bytes;
 #elif defined(__SHIVA_EPOC)
-CCnvCharacterSetConverter* cnvFromUnicode = CCnvCharacterSetConverter::NewLC();
-RFs fs;
-TInt aState;
-
-	fs.Connect();
-
-	cnvFromUnicode->PrepareToConvertToOrFromL(KCharacterSetIdentifierUtf8, fs);
 #else
 const char* iBuf;
 char* oBuf;
 size_t iLeft;
 size_t oLeft;
-iconv_t conv;
-	UNICODE_INIT();
-	conv = iconv_open("UTF-8","UCS-2");
-
-	if (conv == (iconv_t)-1)
-	{
-		fprintf(stderr, "UTF-8 conversion error %d\n", errno);
-		return false;
-	}
 #endif
 
-	while (*buffer)
+	// hack to make sure we can ignore outBuffer in the while check
+	if (!outBuffer)
+		len = SIZE_T_MAX;
+	
+	while (*inBuffer && *charsWritten < len)
 	{
-		if ( !((*buffer)&0xFF80) )
+		if ( !((*inBuffer)&0xFF80) )
 		{
-			if (str)
+			if (outBuffer)
 			{
-				*str = (const char)*buffer;
-				str++;
+				*outBuffer = (const char)*inBuffer;
+				outBuffer++;
 			}
-			buffer++;
-			retVal++;
+			inBuffer++;
+			(*charsWritten)++;
 		}
 		else
 		{
 #ifdef __SHIVA_WIN32
-			bytes = WideCharToMultiByte(CP_UTF8,0,(const WCHAR*)buffer,1,str ? str : utf8Str,5,NULL,NULL);
+			bytes = WideCharToMultiByte(CP_UTF8,0,(const WCHAR*)inBuffer,1,outBuffer ? outBuffer : utf8Str, outBuffer ? int(len-*charsWritten) : 4,NULL,NULL);
 			if (bytes)
 			{
-				retVal += bytes;
-				if (str)
-					str += bytes;
+				*charsWritten += bytes;
+				if (outBuffer)
+					outBuffer += bytes;
 			}
 			else
 			{
-				if (str)
+				if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
 				{
-					*str = '?';
-					str++;
+					break;
 				}
-				retVal++;
+				else if (outBuffer)
+				{
+					*outBuffer = '?';
+					outBuffer++;
+				}
+				(*charsWritten)++;
 			}
 #elif defined(__SHIVA_EPOC)
 			aState = CCnvCharacterSetConverter::KStateDefault;
 			{
-			TPtr16 unicodePtr((TUint16*)str,1);
-			TPtr8 utf8Ptr((TUint8*)(str ? str : utf8Str),4);
-				if (cnvFromUnicode->ConvertFromUnicode( utf8Ptr, TPtrC16((const TUint16*)&ch,1), aState ) != 0)
+			TPtr16 unicodePtr((TUint16*)inBuffer,1);
+			TPtr8 utf8Ptr((TUint8*)(outBuffer ? outBuffer : utf8Str),outBuffer ? len-*charsWritten : 4);
+			TInt errNo = ((CCnvCharacterSetConverter*)convTo)->ConvertFromUnicode( utf8Ptr, TPtrC16((const TUint16*)&ch,1), aState );
+				if (errNo < 0)
 				{
-					retVal++;
-					if (str)
+					///\todo detect lack of output buffer and break
+					SHVASSERT(false);
+					(*charsWritten)++;
+					if (outBuffer)
 					{
-						*str = '?';
-						str++;
+						*outBuffer = '?';
+						outBuffer++;
 					}
 				}
 				else
 				{
-					retVal += SHVString8C::StrLen(utf8Str);
-					if (str)
-						str += SHVString8C::StrLen(utf8Str);
+					*charsWritten += 4-errNo;
+					if (outBuffer)
+						outBuffer += 4-errNo;
 				}
 			}
 #else
-			iBuf = (char*)buffer;
-			oBuf = (char*)(str ? str : utf8Str);
+			iBuf = (char*)inBuffer;
+			oBuf = (char*)(outBuffer ? outBuffer : utf8Str);
 			iLeft  = 2;
-			oLeft  = 4;
+			oLeft  = outBuffer ? len-*charsWritten : 4;
 
-			if ( iconv(conv,(ICONV_IBUFTYPE)&iBuf,&iLeft,&oBuf,&oLeft) == ICONV_ERR)
+			if ( iconv((iconv_t)iconvData,(ICONV_IBUFTYPE)&iBuf,&iLeft,&oBuf,&oLeft) == ICONV_ERR)
 			{
-				retVal++;
-				if (str)
+				if (errno == E2BIG)
 				{
-					*str = '?';
-					str++;
+					break;
+				}
+				(*charsWritten)++;
+				if (outBuffer)
+				{
+					*outBuffer = '?';
+					outBuffer++;
 				}
 			}
 			else
 			{
-				retVal += 4 - oLeft;
-				if (str)
-				{
-					str += 4 - oLeft;
-				}
+				if (outBuffer)
+					outBuffer += len-*charsWritten - oLeft;
+				*charsWritten += (outBuffer ? len-*charsWritten : 4) - oLeft;
 			}
 #endif
-			buffer++;
+			inBuffer++;
 		}
 	}
 
-	if (str)
-		*str = '\0';
-
-#ifdef __SHIVA_WIN32
-#elif defined(__SHIVA_EPOC)
-	fs.Close();
-	CleanupStack::PopAndDestroy(2); // cnv's
-#else
-	iconv_close(conv);
-#endif
-
-	len = retVal;
-
-	return true;
+	return inBuffer;
 }
 
 #endif

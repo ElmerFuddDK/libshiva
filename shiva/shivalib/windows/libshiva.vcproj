@@ -383,6 +383,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\utils\shvstringstream.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\utils\shvstringutf8.cpp"
 					>
 				</File>

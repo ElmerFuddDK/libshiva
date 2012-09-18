@@ -51,6 +51,8 @@ HEADERS += ../../../include/platformspc.h \
            ../../../include/utils/shvstring16.h \
            ../../../include/utils/shvstringc.h \
            ../../../include/utils/shvstring.h \
+           ../../../include/utils/shvstringconv.h \
+           ../../../include/utils/shvstringstream.h \
            ../../../include/utils/shvstringutf8c.h \
            ../../../include/utils/shvstringutf8.h \
            ../../../include/utils/shvtime.h \
@@ -109,6 +111,7 @@ SOURCES += ../../src/framework/shvconsole.cpp \
            ../../src/utils/shvdir.cpp \
            ../../src/utils/shvrefobject.cpp \
            ../../src/utils/shvstringconv.cpp \
+           ../../src/utils/shvstringstream.cpp \
            ../../src/utils/shvstring.cpp \
            ../../src/utils/shvstringutf8.cpp \
            ../../src/utils/shvtime.cpp \
