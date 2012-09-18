@@ -38,6 +38,7 @@
 #include "../include/shvdatarowlistcsqlite.h"
 #include "../include/shvdatarowlistcindexed.h"
 #include "../../../include/modules/dataengine/shvdataengine.h"
+#include "../../../include/utils/shvstringstream.h"
 
 /*************************************
  * Constructor
@@ -342,22 +343,27 @@ SHVDataSessionSQLite::~SHVDataSessionSQLite()
 SHVBool SHVDataSessionSQLite::DoUpdateRow(SHVDataRow* row)
 {
 SHVBool retVal;
-SHVStringUTF8 cols;
-SHVStringUTF8 sql;
+SHVStringStreamUTF8 sql;
 SHVStringSQLite rest(NULL);
 SHVSQLiteStatementRef statement;
 const SHVDataStructC& st = *row->GetStruct();
 
+	sql.WriteStringUTF8("update or fail ");
+	sql.WriteString8(row->GetStruct()->GetTableName());
 	for (size_t c = 0; c  < st.GetColumnCount(); c++)
 	{
 		if (c)
-			cols += ", ";
-		cols += SHVStringUTF8C::Format("\"%s\" = %s", st[c]->GetColumnName().GetSafeBuffer(), row->AsDBString(c).ToStrUTF8().GetSafeBuffer());
+			sql.WriteStringUTF8(", \"");
+		else
+			sql.WriteStringUTF8(" set \"");
+		sql.WriteStringUTF8(st[c]->GetColumnName().GetSafeBuffer());
+		sql.WriteStringUTF8("\" = ");
+		sql.WriteString(row->AsDBString(c));
 	}
-	sql.Format("update or fail %s set %s where %s",
-		row->GetStruct()->GetTableName().GetSafeBuffer(),
-		cols.GetSafeBuffer(),
-		WhereSQL(row).GetSafeBuffer());
+	sql.WriteStringUTF8(" where ");
+	StreamWhereSQL(row,sql);
+	sql.Finalize();
+	
 	statement = SQLite->ExecuteUTF8(retVal, sql, rest);
 	if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 	{
@@ -373,44 +379,62 @@ const SHVDataStructC& st = *row->GetStruct();
 SHVBool SHVDataSessionSQLite::DoInsertRow(SHVDataRow* row, bool replaceIfDuplicate)
 {
 SHVBool retVal;
-SHVStringUTF8 val;
-SHVStringUTF8 vals;
-SHVStringUTF8 cols;
-SHVStringUTF8 sql;
+SHVStringStreamUTF8 sql;
 SHVStringSQLite rest(NULL);
 SHVSQLiteStatementRef statement;
 const SHVDataStructC& st = *row->GetStruct();
+bool empty;
 
+	if (replaceIfDuplicate)
+		sql.WriteStringUTF8("insert or replace into ");
+	else
+		sql.WriteStringUTF8("insert or fail into ");
+	sql.WriteString8(row->GetStruct()->GetTableName());
+	
+	sql.WriteStringUTF8(" (");
 	if (st.GetIsMultiInstance())
 	{
-		cols = "shv_alias";
-		vals.Format("%d", row->GetRowListC()->GetAliasID());
-	}
-	for (size_t c = 0; c  < st.GetColumnCount(); c++)
-	{
-		if (!cols.IsEmpty())
-		{
-			cols += ", ";
-			vals += ", ";
-		}
-		cols += SHVStringUTF8C("\"") + st[c]->GetColumnName().GetSafeBuffer() + SHVStringUTF8C("\"");
-		vals += row->AsDBString(c).ToStrUTF8();
-	}
-	if (replaceIfDuplicate)
-	{
-		sql.Format("insert or replace into %s (%s) values(%s)",
-			row->GetStruct()->GetTableName().GetSafeBuffer(),
-			cols.GetSafeBuffer(),
-			vals.GetSafeBuffer());
+		empty = false;
+		sql.WriteStringUTF8("shv_alias");
 	}
 	else
 	{
-		sql.Format("insert or fail into %s (%s) values(%s)",
-			row->GetStruct()->GetTableName().GetSafeBuffer(),
-			cols.GetSafeBuffer(),
-			vals.GetSafeBuffer());
+		empty = true;
 	}
-	statement = SQLite->ExecuteUTF8(retVal, sql, rest);
+	for (size_t c = 0; c  < st.GetColumnCount(); c++)
+	{
+		if (!empty)
+			sql.WriteStringUTF8(", ");
+		else
+			empty = false;
+		sql.WriteStringUTF8("\"");
+		sql.WriteStringUTF8(st[c]->GetColumnName().GetSafeBuffer());
+		sql.WriteStringUTF8("\"");
+	}
+	
+	sql.WriteStringUTF8(") values(");
+	if (st.GetIsMultiInstance())
+	{
+		empty = false;
+		sql.WriteStringUTF8( SHVStringUTF8C::LongToString(row->GetRowListC()->GetAliasID()) );
+	}
+	else
+	{
+		empty = true;
+	}
+	for (size_t c = 0; c  < st.GetColumnCount(); c++)
+	{
+		if (!empty)
+			sql.WriteStringUTF8(", ");
+		else
+			empty = false;
+		sql.WriteString(row->AsDBString(c));
+	}
+	sql.WriteStringUTF8(")");
+	
+	sql.Finalize();
+
+	statement = SQLite->ExecuteUTF8(retVal, SHVStringUTF8C(sql.GetSafeBuffer()), rest);
 	if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 	{
 		retVal = SHVBool::True;
@@ -419,6 +443,7 @@ const SHVDataStructC& st = *row->GetStruct();
 	{
 		SHVTRACE(_S("Error in %s: %s\n"), sql.ToStrT().GetSafeBuffer(), GetErrorMessage().GetSafeBuffer());
 	}
+	
 	return retVal;
 }
 
@@ -428,11 +453,16 @@ const SHVDataStructC& st = *row->GetStruct();
 SHVBool SHVDataSessionSQLite::DoDeleteRow(SHVDataRow* row)
 {
 SHVBool retVal;
-SHVStringUTF8 sql;
+SHVStringStreamUTF8 sql;
 SHVStringSQLite rest(NULL);
 SHVSQLiteStatementRef statement;
 
-	sql.Format("delete from %s where %s", row->GetStruct()->GetTableName().GetSafeBuffer(), WhereSQL(row).GetSafeBuffer());
+	sql.WriteStringUTF8("delete from ");
+	sql.WriteString8(row->GetStruct()->GetTableName());
+	sql.WriteStringUTF8(" where ");
+	StreamWhereSQL(row,sql);
+	sql.Finalize();
+
 	statement = SQLite->ExecuteUTF8(retVal, sql, rest);
 	if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 	{
@@ -447,27 +477,45 @@ SHVSQLiteStatementRef statement;
  *************************************/
 SHVStringUTF8 SHVDataSessionSQLite::WhereSQL(SHVDataRow* row)
 {
-SHVStringUTF8 retVal;
-SHVStringUTF8 keycond;
-SHVStringUTF8 rest;
+SHVStringStreamUTF8 retVal(128);
+	StreamWhereSQL(row,retVal);
+	retVal.Finalize();
+	return retVal;
+}
+
+/*************************************
+ * StreamWhereSQL
+ *************************************/
+void SHVDataSessionSQLite::StreamWhereSQL(SHVDataRow* row, SHVStringStreamUTF8& str)
+{
 const SHVDataRowKey& Key = *row->GetStruct()->GetPrimaryIndex();
-SHVSQLiteStatementRef statement;
+bool empty = true;
 	
 	if (row->GetStruct()->GetIsMultiInstance())
-		retVal = SHVStringUTF8C::Format("shv_alias=%d", row->GetRowListC()->GetAliasID());
+	{
+		str.WriteStringUTF8("shv_alias=");
+		str.WriteStringUTF8(SHVStringUTF8C::LongToString(row->GetRowListC()->GetAliasID()));
+		empty = false;
+	}
 	for (size_t k = 0; k < Key.Count(); k++)
 	{
 	size_t colIdx;
 		if (row->GetStruct()->FindColumnIndex(colIdx, Key[k].Key))
 		{
-		const SHVDataStructColumnC& col = *(*row->GetStruct())[colIdx];
-			if (!retVal.IsEmpty())
-				retVal += " and ";
-			keycond.Format("\"%s\" = %s", Key[k].Key.GetSafeBuffer(), row->OriginalValue(Key[k].Key)->AsDBString().ToStrUTF8().GetSafeBuffer());
-			retVal += keycond;
+			if (empty)
+			{
+				str.WriteStringUTF8("\"");
+				empty = false;
+			}
+			else
+			{
+				str.WriteStringUTF8(" and \"");
+			}
+			str.WriteStringUTF8(Key[k].Key.GetSafeBuffer());
+			str.WriteStringUTF8("\" = ");
+			str.WriteString(row->OriginalValue(Key[k].Key)->AsDBString());
 		}
 	}
-	return retVal;
 }
 
 /*************************************

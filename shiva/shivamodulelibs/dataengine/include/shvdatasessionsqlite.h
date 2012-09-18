@@ -4,6 +4,8 @@
 #include "../../../include/sqlite/sqlitewrapper.h"
 #include "../../../include/modules/dataengine/shvdatasession.h"
 #include "../../../include/modules/dataengine/shvdatarow.h"
+class SHVStringStreamUTF8;
+
 
 class SHVDataSessionSQLite: public SHVDataSession
 {
@@ -48,6 +50,7 @@ protected:
 private:
 	SHVBool SessionReset();
 	void SessionReposition();
+	void StreamWhereSQL(SHVDataRow* row, SHVStringStreamUTF8& str);
 
 	// data
 	SHVSQLiteWrapperRef SQLite;
