@@ -209,9 +209,7 @@ SHVDataRowC* retVal = NULL;
 				Statement->SetParameterNullUTF8(keyParm);
 		}
 		InitializeFind();
-		RowCount = 0;
-		while (Statement->NextResult().GetError() == SHVSQLiteWrapper::SQLite_ROW) RowCount++;
-		Statement->Reset();
+		RowCount = -1;
 		if (NextRow())
 			retVal = CurrentRow;
 	}
