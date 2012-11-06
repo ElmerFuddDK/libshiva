@@ -10,6 +10,7 @@
 #include "../../../include/modules/dataengine/shvdatarowlist.h"
 #include "../../../include/modules/dataengine/shvdatasession.h"
 #include "../../../include/modules/dataengine/shvdatarow.h"
+#include "../../../include/modules/dataengine/shvdatafunction.h"
 #include "shvdatarowchangecacheimpl.h"
 //-=========================================================================================================
 /// SHVDataRowListSQLite class - SQLite implementation of a datarow list.
@@ -70,6 +71,8 @@ protected:
 	// from SHVDataRowList
 	virtual SHVBool AcceptChanges(SHVDataRow* row);
 	virtual SHVBool RejectChanges(SHVDataRow* row);
+	virtual SHVDataFunction* GetDataChangeFunction(int func);
+	virtual bool SetDataChangeFunction(SHVDataFunction* datafunc, int func);
 
 	// from SHVDataRowListC
 	virtual void AdjustRowCount(int delta);
@@ -78,6 +81,9 @@ protected:
 
 private:
 	SHVDataRowListCRef RowList;
+	SHVDataFunctionRef InsertFunction;
+	SHVDataFunctionRef UpdateFunction;
+	SHVDataFunctionRef DeleteFunction;
 	SHVDataSessionRef DataSession;
 	SHVDataRowCollection PendingRows;
 	SHVListPos PendingPosAdded;

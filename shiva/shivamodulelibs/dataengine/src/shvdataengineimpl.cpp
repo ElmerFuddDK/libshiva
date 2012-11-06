@@ -47,7 +47,10 @@ SHVString datapath = modules.GetConfig().Find(__DATAENGINE_DATAPATH, Modules.Get
 SHVBool ok;
 SHVString driverPath;
 
-	datapath += SHVDir::Delimiter() + database;
+	if (database == _S(":memory:"))
+		datapath = _S("file:memory:?cached=shared");
+	else
+		datapath += SHVDir::Delimiter() + database;
 	driverPath = SQLiteDll.CreateLibFileName(_S("shivasqlite"),modules.GetConfig().Find(SHVModuleList::DefaultCfgAppPath)->ToString());
 
 	ok = SQLiteDll.Load(driverPath);
@@ -229,8 +232,8 @@ SHVSQLiteWrapperRef retVal = (SHVSQLiteWrapper*) SQLiteDll.CreateObjectInt(&Modu
 	{
 	SHVStringSQLite rest("");
 	// Lets setup a default memory database
-		if (dataBase != _S(":memory"))
-			retVal->ExecuteUTF8(Ok, "attach database :memory as memdb", rest);
+		if (dataBase.Find(_S(":memory:")) == -1)
+			retVal->ExecuteUTF8(Ok, "attach database ':memory:' as memdb", rest);
 		if (Ok.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 		{
 			retVal->ExecuteUTF8(Ok, "create table if not exists shv_alias(id integer primary key, alias varchar(200))", rest);
@@ -273,3 +276,18 @@ void SHVDataEngineImpl::RowChanged(SHVDataRow* row)
 	EmitEvent(new SHVEventDataRowChanged(row, this, SHVDataFactory::EventRowChanged, SHVInt(), Factory));
 }
 
+/*************************************
+ * BeginningTransaction
+ *************************************/
+void SHVDataEngineImpl::BeginningTransaction()
+{
+	EmitEvent(new SHVEvent(this, SHVDataEngine::EventBeginningTransaction));
+}
+
+/*************************************
+ * FinishedTransaction
+ *************************************/
+void SHVDataEngineImpl::FinishedTransaction(bool committed)
+{
+	EmitEvent(new SHVEvent(this, SHVDataEngine::EventFinishedTransaction,SHVInt(committed ? 1 : 0)));
+}

@@ -239,6 +239,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\shvdatafunctionimpl.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\shvdatarowchangecacheimpl.cpp"
 					>
 				</File>

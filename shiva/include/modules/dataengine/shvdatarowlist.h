@@ -2,10 +2,11 @@
 #define __SHIVA_DATAENGINE_DATAROWLIST_H
 
 #include "shvdatarowlistc.h"
-#include "shvdatavariant.h"
 
 // forward declare
 class SHVDataRow;
+class SHVDataRowListC;
+class SHVDataVariant;
 class SHVDataRowChangeCache;
 //-=========================================================================================================
 /// SHVDataRowListC class - Interface for SHVDataRowList
@@ -15,6 +16,13 @@ class SHVDataRowChangeCache;
 class SHVDataRowList: public SHVDataRowListC
 {
 public:
+	enum SHVDataChangeFunction
+	{
+		ChangeFunctionNone = -1,
+		ChangeFunctionDelete = 0,
+		ChangeFunctionAdd = 1,
+		ChangeFunctionUpdate = 2
+	};
 	virtual SHVBool StartEdit() = 0;
 	virtual SHVBool EndEdit() = 0;
 	virtual SHVBool CancelEdit() = 0;
@@ -33,6 +41,9 @@ public:
 	virtual void EnableReplaceIfDuplicate(bool enable) = 0;
 	virtual bool GetReplaceIfDuplicate() = 0;
 	virtual const SHVDataRowChangeCache* GetChangeCache() const = 0;
+
+	virtual SHVDataFunction* GetDataChangeFunction(int func) = 0;
+	virtual bool SetDataChangeFunction(SHVDataFunction* datafunc, int func) = 0;
 
 // from SHVDataRowListC
 	virtual const SHVDataRowC* GetCurrentRow() const = 0;
@@ -55,6 +66,7 @@ public:
 protected:
 // friends
 friend class SHVDataRow;
+friend class SHVDataSession;
 
 	virtual ~SHVDataRowList() {}
 
@@ -73,6 +85,7 @@ friend class SHVDataRow;
 	inline void InternalAdjustRowCount(SHVDataRowListC* rowList, int delta);
 };
 typedef SHVRefObjectContainer<SHVDataRowList> SHVDataRowListRef;
+
 #endif
 
 // ==================================== implementation - SHVDataRowList ==================================== //
@@ -81,6 +94,7 @@ typedef SHVRefObjectContainer<SHVDataRowList> SHVDataRowListRef;
 
 #include "shvdatasession.h"
 #include "shvdatarow.h"
+#include "shvdatavariant.h"
 
 /*************************************
  * UpdateRow

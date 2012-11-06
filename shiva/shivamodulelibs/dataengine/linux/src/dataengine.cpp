@@ -66,6 +66,7 @@ public:
 				table->SetPrimaryIndex(key);
 				table->SetIsMultiInstance(false);
 				DataEngine->RegisterTable(table);
+				printf("Done\n");
 			}
 			else
 			if (str == SHVString8C("/insert"))
@@ -79,6 +80,19 @@ public:
 				else
 				{
 					rowList->EnableReplaceIfDuplicate(true);
+					rowList->StartEdit();
+					for (int i = 0; i < 1000000; i++)
+					{
+						row = rowList->AddRow();
+						row->SetInt(0,i);
+						row->SetString(1,SHVStringC::Format(_S("Number %d"), i));
+						row->SetInt(2,i);
+						row->SetString(3, _S("Blabber head"));
+						row->AcceptChanges();
+					}
+					rowList->EndEdit();
+					printf("Done\n");
+/*
 					rowList->StartEdit();
 					row = rowList->AddRow();
 					row->SetInt(0, 1);
@@ -99,6 +113,7 @@ public:
 					row->SetString(3, "æøå");
 					row->AcceptChanges();
 					rowList->EndEdit();
+*/
 				}
 			}
 			else
@@ -119,6 +134,20 @@ public:
 							  					rows->GetCurrentRow()->AsString(3).GetSafeBuffer());
 					}
 				}
+			}
+			else
+			if (str == SHVString8C("/seek"))
+			{
+			SHVDataRowKeyRef key = DataEngine->CreateKey();
+			SHVDataVariant* v = DataEngine->CreateVariant();
+			SHVDataRowListCRef l = DataSession->GetRows("testtable", _S(""), 0);
+
+				v->SetInt(500);
+				key->AddKey("key", v, false);
+				l->SetPosition(key);
+				printf("Found %s\n", l->GetCurrentRow()->AsString("col1").GetSafeBuffer());
+				printf("Done\n");
+
 			}
 			else
 			{				

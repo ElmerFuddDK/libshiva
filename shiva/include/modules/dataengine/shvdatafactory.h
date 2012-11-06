@@ -79,6 +79,8 @@ friend class SHVDataEngine;
 	// inlines
 	inline void SchemaChanged(SHVDataSession* session);
 	inline SHVDataStruct* GetInternalStruct(SHVDataStructC* dataStruct);
+	inline void BeginningTransaction(SHVDataEngine* engine);
+	inline void FinishedTransaction(SHVDataEngine* engine, bool committed);
 };
 typedef SHVRefObjectContainer<SHVDataFactory> SHVDataFactoryRef;
 
@@ -106,6 +108,7 @@ private:
 #define __SHIVA_DATAFACTORY_INL
 
 #include "shvdatasession.h"
+#include "shvdataengine.h" // included here since data engine implements 2 datafactory inlines
 
 /*************************************
  * SchemaChanged

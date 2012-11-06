@@ -53,6 +53,8 @@ protected:
 	// from SHVDataEngine
 	virtual void SubscribeRowChange(SHVEventSubscriberBase* sub);
 	virtual void RowChanged(SHVDataRow* row);
+	virtual void BeginningTransaction();
+	virtual void FinishedTransaction(bool committed);
 
 
 private:

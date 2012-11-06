@@ -15,6 +15,7 @@ TEMPLATE = lib
 
 HEADERS += ../../../include/modules/dataengine/shvdataengine.h \
            ../../../include/modules/dataengine/shvdatafactory.h \
+           ../../../include/modules/dataengine/shvdatafunction.h \
            ../../../include/modules/dataengine/shvdatarowc.h \
            ../../../include/modules/dataengine/shvdatarowchangecache.h \
            ../../../include/modules/dataengine/shvdatarow.h \
@@ -28,6 +29,7 @@ HEADERS += ../../../include/modules/dataengine/shvdataengine.h \
            ../include/shvdataenginefactory.h \
            ../include/shvdataengineimpl.h \
            ../include/shvdatafactoryimpl.h \
+           ../include/shvdatafunctionimpl.h \
            ../include/shvdatarowchangecacheimpl.h \
            ../include/shvdatarowcsqlite.h \
            ../include/shvdatarowimpl.h \
@@ -43,6 +45,7 @@ SOURCES += dataengine.cpp \
            ../src/shvdataenginefactory.cpp \
            ../src/shvdataengineimpl.cpp \
            ../src/shvdatafactoryimpl.cpp \
+           ../src/shvdatafunctionimpl.cpp \
            ../src/shvdatarowchangecacheimpl.cpp \
            ../src/shvdatarowcsqlite.cpp \
            ../src/shvdatarowimpl.cpp \

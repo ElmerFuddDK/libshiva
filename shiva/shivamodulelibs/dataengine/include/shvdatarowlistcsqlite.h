@@ -9,6 +9,9 @@
 #include "../../../include/modules/dataengine/shvdatarowlistc.h"
 #include "../../../include/modules/dataengine/shvdatarowc.h"
 
+// forward declares
+class SHVDataFunctionImpl;
+
 //-=========================================================================================================
 /// SHVDataRowListCSQLite class - SQLite implementation of a constant datarow list.
 /**
@@ -54,7 +57,9 @@ protected:
 	void Unlock();
 
 private:
-	SHVDataRowListCSQLite(SHVDataSession* session, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, const SHVString8C& alias, size_t index);
+friend class SHVDataFunctionImpl;
+	SHVDataRowListCSQLite(SHVDataSession* session, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, const SHVString8C& alias, size_t index);	
+	SHVDataRowListCSQLite(SHVDataSession* session, const SHVStringUTF8C& sql, const SHVDataRowKey* sortKey);
 	SHVDataStructCRef StructCache;
 	SHVDataRowCRef CurrentRow;
 	SHVDataSessionRef DataSession;
@@ -70,7 +75,7 @@ protected:
 	SHVString8 Alias;
 	bool HasShareLock;
 };
-typedef SHVRefObjectContainer<SHVDataRowListC> SHVDataRowListCRef;
+typedef SHVRefObjectContainer<SHVDataRowListCSQLite> SHVDataRowListCSQLiteRef;
 
 
 // ==================================== implementation - SHVDataRowList ==================================== //

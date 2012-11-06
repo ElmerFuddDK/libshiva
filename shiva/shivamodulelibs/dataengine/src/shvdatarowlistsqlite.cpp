@@ -470,6 +470,35 @@ SHVBool retVal = SHVBool::True;
 }
 
 /*************************************
+ * GetDataChangeFunction
+ *************************************/
+SHVDataFunction* SHVDataRowListSQLite::GetDataChangeFunction(int func)
+{
+SHVDataFunction* retVal = NULL;
+	switch (func)
+	{
+	case ChangeFunctionAdd: retVal = InsertFunction; break;
+	case ChangeFunctionUpdate: retVal = UpdateFunction; break;
+	case ChangeFunctionDelete: retVal = DeleteFunction; break;
+	}
+	return retVal;
+}
+
+bool SHVDataRowListSQLite::SetDataChangeFunction(SHVDataFunction* datafunc, int func)
+{
+bool retVal = true;
+	switch (func)
+	{
+	case ChangeFunctionAdd: InsertFunction = datafunc; break;
+	case ChangeFunctionUpdate: UpdateFunction = datafunc; break;
+	case ChangeFunctionDelete: DeleteFunction = datafunc; break;
+	default: retVal = false;
+	}
+	return retVal;
+}
+
+
+/*************************************
  * AdjustRowCount
  *************************************/
 void SHVDataRowListSQLite::AdjustRowCount(int delta)

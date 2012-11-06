@@ -21,6 +21,14 @@
 class SHVDataEngine: public SHVModule
 {
 public:
+	
+	enum Events
+	{
+		EventRowChanged = SHVDataFactory::EventRowChanged,
+		EventBeginningTransaction,
+		EventFinishedTransaction  ///< SubID is 1 if transaction committed
+	};
+	
 	virtual ~SHVDataEngine() {}
 	virtual SHVBool RegisterTable(const SHVDataStructC* dataStruct, SHVDataSession* useSession = NULL) = 0;
 	virtual SHVBool RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear = false, SHVDataSession* useSession = NULL) = 0;
@@ -52,8 +60,11 @@ public:
 
 
 protected:
+friend class SHVDataFactory;
 	virtual void SubscribeRowChange(SHVEventSubscriberBase* sub) = 0;
 	virtual void RowChanged(SHVDataRow* row) = 0;
+	virtual void BeginningTransaction() = 0;
+	virtual void FinishedTransaction(bool committed) = 0;
 
 	// inlines
 	inline SHVDataEngine(SHVModuleList& modules): SHVModule(modules, "DataEngine") { }
@@ -68,6 +79,22 @@ protected:
 void SHVDataEngine::FactoryRowChanged(SHVDataRow* row)
 {
 	RowChanged(row);
+}
+
+/*************************************
+ * SHVDataFactory::BeginningTransaction
+ *************************************/
+void SHVDataFactory::BeginningTransaction(SHVDataEngine* engine)
+{
+	engine->BeginningTransaction();
+}
+
+/*************************************
+ * SHVDataFactory::FactoryRowChanged
+ *************************************/
+void SHVDataFactory::FinishedTransaction(SHVDataEngine* engine, bool committed)
+{
+	engine->FinishedTransaction(committed);
 }
 #endif
 

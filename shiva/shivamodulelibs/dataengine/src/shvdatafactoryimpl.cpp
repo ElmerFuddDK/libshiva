@@ -895,6 +895,7 @@ SHVStringSQLite rest(NULL);
 SHVBool ok = SHVBool::True;
 	if (!InTransaction)
 	{
+		BeginningTransaction(&DataEngine);
 		sqlite->ExecuteUTF8(ok, "BEGIN TRANSACTION", rest);
 		if (ok == SHVSQLiteWrapper::SQLite_DONE)
 			ok = SHVBool::True;
@@ -963,6 +964,7 @@ bool more;
 			InTransaction++;
 			InternalRollbackTransaction(sqlite);
 		}
+		FinishedTransaction(&DataEngine,ok);
 	}
 	return ok;
 }
@@ -1009,6 +1011,7 @@ bool more;
 				}			
 			}
 		}
+		FinishedTransaction(&DataEngine,false);
 	}
 	return ok;
 }

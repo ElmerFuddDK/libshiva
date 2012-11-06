@@ -9,6 +9,7 @@
 // forward declare
 class SHVDataRowList;
 class SHVDataRowListC;
+class SHVDataFunction;
 class SHVDataRow;
 class SHVDataRowKey;
 class SHVDataFactory;
@@ -30,6 +31,7 @@ public:
 	virtual SHVDataRowList* GetRows(const SHVString8C& tableName, const SHVStringC& condition, size_t index) = 0;
 	virtual SHVDataRowList* GetRowsIndexed(const SHVString8C& tableName, const SHVStringC& condition, size_t index) = 0;
 	virtual SHVDataRowListC* Query(const SHVStringC& query, const SHVDataRowKey* sortKey = NULL) = 0;
+	virtual SHVDataFunction* PrepareFunction(const SHVStringC& query, const SHVDataRowKey* sortKey = NULL) = 0;
 	virtual SHVDataRowListC* QueryTable(const SHVString8C& tableName, const SHVStringC& condition, size_t index) = 0;
 	virtual SHVDataRowListC* QueryTableIndexed(const SHVString8C& tableName, const SHVStringC& condition, size_t index) = 0;
 	virtual SHVDataRowList* CopyAlias(const SHVString8C& sourceAlias, const SHVString8C& destAlias) = 0;
@@ -67,10 +69,10 @@ friend class SHVDataFactory;
 	inline int GetAliasID(const SHVString8C alias) const;
 };
 typedef SHVRefObjectContainer<SHVDataSession> SHVDataSessionRef;
-
 #endif
 
 // =========================================== implementation ============================================ //
+
 #ifndef __SHIVA_DATASESSION_INL
 #define __SHIVA_DATASESSION_INL
 

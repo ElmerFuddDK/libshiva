@@ -20,6 +20,7 @@ public:
 	virtual SHVDataRowList* GetRows(const SHVString8C& tableName, const SHVStringC& condition, size_t index);
 	virtual SHVDataRowList* GetRowsIndexed(const SHVString8C& tableName, const SHVStringC& condition, size_t index);
 	virtual SHVDataRowListC* Query(const SHVStringC& query, const SHVDataRowKey* sortKey);
+	virtual SHVDataFunction* PrepareFunction(const SHVStringC& query, const SHVDataRowKey* sortKey = NULL);
 	virtual SHVDataRowListC* QueryTable(const SHVString8C& tableName, const SHVStringC& condition, size_t index);
 	virtual SHVDataRowListC* QueryTableIndexed(const SHVString8C& tableName, const SHVStringC& condition, size_t index);
 	virtual SHVDataRowList* CopyAlias(const SHVString8C& sourceAlias, const SHVString8C& destAlias);
@@ -33,9 +34,9 @@ public:
 protected:
 	virtual ~SHVDataSessionSQLite();
 	
-	virtual SHVBool DoUpdateRow(SHVDataRow* row);
-	virtual SHVBool DoInsertRow(SHVDataRow* row, bool replaceIfDuplicate);
-	virtual SHVBool DoDeleteRow(SHVDataRow* row);
+	virtual void UpdateRowSQL(SHVDataRow* row, SHVStringStreamUTF8& sql);
+	virtual void InsertRowSQL(SHVDataRow* row, SHVStringStreamUTF8& sql, bool replaceIfDuplicate);
+	virtual void DeleteRowSQL(SHVDataRow* row, SHVStringStreamUTF8& sql);
 	virtual SHVStringUTF8 WhereSQL(SHVDataRow* row);
 
 	bool EmptySlot(const SHVDataRowVector& vector, size_t& idx);
@@ -46,11 +47,12 @@ protected:
 	virtual SHVBool IsValid() const;
 	virtual void SchemaChanged();
 	virtual SHVBool CheckConnection();
+	SHVDataFunction* PrepareFunction(const SHVStringUTF8C& query, const SHVDataRowKey* sortKey = NULL);
 
 private:
 	SHVBool SessionReset();
 	void SessionReposition();
-	void StreamWhereSQL(SHVDataRow* row, SHVStringStreamUTF8& str);
+	void StreamWhereSQL(SHVDataRow* row, SHVStringStreamUTF8& str, bool parameterized);
 
 	// data
 	SHVSQLiteWrapperRef SQLite;

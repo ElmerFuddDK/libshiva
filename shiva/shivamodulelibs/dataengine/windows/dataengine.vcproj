@@ -193,6 +193,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\shvdatafunctionimpl.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -284,6 +288,10 @@
 			</File>
 			<File
 				RelativePath="..\include\shvdatafactoryimpl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\shvdatafunctionimpl.h"
 				>
 			</File>
 			<File
@@ -401,6 +409,10 @@
 						</File>
 						<File
 							RelativePath="..\..\..\include\modules\dataengine\shvdatafactory.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\modules\dataengine\shvdatafunction.h"
 							>
 						</File>
 						<File

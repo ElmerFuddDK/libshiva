@@ -63,6 +63,22 @@ SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
 	Bof = true;
 }
 
+SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVStringUTF8C& sql, const SHVDataRowKey* sortKey): DataSession(session), RowCount(-1), Alias(""), HasShareLock(false)
+{
+SHVStringSQLite rest(NULL);
+SHVDataStructImpl* st = new SHVDataStructImpl();
+SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
+	AliasID = -1;
+	StructCache = st;
+	Statement = SQLite->PrepareUTF8(Ok, sql, rest);
+	if (sortKey)
+		st->AddIndex((SHVDataRowKey*) sortKey);
+	SortIndex = 0;
+	Eof = !Ok;
+	Bof = true;
+}
+
+
 SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias, const SHVStringC& condition, size_t index): StructCache((SHVDataStructC*)dataStruct), DataSession(session), RowCount(-1), Alias(alias), HasShareLock(false)
 {
 SHVStringSQLite rest(NULL);
