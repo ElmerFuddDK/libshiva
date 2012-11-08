@@ -174,6 +174,37 @@ SHVDataFunction* SHVDataSessionSQLite::PrepareFunction(const SHVStringC &query, 
 }
 
 /*************************************
+ * GetDataChangeFunction
+ *************************************/
+SHVDataFunction *SHVDataSessionSQLite::GetDataChangeFunction(SHVDataRowList *rowList, int function)
+{
+SHVDataFunctionRef retVal = rowList->GetDataChangeFunction(function);
+SHVStringStreamUTF8 sql;
+	if (retVal == NULL)
+	{
+		switch (function)
+		{
+		case SHVDataRowList::ChangeFunctionAdd:
+			InsertRowSQL(rowList, sql, rowList->GetReplaceIfDuplicate());
+			retVal = PrepareFunction(sql);
+			rowList->SetDataChangeFunction(retVal, SHVDataRowList::ChangeFunctionAdd);
+			break;
+		case SHVDataRowList::ChangeFunctionUpdate:
+			UpdateRowSQL(rowList, sql);
+			retVal = PrepareFunction(sql);
+			rowList->SetDataChangeFunction(retVal, SHVDataRowList::ChangeFunctionUpdate);
+			break;
+		case SHVDataRowList::ChangeFunctionDelete:
+			DeleteRowSQL(rowList, sql);
+			retVal = PrepareFunction(sql);
+			rowList->SetDataChangeFunction(retVal, SHVDataRowList::ChangeFunctionDelete);
+			break;
+		}
+	}
+	return retVal.ReleaseReference();
+}
+
+/*************************************
  * QueryTable
  *************************************/
 SHVDataRowListC* SHVDataSessionSQLite::QueryTable(const SHVString8C& tableName, const SHVStringC& condition, size_t index)
@@ -348,12 +379,12 @@ SHVDataSessionSQLite::~SHVDataSessionSQLite()
 /*************************************
  * UpdateRowSQL
  *************************************/
-void SHVDataSessionSQLite::UpdateRowSQL(SHVDataRow *row, SHVStringStreamUTF8 &sql)
+void SHVDataSessionSQLite::UpdateRowSQL(const SHVDataRowList *rowList, SHVStringStreamUTF8 &sql)
 {
-const SHVDataStructC& st = *row->GetStruct();
+const SHVDataStructC& st = *rowList->GetStruct();
 
 	sql.WriteStringUTF8("update or fail ");
-	sql.WriteString8(row->GetStruct()->GetTableName());
+	sql.WriteString8(st.GetTableName());
 	for (size_t c = 0; c  < st.GetColumnCount(); c++)
 	{
 		if (c)
@@ -366,23 +397,62 @@ const SHVDataStructC& st = *row->GetStruct();
 		sql.WriteStringUTF8(st[c]->GetColumnName().GetBufferConst());
 	}
 	sql.WriteStringUTF8(" where ");
-	StreamWhereSQL(row,sql,true);
+	StreamWhereSQL(rowList,sql,NULL);
 	sql.Finalize();
 }
 
 /*************************************
- * DoInsertRow
+ * InitUpdateFunction
  *************************************/
-void SHVDataSessionSQLite::InsertRowSQL(SHVDataRow *row, SHVStringStreamUTF8 &sql, bool replaceIfDuplicate)
+void SHVDataSessionSQLite::InitUpdateFunction(SHVDataFunction *func, SHVDataRow *row)
 {
-const SHVDataStructC& st = *row->GetStruct();
+	if (func)
+	{
+	const SHVDataStructC& st = *row->GetStruct();
+		for (size_t c = 0; c < st.GetColumnCount(); c++)
+		{
+			if (row->IsNull(c))
+			{
+				func->SetParameterNullUTF8(st[c]->GetColumnName().GetBufferConst());
+			}
+			else
+			{
+				switch (st[c]->GetDataType())
+				{
+				case SHVDataVariant::TypeInt:
+					func->SetParameterIntUTF8(st[c]->GetColumnName().GetBufferConst(), row->AsInt(c));
+					break;
+				case SHVDataVariant::TypeBool:
+					func->SetParameterIntUTF8(st[c]->GetColumnName().GetBufferConst(), row->AsBool(c) ? 1 : 0);
+					break;
+				case SHVDataVariant::TypeInt64:
+					func->SetParameterInt64UTF8(st[c]->GetColumnName().GetBufferConst(), row->AsInt64(c));
+					break;
+				case SHVDataVariant::TypeDouble:
+					func->SetParameterDoubleUTF8(st[c]->GetColumnName().GetBufferConst(), row->AsDouble(c));
+					 break;
+				default:
+					func->SetParameterStringUTF8(st[c]->GetColumnName().GetBufferConst(), row->AsString(c).ToStrUTF8());
+					break;
+				}
+			}
+		}
+	}
+}
+
+/*************************************
+ * InsertRowSQL
+ *************************************/
+void SHVDataSessionSQLite::InsertRowSQL(const SHVDataRowList *rowList, SHVStringStreamUTF8 &sql, bool replaceIfDuplicate)
+{
+const SHVDataStructC& st = *rowList->GetStruct();
 bool empty;
 
 	if (replaceIfDuplicate)
 		sql.WriteStringUTF8("insert or replace into ");
 	else
 		sql.WriteStringUTF8("insert or fail into ");
-	sql.WriteString8(row->GetStruct()->GetTableName());
+	sql.WriteString8(st.GetTableName());
 	
 	sql.WriteStringUTF8(" (");
 	if (st.GetIsMultiInstance())
@@ -409,7 +479,7 @@ bool empty;
 	if (st.GetIsMultiInstance())
 	{
 		empty = false;
-		sql.WriteStringUTF8( SHVStringUTF8C::LongToString(row->GetRowListC()->GetAliasID()) );
+		sql.WriteStringUTF8( SHVStringUTF8C::LongToString(rowList->GetAliasID()) );
 	}
 	else
 	{
@@ -425,20 +495,107 @@ bool empty;
 		sql.WriteStringUTF8(st[c]->GetColumnName().GetBufferConst());
 	}
 	sql.WriteStringUTF8(")");
-	
 	sql.Finalize();
 }
 
 /*************************************
- * DoDeleteRow
+ * InitInsertFunction
  *************************************/
-void SHVDataSessionSQLite::DeleteRowSQL(SHVDataRow *row, SHVStringStreamUTF8 &sql)
+void SHVDataSessionSQLite::InitInsertFunction(SHVDataFunction *func, SHVDataRow *row)
+{
+	if (func)
+	{
+	const SHVDataStructC& st = *row->GetStruct();
+		for (size_t c = 0; c < st.GetColumnCount(); c++)
+		{
+			if (row->IsNull(c))
+			{
+				func->SetParameterNullUTF8(st[c]->GetColumnName().GetBufferConst());
+			}
+			else
+			{
+				switch (st[c]->GetDataType())
+				{
+				case SHVDataVariant::TypeInt:
+					func->SetParameterIntUTF8(st[c]->GetColumnName().GetBufferConst(), row->AsInt(c));
+					break;
+				case SHVDataVariant::TypeBool:
+					func->SetParameterIntUTF8(st[c]->GetColumnName().GetBufferConst(), row->AsBool(c) ? 1 : 0);
+					break;
+				case SHVDataVariant::TypeInt64:
+					func->SetParameterInt64UTF8(st[c]->GetColumnName().GetBufferConst(), row->AsInt64(c));
+					break;
+				case SHVDataVariant::TypeDouble:
+					func->SetParameterDoubleUTF8(st[c]->GetColumnName().GetBufferConst(), row->AsDouble(c));
+					 break;
+				default:
+					func->SetParameterStringUTF8(st[c]->GetColumnName().GetBufferConst(), row->AsString(c).ToStrUTF8());
+					break;
+				}
+			}
+		}
+	}
+}
+
+/*************************************
+ * DeleteRowSQL
+ *************************************/
+void SHVDataSessionSQLite::DeleteRowSQL(const SHVDataRowList *rowList, SHVStringStreamUTF8 &sql)
 {
 	sql.WriteStringUTF8("delete from ");
-	sql.WriteString8(row->GetStruct()->GetTableName());
+	sql.WriteString8(rowList->GetStruct()->GetTableName());
 	sql.WriteStringUTF8(" where ");
-	StreamWhereSQL(row,sql,true);
+	StreamWhereSQL(rowList,sql,NULL);
 	sql.Finalize();
+}
+
+/*************************************
+ * InitDeleteFunction
+ *************************************/
+void SHVDataSessionSQLite::InitDeleteFunction(SHVDataFunction *func, const SHVDataRow *row)
+{
+	InitDeleteFunction(func, row->GetKey(), row->GetStruct());
+}
+
+void SHVDataSessionSQLite::InitDeleteFunction(SHVDataFunction *func, const SHVDataRowKey *key, const SHVDataStructC *struc)
+{
+	if (func)
+	{
+	const SHVDataStructC& st = *struc;
+	const SHVDataRowKey& Key = *key;
+		for (size_t c = 0; c < Key.Count(); c++)
+		{
+		size_t colIdx;
+			if (st.FindColumnIndex(colIdx, Key[c].Key))
+			{
+				if (!Key[c].Value)
+				{
+					func->SetParameterNullUTF8(st[colIdx]->GetColumnName().GetBufferConst());
+				}
+				else
+				{
+					switch (st[colIdx]->GetDataType())
+					{
+					case SHVDataVariant::TypeInt:
+						func->SetParameterIntUTF8(st[colIdx]->GetColumnName().GetBufferConst(), Key[c].Value->AsInt());
+						break;
+					case SHVDataVariant::TypeBool:
+						func->SetParameterIntUTF8(st[c]->GetColumnName().GetBufferConst(), Key[c].Value->AsBool() ? 1 : 0);
+						break;
+					case SHVDataVariant::TypeInt64:
+						func->SetParameterInt64UTF8(st[colIdx]->GetColumnName().GetBufferConst(), Key[c].Value->AsInt64());
+						break;
+					case SHVDataVariant::TypeDouble:
+						func->SetParameterDoubleUTF8(st[colIdx]->GetColumnName().GetBufferConst(), Key[c].Value->AsDouble());
+						 break;
+					default:
+						func->SetParameterStringUTF8(st[colIdx]->GetColumnName().GetBufferConst(), Key[c].Value->AsString().ToStrUTF8());
+						break;
+					}
+				}
+			}
+		}
+	}
 }
 
 /*************************************
@@ -447,7 +604,7 @@ void SHVDataSessionSQLite::DeleteRowSQL(SHVDataRow *row, SHVStringStreamUTF8 &sq
 SHVStringUTF8 SHVDataSessionSQLite::WhereSQL(SHVDataRow* row)
 {
 SHVStringStreamUTF8 retVal(128);
-	StreamWhereSQL(row,retVal,false);
+	StreamWhereSQL(row->GetRowList(),retVal,row);
 	retVal.Finalize();
 	return retVal;
 }
@@ -455,21 +612,21 @@ SHVStringStreamUTF8 retVal(128);
 /*************************************
  * StreamWhereSQL
  *************************************/
-void SHVDataSessionSQLite::StreamWhereSQL(SHVDataRow* row, SHVStringStreamUTF8& str, bool parameterized)
+void SHVDataSessionSQLite::StreamWhereSQL(const SHVDataRowList *rowList, SHVStringStreamUTF8 &str, SHVDataRow *row)
 {
-const SHVDataRowKey& Key = *row->GetStruct()->GetPrimaryIndex();
+const SHVDataRowKey& Key = *rowList->GetStruct()->GetPrimaryIndex();
 bool empty = true;
 	
-	if (row->GetStruct()->GetIsMultiInstance())
+	if (rowList->GetStruct()->GetIsMultiInstance())
 	{
 		str.WriteStringUTF8("shv_alias=");
-		str.WriteStringUTF8(SHVStringUTF8C::LongToString(row->GetRowListC()->GetAliasID()));
+		str.WriteStringUTF8(SHVStringUTF8C::LongToString(rowList->GetAliasID()));
 		empty = false;
 	}
 	for (size_t k = 0; k < Key.Count(); k++)
 	{
 	size_t colIdx;
-		if (row->GetStruct()->FindColumnIndex(colIdx, Key[k].Key))
+		if (rowList->GetStruct()->FindColumnIndex(colIdx, Key[k].Key))
 		{
 			if (empty)
 			{
@@ -482,7 +639,7 @@ bool empty = true;
 			}
 			str.WriteStringUTF8(Key[k].Key.GetSafeBuffer());
 			str.WriteStringUTF8("\" = ");
-			if (parameterized)
+			if (!row)
 			{
 				str.WriteStringUTF8("@");
 				str.WriteStringUTF8(Key[k].Key.GetSafeBuffer());
@@ -525,142 +682,26 @@ SHVDataRow* found = NULL;
 /*************************************
  * UpdateRow
  *************************************/
-SHVBool SHVDataSessionSQLite::UpdateRow(SHVDataRow* row, bool replaceIfDuplicate)
+SHVBool SHVDataSessionSQLite::UpdateRow(SHVDataRow* row)
 {
 SHVBool retVal;
 SHVDataFunctionRef Func;
-SHVStringStreamUTF8 sql;
-const SHVDataStructC& st = *row->GetStruct();
-const SHVDataRowKey& Key = *row->GetStruct()->GetPrimaryIndex();
 SHVDataRowListC* Result;
 
 	SHVASSERT(SessionValid());
 	switch (row->GetRowState())
 	{
-	case SHVDataRow::RowStateChanging:
-		Func = row->GetRowList()->GetDataChangeFunction(SHVDataRowList::ChangeFunctionUpdate);
-		if (Func.IsNull())
-		{
-			UpdateRowSQL(row, sql);
-			Func = PrepareFunction(sql);
-			row->GetRowList()->SetDataChangeFunction(Func, SHVDataRowList::ChangeFunctionUpdate);
-		}
-		if (!Func.IsNull())
-		{
-			for (size_t c = 0; c < st.GetColumnCount(); c++)
-			{
-				if (row->IsNull(c))
-				{
-					Func->SetParameterNullUTF8(st[c]->GetColumnName().GetBufferConst());
-				}
-				else
-				{
-					switch (st[c]->GetDataType())
-					{
-					case SHVDataVariant::TypeInt:
-						Func->SetParameterIntUTF8(st[c]->GetColumnName().GetBufferConst(), row->AsInt(c));
-						break;
-					case SHVDataVariant::TypeBool:
-						Func->SetParameterIntUTF8(st[c]->GetColumnName().GetBufferConst(), row->AsBool(c) ? 1 : 0);
-						break;
-					case SHVDataVariant::TypeInt64:
-						Func->SetParameterInt64UTF8(st[c]->GetColumnName().GetBufferConst(), row->AsInt64(c));
-						break;
-					case SHVDataVariant::TypeDouble:
-						Func->SetParameterDoubleUTF8(st[c]->GetColumnName().GetBufferConst(), row->AsDouble(c));
-						 break;
-					default:
-						Func->SetParameterStringUTF8(st[c]->GetColumnName().GetBufferConst(), row->AsString(c).ToStrUTF8());
-						break;
-					}
-				}
-			}
-		}
+	case SHVDataRow::RowStateChanging:		
+		Func = GetDataChangeFunction(row->GetRowList(), SHVDataRowList::ChangeFunctionUpdate);
+		InitUpdateFunction(Func, row);
 		break;
 	case SHVDataRow::RowStateAdding:
-		Func = row->GetRowList()->GetDataChangeFunction(SHVDataRowList::ChangeFunctionAdd);
-		if (Func.IsNull())
-		{
-			InsertRowSQL(row, sql, replaceIfDuplicate);
-			Func = PrepareFunction(sql);
-			row->GetRowList()->SetDataChangeFunction(Func, SHVDataRowList::ChangeFunctionAdd);
-		}
-		if (!Func.IsNull())
-		{
-			for (size_t c = 0; c < st.GetColumnCount(); c++)
-			{
-				if (row->IsNull(c))
-				{
-					Func->SetParameterNullUTF8(st[c]->GetColumnName().GetBufferConst());
-				}
-				else
-				{
-					switch (st[c]->GetDataType())
-					{
-					case SHVDataVariant::TypeInt:
-						Func->SetParameterIntUTF8(st[c]->GetColumnName().GetBufferConst(), row->AsInt(c));
-						break;
-					case SHVDataVariant::TypeBool:
-						Func->SetParameterIntUTF8(st[c]->GetColumnName().GetBufferConst(), row->AsBool(c) ? 1 : 0);
-						break;
-					case SHVDataVariant::TypeInt64:
-						Func->SetParameterInt64UTF8(st[c]->GetColumnName().GetBufferConst(), row->AsInt64(c));
-						break;
-					case SHVDataVariant::TypeDouble:
-						Func->SetParameterDoubleUTF8(st[c]->GetColumnName().GetBufferConst(), row->AsDouble(c));
-						 break;
-					default:
-						Func->SetParameterStringUTF8(st[c]->GetColumnName().GetBufferConst(), row->AsString(c).ToStrUTF8());
-						break;
-					}
-				}
-			}
-		}
+		Func = GetDataChangeFunction(row->GetRowList(), SHVDataRowList::ChangeFunctionAdd);
+		InitInsertFunction(Func, row);
 		break;
 	case SHVDataRow::RowStateDeleting:
-		Func = row->GetRowList()->GetDataChangeFunction(SHVDataRowList::ChangeFunctionDelete);
-		if (Func.IsNull())
-		{
-			DeleteRowSQL(row, sql);
-			Func = PrepareFunction(sql);
-			row->GetRowList()->SetDataChangeFunction(Func, SHVDataRowList::ChangeFunctionDelete);
-		}
-		if (!Func.IsNull())
-		{
-			for (size_t c = 0; c < Key.Count(); c++)
-			{
-			size_t colIdx;
-				if (st.FindColumnIndex(colIdx, Key[c].Key))
-				{
-					if (row->IsNull(colIdx))
-					{
-						Func->SetParameterNullUTF8(st[colIdx]->GetColumnName().GetBufferConst());
-					}
-					else
-					{
-						switch (st[colIdx]->GetDataType())
-						{
-						case SHVDataVariant::TypeInt:
-							Func->SetParameterIntUTF8(st[colIdx]->GetColumnName().GetBufferConst(), row->AsInt(colIdx));
-							break;
-						case SHVDataVariant::TypeBool:
-							Func->SetParameterIntUTF8(st[c]->GetColumnName().GetBufferConst(), row->AsBool(c) ? 1 : 0);
-							break;
-						case SHVDataVariant::TypeInt64:
-							Func->SetParameterInt64UTF8(st[colIdx]->GetColumnName().GetBufferConst(), row->AsInt64(colIdx));
-							break;
-						case SHVDataVariant::TypeDouble:
-							Func->SetParameterDoubleUTF8(st[colIdx]->GetColumnName().GetBufferConst(), row->AsDouble(colIdx));
-							 break;
-						default:
-							Func->SetParameterStringUTF8(st[colIdx]->GetColumnName().GetBufferConst(), row->AsString(colIdx).ToStrUTF8());
-							break;
-						}
-					}
-				}
-			}
-
-		}
+		Func = GetDataChangeFunction(row->GetRowList(), SHVDataRowList::ChangeFunctionDelete);
+		InitDeleteFunction(Func, row);
 		break;
 	default:
 		retVal = SHVBool::False;

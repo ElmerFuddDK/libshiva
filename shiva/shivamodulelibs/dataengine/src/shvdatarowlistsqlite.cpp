@@ -134,6 +134,65 @@ SHVDataRow* retVal = NULL;
 }
 
 /*************************************
+ * DeleteRow
+ *************************************/
+SHVBool SHVDataRowListSQLite::DeleteRow(const SHVDataRowKey *key)
+{
+SHVDataFunctionRef func = DataSession->GetDataChangeFunction(this, SHVDataRowList::ChangeFunctionDelete);
+SHVBool retVal = SHVBool::False;
+	if (func)
+	{
+	const SHVDataStructC& st = *GetStruct();
+	const SHVDataRowKey& Key = *key;
+		for (size_t c = 0; c < Key.Count(); c++)
+		{
+		size_t colIdx;
+			if (st.FindColumnIndex(colIdx, Key[c].Key))
+			{
+				if (!Key[c].Value)
+				{
+					func->SetParameterNullUTF8(st[colIdx]->GetColumnName().GetBufferConst());
+				}
+				else
+				{
+					switch (st[colIdx]->GetDataType())
+					{
+					case SHVDataVariant::TypeInt:
+						func->SetParameterIntUTF8(st[colIdx]->GetColumnName().GetBufferConst(), Key[c].Value->AsInt());
+						break;
+					case SHVDataVariant::TypeBool:
+						func->SetParameterIntUTF8(st[c]->GetColumnName().GetBufferConst(), Key[c].Value->AsBool() ? 1 : 0);
+						break;
+					case SHVDataVariant::TypeInt64:
+						func->SetParameterInt64UTF8(st[colIdx]->GetColumnName().GetBufferConst(), Key[c].Value->AsInt64());
+						break;
+					case SHVDataVariant::TypeDouble:
+						func->SetParameterDoubleUTF8(st[colIdx]->GetColumnName().GetBufferConst(), Key[c].Value->AsDouble());
+						 break;
+					default:
+						func->SetParameterStringUTF8(st[colIdx]->GetColumnName().GetBufferConst(), Key[c].Value->AsString().ToStrUTF8());
+						break;
+					}
+				}
+			}
+		}
+	}
+	if (!func.IsNull())
+	{
+	SHVDataRowListCRef result = func->Exec();
+		retVal = func->GetLastError();
+		if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+		{
+			retVal = SHVBool::True;
+			AdjustRowCount(-1);
+		}
+		if (!result.IsNull())
+			result->Reset();
+	}
+	return retVal;
+}
+
+/*************************************
  * EnableEvents
  *************************************/
 void SHVDataRowListSQLite::EnableEvents(bool enable)
@@ -414,7 +473,7 @@ SHVListPos pos =  PendingRows.Find(rrow);
 			if (!ChangeCache.IsNull())
 				ChangeCache->AddItem(row, FullRowCache);
 			RowChanged(rrow);
-			retVal = UpdateRow(row, ReplaceIfDuplicate);
+			retVal = UpdateRow(row);
 			if (retVal)
 			{
 				if (pos)

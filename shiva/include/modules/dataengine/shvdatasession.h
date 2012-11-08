@@ -32,6 +32,7 @@ public:
 	virtual SHVDataRowList* GetRowsIndexed(const SHVString8C& tableName, const SHVStringC& condition, size_t index) = 0;
 	virtual SHVDataRowListC* Query(const SHVStringC& query, const SHVDataRowKey* sortKey = NULL) = 0;
 	virtual SHVDataFunction* PrepareFunction(const SHVStringC& query, const SHVDataRowKey* sortKey = NULL) = 0;
+	virtual SHVDataFunction* GetDataChangeFunction(SHVDataRowList* rowList, int function) = 0;
 	virtual SHVDataRowListC* QueryTable(const SHVString8C& tableName, const SHVStringC& condition, size_t index) = 0;
 	virtual SHVDataRowListC* QueryTableIndexed(const SHVString8C& tableName, const SHVStringC& condition, size_t index) = 0;
 	virtual SHVDataRowList* CopyAlias(const SHVString8C& sourceAlias, const SHVString8C& destAlias) = 0;
@@ -55,7 +56,7 @@ friend class SHVDataRowList;
 friend class SHVDataFactory;
 
 	virtual ~SHVDataSession() {}
-	virtual SHVBool UpdateRow(SHVDataRow* row, bool replaceIfDuplicate) = 0;
+	virtual SHVBool UpdateRow(SHVDataRow* row) = 0;
 	virtual SHVBool IsValid() const = 0;
 	virtual void SchemaChanged() = 0;
 

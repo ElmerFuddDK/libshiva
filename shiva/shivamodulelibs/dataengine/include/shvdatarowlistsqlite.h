@@ -31,6 +31,7 @@ public:
 
 	virtual SHVDataRow* EditCurrentRow();
 	virtual SHVDataRow* AddRow();
+	virtual SHVBool DeleteRow(const SHVDataRowKey* key);
 
 	virtual void EnableEvents(bool enable);
 	virtual bool GetEventsEnabled() const;

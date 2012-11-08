@@ -29,6 +29,7 @@ public:
 
 	virtual SHVDataRow* EditCurrentRow() = 0;
 	virtual SHVDataRow* AddRow() = 0;	
+	virtual SHVBool DeleteRow(const SHVDataRowKey* key) = 0;
 
 	virtual void EnableEvents(bool enable) = 0;
 	virtual bool GetEventsEnabled() const = 0;
@@ -78,7 +79,7 @@ friend class SHVDataSession;
 	virtual SHVBool InternalRowChanged(SHVDataRow* row) = 0;
 
 // inlines
-	inline SHVBool UpdateRow(SHVDataRow* row, bool replaceIfDuplicate);
+	inline SHVBool UpdateRow(SHVDataRow* row);
 	inline void RowChanged(SHVDataRow* row);
 	inline void InternalAcceptChanges(SHVDataRow* row);
 	inline void InternalRejectChanges(SHVDataRow* row);
@@ -99,9 +100,9 @@ typedef SHVRefObjectContainer<SHVDataRowList> SHVDataRowListRef;
 /*************************************
  * UpdateRow
  *************************************/
-SHVBool SHVDataRowList::UpdateRow(SHVDataRow* row, bool replaceIfDuplicate)
+SHVBool SHVDataRowList::UpdateRow(SHVDataRow* row)
 { 
-	return GetDataSession()->UpdateRow(row, replaceIfDuplicate);
+	return GetDataSession()->UpdateRow(row);
 }
 
 /*************************************

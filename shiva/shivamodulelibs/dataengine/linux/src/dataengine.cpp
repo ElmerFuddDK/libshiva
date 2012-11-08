@@ -150,6 +150,33 @@ public:
 
 			}
 			else
+			if (str == SHVString8C("/test"))
+			{
+			SHVDataRowKeyRef key = DataEngine->CreateKey();
+			SHVDataRowListRef l = DataSession->GetRows("testtable", _S(""), 0);
+			SHVDataVariant* v = DataEngine->CreateVariant();
+			SHVDataRow* row;
+				l->StartEdit();
+				printf("Deleting\n");
+				v->SetInt(500);
+				key->AddKey("key", v, false);
+				if (l->DeleteRow(key))
+					printf("Now 500 is gone\n");
+				if (!l->DeleteRow(key))
+					printf("For sure\n");
+
+				printf("Updateing\n");
+				key->SetKeyValue(0, SHVInt(501));
+				l->SetPosition(key);
+				row = l->EditCurrentRow();
+				row->SetString(3, _S("Fister"));
+				row->AcceptChanges();
+				l->Reset();
+				l->EndEdit();
+				l->SetPosition(key);
+				printf("Is corrected to = %s\n", l->GetCurrentRow()->AsString(3).GetSafeBuffer());
+			}
+			else
 			{				
 				printf("Unknown command\n");
 			}
