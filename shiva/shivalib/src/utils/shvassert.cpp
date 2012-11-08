@@ -36,6 +36,8 @@
 
 #if defined(__SHIVA_WIN32) && !defined(__SHIVA_WINCE) && !defined(__MINGW32__)
 # include <crtdbg.h>
+#elif !defined(__SHIVA_WINCE) && !defined(__MINGW32__)
+# include <signal.h>
 #endif
 #ifdef ANDROID
 #include <android/log.h>
@@ -64,6 +66,11 @@ bool SHVAPI SHVAssert::ReportError(const char* fileName, int lineNo)
 	SHVConsole::ErrPrintf8("ASSERTION FAILED IN %s, LINE %d\n",fileName,lineNo);
 # ifdef __MINGW32__
 	fflush(stderr);
+# else
+	if (::getenv("SHVBREAKONASSERT"))
+	{
+		raise(SIGINT);
+	}
 # endif
 	return false;
 #endif
