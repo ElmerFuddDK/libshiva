@@ -394,12 +394,12 @@ SHVBool retVal;
 			retVal = (::CreateDirectory((const TCHAR*)dirName.GetSafeBuffer(),NULL) ? SHVBool::True :  SHVBool::False);
 #elif defined __SHIVA_EPOC
 # ifdef UNICODE
-		retVal = (wmkdir((wchar_t*)(WCHAR*)dirName.GetSafeBuffer(),448) == 0);
+		retVal = (wmkdir((wchar_t*)(WCHAR*)dirName.GetSafeBuffer(),0777) == 0);
 # else
-		retVal = (mkdir(dirName.GetSafeBuffer(),448) == 0);
+		retVal = (mkdir(dirName.GetSafeBuffer(),0777) == 0);
 # endif
 #else
-		retVal = (mkdir(dirName.GetSafeBuffer(),448) == 0);
+		retVal = (mkdir(dirName.GetSafeBuffer(),0777) == 0);
 #endif
 	}
 
