@@ -435,10 +435,16 @@ SHVXmlReaderImpl* self = (SHVXmlReaderImpl*) userData;
  *************************************/
 void SHVXmlReaderImpl::DefaultHandler(void *userData, const XML_Char *s, int len)
 {
+SHVStringUTF8 utf8;
 SHVXmlReaderImpl* self = (SHVXmlReaderImpl*) userData;
 	if (self->ValueCol.IsNull())
 		self->ValueCol = new SHVBufferStream();
+#ifdef XML_UNICODE
 	self->ValueCol->WriteBytes((const SHVByte*)s, len * sizeof(SHVTChar), self->ValuePos);
+#else
+	utf8.AddChars(s,len);
+	self->ValueCol->WriteString(utf8.ToStrT(),self->ValuePos);
+#endif
 }
 
 /*************************************
