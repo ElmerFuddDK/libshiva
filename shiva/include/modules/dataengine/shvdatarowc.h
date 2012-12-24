@@ -44,6 +44,7 @@ public:
 	virtual const SHVDataRowListC* GetRowListC() = 0;
 
 	inline SHVStringBuffer AsString(const SHVString8C& colName) const;
+	inline SHVStringBuffer AsDBString(const SHVString8C& colName) const;
 	inline SHVInt AsInt(const SHVString8C& colName) const;
 	inline SHVInt64 AsInt64(const SHVString8C& colName) const;
 	inline SHVDouble AsDouble(const SHVString8C& colName) const;
@@ -77,6 +78,14 @@ typedef SHVRefObjectContainer<SHVDataRowC> SHVDataRowCRef;
 SHVStringBuffer SHVDataRowC::AsString(const SHVString8C& colName) const
 {
 	return AsString(ColumnIndex(colName));
+}
+
+/*************************************
+ * AsDBString
+ *************************************/
+SHVStringBuffer SHVDataRowC::AsDBString(const SHVString8C &colName) const
+{
+	return AsDBString(ColumnIndex(colName));
 }
 
 /*************************************
