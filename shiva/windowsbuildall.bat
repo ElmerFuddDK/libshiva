@@ -28,6 +28,10 @@ echo Building modules/xmlstream
 devenv.exe "%CD%\shivamodulelibs\xmlstream\windows\xmlstream.vcproj" /rebuild Debug
 devenv.exe "%CD%\shivamodulelibs\xmlstream\windows\xmlstream.vcproj" /rebuild Release
 
+echo Building modules/luaengine
+devenv.exe "%CD%\shivamodulelibs\luaengine\windows\luaengine.vcproj" /rebuild Debug
+devenv.exe "%CD%\shivamodulelibs\luaengine\windows\luaengine.vcproj" /rebuild Release
+
 PATH=%OLDPATH%
 set OLDPATH=
 pause

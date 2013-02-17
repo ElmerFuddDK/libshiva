@@ -47,5 +47,11 @@ mingw32-make.exe -w distclean
 qmake xmlstream.pro -r CONFIG-=debug CONFIG+=release
 mingw32-make.exe -w
 
+echo Building modules/luaengine
+cd "%CurDir%\shivamodulelibs\luaengine\windows"
+mingw32-make.exe -w distclean
+qmake luaengine.pro -r CONFIG-=debug CONFIG+=release
+mingw32-make.exe -w
+
 cd "%CurDir%"
 pause
