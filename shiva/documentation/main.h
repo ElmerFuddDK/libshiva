@@ -280,6 +280,7 @@ All parts but the ones listed here are covered by the license at the bottom:\n
  - UUID generation in shivalib/src/uuid
  - md5 generation in shivalib/src/md5
  - libunicode in shivalib/src/libunicode
+ - lua in shivamodulelibs/luaengine/src/lua
 
 \n
 Copyright (C) 2008 by Lars Eriksen and others\n
