@@ -279,6 +279,17 @@ bool retVal = false;
 }
 
 /*************************************
+ * Clear
+ *************************************/
+void SHVConfigImpl::Clear()
+{
+	Lock.Lock();
+	StringEntries.Clear();
+	EnumEntries.Clear();
+	Lock.Unlock();
+}
+
+/*************************************
  * Load
  *************************************/
 SHVBool SHVConfigImpl::Load(const SHVStringC fileName)
@@ -590,17 +601,6 @@ void SHVConfigImpl::Remove(const SHVInt& enumerator)
 {
 	Lock.Lock();
 	EnumEntries.Remove(enumerator);
-	Lock.Unlock();
-}
-
-/*************************************
- * Clear
- *************************************/
-void SHVConfigImpl::Clear()
-{
-	Lock.Lock();
-	StringEntries.Clear();
-	EnumEntries.Clear();
 	Lock.Unlock();
 }
 

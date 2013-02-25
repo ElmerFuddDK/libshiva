@@ -53,6 +53,7 @@ public:
 
 
 	// Store and load string config values
+	virtual void Clear();
 	virtual SHVBool Load(const SHVStringC fileName);
 	virtual SHVBool Save(const SHVStringC newFileName = NULL);
 
@@ -86,8 +87,6 @@ public:
 	// From SHVMathTokenMap
 	virtual bool LookupValue(const SHVStringC token, double& result);
 
-
-	void Clear();
 
 	///\cond INTERNAL
 	static SHVStringBuffer Unescape(const SHVStringC str);
