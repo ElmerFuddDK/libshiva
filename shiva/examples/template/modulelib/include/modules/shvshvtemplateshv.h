@@ -22,6 +22,7 @@ public:
 	// Add stuff here
 
 protected:
+	///\cond INTERNAL
 	inline SHVSHVTemplateSHV(SHVModuleList& modules) : SHVModule(modules,"SHVTemplateSHV") {}
 	///\endcond
 };
