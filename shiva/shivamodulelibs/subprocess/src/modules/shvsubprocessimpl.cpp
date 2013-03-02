@@ -236,7 +236,7 @@ SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
 		
 #endif
 	
-		retVal = LastError = IsRunning();
+		retVal = LastError;
 	}
 	
 	return retVal;
