@@ -65,6 +65,16 @@ SHVDouble SHVLuaFuncArgsImpl::ArgAsDouble(int idx)
 }
 
 /*************************************
+ * ArgAsBool
+ *************************************/
+bool SHVLuaFuncArgsImpl::ArgAsBool(int idx)
+{
+	if (lua_type((lua_State*)State,idx+1) == LUA_TNIL)
+		return false;
+	return lua_toboolean((lua_State*)State,idx+1);
+}
+
+/*************************************
  * ArgAsRefObject
  *************************************/
 SHVRefObject* SHVLuaFuncArgsImpl::ArgRef(int idx)
@@ -111,6 +121,15 @@ void SHVLuaFuncArgsImpl::PushDouble(SHVDouble val)
 		lua_pushnil((lua_State*)State);
 	else
 		lua_pushnumber((lua_State*)State,val);
+}
+
+/*************************************
+ * PushBool
+ *************************************/
+bool SHVLuaFuncArgsImpl::PushBool(bool val)
+{
+	ReturnVals++;
+	lua_pushboolean((lua_State*)State,val ? 1 : 0);
 }
 
 /*************************************
