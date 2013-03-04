@@ -77,9 +77,9 @@ bool SHVLuaFuncArgsImpl::ArgAsBool(int idx)
 /*************************************
  * ArgAsRefObject
  *************************************/
-SHVRefObject* SHVLuaFuncArgsImpl::ArgRef(int idx)
+SHVRefObject* SHVLuaFuncArgsImpl::ArgAsRef(int idx)
 {
-	return SHVLuaRefObjectType::ToRef(State,idx);
+	return SHVLuaRefObjectType::ToRef(State,idx+1);
 }
 
 /*************************************
@@ -126,7 +126,7 @@ void SHVLuaFuncArgsImpl::PushDouble(SHVDouble val)
 /*************************************
  * PushBool
  *************************************/
-bool SHVLuaFuncArgsImpl::PushBool(bool val)
+void SHVLuaFuncArgsImpl::PushBool(bool val)
 {
 	ReturnVals++;
 	lua_pushboolean((lua_State*)State,val ? 1 : 0);

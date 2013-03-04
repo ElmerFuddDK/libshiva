@@ -25,7 +25,7 @@ public:
 	virtual SHVStringBuffer ArgAsString(int idx) = 0;
 	virtual SHVDouble ArgAsDouble(int idx) = 0;
 	virtual bool ArgAsBool(int idx) = 0;
-	virtual SHVRefObject* ArgRef(int idx) = 0;
+	virtual SHVRefObject* ArgAsRef(int idx) = 0;
 	virtual SHVLuaValue* ArgToValue(int idx) = 0;
 
 
@@ -33,7 +33,7 @@ public:
 	virtual void PushInt(SHVInt val) = 0;
 	virtual void PushString(const SHVStringC val) = 0;
 	virtual void PushDouble(SHVDouble val) = 0;
-	virtual bool PushBool(bool val) = 0;
+	virtual void PushBool(bool val) = 0;
 	virtual void PushRef(SHVRefObject* val) = 0;
 
 };
