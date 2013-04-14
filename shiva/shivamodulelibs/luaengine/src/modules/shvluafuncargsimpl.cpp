@@ -146,6 +146,7 @@ void SHVLuaFuncArgsImpl::PushRef(SHVRefObject* val)
  *************************************/
 SHVLuaValue* SHVLuaFuncArgsImpl::ToValue(void *state, int idx)
 {
+	idx++; // Offset to match lua index
 	switch (lua_type((lua_State*)state,idx))
 	{
 	case LUA_TNUMBER:
