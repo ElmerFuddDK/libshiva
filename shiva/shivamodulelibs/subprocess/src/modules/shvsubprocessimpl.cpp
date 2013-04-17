@@ -198,7 +198,7 @@ SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
 			for (int i = 3; i < open_max; i++)
 				close(i);
 #endif
-			setpgrp(); // make our own process group
+			SHVVERIFY(setpgid(0,0) == 0); // make our own process group
 			argList = (char**)malloc(sizeof(char*)*(args.GetCount()+2));
 			argList[0] = (char*)program.GetSafeBuffer();
 			for (int i=1;args.MoveNext(pos);i++)
@@ -223,6 +223,7 @@ SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
 		}
 		else // we are the parent process
 		{
+			setpgid(Pid,Pid); // Release the sub process into it's own group
 			// close the other end of the streams
 			SafeCloseFd(PipeStdIn[0]);
 			SafeCloseFd(PipeStdOut[1]);
