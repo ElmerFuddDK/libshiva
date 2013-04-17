@@ -84,6 +84,10 @@ public:
 	void AddSeconds(int seconds);
 
 
+	// Set system time
+	bool SetSystemTime();
+
+
 	// operators
 	friend SHVTime SHVAPI operator+(const SHVTime& tTime, int diffInSeconds);
 	friend bool SHVAPI operator>(const SHVTime& tTime1, const SHVTime& tTime2);
@@ -95,6 +99,7 @@ public:
 
 
 	// statics
+	static long GetRelativeTimeInMilliSecs();
 	static SHVTime FromUnixTime(SHVInt64Val unixTime);
 	static SHVInt64Val ToUnixTime(const SHVTime& time);
 	static SHVTime FromDateString(const SHVStringC& dateStr);

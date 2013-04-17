@@ -14,6 +14,7 @@ public:
 		ActionUTC = 0x01,
 		ActionConversion = 0x02,
 		ActionLocalTime = 0x04,
+		ActionRelativeTime = 0x08,
 	};
 
 	virtual const SHVString8C GetGroup() const;
@@ -26,6 +27,7 @@ private:
 	static bool TestUTC(SHVModuleList& modules, SHVTestBase* self, int flag);
 	static bool TestConversion(SHVModuleList& modules, SHVTestBase* self, int flag);
 	static bool TestLocalTime(SHVModuleList& modules, SHVTestBase* self, int flag);
+	static bool TestRelativeTime(SHVModuleList& modules, SHVTestBase* self, int flag);
 
 };
 

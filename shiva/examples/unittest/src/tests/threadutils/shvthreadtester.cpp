@@ -59,7 +59,8 @@ const SHVTestBase::Action* SHVThreadTester::GetActions() const
 {
 static const SHVTestBase::Action actions[] = {
 	{ ActionStartup, "startup", _S("startup"), _S("Tests thread startup"), &SHVThreadTester::TestStartup },
-	{ ActionPounding, "pounding", _S("pounding"), _S("Tests thread startup"), &SHVThreadTester::TestPounding },
+    { ActionPounding, "pounding", _S("pounding"), _S("Tests thread startup"), &SHVThreadTester::TestPounding },
+    { ActionTickCount, "tickcount", _S("tickcount"), _S("Tests tick count in milli seconds"), &SHVThreadTester::TestTickCount },
 	{ 0, NULL, NULL, NULL, NULL } }; // Termination
 
 	return actions;
@@ -104,6 +105,23 @@ TestObject tester(self);
 
 	ok = (ok && (tester.Counter == 100));
 	ok = (ok && (!tester.PoundThread.IsRunning()));
+
+	self->AddLine(_S("Test result: %s"), self->Success(modules,ok).GetSafeBuffer());
+	return ok;
+}
+#define TICKTEST(start,stop,duration,deviation) SHVThreadBase::Sleep(duration); stop=SHVThreadBase::GetTicksInMilliSecs(); ok = (ok && stop-start-deviation < duration && stop-start+deviation > duration); start = stop
+bool SHVThreadTester::TestTickCount(SHVModuleList &modules, SHVTestBase *self, int flag)
+{
+bool ok = true;
+long start = SHVThreadBase::GetTicksInMilliSecs();
+long stop;
+
+	SHVUNUSED_PARAM(flag);
+
+	TICKTEST(start,stop,100,30);
+	TICKTEST(start,stop,250,30);
+	TICKTEST(start,stop,333,30);
+	TICKTEST(start,stop,1000,30);
 
 	self->AddLine(_S("Test result: %s"), self->Success(modules,ok).GetSafeBuffer());
 	return ok;

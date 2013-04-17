@@ -399,6 +399,7 @@ TThreadId tmpId = curThread.Id();
  * This function is used to get tick counts. The duration of
  * a tick is not specified. If you want more proper tick count
  * use the GetTicksInMilliSecs function.
+ \note Ticks relative to the clock and not CPU in windows.
  */
 long SHVThreadBase::GetTickCount()
 {
@@ -424,9 +425,15 @@ timeval val;
 /*************************************
  * GetTicksInMilliSecs
  *************************************/
-/// returns tick count in milli seconds
+/// returns CPU tick count in milli seconds
 /**
  \return tick count in milliseconds
+ *
+ * Note that this function returns time relative to CPU
+ * time. If the system is suspended then the tick counter
+ * gets suspended as well. For ticks relative to the system
+ * clock, use SHVTime::GetRelativeTimeInMilliSecs().
+ \bug Ticks relative to the clock and not CPU in windows.
  */
 long SHVThreadBase::GetTicksInMilliSecs()
 {

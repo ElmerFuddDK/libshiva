@@ -35,6 +35,9 @@
 
 ///\cond INTERNAL
 #define __SHVTIME_MAXDATESTR 128
+#if defined(__SHIVA_POSIX_LINUX) && !defined(CLOCK_BOOTTIME)
+# define CLOCK_BOOTTIME 7
+#endif
 ///\endcond
 
 
@@ -45,6 +48,8 @@
 
 #ifdef __SHIVA_EPOC
 # include <string.h>
+#elif defined(__SHIVA_POSIX)
+# include <sys/time.h>
 #endif
 
 /*************************************
@@ -753,6 +758,38 @@ time_t ttime;
 
 }
 
+/*************************************
+ * SetSystemTime
+ *************************************/
+bool SHVTime::SetSystemTime()
+{
+#ifdef __SHIVA_WIN32
+SYSTEMTIME sysTime;
+
+	GetSystemTime(&sysTime);
+
+	sysTime.wYear      = GetYear();
+	sysTime.wMonth     = GetMonth();
+	sysTime.wDay       = GetDay();
+	sysTime.wDayOfWeek = CalculateDayOfWeek();
+	sysTime.wHour      = GetHour();
+	sysTime.wMinute    = GetMinute();
+	sysTime.wSecond    = GetSecond();
+	sysTime.wMilliseconds = 0;
+
+	// Daylight savings fix for windows ce - it doesn't set the dst flag correctly
+# ifdef __SHIVA_WINCE
+	::SetDaylightTime(CalculateIsDst() ? 1 : 0);
+# endif
+	return (::SetSystemTime(&sysTime) ? true : false);
+#else
+timeval tv;
+	tv.tv_sec = TimeGm(&Time);
+	tv.tv_usec = 0;
+	return (settimeofday(&tv, NULL) ? false : true);
+#endif
+	return false;
+}
 
 // operators
 /*************************************
@@ -811,6 +848,60 @@ time_t t2 = SHVTime::TimeGm((tm*)&tTime2.Time, false);
 
 
 // statics
+/*************************************
+ * GetRelativeTimeInMilliSecs
+ *************************************/
+/// returns milliseconds relative to a fixed point
+/**
+ \return tick count in milliseconds
+ *
+ * This can be used for timing stuff based on the system clock.
+ * If you want timing relative to CPU time you should use
+ * SHVThreadBase::GetTicksInMilliSecs().\n
+ * This is only relevant for cases where the system has been
+ * suspended, otherwise they are functionaly comparable, but
+ * they do not have the same offset, so don't mix them.\n
+ * Here is a short usage example:\n
+\code
+int start = SHVTime::GetRelativeTimeInMilliSecs();
+	SHVThreadBase::Sleep(1000);
+	// The following prints Difference in ticks : 1000
+	SHVConsole::Printf(_S("Difference in ticks : %s\n"), SHVTime::GetRelativeTimeInMilliSecs()-start);
+\endcode
+ */
+long SHVTime::GetRelativeTimeInMilliSecs()
+{
+#ifdef __SHIVA_WIN32
+	return ::GetTickCount();
+#elif defined(__SHIVA_EPOC)
+TTimeIntervalMicroSeconds32 t = 1;
+	UserHal::TickPeriod(t);
+	return User::TickCount()*t.Int();
+#elif _POSIX_TIMERS > 0
+struct timespec n;
+#ifdef CLOCK_BOOTTIME
+	if (clock_gettime(CLOCK_BOOTTIME, &n))
+#elif defined(CLOCK_UPTIME)
+	if (clock_gettime(CLOCK_UPTIME, &n))
+#else
+	if (true)
+#endif
+	{
+		if (clock_gettime(CLOCK_MONOTONIC, &n))
+		{
+			fprintf(stderr,"GETTICKCOUNT ERROR\n");
+			abort();
+		}
+	}
+	return long(n.tv_sec*1000L + n.tv_nsec/1000000L);
+#else
+# warning GetTicksInMilliSecs is not relative to system time
+timeval val;
+	gettimeofday(&val,NULL);
+	return (val.tv_sec*1000)+(val.tv_usec/1000);
+#endif
+}
+
 /*************************************
  * FromUnixTime
  *************************************/

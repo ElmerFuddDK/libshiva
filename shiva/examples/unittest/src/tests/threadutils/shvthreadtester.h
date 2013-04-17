@@ -15,6 +15,7 @@ public:
 	enum Actions {
 		ActionStartup = 0x01,
 		ActionPounding = 0x02,
+		ActionTickCount = 0x04,
 	};
 
 	SHVThreadTester(SHVModuleList& modules);
@@ -30,6 +31,7 @@ public:
 private:
 	static bool TestStartup(SHVModuleList& modules, SHVTestBase* self, int flag);
 	static bool TestPounding(SHVModuleList& modules, SHVTestBase* self, int flag);
+	static bool TestTickCount(SHVModuleList& modules, SHVTestBase* self, int flag);
 
 	// implementation
 private:

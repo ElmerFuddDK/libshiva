@@ -38,7 +38,8 @@ const SHVTestBase::Action* SHVTimeTester::GetActions() const
 static const SHVTestBase::Action actions[] = {
 	{ ActionUTC, "utc", _S("UTC"), _S("This will test UTC"), &SHVTimeTester::TestUTC },
 	{ ActionConversion, "conversion", _S("Conversion"), _S("This will test conversion"), &SHVTimeTester::TestConversion },
-	{ ActionLocalTime, "localtime", _S("Localtime"), _S("This will test localtime"), &SHVTimeTester::TestLocalTime },
+    { ActionLocalTime, "localtime", _S("Localtime"), _S("This will test localtime"), &SHVTimeTester::TestLocalTime },
+    { ActionRelativeTime, "relativetime", _S("Relativetime"), _S("Tests relative time measurement"), &SHVTimeTester::TestRelativeTime },
 	{ 0, NULL, NULL, NULL, NULL } }; // Termination
 	
 	return actions;
@@ -212,5 +213,22 @@ bool ok;
 
 	self->AddLine(_S("Test result: %s"), self->Success(modules,ok).GetSafeBuffer());
 	
+	return ok;
+}
+#define TICKTEST(start,stop,duration,deviation) SHVThreadBase::Sleep(duration); stop=SHVTime::GetRelativeTimeInMilliSecs(); ok = (ok && stop-start-deviation < duration && stop-start+deviation > duration); start = stop
+bool SHVTimeTester::TestRelativeTime(SHVModuleList& modules, SHVTestBase* self, int flag)
+{
+bool ok = true;
+long start = SHVTime::GetRelativeTimeInMilliSecs();
+long stop;
+
+	SHVUNUSED_PARAM(flag);
+
+	TICKTEST(start,stop,100,30);
+	TICKTEST(start,stop,250,30);
+	TICKTEST(start,stop,333,30);
+	TICKTEST(start,stop,1000,30);
+
+	self->AddLine(_S("Test result: %s"), self->Success(modules,ok).GetSafeBuffer());
 	return ok;
 }
