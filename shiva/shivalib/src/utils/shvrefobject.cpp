@@ -145,6 +145,6 @@ void SHVRefObject::LockedDecrement(volatile int* ref)
 #elif defined(__SHIVA_WIN32)
 	RefObject_Dec(ref);
 #else
-	(*ref)++;
+	(*ref)--;
 #endif
 }
