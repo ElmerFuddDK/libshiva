@@ -195,6 +195,8 @@ void SHVTimerInstanceImpl::Set(SHVTimerInstance::Modes mode, int interval)
 void SHVTimerInstanceImpl::SetAbsolute(const SHVTime& time)
 {
 	AbsoluteTime = time;
+	if (AbsoluteTime.IsLocalTime())
+		AbsoluteTime.SetLocalTime(false);
 	Mode = SHVTimerInstance::ModeAbsolute;
 	Timer->RecalculateTimer(this);
 }
