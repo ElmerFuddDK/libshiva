@@ -205,6 +205,8 @@ HANDLE handle = ::FindFirstFile((const TCHAR*)fileName.GetSafeBuffer(), &lpData)
 		else
 			break;
 	}
+	if (handle != INVALID_HANDLE_VALUE)
+		::FindClose(handle);
 #elif defined __SHIVA_EPOC
 RFs fs;
 CDir* fileList;
