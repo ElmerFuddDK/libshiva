@@ -288,7 +288,7 @@ SHVLuaValuesRef a(args);
 				HandleError(ErrExecuting, SHVString8C(lua_tostring((lua_State*)LuaState, -1)).ToStrT());
 				return retVal.ReleaseReference();
 			}
-			for (int i = 1; i <= lua_gettop((lua_State*)LuaState); i++)
+			for (int i = 0; i < lua_gettop((lua_State*)LuaState); i++)
 			{
 				retVal->AddValue(SHVLuaFuncArgsImpl::ToValue(LuaState,i));
 			}
