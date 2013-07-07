@@ -43,6 +43,14 @@ SHVLuaValue::Types SHVLuaValueImpl::GetType() const
 }
 
 /*************************************
+ * GetRefType
+ *************************************/
+const char* SHVLuaValueImpl::GetRefType() const
+{
+	return (Type == TypeRefOject ? RefTypeID : NULL);
+}
+
+/*************************************
  * AsInt
  *************************************/
 SHVInt SHVLuaValueImpl::AsInt() const
@@ -138,12 +146,12 @@ SHVBool SHVLuaValueImpl::AsBool() const
 /*************************************
  * AsObject
  *************************************/
-SHVRefObject* SHVLuaValueImpl::AsRef() const
+SHVRefObject* SHVLuaValueImpl::AsRef(const char* typeID) const
 {
 	switch (Type)
 	{
 	case TypeRefOject:
-		return Data.ObjVal;
+		return (SHVString8C(RefTypeID) == SHVString8C(typeID) ? Data.ObjVal : NULL);
 	default:
 	case TypeNull:
 		break;
@@ -229,7 +237,7 @@ SHVLuaValueImpl* retVal = new SHVLuaValueImpl();
 /*************************************
  * NewObject
  *************************************/
-SHVLuaValueImpl* SHVLuaValueImpl::NewRef(SHVRefObject* val)
+SHVLuaValueImpl* SHVLuaValueImpl::NewRef(SHVRefObject* val, const char* typeID)
 {
 SHVLuaValueImpl* retVal = new SHVLuaValueImpl();
 	if (!val)
@@ -240,6 +248,7 @@ SHVLuaValueImpl* retVal = new SHVLuaValueImpl();
 	{
 		retVal->Type = TypeRefOject;
 		retVal->Data.ObjVal = val->CreateRef();
+		retVal->RefTypeID = typeID;
 	}
 	return retVal;
 }
@@ -310,9 +319,14 @@ SHVLuaValues* SHVLuaValuesImpl::AddBool(SHVBool val)
 /*************************************
  * AddRefObject
  *************************************/
-SHVLuaValues* SHVLuaValuesImpl::AddRef(SHVRefObject* val)
+SHVLuaValues* SHVLuaValuesImpl::AddRef(SHVRefObject* val, const char* typeID)
 {
-	Values.Add(SHVLuaValueImpl::NewRef(val));
+	Values.Add(SHVLuaValueImpl::NewRef(val,typeID));
+	return this;
+}
+SHVLuaValues* SHVLuaValuesImpl::AddRef(SHVLuaValues::RefStruct val)
+{
+	Values.Add(SHVLuaValueImpl::NewRef(val.Obj,val.TypeID));
 	return this;
 }
 

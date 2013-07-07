@@ -85,6 +85,7 @@ HEADERS += \
     ../../src/modules/shvluafuncargsimpl.h \
     ../../../../include/modules/luaengine/shvluavalue.h \
     ../../src/modules/shvluavalueimpl.h \
-    ../../src/modules/shvluarefobjecttype.h
+    ../../src/modules/shvluarefobjecttype.h \
+    ../../../../include/modules/luaengine/shvluareftype.h
 
 INCLUDEPATH += ../../../../..

@@ -77,9 +77,9 @@ bool SHVLuaFuncArgsImpl::ArgAsBool(int idx)
 /*************************************
  * ArgAsRefObject
  *************************************/
-SHVRefObject* SHVLuaFuncArgsImpl::ArgAsRef(int idx)
+SHVRefObject* SHVLuaFuncArgsImpl::ArgAsRef(int idx, const char* typeID)
 {
-	return SHVLuaRefObjectType::ToRef(State,idx+1);
+	return SHVLuaRefObjectType::ToRefByType(State,idx+1,typeID);
 }
 
 /*************************************
@@ -135,10 +135,15 @@ void SHVLuaFuncArgsImpl::PushBool(bool val)
 /*************************************
  * PushRefObject
  *************************************/
-void SHVLuaFuncArgsImpl::PushRef(SHVRefObject* val)
+void SHVLuaFuncArgsImpl::PushRef(SHVRefObject* val, const char* typeID)
 {
 	ReturnVals++;
-	SHVLuaRefObjectType::PushRef(State,val);
+	SHVLuaRefObjectType::PushRef(State,val,typeID);
+}
+void SHVLuaFuncArgsImpl::PushRef(SHVLuaValues::RefStruct refObj)
+{
+	ReturnVals++;
+	SHVLuaRefObjectType::PushRef(State,refObj.Obj,refObj.TypeID);
 }
 
 /*************************************
@@ -156,10 +161,13 @@ SHVLuaValue* SHVLuaFuncArgsImpl::ToValue(void *state, int idx)
 	case LUA_TSTRING:
 		return SHVLuaValueImpl::NewString(SHVString8C(lua_tostring((lua_State*)state,idx)).ToStrT());
 	case LUA_TUSERDATA:
-		if (SHVLuaRefObjectType::IsRef((lua_State*)state,idx))
 		{
-			return SHVLuaValueImpl::NewRef(SHVLuaRefObjectType::ToRef((lua_State*)state,idx));
-		}
+		const char* typeID;
+			if (SHVLuaRefObjectType::IsRef((lua_State*)state,idx,&typeID))
+			{
+				return SHVLuaValueImpl::NewRef(SHVLuaRefObjectType::ToRef((lua_State*)state,idx,NULL),typeID);
+			}
+	}
 		// continue
 	default:
 		SHVASSERT(false); // Unknown type

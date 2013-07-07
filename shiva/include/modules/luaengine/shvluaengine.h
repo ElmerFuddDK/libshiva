@@ -3,6 +3,7 @@
 
 #include "../../framework/shvmodule.h"
 #include "shvluascript.h"
+#include "shvluareftype.h"
 
 #define __LUAENGINE_VERSION_MAJOR   0
 #define __LUAENGINE_VERSION_MINOR   1

@@ -21,13 +21,14 @@ public:
 
 
 	virtual Types GetType() const;
+	virtual const char* GetRefType() const;
 
 
 	virtual SHVInt AsInt() const;
 	virtual SHVDouble AsDouble() const;
 	virtual SHVStringBuffer AsString() const;
 	virtual SHVBool AsBool() const;
-	virtual SHVRefObject* AsRef() const;
+	virtual SHVRefObject* AsRef(const char* typeID = NULL) const;
 
 
 	static SHVLuaValueImpl* NewNull();
@@ -35,7 +36,7 @@ public:
 	static SHVLuaValueImpl* NewDouble(SHVDouble val);
 	static SHVLuaValueImpl* NewString(const SHVStringC val);
 	static SHVLuaValueImpl* NewBool(SHVBool val);
-	static SHVLuaValueImpl* NewRef(SHVRefObject* val);
+	static SHVLuaValueImpl* NewRef(SHVRefObject* val, const char* typeID = NULL);
 
 
 private:
@@ -44,6 +45,7 @@ private:
 
 	///\cond INTERNAL
 	Types Type;
+	const char* RefTypeID;
 	union DataUnion
 	{
 		int IntVal;
@@ -76,7 +78,8 @@ public:
 	virtual SHVLuaValues* AddDouble(SHVDouble val);
 	virtual SHVLuaValues* AddString(const SHVStringC val);
 	virtual SHVLuaValues* AddBool(SHVBool val);
-	virtual SHVLuaValues* AddRef(SHVRefObject* val);
+	virtual SHVLuaValues* AddRef(SHVRefObject* val, const char* typeID);
+	virtual SHVLuaValues* AddRef(RefStruct val);
 
 	// For internal use
 	void AddValue(SHVLuaValue* value);

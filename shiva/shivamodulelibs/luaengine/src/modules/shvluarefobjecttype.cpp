@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "shiva/include/platformspc.h"
+#include "shiva/include/utils/shvstringc.h"
 
 #include "shvluarefobjecttype.h"
 
@@ -39,35 +40,67 @@ static const luaL_Reg shvref_methods[] = {
 /*************************************
  * IsRefObject
  *************************************/
-bool SHVLuaRefObjectType::IsRef(void *state, int idx)
+bool SHVLuaRefObjectType::IsRef(void* state, int idx, const char** typeID)
 {
-	return luaL_testudata((lua_State*)state, idx, SHVLUA_UDATANAME) ? true : false;
+LuaRefObject* data = (LuaRefObject*)luaL_testudata((lua_State*)state, idx, SHVLUA_UDATANAME);
+	if (data)
+	{
+		if (typeID)
+			*typeID = data->Type;
+		return true;
+	}
+	else if (typeID)
+	{
+		*typeID = NULL;
+	}
+	return false;
+}
+bool SHVLuaRefObjectType::IsRefByType(void* state, int idx, const char* typeID)
+{
+LuaRefObject* data = (LuaRefObject*)luaL_testudata((lua_State*)state, idx, SHVLUA_UDATANAME);
+	return data && SHVString8C(data->Type) == SHVString8C(typeID);
 }
 
 /*************************************
  * ToRefObject
  *************************************/
-SHVRefObject* SHVLuaRefObjectType::ToRef(void* state, int idx)
+SHVRefObject* SHVLuaRefObjectType::ToRef(void* state, int idx, const char** typeID)
 {
-SHVRefObject** data = (SHVRefObject**)luaL_testudata((lua_State*)state, idx, SHVLUA_UDATANAME);
-	return (data ? *data : NULL);
+LuaRefObject* data = (LuaRefObject*)luaL_testudata((lua_State*)state, idx, SHVLUA_UDATANAME);
+	if (data)
+	{
+		if (typeID)
+			*typeID = data->Type;
+		return data->Obj;
+	}
+	else if (typeID)
+	{
+		*typeID = NULL;
+	}
+	return NULL;
+}
+SHVRefObject* SHVLuaRefObjectType::ToRefByType(void* state, int idx, const char* typeID)
+{
+LuaRefObject* data = (LuaRefObject*)luaL_testudata((lua_State*)state, idx, SHVLUA_UDATANAME);
+	return (data && SHVString8C(data->Type) == SHVString8C(typeID) ? data->Obj : NULL);
 }
 
 /*************************************
  * PushRefObject
  *************************************/
-void SHVLuaRefObjectType::PushRef(void* state, SHVRefObject* val)
+void SHVLuaRefObjectType::PushRef(void* state, SHVRefObject* val, const char* typeID)
 {
-SHVRefObject** data = (SHVRefObject**)lua_newuserdata((lua_State*)state, sizeof(SHVRefObject*));
+LuaRefObject* data = (LuaRefObject*)lua_newuserdata((lua_State*)state, sizeof(LuaRefObject));
 
-	*data = NULL;
+	data->Obj = NULL;
+	data->Type = typeID;
 
 	// Set the meta table
 	luaL_getmetatable((lua_State*)state, SHVLUA_UDATANAME);
 	lua_setmetatable((lua_State*)state, -2);
 
 	if (val)
-		*data = val->CreateRef();
+		data->Obj = val->CreateRef();
 }
 
 /*************************************
@@ -75,12 +108,12 @@ SHVRefObject** data = (SHVRefObject**)lua_newuserdata((lua_State*)state, sizeof(
  *************************************/
 int SHVLuaRefObjectType::LuaGc(void* state)
 {
-SHVRefObject** data = (SHVRefObject**)luaL_testudata((lua_State*)state, 1, SHVLUA_UDATANAME);
+LuaRefObject* data = (LuaRefObject*)luaL_testudata((lua_State*)state, 1, SHVLUA_UDATANAME);
 
-	if (data && *data)
+	if (data && data->Obj)
 	{
-		(*data)->DestroyRef();
-		*data = NULL;
+		data->Obj->DestroyRef();
+		data->Obj = NULL;
 	}
 	return 0;
 }

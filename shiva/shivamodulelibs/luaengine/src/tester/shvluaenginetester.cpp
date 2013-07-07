@@ -5,6 +5,9 @@
 
 #include "shvluaenginetester.h"
 
+typedef SHVRefObjectTemplate<int> SHVRefInt;
+SHVLUAREFTYPE(SHVLuaRefInt,SHVRefInt);
+
 
 //=========================================================================================================
 // SHVLuaEngineTester class
@@ -46,13 +49,13 @@ void SHVLuaEngineTester::PostRegister()
 	{
 	SHVLuaValuesRef retVal;
 		LuaScript->ExecuteFromFile(Modules.GetConfig().Find(_S("file"))->ToString());
-		retVal = LuaScript->ExecuteFunction("TestFunc",LuaScript->NewArgs()->AddDouble(1.234)->AddString(_S("This is a test")));
+		retVal = LuaScript->ExecuteFunction("TestFunc",LuaScript->NewArgs()->AddDouble(1.234)->AddString(_S("This is a test"))->AddRef(SHVLuaRefInt().Obj(new SHVRefInt(512))));
 		for (int i=0; i<retVal->GetCount(); i++)
 		{
 			SHVConsole::Printf(_S("Type(%d): %s\n"), retVal->Get(i)->GetType(), retVal->Get(i)->AsString().GetSafeBuffer());
-			if (retVal->Get(i)->GetType() == SHVLuaValue::TypeRefOject)
+			if (SHVLuaRefInt().Is(retVal,i))
 			{
-				SHVConsole::Printf(_S("  -> %d\n"), ((SHVRefObjectTemplate<int>*)retVal->Get(i)->AsRef())->Object());
+				SHVConsole::Printf8("  -> %s %d\n", SHVLuaRefInt().Type(), SHVLuaRefInt().Get(retVal,i)->Object());
 			}
 		}
 	}
@@ -118,6 +121,7 @@ void SHVLuaEngineTester::LuaTestFunc(SHVLuaScript* script, SHVLuaFuncArgs &args)
 		SHVConsole::Printf8("  Param 1 as int %d\n", args.ArgAsInt(0).IfNull(-1));
 	args.PushDouble(1.245);
 	args.PushString(_S("NOGET"));
-	args.PushRef(new SHVRefObjectTemplate<int>(512));
+	args.PushRef(new SHVRefInt(512)); // just a regular refobject, not validatable by SHVLuaRefInt
+	args.PushRef(SHVLuaRefInt().Obj(new SHVRefInt(512)));
 }
 

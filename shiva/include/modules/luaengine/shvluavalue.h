@@ -31,13 +31,14 @@ public:
 
 
 	virtual Types GetType() const = 0;
+	virtual const char* GetRefType() const = 0;
 
 
 	virtual SHVInt AsInt() const = 0;
 	virtual SHVDouble AsDouble() const = 0;
 	virtual SHVStringBuffer AsString() const = 0;
 	virtual SHVBool AsBool() const = 0;
-	virtual SHVRefObject* AsRef() const = 0;
+	virtual SHVRefObject* AsRef(const char* typeID = NULL) const = 0;
 
 
 };
@@ -56,6 +57,9 @@ class SHVLuaValues : public SHVRefObject
 {
 public:
 
+	// For transportation from SHVLuaRefType
+	struct RefStruct { SHVRefObject* Obj; const char* TypeID; };
+
 	virtual int GetCount() = 0;
 	virtual SHVLuaValue* Get(int idx) = 0;
 
@@ -63,7 +67,8 @@ public:
 	virtual SHVLuaValues* AddDouble(SHVDouble val) = 0;
 	virtual SHVLuaValues* AddString(const SHVStringC val) = 0;
 	virtual SHVLuaValues* AddBool(SHVBool val) = 0;
-	virtual SHVLuaValues* AddRef(SHVRefObject* val) = 0;
+	virtual SHVLuaValues* AddRef(SHVRefObject* val, const char* typeID = NULL) = 0;
+	virtual SHVLuaValues* AddRef(RefStruct val) = 0;
 
 };
 typedef SHVRefObjectContainer<SHVLuaValues> SHVLuaValuesRef;

@@ -25,7 +25,7 @@ public:
 	virtual SHVStringBuffer ArgAsString(int idx) = 0;
 	virtual SHVDouble ArgAsDouble(int idx) = 0;
 	virtual bool ArgAsBool(int idx) = 0;
-	virtual SHVRefObject* ArgAsRef(int idx) = 0;
+	virtual SHVRefObject* ArgAsRef(int idx, const char* typeID = NULL) = 0;
 	virtual SHVLuaValue* ArgToValue(int idx) = 0;
 
 
@@ -34,7 +34,8 @@ public:
 	virtual void PushString(const SHVStringC val) = 0;
 	virtual void PushDouble(SHVDouble val) = 0;
 	virtual void PushBool(bool val) = 0;
-	virtual void PushRef(SHVRefObject* val) = 0;
+	virtual void PushRef(SHVRefObject* val, const char* typeID = NULL) = 0;
+	virtual void PushRef(SHVLuaValues::RefStruct refObj) = 0;
 
 };
 
