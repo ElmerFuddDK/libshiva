@@ -48,7 +48,7 @@ SHVLuaScriptImpl::SHVLuaScriptImpl(SHVLuaEngineImpl &engine, SHVEventQueue &queu
 		if ((initFuncs&FuncsMath))		luaopen_math((lua_State*)LuaState);
 		if ((initFuncs&FuncsDebug))		luaopen_debug((lua_State*)LuaState);
 		if ((initFuncs&FuncsPackage))	luaopen_package((lua_State*)LuaState);
-		if ((initFuncs&FuncsPackage))	LoadShivaFunctions();
+		if ((initFuncs&FuncsShiva))		LoadShivaFunctions();
 		Started = true;
 	}
 	else
