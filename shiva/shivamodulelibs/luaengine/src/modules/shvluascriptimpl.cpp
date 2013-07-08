@@ -277,7 +277,10 @@ SHVLuaValuesRef a(args);
 						lua_pushboolean((lua_State*)LuaState,val->AsBool() ? 1 : 0);
 						break;
 					case SHVLuaValue::TypeRefOject:
-						SHVLuaRefObjectType::PushRef(LuaState,val->AsRef(),val->GetRefType());
+						{
+						const char* typeID = val->GetRefType();
+							SHVLuaRefObjectType::PushRef(LuaState,val->AsRef(typeID),typeID);
+						}
 						break;
 					}
 				}
