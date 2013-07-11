@@ -36,6 +36,11 @@
 #include "../include/shvdatafactoryimpl.h"
 #include "../../../include/utils/shvdir.h"
 
+#ifdef __SHIVA_IOS
+
+#include "../../../shivasqlite/include/sqlitewrapperimpl.h"
+
+#endif
 
 /*************************************
  * Constructor
@@ -51,6 +56,9 @@ SHVString driverPath;
 		datapath = _S("file:memory:?cached=shared");
 	else
 		datapath += SHVDir::Delimiter() + database;
+
+#ifndef __SHIVA_IOS
+
 	driverPath = SQLiteDll.CreateLibFileName(_S("shivasqlite"),modules.GetConfig().Find(SHVModuleList::DefaultCfgAppPath)->ToString());
 
 	ok = SQLiteDll.Load(driverPath);
@@ -62,6 +70,9 @@ SHVString driverPath;
 	{
 		Factory = new SHVDataFactoryImpl(*this, datapath);
 	}
+#else
+	Factory = new SHVDataFactoryImpl(*this, datapath);
+#endif
 }
 
 SHVDataEngineImpl::~SHVDataEngineImpl()
@@ -226,7 +237,15 @@ void SHVDataEngineImpl::BuildKeySQL(const SHVDataRowKey* key, SHVString8& condit
  *************************************/
 SHVSQLiteWrapper* SHVDataEngineImpl::CreateConnection(SHVBool& Ok, const SHVStringC& dataBase)
 {
-SHVSQLiteWrapperRef retVal = (SHVSQLiteWrapper*) SQLiteDll.CreateObjectInt(&Modules, SHVDll::ClassTypeUser);
+//SHVSQLiteWrapperRef retVal = (SHVSQLiteWrapper*) SQLiteDll.CreateObjectInt(&Modules, SHVDll::ClassTypeUser);
+SHVSQLiteWrapperRef retVal;
+
+#ifdef __SHIVA_IOS
+	retVal = new SHVSQLiteWrapperImpl();
+#else
+	retVal = (SHVSQLiteWrapper*) SQLiteDll.CreateObjectInt(&Modules, SHVDll::ClassTypeUser);
+#endif
+
 	Ok = retVal->Open(dataBase);
 	if (Ok)
 	{

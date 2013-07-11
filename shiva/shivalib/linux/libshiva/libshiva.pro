@@ -140,7 +140,7 @@ SOURCES += ../../src/framework/shvconsole.cpp \
     ../../src/utils/shvbase64.cpp
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
 TARGET = shiva 
-CONFIG = debug \
+CONFIG = $$QMAKE_PLATFORM debug \
          warn_on \
          dll 
 TEMPLATE = lib 
@@ -149,7 +149,7 @@ LIBS += -lm \
   $$QMAKE_LIBS_DYNLOAD \
   -lpthread
 
-ios|macx {
+mac {
 	DEFINES += _POSIX_C_SOURCE=200112L _XOPEN_SOURCE=500 _REENTRANT _THREAD_SAFE
 	DEFINES += _DARWIN_C_SOURCE
 	LIBS -= -lrt
@@ -166,6 +166,10 @@ ios|macx {
 			../../src/libunicode/utf8.c \
 			../../src/libunicode/utf8conv.c
 	 DEFINES += __SHIVA_LIBUNICODESTATIC
+}
+
+ios {
+	CONFIG += staticlib
 }
 
 !isEmpty(ANDROID_PLATFORM){

@@ -1,5 +1,5 @@
-#ifndef __SHIVA_MODULEFACTORY_H
-#define __SHIVA_MODULEFACTORY_H
+#ifndef __SHIVA_MODULEFACTORY_XMLSTREAM_H
+#define __SHIVA_MODULEFACTORY_XMLSTREAM_H
 
 #include "../../../include/framework/shvmodulefactory.h"
 

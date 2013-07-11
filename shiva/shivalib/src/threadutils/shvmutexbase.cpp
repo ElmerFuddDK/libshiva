@@ -43,6 +43,11 @@
 # include <sys/time.h>
 #endif
 
+#ifdef __MACH__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
+
 
 //=========================================================================================================
 //  SHVMutexBase class - Non-thread aware locking class

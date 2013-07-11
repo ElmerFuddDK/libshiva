@@ -5,7 +5,8 @@
 
 INCLUDEPATH += ../../ 
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
-CONFIG = debug \
+CONFIG = $$QMAKE_PLATFORM \
+	debug \
          warn_on \
          dll 
 TEMPLATE = lib 
@@ -68,4 +69,9 @@ DESTDIR = ../bin
   QMAKE_LIBS = -lstdc++ -lsupc++ -llog
   QMAKE_INCDIR -= $$ANDROID_SOURCES_CXX_STL_INCDIR
   QMAKE_LIBDIR -= $$ANDROID_SOURCES_CXX_STL_LIBDIR
+}
+
+ios {
+	CONFIG += staticlib
+	LIBS -= -lshiva
 }
