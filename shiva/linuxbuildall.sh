@@ -10,10 +10,11 @@ fi
 unset ReleaseMode
 unset StripMode
 unset LibIconv
-unset QMake
 
-which qmake-qt4 &>/dev/null && QMake="qmake-qt4"
-test -z "$QMake" && QMake="qmake"
+if test -z "$QMake"
+then
+  which qmake-qt4 &>/dev/null && QMake="qmake-qt4" || QMake="qmake"
+fi
 
 # check for command line input
 
