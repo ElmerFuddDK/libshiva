@@ -61,6 +61,7 @@ public:
 	// properties
 	virtual SHVTimerInstance::Modes GetMode();
 	virtual int GetInterval();
+	virtual int GetIntervalElapsed();
 
 private:
 	///\cond INTERNAL

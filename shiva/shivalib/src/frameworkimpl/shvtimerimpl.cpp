@@ -217,6 +217,30 @@ int SHVTimerInstanceImpl::GetInterval()
 	return Interval;
 }
 
+/*************************************
+ * GetIntervalElapsed
+ *************************************/
+int SHVTimerInstanceImpl::GetIntervalElapsed()
+{
+int retVal = Interval;
+
+	if (Timer->TimerThread.LockEvent())
+	{
+		switch (Mode)
+		{
+		case SHVTimerInstance::ModeOnce:
+		case SHVTimerInstance::ModeRecurring:
+			retVal = TickHit - SHVThreadBase::GetTicksInMilliSecs();
+			break;
+		default:
+			break;
+		}
+		Timer->TimerThread.UnlockEvent();
+	}
+	
+	return retVal;
+}
+
 
 ///\cond INTERNAL
 /*************************************

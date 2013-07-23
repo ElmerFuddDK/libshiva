@@ -34,6 +34,7 @@ public:
 	// properties
 	virtual Modes GetMode() = 0;
 	virtual int GetInterval() = 0;
+	virtual int GetIntervalElapsed() = 0;
 
 };
 typedef SHVRefObjectContainer<SHVTimerInstance> SHVTimerInstanceRef;
