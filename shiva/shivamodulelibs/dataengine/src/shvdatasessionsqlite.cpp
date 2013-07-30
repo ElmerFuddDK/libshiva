@@ -580,7 +580,7 @@ void SHVDataSessionSQLite::InitDeleteFunction(SHVDataFunction *func, const SHVDa
 						func->SetParameterIntUTF8(st[colIdx]->GetColumnName().GetBufferConst(), Key[c].Value->AsInt());
 						break;
 					case SHVDataVariant::TypeBool:
-						func->SetParameterIntUTF8(st[c]->GetColumnName().GetBufferConst(), Key[c].Value->AsBool() ? 1 : 0);
+						func->SetParameterIntUTF8(st[colIdx]->GetColumnName().GetBufferConst(), Key[c].Value->AsBool() ? 1 : 0);
 						break;
 					case SHVDataVariant::TypeInt64:
 						func->SetParameterInt64UTF8(st[colIdx]->GetColumnName().GetBufferConst(), Key[c].Value->AsInt64());
