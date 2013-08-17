@@ -30,7 +30,7 @@ public:
 	T& GetFirst() const;
 	T& GetPrev(SHVListPos& current) const;
 	T& GetNext(SHVListPos& current) const;
-	T& GetAt(SHVListPos& current) const;
+	T& GetAt(const SHVListPos current) const;
 	T& GetLast(SHVListPos& current) const;
 	T& GetLast() const;
 
@@ -165,7 +165,7 @@ T& SHVList<T,S>::GetPrev(SHVListPos& current) const  { return ((SHVListNodeTemp<
 template<class T, class S>
 T& SHVList<T,S>::GetNext(SHVListPos& current) const  { return ((SHVListNodeTemp<T,S>*)SHVListBase::GetNext(current))->Data;  }
 template<class T, class S>
-T& SHVList<T,S>::GetAt(SHVListPos& current) const    { return ((SHVListNodeTemp<T,S>*)SHVListBase::GetAt(current))->Data;    }
+T& SHVList<T,S>::GetAt(const SHVListPos current) const { return ((SHVListNodeTemp<T,S>*)SHVListBase::GetAt(current))->Data;  }
 template<class T, class S>
 T& SHVList<T,S>::GetLast(SHVListPos& current) const  { return ((SHVListNodeTemp<T,S>*)SHVListBase::GetLast(current))->Data;  }
 template<class T, class S>

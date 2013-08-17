@@ -39,7 +39,7 @@ protected:
 	SHVListNode* GetFirst() const;
 	SHVListNode* GetPrev(SHVListPos& current) const;
 	SHVListNode* GetNext(SHVListPos& current) const;
-	SHVListNode* GetAt(SHVListPos& current) const;
+	SHVListNode* GetAt(const SHVListPos current) const;
 	SHVListNode* GetLast(SHVListPos& current) const;
 	SHVListNode* GetLast() const;
 

@@ -269,9 +269,9 @@ SHVListNode* SHVListBase::GetNext(SHVListPos& current) const
  \param current Position from where to return the item
  \return The item
  */
-SHVListNode* SHVListBase::GetAt(SHVListPos& current) const
+SHVListNode* SHVListBase::GetAt(const SHVListPos current) const
 {
-	return current;
+	return (SHVListNode*)current;
 }
 
 /*************************************
