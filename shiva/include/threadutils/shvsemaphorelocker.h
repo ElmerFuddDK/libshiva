@@ -8,12 +8,12 @@
 /**
  * Convenience class to handle function locks. See example.
 \code
-bool examplefunc()
+bool examplefunc(SHVSemaphore* sem)
 {
-SHVSemaphoreLocker lock(mySemaphore);
+SHVSemaphoreLocker lock(sem); // will wait for 1 resource in the semaphore
 	doSomething();
 	if (checkSomeThing())
-		return false; // Will signal the waited semaphore in the locker on automatic destructor
+		return false; // Will signal the waited resource in the semaphore on automatic destructor
 	return doSomethingElse();
 }
 \endcode
