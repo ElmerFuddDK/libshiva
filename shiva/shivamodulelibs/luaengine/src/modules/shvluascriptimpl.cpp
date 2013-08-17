@@ -455,6 +455,9 @@ void SHVLuaScriptImpl::OnInternalEvent(SHVEvent *event)
 	case EventInternalExecuteFromFile:
 		ExecuteFromFile(SHVEventData<SHVString>::Get(event).GetBufferConst());
 		break;
+	case EventInternalExecuteFunction:
+		ExecuteFunction(SHVEventData<ExecFuncData>::Get(event).name,SHVEventData<ExecFuncData>::Get(event).args);
+		break;
 	case EventInternalStopScript:
 		StopScript();
 		break;
