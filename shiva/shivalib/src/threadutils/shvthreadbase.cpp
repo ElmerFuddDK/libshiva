@@ -182,7 +182,9 @@ void** tmpData = (void**)::malloc(sizeof(void*)*2);
 #else
 pthread_attr_t attr;
 sched_param param;
+int policy;
 int min,max;
+bool setPrio = false;
 pthread_mutex_t* mutex;
 void** tmpData = (void**)::malloc(sizeof(void*)*3);
 
@@ -199,26 +201,54 @@ void** tmpData = (void**)::malloc(sizeof(void*)*3);
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);
 
-	if (HasSystemPrivs())
+	if (priority > PrioNormal && HasSystemPrivs())
 	{
-		min = sched_get_priority_min(SCHED_RR);
-		max = sched_get_priority_max(SCHED_RR);
+		setPrio = true;
+		policy = SCHED_RR;
+		min = sched_get_priority_min(policy);
+		max = sched_get_priority_max(policy);
 
 		if (priority >= PrioRealtime) priority = max;
-		else if (priority <= PrioIdle) priority = min;
-		else
-		{
-			priority *= 33;
-			priority = ((max-min)/2 + min) + (priority * (max-min))/200;
-		}
+		else if (priority <= PrioHigh) priority = min;
+		else priority = ((max-min)/2 + min);
 
-		pthread_attr_setschedpolicy(&attr,SCHED_RR);
+		pthread_attr_setschedpolicy(&attr,policy);
 		param.sched_priority = priority;
-		pthread_attr_setschedparam(&attr, &param);
+		SHVVERIFY(pthread_attr_setschedparam(&attr, &param) == 0);
 	}
+#ifdef SCHED_BATCH
+	else if (priority == PrioLowest || priority == PrioLow)
+	{
+		setPrio = true;
+		policy = SCHED_BATCH;
+
+		min = sched_get_priority_min(policy);
+		max = sched_get_priority_max(policy);
+
+		if (priority >= PrioLow) priority = max;
+		else priority = min;
+		
+		pthread_attr_setschedpolicy(&attr,policy);
+		param.sched_priority = priority;
+		SHVVERIFY(pthread_attr_setschedparam(&attr, &param) == 0);
+	}
+#endif
+#ifdef SCHED_IDLE
+	else if (priority == PrioIdle)
+	{
+		setPrio = true;
+		policy = SCHED_IDLE;
+		pthread_attr_setschedpolicy(&attr,policy);
+		param.sched_priority = sched_get_priority_min(policy);
+		SHVVERIFY(pthread_attr_setschedparam(&attr, &param) == 0);
+	}
+#endif
+	
 	SHVVERIFY(pthread_attr_setstacksize(&attr,(size_t)stackSize.IfNull(0x100000)) == 0); // 1 MB standard - 12 MB is simply too much
 
 	ThreadHandle = (pthread_create( (pthread_t*)&ID, &attr, StartupFuncPosix, (void*)tmpData) ? 0/*error*/ : 1/*ok*/ );
+	if (setPrio)
+		SHVVERIFY(pthread_setschedparam(ID,policy,&param) == 0);
 
 	retVal = (ThreadHandle ? true : false);
 
