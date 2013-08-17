@@ -6342,6 +6342,101 @@ DEP_CPP_SHVSTRING=\
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\utils\shvstringstream.cpp
+
+!IF  "$(CFG)" == "libshiva - Win32 (WCE ARM) Release"
+
+DEP_CPP_SHVSTRS=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvlist.h"\
+	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvptrcontainer.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\src\utils\stdafx.h"\
+	
+# ADD CPP /Yu"stdafx.h"
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE ARM) Debug"
+
+DEP_CPP_SHVSTRS=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvlist.h"\
+	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvptrcontainer.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\src\utils\stdafx.h"\
+	
+# ADD CPP /Yu"stdafx.h"
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE x86) Release"
+
+DEP_CPP_SHVSTRS=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvlist.h"\
+	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvptrcontainer.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\src\utils\stdafx.h"\
+	
+# ADD CPP /Yu"stdafx.h"
+
+!ELSEIF  "$(CFG)" == "libshiva - Win32 (WCE x86) Debug"
+
+DEP_CPP_SHVSTRS=\
+	"..\..\include\platforms\linux\platformspc.h"\
+	"..\..\include\platforms\symbian\platformspc.h"\
+	"..\..\include\platforms\win32\platformspc.h"\
+	"..\..\include\platforms\wince\platformspc.h"\
+	"..\..\include\platformspc.h"\
+	"..\..\include\shvtypes.h"\
+	"..\..\include\utils\shvassert.h"\
+	"..\..\include\utils\shvhashvalue.h"\
+	"..\..\include\utils\shvlist.h"\
+	"..\..\include\utils\shvlistbase.h"\
+	"..\..\include\utils\shvptrcontainer.h"\
+	"..\..\include\utils\shvstring.h"\
+	"..\..\include\utils\shvstring16.h"\
+	"..\..\include\utils\shvstring16c.h"\
+	"..\..\include\utils\shvstringc.h"\
+	"..\src\utils\stdafx.h"\
+	
+# ADD CPP /Yu"stdafx.h"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\utils\shvstringutf8.cpp
 
 !IF  "$(CFG)" == "libshiva - Win32 (WCE ARM) Release"
