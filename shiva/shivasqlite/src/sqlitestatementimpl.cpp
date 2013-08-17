@@ -251,7 +251,7 @@ int cnt;
 	SHVTHREADCHECK(OwnerThread);
 	cnt = sqlite3_bind_parameter_count(Statement);
 	for (int i = 0; i < cnt;i++)
-		sqlite3_bind_null(Statement, i);
+		sqlite3_bind_null(Statement, i+1);
 }
 
 /*************************************
