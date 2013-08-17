@@ -273,6 +273,10 @@
 							>
 						</File>
 						<File
+							RelativePath="..\src\tests\utils\shvmd5sumtester.cpp"
+							>
+						</File>
+						<File
 							RelativePath="..\src\tests\utils\shvstringtester.cpp"
 							>
 						</File>
@@ -400,6 +404,10 @@
 						</File>
 						<File
 							RelativePath="..\src\tests\utils\shvlisttester.h"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\utils\shvmd5sumtester.h"
 							>
 						</File>
 						<File
