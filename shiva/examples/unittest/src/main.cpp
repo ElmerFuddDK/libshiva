@@ -29,6 +29,7 @@
 #include "tests/utils/shvvectortester.h"
 
 #include "tests/threadutils/shvmutextester.h"
+#include "tests/threadutils/shvsemaphoretester.h"
 #include "tests/threadutils/shvthreadtester.h"
 
 
@@ -101,6 +102,7 @@ SHVMainThreadEventDispatcher* dispatcher = NULL;
 		unitTest->RegisterTest(new SHVVectorTester());
 
 		unitTest->RegisterTest(new SHVMutexTester(mainqueue.GetModuleList()));
+		unitTest->RegisterTest(new SHVSemaphoreTester(mainqueue.GetModuleList()));
 		unitTest->RegisterTest(new SHVThreadTester(mainqueue.GetModuleList()));
 
 		// Load unit tests from module libraries

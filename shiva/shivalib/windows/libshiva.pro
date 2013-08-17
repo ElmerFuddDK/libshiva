@@ -33,6 +33,8 @@ HEADERS += ../../include/platformspc.h \
            ../../include/threadutils/shvmutexbase.h \
            ../../include/threadutils/shvmutex.h \
            ../../include/threadutils/shvmutexlocker.h \
+           ../../include/threadutils/shvsemaphore.h \
+           ../../include/threadutils/shvsemaphorelocker.h \
            ../../include/threadutils/shvthreadbase.h \
            ../../include/threadutils/shvthread.h \
            ../../include/utils/shvassert.h \
@@ -107,6 +109,7 @@ SOURCES += ../src/framework/shvevent.cpp \
            ../src/frameworkimpl/shvtimerimpl.cpp \
            ../src/threadutils/shvmutexbase.cpp \
            ../src/threadutils/shvmutex.cpp \
+           ../src/threadutils/shvsemaphore.cpp \
            ../src/threadutils/shvreadwritelock.cpp \
            ../src/threadutils/shvthreadbase.cpp \
            ../src/utils/shvassert.cpp \

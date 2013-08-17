@@ -3,6 +3,7 @@ SOURCES = ../../src/main.cpp \
     ../../src/logger/shvtestloggerconsole.cpp \
     ../../src/logger/shvtestloggergui.cpp \
     ../../src/tests/threadutils/shvmutextester.cpp \
+    ../../src/tests/threadutils/shvsemaphoretester.cpp \
     ../../src/tests/threadutils/shvthreadtester.cpp \
     ../../src/tests/utils/shvbooltester.cpp \
     ../../src/tests/utils/shvdoubletester.cpp \
@@ -25,6 +26,7 @@ HEADERS += \
     ../../src/logger/shvtestloggerconsole.h \
     ../../src/logger/shvtestloggergui.h \
     ../../src/tests/threadutils/shvmutextester.h \
+    ../../src/tests/threadutils/shvsemaphoretester.h \
     ../../src/tests/threadutils/shvthreadtester.h \
     ../../src/tests/utils/shvbooltester.h \
     ../../src/tests/utils/shvdoubletester.h \

@@ -294,6 +294,10 @@
 							>
 						</File>
 						<File
+							RelativePath="..\src\tests\threadutils\shvsemaphoretester.cpp"
+							>
+						</File>
+						<File
 							RelativePath="..\src\tests\threadutils\shvthreadtester.cpp"
 							>
 						</File>
@@ -417,6 +421,10 @@
 						>
 						<File
 							RelativePath="..\src\tests\threadutils\shvmutextester.h"
+							>
+						</File>
+						<File
+							RelativePath="..\src\tests\threadutils\shvsemaphoretester.h"
 							>
 						</File>
 						<File

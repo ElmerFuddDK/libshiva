@@ -321,6 +321,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\src\threadutils\shvsemaphore.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\src\threadutils\shvreadwritelock.cpp"
 						>
 					</File>
@@ -704,6 +708,14 @@
 					</File>
 					<File
 						RelativePath="..\..\include\threadutils\shvmutexlocker.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\threadutils\shvsemaphore.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\threadutils\shvsemaphorelocker.h"
 						>
 					</File>
 					<File
