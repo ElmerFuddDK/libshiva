@@ -34,7 +34,7 @@ public:
 
 
 	// thread handling
-	void StartThread(SHVModuleList& modules);
+	void StartThread(SHVModuleList& modules, short threadPriority = SHVThreadBase::PrioNormal, const SHVStringC name = NULL);
 	void StopThread();
 	void WaitForTermination();
 

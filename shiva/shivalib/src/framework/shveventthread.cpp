@@ -65,7 +65,7 @@ SHVEventThread::~SHVEventThread()
  * IMPORTANT - Always call this function before usage. Eg. before or during
  * register of a module.
  */
-void SHVEventThread::StartThread(SHVModuleList& modules)
+void SHVEventThread::StartThread(SHVModuleList& modules, short threadPriority, const SHVStringC name)
 {
 	if (!EventThread.IsRunning())
 	{
@@ -73,7 +73,7 @@ void SHVEventThread::StartThread(SHVModuleList& modules)
 		TimeoutInterval = SHVMutexBase::Infinite;
 		KillSignal = false;
 		ThreadSignal.Lock(); // acquire signal before starting the thread - yay
-		EventThread.Start(this,&SHVEventThread::ThreadFunc);
+		EventThread.Start(this,&SHVEventThread::ThreadFunc,threadPriority,name);
 	}
 }
 
