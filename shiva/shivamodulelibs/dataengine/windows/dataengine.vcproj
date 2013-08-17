@@ -264,6 +264,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\shvdatastatementimpl.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\shvdatastructcsqlite.cpp"
 					>
 				</File>
@@ -320,6 +324,10 @@
 			</File>
 			<File
 				RelativePath="..\include\shvdatarowlistsqlite.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\shvdatastatementimpl.h"
 				>
 			</File>
 			<File
@@ -441,6 +449,10 @@
 						</File>
 						<File
 							RelativePath="..\..\..\include\modules\dataengine\shvdatasession.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\modules\dataengine\shvdatastatement.h"
 							>
 						</File>
 						<File

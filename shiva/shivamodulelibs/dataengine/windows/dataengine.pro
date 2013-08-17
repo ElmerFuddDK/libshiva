@@ -23,6 +23,7 @@ HEADERS += ../../../include/modules/dataengine/shvdataengine.h \
            ../../../include/modules/dataengine/shvdatarowlistc.h \
            ../../../include/modules/dataengine/shvdatarowlist.h \
            ../../../include/modules/dataengine/shvdatasession.h \
+           ../../../include/modules/dataengine/shvdatastatement.h \
            ../../../include/modules/dataengine/shvdatastructc.h \
            ../../../include/modules/dataengine/shvdatastruct.h \
            ../../../include/modules/dataengine/shvdatavariant.h \
@@ -38,6 +39,7 @@ HEADERS += ../../../include/modules/dataengine/shvdataengine.h \
            ../include/shvdatarowlistcsqlite.h \
            ../include/shvdatarowlistsqlite.h \
            ../include/shvdatasessionsqlite.h \
+           ../include/shvdatastatementimpl.h \
            ../include/shvdatastructcsqlite.h \
            ../include/shvdatastructimpl.h \
            ../include/shvdatavariantimpl.h
@@ -54,6 +56,7 @@ SOURCES += dataengine.cpp \
            ../src/shvdatarowlistcsqlite.cpp \
            ../src/shvdatarowlistsqlite.cpp \
            ../src/shvdatasessionsqlite.cpp \
+           ../src/shvdatastatementimpl.cpp \
            ../src/shvdatastructcsqlite.cpp \
            ../src/shvdatastructimpl.cpp \
            ../src/shvdatavariantimpl.cpp

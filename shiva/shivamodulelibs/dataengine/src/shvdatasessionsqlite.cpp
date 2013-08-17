@@ -40,6 +40,7 @@
 #include "../include/shvdatafunctionimpl.h"
 #include "../../../include/modules/dataengine/shvdataengine.h"
 #include "../../../include/utils/shvstringstream.h"
+#include "../include/shvdatastatementimpl.h"
 
 /*************************************
  * Constructor
@@ -202,6 +203,14 @@ SHVStringStreamUTF8 sql;
 		}
 	}
 	return retVal.ReleaseReference();
+}
+
+/*************************************
+ * PrepareStatement
+ *************************************/
+SHVDataStatement* SHVDataSessionSQLite::PrepareStatement(const SHVStringC& query)
+{
+	return new SHVDataStatementImpl(SQLite,query);
 }
 
 /*************************************

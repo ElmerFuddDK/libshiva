@@ -36,8 +36,10 @@ HEADERS += ../../../../include/modules/dataengine/shvdataengine.h \
  ../../include/shvdatastructcsqlite.h \
  ../../include/shvdatastructimpl.h \
  ../../include/shvdatavariantimpl.h \
-    ../../../../include/modules/dataengine/shvdatafunction.h \
-	../../include/shvdatafunctionimpl.h
+ ../../../../include/modules/dataengine/shvdatafunction.h \
+ ../../include/shvdatafunctionimpl.h \
+ ../../../../include/modules/dataengine/shvdatastatement.h \
+ ../../include/shvdatastatementimpl.h
 SOURCES += dataengine.cpp \
            ../../src/shvdataenginefactory.cpp \
  ../../src/shvdataengineimpl.cpp \
@@ -53,7 +55,8 @@ SOURCES += dataengine.cpp \
  ../../src/shvdatastructcsqlite.cpp \
  ../../src/shvdatastructimpl.cpp \
  ../../src/shvdatavariantimpl.cpp \
-    ../../src/shvdatafunctionimpl.cpp
+ ../../src/shvdatafunctionimpl.cpp \
+ ../../src/shvdatastatementimpl.cpp
 
 LIBS += -L../../../../shivalib/linux/libshiva/ \
   -lshiva \

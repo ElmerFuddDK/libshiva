@@ -275,6 +275,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\shvdatastatementimpl.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\shvdatastructcsqlite.cpp"
 					>
 				</File>

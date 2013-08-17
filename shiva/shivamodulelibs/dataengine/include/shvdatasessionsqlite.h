@@ -22,6 +22,7 @@ public:
 	virtual SHVDataRowListC* Query(const SHVStringC& query, const SHVDataRowKey* sortKey);
 	virtual SHVDataFunction* PrepareFunction(const SHVStringC& query, const SHVDataRowKey* sortKey = NULL);
 	virtual SHVDataFunction* GetDataChangeFunction(SHVDataRowList *rowList, int function);
+	virtual SHVDataStatement* PrepareStatement(const SHVStringC& query);
 	virtual SHVDataRowListC* QueryTable(const SHVString8C& tableName, const SHVStringC& condition, size_t index);
 	virtual SHVDataRowListC* QueryTableIndexed(const SHVString8C& tableName, const SHVStringC& condition, size_t index);
 	virtual SHVDataRowList* CopyAlias(const SHVString8C& sourceAlias, const SHVString8C& destAlias);

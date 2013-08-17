@@ -150,6 +150,61 @@ public:
 
 			}
 			else
+			if (str == SHVString8C("/statement"))
+			{
+			SHVBool ok;
+			SHVDataStatementRef statement = DataSession->PrepareStatement(
+				            "SELECT key AS number, col1 AS data FROM testtable ORDER BY col2 limit 1;"
+				            "SELECT key AS differentnumber, col1 AS moredata FROM testtable WHERE col1 = @param AND @param2 = 'enabled';"
+				            "SELECT key AS differentnumber, col1 AS moredata FROM testtable WHERE col1 = 'Number 50';"
+				            );
+				printf("Statement ok : %d\n", statement->IsOk().GetError());
+				printf("Reset %d\n", statement->Reset().GetError());
+				statement->ClearAllParameters();
+				printf("SetParameter %d\n", statement->SetParameterStringUTF8("@dummy","dummy").GetError());
+				printf("SetParameter %d\n", statement->SetParameterStringUTF8("@param","Number 50").GetError());
+				printf("SetParameter %d\n", statement->SetParameterStringUTF8("@param2","enabled").GetError());
+				while (statement->NextResult())
+				{
+					printf("Result set start\n");
+					while (statement->NextRow())
+					{
+					SHVString val;
+					int len;
+						statement->GetString(val,len,1);
+						printf("  Data : %s\n", val.GetSafeBuffer());
+					}
+				}
+				printf("Reset %d\n", statement->Reset().GetError());
+				statement->ClearAllParameters();
+				printf("SetParameter %d\n", statement->SetParameterStringUTF8("@param","Number 1234").GetError());
+				printf("SetParameter %d\n", statement->SetParameterStringUTF8("@param2","enabled").GetError());
+				while (statement->NextResult())
+				{
+					printf("Result set start\n");
+					while (statement->NextRow())
+					{
+					SHVString val;
+					int len;
+						statement->GetString(val,len,1);
+						printf("  Data : %s\n", val.GetSafeBuffer());
+					}
+				}
+				printf("Reset %d\n", statement->Reset().GetError());
+				statement->ClearAllParameters();
+				while (statement->NextResult())
+				{
+					printf("Result set start\n");
+					while (statement->NextRow())
+					{
+					SHVString val;
+					int len;
+						statement->GetString(val,len,1);
+						printf("  Data : %s\n", val.GetSafeBuffer());
+					}
+				}
+			}
+			else
 			if (str == SHVString8C("/test"))
 			{
 			SHVDataRowKeyRef key = DataEngine->CreateKey();

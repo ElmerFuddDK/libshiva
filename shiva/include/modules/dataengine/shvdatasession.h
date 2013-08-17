@@ -10,6 +10,7 @@
 class SHVDataRowList;
 class SHVDataRowListC;
 class SHVDataFunction;
+class SHVDataStatement;
 class SHVDataRow;
 class SHVDataRowKey;
 class SHVDataFactory;
@@ -33,6 +34,7 @@ public:
 	virtual SHVDataRowListC* Query(const SHVStringC& query, const SHVDataRowKey* sortKey = NULL) = 0;
 	virtual SHVDataFunction* PrepareFunction(const SHVStringC& query, const SHVDataRowKey* sortKey = NULL) = 0;
 	virtual SHVDataFunction* GetDataChangeFunction(SHVDataRowList* rowList, int function) = 0;
+	virtual SHVDataStatement* PrepareStatement(const SHVStringC& query) = 0;
 	virtual SHVDataRowListC* QueryTable(const SHVString8C& tableName, const SHVStringC& condition, size_t index) = 0;
 	virtual SHVDataRowListC* QueryTableIndexed(const SHVString8C& tableName, const SHVStringC& condition, size_t index) = 0;
 	virtual SHVDataRowList* CopyAlias(const SHVString8C& sourceAlias, const SHVString8C& destAlias) = 0;
@@ -79,6 +81,7 @@ typedef SHVRefObjectContainer<SHVDataSession> SHVDataSessionRef;
 
 #include "shvdatafactory.h"
 #include "shvdatarowlistc.h"
+#include "shvdatastatement.h"
 
 /*************************************
  * IsEditting
