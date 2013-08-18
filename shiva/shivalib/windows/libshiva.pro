@@ -87,6 +87,7 @@ HEADERS += ../../include/platformspc.h \
            ../../include/utils/shvmd5sum.h \
            ../../include/utils/shvmathtokenmap.h \
            ../../include/utils/shvmathtokenhashmap.h \
+           ../../include/threadutils/shvthreadpool.h \
            ../../include/threadutils/shvthreadpoolbase.h \
            ../../include/framework/shvconsole.h
 SOURCES += ../src/framework/shvevent.cpp \

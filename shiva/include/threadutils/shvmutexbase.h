@@ -10,6 +10,7 @@
 # include "../utils/shvlist.h"
 # include <pthread.h>
 #endif
+#include "shvthreadbase.h"
 
 
 //-=========================================================================================================
@@ -27,7 +28,7 @@ public:
 
 	// defines
 	enum { Infinite = -1 };
-	enum { InvalidThreadID = SIZE_T_MAX };  ///<\todo investigate invalid thread ID on various platforms
+	enum { InvalidThreadID = SHVThreadBase::InvalidThreadID };
 
 
 	SHVMutexBase();

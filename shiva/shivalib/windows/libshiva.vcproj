@@ -944,6 +944,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\include\threadutils\shvthreadpool.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\threadutils\shvthreadpoolbase.h"
 						>
 					</File>

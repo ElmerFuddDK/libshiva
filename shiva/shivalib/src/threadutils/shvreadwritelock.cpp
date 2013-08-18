@@ -45,7 +45,7 @@
  *************************************/
 SHVReadWriteLock::SHVReadWriteLock()
 {
-	ExclusiveOwner = SHVMutexBase::InvalidThreadID;
+	ExclusiveOwner = SHVThreadBase::InvalidThreadID;
 	RefCount = 0;
 }
 
@@ -55,19 +55,19 @@ SHVReadWriteLock::SHVReadWriteLock()
 void SHVReadWriteLock::LockShared()
 {
 	Lock.Lock();
-	if (RefCount && ExclusiveOwner != SHVMutexBase::InvalidThreadID
+	if (RefCount && ExclusiveOwner != SHVThreadBase::InvalidThreadID
 				 && ExclusiveOwner != SHVThreadBase::GetCurrentThreadID())
 	{
 	SHVMutexBase waitLock;
 		waitLock.Lock();
-		WaitQueue.AddTail(Wait(waitLock,SHVMutexBase::InvalidThreadID));
+		WaitQueue.AddTail(Wait(waitLock,SHVThreadBase::InvalidThreadID));
 		Lock.Unlock();
 
 		waitLock.Lock();
 
 		Lock.Lock();
 		waitLock.Unlock();
-		SHVASSERT(ExclusiveOwner == SHVMutexBase::InvalidThreadID && RefCount);
+		SHVASSERT(ExclusiveOwner == SHVThreadBase::InvalidThreadID && RefCount);
 	}
 	else
 	{
@@ -142,11 +142,11 @@ void SHVReadWriteLock::Unlock()
 				RefCount++;
 				ExclusiveOwner = wait.NewOwner;
 				wait.WaitObject.Unlock();
-			} while (ExclusiveOwner == SHVMutexBase::InvalidThreadID && WaitQueue.GetCount() && WaitQueue.GetFirst().NewOwner == SHVMutexBase::InvalidThreadID);
+			} while (ExclusiveOwner == SHVThreadBase::InvalidThreadID && WaitQueue.GetCount() && WaitQueue.GetFirst().NewOwner == SHVThreadBase::InvalidThreadID);
 		}
 		else
 		{
-			ExclusiveOwner = SHVMutexBase::InvalidThreadID;
+			ExclusiveOwner = SHVThreadBase::InvalidThreadID;
 		}
 	}
 	Lock.Unlock();
@@ -157,7 +157,7 @@ void SHVReadWriteLock::Unlock()
  *************************************/
 bool SHVReadWriteLock::IsExclusiveLocked()
 {
-	return (ExclusiveOwner != SHVMutexBase::InvalidThreadID);
+	return (ExclusiveOwner != SHVThreadBase::InvalidThreadID);
 }
 
 /*************************************

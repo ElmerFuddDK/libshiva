@@ -1,5 +1,5 @@
-#ifndef __SHIVA_THREADUTILS_THREADPOOL_H
-#define __SHIVA_THREADUTILS_THREADPOOL_H
+#ifndef __SHIVA_THREADUTILS_THREADPOOLBASE_H
+#define __SHIVA_THREADUTILS_THREADPOOLBASE_H
 
 #include "shvthreadbase.h"
 #include "shvmutexbase.h"
@@ -14,12 +14,14 @@
  * functions.
  */
 
-class SHVThreadPoolBase
+class SHVAPI SHVThreadPoolBase
 {
 public:
 
 	SHVThreadPoolBase(int initialCount = -1, int maxCount = -1, short priority = SHVThreadBase::PrioNormal, SHVInt stackSize = SHVInt());
 	~SHVThreadPoolBase();
+
+	void SetThreadStartingFunction(SHVThreadBase::ThreadFunc func, void* data);
 
 	bool Start(int initialCount = 5, int maxCount = 25, short priority = SHVThreadBase::PrioNormal, SHVInt stackSize = SHVInt());
 	void Stop();
@@ -27,7 +29,7 @@ public:
 	SHVThreadBase::ThreadID Execute(SHVThreadBase::ThreadFunc func, void* data);
 
 
-private:
+protected:
 	///\cond INTERNAL
 	bool Running;
 	int MaxCount;
@@ -36,6 +38,8 @@ private:
 	struct PoolThreadData{ SHVThreadBase Thread; SHVMutexBase Lock; SHVThreadBase::ThreadFunc Func; void* Data; };
 	struct PoolThreadWaitData{ SHVMutexBase Lock; SHVThreadBase::ThreadFunc Func; void* Data; PoolThreadData* PoolThread; };
 	struct PoolThreadFuncData{ PoolThreadData* Data; SHVThreadPoolBase* Self; };
+	SHVThreadBase::ThreadFunc ThreadStartingFunc;
+	void* ThreadStartingData;
 	SHVMutexBase Lock;
 	SHVMutexBase ThreadInitLock;
 	int ThreadsStarting;

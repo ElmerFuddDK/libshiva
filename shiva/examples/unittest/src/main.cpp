@@ -30,6 +30,7 @@
 
 #include "tests/threadutils/shvmutextester.h"
 #include "tests/threadutils/shvsemaphoretester.h"
+#include "tests/threadutils/shvthreadpooltester.h"
 #include "tests/threadutils/shvthreadtester.h"
 
 
@@ -104,6 +105,7 @@ SHVMainThreadEventDispatcher* dispatcher = NULL;
 		unitTest->RegisterTest(new SHVMutexTester(mainqueue.GetModuleList()));
 		unitTest->RegisterTest(new SHVSemaphoreTester(mainqueue.GetModuleList()));
 		unitTest->RegisterTest(new SHVThreadTester(mainqueue.GetModuleList()));
+		unitTest->RegisterTest(new SHVThreadPoolTester(mainqueue.GetModuleList()));
 
 		// Load unit tests from module libraries
 		ModuleLoader.AddModuleLibs(mainqueue.GetModuleList().GetConfig().Find(SHVModuleList::DefaultCfgAppPath)->ToString() + SHVDir::Delimiter() + _S("modules"));

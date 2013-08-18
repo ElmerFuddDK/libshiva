@@ -22,6 +22,9 @@ class SHVAPI SHVThreadBase
 {
 public:
 
+	// enums
+	enum { InvalidThreadID = SIZE_T_MAX };  ///<\todo investigate invalid thread ID on various platforms
+	
 	// defines
 	typedef void (*ThreadFunc)(void*);
 	typedef size_t ThreadID;

@@ -47,6 +47,8 @@ SHVThreadPoolBase::SHVThreadPoolBase(int initialCount, int maxCount, short prior
 {
 	ThreadsStarting = 0;
 	Running = false;
+	ThreadStartingFunc = NULL;
+	ThreadStartingData = NULL;
 	
 	if (initialCount >= 0)
 		SHVVERIFY(Start(initialCount, maxCount, priority));
@@ -62,12 +64,23 @@ SHVThreadPoolBase::~SHVThreadPoolBase()
 }
 
 /*************************************
+ * SetThreadStartingFunction
+ *************************************/
+void SHVThreadPoolBase::SetThreadStartingFunction(SHVThreadBase::ThreadFunc func, void *data)
+{
+	Lock.Lock();
+	ThreadStartingFunc = func;
+	ThreadStartingData = data;
+	Lock.Unlock();
+}
+
+/*************************************
  * Execute
  *************************************/
 /// Executes a function with a thread from the pool
 SHVThreadBase::ThreadID SHVThreadPoolBase::Execute(SHVThreadBase::ThreadFunc func, void* data)
 {
-SHVThreadBase::ThreadID retVal = SHVMutexBase::InvalidThreadID;
+SHVThreadBase::ThreadID retVal = SHVThreadBase::InvalidThreadID;
 PoolThreadData* thread = NULL;
 bool err = false;
 
@@ -136,7 +149,7 @@ bool err = false;
 	}
 	if (thread)
 		retVal = thread->Thread.GetThreadID();
-	SHVASSERT(!Running || retVal != SHVMutexBase::InvalidThreadID);
+	SHVASSERT(!Running || retVal != SHVThreadBase::InvalidThreadID);
 	Lock.Unlock();
 	
 	return retVal;
@@ -260,6 +273,9 @@ SHVThreadPoolBase* self = t->Self;
 		}
 	}
 	self->Lock.Unlock();
+
+	if (self->ThreadStartingFunc)
+		(*(self->ThreadStartingFunc))(self->ThreadStartingData);
 
 	do
 	{

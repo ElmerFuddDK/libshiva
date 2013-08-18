@@ -78,10 +78,11 @@ HEADERS += ../../../include/platformspc.h \
            ../../../include/utils/shvmath.h \
            ../../../include/utils/shvuuid.h \
            ../../../include/utils/shvmd5sum.h \
- ../../../include/utils/shvmathtokenmap.h \
- ../../../include/utils/shvmathtokenhashmap.h \
- ../../../include/threadutils/shvthreadpoolbase.h \
-    ../../../include/utils/shvbase64.h
+           ../../../include/utils/shvmathtokenmap.h \
+           ../../../include/utils/shvmathtokenhashmap.h \
+           ../../../include/threadutils/shvthreadpoolbase.h \
+           ../../../include/threadutils/shvthreadpool.h \
+           ../../../include/utils/shvbase64.h
 SOURCES += ../../src/framework/shvconsole.cpp \
            ../../src/framework/shvevent.cpp \
            ../../src/framework/shveventemitter.cpp \
