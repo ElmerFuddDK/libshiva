@@ -475,6 +475,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\framework\shveventthreadpool.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\framework\shveventthread.cpp"
 					>
 				</File>
@@ -873,6 +877,10 @@
 					</File>
 					<File
 						RelativePath="..\..\include\framework\shveventtargetdynamic.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\framework\shveventthreadpool.h"
 						>
 					</File>
 					<File

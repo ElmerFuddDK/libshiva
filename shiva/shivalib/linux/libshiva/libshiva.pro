@@ -67,6 +67,7 @@ HEADERS += ../../../include/platformspc.h \
            ../../../include/framework/shveventsubscriber.h \
            ../../../include/framework/shveventsubscriptionlist.h \
            ../../../include/framework/shveventtargetdynamic.h \
+           ../../../include/framework/shveventthreadpool.h \
            ../../../include/framework/shveventthread.h \
            ../../../include/frameworkimpl/shvconfigimpl.h \
            ../../../include/frameworkimpl/shvmainthreadeventdispatchergeneric.h \
@@ -93,6 +94,7 @@ SOURCES += ../../src/framework/shvconsole.cpp \
            ../../src/framework/shveventsubscriber.cpp \
            ../../src/framework/shveventsubscriberdynamic.cpp \
            ../../src/framework/shveventsubscriptionlist.cpp \
+           ../../src/framework/shveventthreadpool.cpp \
            ../../src/framework/shveventthread.cpp \
            ../../src/framework/shvgui.cpp \
            ../../src/framework/shvmodule.cpp \

@@ -19,6 +19,7 @@ public:
 
 	// constructor
 	SHVEventQueueList();
+	virtual ~SHVEventQueueList();
 
 
 	// Event handling
@@ -51,6 +52,9 @@ protected:
 	bool IsDispatching;
 
 	///\endcond
+	virtual void PerformEvent(SHVModuleList& modules, EventEntryPtr& entry);
+	inline SHVBool EventActiveInQueue(SHVModuleList& modules) { return modules.EventActiveInQueue(); }
+	inline void EventDeactivatedInQueue(SHVModuleList& modules) { modules.EventDeactivatedInQueue(); }
 };
 
 #endif

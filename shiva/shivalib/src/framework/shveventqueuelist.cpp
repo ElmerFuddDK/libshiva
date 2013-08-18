@@ -48,6 +48,13 @@ SHVEventQueueList::SHVEventQueueList()
 }
 
 /*************************************
+ * Destructor
+ *************************************/
+SHVEventQueueList::~SHVEventQueueList()
+{
+}
+
+/*************************************
  * EnqueueEvent
  *************************************/
 void SHVEventQueueList::EnqueueEvent(SHVModuleList& modules, SHVEvent* event, SHVEventSubscriberBase* subscriber)
@@ -91,8 +98,7 @@ void SHVEventQueueList::DispatchEvents(SHVModuleList& modules)
 			while (localList.GetCount())
 			{
 				entry = localList.PopHead().ReleaseReference();
-				entry->Subscriber->Perform(entry->Event);
-				modules.EventDeactivatedInQueue();
+				PerformEvent(modules,entry);
 			}
 			entry = NULL;
 		}
@@ -142,4 +148,13 @@ bool SHVEventQueueList::LockEvent()
 void SHVEventQueueList::UnlockEvent()
 {
 	EventLock.Unlock();
+}
+
+/*************************************
+ * PerformEvent
+ *************************************/
+void SHVEventQueueList::PerformEvent(SHVModuleList& modules, EventEntryPtr& entry)
+{
+	entry->Subscriber->Perform(entry->Event);
+	modules.EventDeactivatedInQueue();
 }
