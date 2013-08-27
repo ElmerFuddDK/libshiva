@@ -247,8 +247,10 @@ void** tmpData = (void**)::malloc(sizeof(void*)*3);
 	SHVVERIFY(pthread_attr_setstacksize(&attr,(size_t)stackSize.IfNull(0x100000)) == 0); // 1 MB standard - 12 MB is simply too much
 
 	ThreadHandle = (pthread_create( (pthread_t*)&ID, &attr, StartupFuncPosix, (void*)tmpData) ? 0/*error*/ : 1/*ok*/ );
+#ifdef __SHIVA_POSIX_LINUX
 	if (setPrio)
 		SHVVERIFY(pthread_setschedparam(ID,policy,&param) == 0);
+#endif
 
 	retVal = (ThreadHandle ? true : false);
 
