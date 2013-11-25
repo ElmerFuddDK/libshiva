@@ -38,6 +38,9 @@ public:
 	};
 
 
+	virtual ~SHVSubProcess() {}
+
+
 	// Properties
 	virtual SHVBool IsRunning() = 0;
 	virtual SHVStreamIn& GetStdOut() = 0;
