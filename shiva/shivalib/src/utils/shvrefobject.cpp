@@ -33,8 +33,11 @@
 
 #include "../../../include/utils/shvrefobject.h"
 
+#if __APPLE__
+# include <libkern/OSAtomic.h>
+#else
 #ifdef ANDROID
-#   include <sys/atomics.h>
+#include <sys/atomics.h>
 #elif defined(__GNUC__)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 2))
 #   include <ext/atomicity.h>
@@ -48,6 +51,9 @@
 #   define GNUC_NAMESPACE __gnu_cxx
 # endif
 #endif
+
+#endif
+
 
 
 //=========================================================================================================
@@ -117,7 +123,9 @@ void __fastcall RefObject_Dec(volatile int*)
 /// Thread safe ++
 void SHVRefObject::LockedIncrement(volatile int* ref)
 {
-#ifdef ANDROID
+#ifdef __APPLE__
+	OSAtomicIncrement32(ref);
+#elif ANDROID
 	__atomic_inc(ref);
 #elif defined(__GNUC__)
 	GNUC_NAMESPACE::__atomic_add(ref,1);
@@ -136,7 +144,9 @@ void SHVRefObject::LockedIncrement(volatile int* ref)
 /// Thread safe --
 void SHVRefObject::LockedDecrement(volatile int* ref)
 {
-#ifdef ANDROID
+#ifdef __APPLE__
+	OSAtomicDecrement32(ref);
+#elif ANDROID
 	__atomic_dec(ref);
 #elif __GNUC__
 	GNUC_NAMESPACE::__atomic_add(ref,-1);
