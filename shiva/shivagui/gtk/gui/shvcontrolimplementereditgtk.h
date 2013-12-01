@@ -40,6 +40,9 @@ public:
 private:
 
 	///\cond INTERNAL
+	static void on_changed(GtkEditable* widget, gpointer user_data);
+	
+	bool SuppressChangeEvent;
 	///\endcond
 };
 

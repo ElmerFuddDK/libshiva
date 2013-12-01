@@ -130,6 +130,10 @@ SHVBool retVal(parent && owner && !IsCreated());
 		SetHandle(::CreateWindowEx(exStyle,_T("EDIT"), _T(""), style,
 			0, 0, 0, 0, Win32::GetHandle(parent), NULL, Win32::GetInstance(owner), NULL));
 
+		OrigProc = (WNDPROC)GetWindowLongPtr(GetHandle(),GWLP_WNDPROC);
+		SetWindowLongPtr(GetHandle(),GWLP_USERDATA,(LONG_PTR)owner);
+		SetWindowLongPtr(GetHandle(),GWLP_WNDPROC,(LONG_PTR)&SHVControlImplementerEditWin32::WndProc);
+
 		retVal = IsCreated();
 
 		owner->SetFont(NULL,true);
@@ -222,3 +226,27 @@ int SHVControlImplementerEditWin32::CalculateNewHeight(SHVControl* owner, SHVFon
 	return SHVControlImplementerWin32<SHVControlImplementerEdit>::CalculateNewHeight(owner,font)
 		+ font->GetCellHeight()*(Lines-1);
 }
+
+///\cond INTERNAL
+/*************************************
+ * WndProc
+ *************************************/
+LRESULT CALLBACK SHVControlImplementerEditWin32::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+SHVControlEdit* owner = (SHVControlEdit*)GetWindowLongPtr(hWnd,GWLP_USERDATA);
+SHVControlImplementerEditWin32* self = (owner ? (SHVControlImplementerEditWin32*)owner->GetImplementor() : NULL);
+LRESULT retVal = 0;
+
+	switch (message) 
+	{
+	case WM_COMMAND:
+		if (HIWORD(wParam) == EN_CHANGE)
+		{
+			owner->PerformChanged();
+		}
+	default:
+		retVal = CallWindowProc(self->OrigProc,hWnd, message, wParam, lParam);
+	}
+	return retVal;
+}
+///\endcond

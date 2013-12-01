@@ -32,6 +32,9 @@ public:
 		ScrollTop,
 		ScrollBottom
 	};
+	enum Events {
+		EventChanged = EventSubClass
+	};
 
 
 	// constructor
@@ -58,9 +61,20 @@ public:
 	inline void SetSelection(int pos, SHVInt selectFrom = SHVInt(), ScrollModes scroll = ScrollNone);
 
 
+	// Perform changed event
+	virtual void PerformChanged();
+	virtual void SubscribeChanged(SHVEventSubscriberBase* subscriber);
+
+
 	// obtain pointer to the implementor
 	inline SHVControlImplementerEdit* GetImplementor();
 
+
+private:
+
+	///\cond INTERNAL
+	SHVEventSubscriberBaseRef Changed;
+	///\endcond
 };
 typedef SHVRefObjectContainer<SHVControlEdit> SHVControlEditRef;
 

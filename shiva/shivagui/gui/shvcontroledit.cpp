@@ -78,3 +78,22 @@ SHVBool SHVControlEdit::SetData(SHVDataBinder* data)
 
 	return SHVBool::False;
 }
+
+/*************************************
+ * PerformChanged
+ *************************************/
+void SHVControlEdit::PerformChanged()
+{
+	if (!Changed.IsNull())
+	{
+		Changed->EmitNow(GetModuleList(),new SHVEvent(NULL,EventChanged,SHVInt(),this));
+	}
+}
+
+/*************************************
+ * SubscribeChanged
+ *************************************/
+void SHVControlEdit::SubscribeChanged(SHVEventSubscriberBase* subscriber)
+{
+	Changed = subscriber;
+}

@@ -45,6 +45,7 @@
  *************************************/
 SHVControlImplementerEditGtk::SHVControlImplementerEditGtk() : SHVControlImplementerGtkWidget<SHVControlImplementerEdit>()
 {
+	SuppressChangeEvent = false;
 }
 
 /*************************************
@@ -56,6 +57,9 @@ SHVBool SHVControlImplementerEditGtk::Create(SHVControl* owner, SHVControlImplem
 	{
 		SetHandle(gtk_entry_new());
 		gtk_container_add(GTK_CONTAINER (parent->GetNative()), GetHandle());
+		
+		g_signal_connect (G_OBJECT (GetHandle()), "changed",
+						  G_CALLBACK (SHVControlImplementerEditGtk::on_changed), owner);
 		
 		owner->SetFont(NULL,true);
 		owner->SetFlag(flags);
@@ -145,6 +149,7 @@ void SHVControlImplementerEditGtk::SetText(const SHVStringC& text)
 
 	if (IsCreated())
 	{
+		SuppressChangeEvent = true;
 		gtk_entry_set_text(GTK_ENTRY (GetHandle()), text.ToStrUTF8().GetSafeBuffer());
 	}
 }
@@ -185,6 +190,7 @@ void SHVControlImplementerEditGtk::SetLimit(int limit)
 void SHVControlImplementerEditGtk::SetHeight(SHVControlEdit* owner, int lines)
 {
 	SHVUNUSED_PARAM(owner);
+	SHVUNUSED_PARAM(lines);
 
 	SHVASSERT(false); // should never happen since it is single line
 }
@@ -205,3 +211,19 @@ void SHVControlImplementerEditGtk::SetSelection(SHVControlEdit* owner, int pos, 
 		gtk_entry_select_region(GTK_ENTRY (GetHandle()), selectFrom, pos);
 	}
 }
+
+///\cond INTERNAL
+/*************************************
+ * on_changed
+ *************************************/
+void SHVControlImplementerEditGtk::on_changed(GtkEditable* widget, gpointer user_data)
+{
+SHVControlEdit* owner = (SHVControlEdit*)user_data;
+SHVControlImplementerEditGtk* self = (SHVControlImplementerEditGtk*)owner->GetImplementor();
+	SHVUNUSED_PARAM(widget);
+	if (!self->SuppressChangeEvent)
+		owner->PerformChanged();
+	else
+		self->SuppressChangeEvent = false;
+}
+///\endcond

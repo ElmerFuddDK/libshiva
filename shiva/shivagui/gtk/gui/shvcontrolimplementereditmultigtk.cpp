@@ -47,6 +47,7 @@ SHVControlImplementerEditMultiGtk::SHVControlImplementerEditMultiGtk() : SHVCont
 {
 	TextView = NULL;
 	Lines = 1;
+	SuppressChangeEvent = false;
 }
 
 /*************************************
@@ -63,6 +64,9 @@ SHVBool SHVControlImplementerEditMultiGtk::Create(SHVControl* owner, SHVControlI
 		gtk_widget_show(TextView);
 		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW (GetHandle()), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 		gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW (GetHandle()), GTK_SHADOW_ETCHED_IN);
+		
+		g_signal_connect (G_OBJECT (GetHandle()), "changed",
+						  G_CALLBACK (SHVControlImplementerEditMultiGtk::on_changed), owner);
 		
 		owner->SetFont(NULL,true);
 		owner->SetFlag(flags);
@@ -193,6 +197,7 @@ void SHVControlImplementerEditMultiGtk::SetText(const SHVStringC& text)
 	{
 	GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW (TextView));
 		
+		SuppressChangeEvent = true;
 		gtk_text_buffer_set_text(buffer,text.ToStrUTF8().GetSafeBuffer(),-1);
 	}
 }
@@ -296,3 +301,19 @@ int SHVControlImplementerEditMultiGtk::CalculateNewHeight(SHVControl* owner, SHV
 	return SHVControlImplementerGtkWidget<SHVControlImplementerEdit>::CalculateNewHeight(owner,font)
 		+ font->GetCellHeight()*(Lines-1);
 }
+
+///\cond INTERNAL
+/*************************************
+ * on_changed
+ *************************************/
+void SHVControlImplementerEditMultiGtk::on_changed(GtkEditable* widget, gpointer user_data)
+{
+SHVControlEdit* owner = (SHVControlEdit*)user_data;
+SHVControlImplementerEditMultiGtk* self = (SHVControlImplementerEditMultiGtk*)owner->GetImplementor();
+	SHVUNUSED_PARAM(widget);
+	if (!self->SuppressChangeEvent)
+		owner->PerformChanged();
+	else
+		self->SuppressChangeEvent = false;
+}
+///\endcond

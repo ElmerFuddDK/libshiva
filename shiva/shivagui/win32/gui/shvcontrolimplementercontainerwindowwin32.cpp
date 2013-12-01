@@ -355,6 +355,12 @@ LRESULT result = 0;
 			owner->ResizeControls();
 		}
 		break;
+	case WM_COMMAND:
+		if (message == WM_COMMAND && HIWORD(wParam) == EN_CHANGE)
+		{
+			::SendMessage((HWND)lParam,WM_COMMAND,wParam,lParam);
+		}
+		// continue
 	default:
 		result = DefWindowProc(hWnd, message, wParam, lParam);
 		break;

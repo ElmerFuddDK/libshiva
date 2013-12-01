@@ -451,6 +451,10 @@ SHVControlContainerRef refToSelf;
 		if (self && !self->CmdWnd.IsNull())
 			self->CmdWnd->OnCommandMsg(hWnd,wParam,lParam);
 #endif
+		if (HIWORD(wParam) == EN_CHANGE)
+		{
+			::SendMessage((HWND)lParam,WM_COMMAND,wParam,lParam);
+		}
 		retVal = DefWindowProc(hWnd, message, wParam, lParam);
 		break;
 #ifdef WM_SIZING

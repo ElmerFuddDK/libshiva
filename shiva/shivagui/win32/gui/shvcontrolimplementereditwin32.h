@@ -53,6 +53,9 @@ private:
 	///\cond INTERNAL
 	int SubType;
 	int Lines;
+	WNDPROC OrigProc;
+
+	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	///\endcond
 };
 
