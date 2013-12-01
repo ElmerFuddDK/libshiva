@@ -9,7 +9,7 @@ LIBS += -lgdk-x11-2.0 \
         -lshiva 
 QMAKE_LIBDIR = ../../../../shivalib/linux/libshiva
 QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
-QMAKE_LFLAGS = -Wl
+# QMAKE_LFLAGS = -Wl
 DEFINES = __SHIVA_GTK
 CONFIG = debug \
          warn_on \
