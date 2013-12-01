@@ -46,9 +46,9 @@ typedef SHVRefObjectContainer<SHVColorGtk> SHVColorGtkRef;
 SHVColorGtk::SHVColorGtk(ColorVal r, ColorVal g, ColorVal b)
 {
 	Color.red = r*0x100+r;
-	Color.green = g*0x100+r;
-	Color.blue = b*0x100+r;
-	Color.pixel = r+(g*0x0100)+(b*0x010000);
+	Color.green = g*0x100+g;
+	Color.blue = b*0x100+b;
+	Color.pixel = b+(g*0x0100)+(r*0x010000);
 }
 SHVColorGtk::SHVColorGtk(const GdkColor& color) : Color(color)
 {
