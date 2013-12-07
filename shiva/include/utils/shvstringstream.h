@@ -55,6 +55,12 @@ public:
 	SHVBool WriteStringUTF8(const SHVStringUTF8C str);
 	inline SHVBool WriteString(const SHVStringC str);
 	
+	SHVBool AddChars8(const SHVChar* chars, size_t len);
+	SHVBool AddChars16(const SHVWChar* chars, size_t len);
+	SHVBool AddCharsUTF8(const SHVChar* chars, size_t len);
+	inline SHVBool AddChars(const SHVTChar* chars, size_t len);
+	
+	
 	void Reset();	
 	void Finalize();
 	
@@ -103,6 +109,11 @@ public:
 	SHVBool WriteStringUTF8(const SHVStringUTF8C str);
 	inline SHVBool WriteString(const SHVStringC str);
 	
+	SHVBool AddChars8(const SHVChar* chars, size_t len);
+	SHVBool AddChars16(const SHVWChar* chars, size_t len);
+	SHVBool AddCharsUTF8(const SHVChar* chars, size_t len);
+	inline SHVBool AddChars(const SHVTChar* chars, size_t len);
+	
 	void Reset();	
 	void Finalize();
 	
@@ -150,6 +161,11 @@ public:
 	SHVBool WriteString16(const SHVString16C str);
 	SHVBool WriteStringUTF8(const SHVStringUTF8C str);
 	inline SHVBool WriteString(const SHVStringC str);
+	
+	SHVBool AddChars8(const SHVChar* chars, size_t len);
+	SHVBool AddChars16(const SHVWChar* chars, size_t len);
+	SHVBool AddCharsUTF8(const SHVChar* chars, size_t len);
+	inline SHVBool AddChars(const SHVTChar* chars, size_t len);
 
 	void Reset();	
 	void Finalize();
@@ -183,10 +199,16 @@ typedef SHVPtrContainer<SHVStringStream16> SHVStringStream16Ptr;
 SHVBool SHVStringStream8::WriteString(const SHVStringC str) { return WriteString16(str); }
 SHVBool SHVStringStreamUTF8::WriteString(const SHVStringC str) { return WriteString16(str); }
 SHVBool SHVStringStream16::WriteString(const SHVStringC str) { return WriteString16(str); }
+SHVBool SHVStringStream8::AddChars(const SHVTChar* chars, size_t len) { return AddChars16(chars,len); }
+SHVBool SHVStringStreamUTF8::AddChars(const SHVTChar* chars, size_t len) { return AddChars16(chars,len); }
+SHVBool SHVStringStream16::AddChars(const SHVTChar* chars, size_t len) { return AddChars16(chars,len); }
 # else
 SHVBool SHVStringStream8::WriteString(const SHVStringC str) { return WriteString8(str); }
 SHVBool SHVStringStreamUTF8::WriteString(const SHVStringC str) { return WriteString8(str); }
 SHVBool SHVStringStream16::WriteString(const SHVStringC str) { return WriteString8(str); }
+SHVBool SHVStringStream8::AddChars(const SHVTChar* chars, size_t len) { return AddChars8(chars,len); }
+SHVBool SHVStringStreamUTF8::AddChars(const SHVTChar* chars, size_t len) { return AddChars8(chars,len); }
+SHVBool SHVStringStream16::AddChars(const SHVTChar* chars, size_t len) { return AddChars8(chars,len); }
 # endif
 
 

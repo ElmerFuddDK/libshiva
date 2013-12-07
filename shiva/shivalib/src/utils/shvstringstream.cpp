@@ -133,6 +133,67 @@ size_t converted = 1;
 }
 
 /*************************************
+ * AddChars8
+ *************************************/
+SHVBool SHVStringStream8::AddChars8(const SHVChar* chars, size_t len)
+{
+	if (len)
+	{
+		EnsureBufferSpaceFree(len);
+		::memcpy(BufferPos,chars,len);
+		BufferPos += len;
+		BufferLeft -= len;
+	}
+	return SHVBool::True;
+}
+
+/*************************************
+ * AddChars16
+ *************************************/
+SHVBool SHVStringStream8::AddChars16(const SHVWChar* chars, size_t len)
+{
+size_t converted = 1;
+
+	if (Conv16.IsNull())
+		Conv16 = new SHVStringConv(SHVStringConv::Enc16,SHVStringConv::Enc8);
+	
+	while (len && converted)
+	{
+		EnsureBufferSpaceFree();
+		chars = (const SHVWChar*)Conv16->Convert((const SHVByte*)chars,BufferPos,BufferLeft-1,&converted);
+		BufferPos += converted;
+		BufferLeft -= converted;
+		len--;
+	}
+	SHVASSERT(len == 0);
+	
+	return len == 0;
+}
+
+/*************************************
+ * AddCharsUTF8
+ *************************************/
+SHVBool SHVStringStream8::AddCharsUTF8(const SHVChar *chars, size_t len)
+{
+size_t converted = 1;
+
+	if (ConvUtf8.IsNull())
+		ConvUtf8 = new SHVStringConv(SHVStringConv::EncUtf8,SHVStringConv::Enc8);
+	
+	while (len && converted)
+	{
+		EnsureBufferSpaceFree();
+		chars = (const SHVChar*)ConvUtf8->Convert((const SHVByte*)chars,BufferPos,BufferLeft-1,&converted);
+		BufferPos += converted;
+		BufferLeft -= converted;
+		len--;
+	}
+	SHVASSERT(len == 0);
+	
+	return len == 0;
+}
+
+/*************************************
  * Reset
  *************************************/
 void SHVStringStream8::Reset()
@@ -264,6 +325,67 @@ size_t len = SHVString8C(str.GetBufferConst()).GetLength();
 	{
 		EnsureBufferSpaceFree(len);
 		::memcpy(BufferPos,str.GetBufferConst(),len);
+		BufferPos += len;
+		BufferLeft -= len;
+	}
+	return SHVBool::True;
+}
+
+/*************************************
+ * AddChars8
+ *************************************/
+SHVBool SHVStringStreamUTF8::AddChars8(const SHVChar* chars, size_t len)
+{
+size_t converted = 1;
+
+	if (Conv8.IsNull())
+		Conv8 = new SHVStringConv(SHVStringConv::Enc8,SHVStringConv::EncUtf8);
+	
+	while (len && converted)
+	{
+		EnsureBufferSpaceFree();
+		chars = (const SHVChar*)Conv8->Convert((const SHVByte*)chars,BufferPos,BufferLeft-1,&converted);
+		BufferPos += converted;
+		BufferLeft -= converted;
+		len--;
+	}
+	SHVASSERT(len == 0);
+	
+	return len == 0;
+}
+
+/*************************************
+ * AddChars16
+ *************************************/
+SHVBool SHVStringStreamUTF8::AddChars16(const SHVWChar* chars, size_t len)
+{
+size_t converted = 1;
+
+	if (Conv16.IsNull())
+		Conv16 = new SHVStringConv(SHVStringConv::Enc16,SHVStringConv::EncUtf8);
+	
+	while (len && converted)
+	{
+		EnsureBufferSpaceFree();
+		chars = (const SHVWChar*)Conv16->Convert((const SHVByte*)chars,BufferPos,BufferLeft-1,&converted);
+		BufferPos += converted;
+		BufferLeft -= converted;
+		len--;
+	}
+	SHVASSERT(len == 0);
+	
+	return len == 0;
+}
+
+/*************************************
+ * AddCharsUTF8
+ *************************************/
+SHVBool SHVStringStreamUTF8::AddCharsUTF8(const SHVChar* chars, size_t len)
+{
+	if (len)
+	{
+		EnsureBufferSpaceFree(len);
+		::memcpy(BufferPos,chars,len);
 		BufferPos += len;
 		BufferLeft -= len;
 	}
@@ -406,6 +528,67 @@ size_t converted = 1;
 	SHVASSERT(*buf == 0);
 	
 	return *buf == 0;
+}
+
+/*************************************
+ * AddChars8
+ *************************************/
+SHVBool SHVStringStream16::AddChars8(const SHVChar* chars, size_t len)
+{
+size_t converted = 1;
+
+	if (Conv8.IsNull())
+		Conv8 = new SHVStringConv(SHVStringConv::Enc8,SHVStringConv::Enc16);
+	
+	while (len && converted)
+	{
+		EnsureBufferSpaceFree();
+		chars = (const SHVChar*)Conv8->Convert((const SHVByte*)chars,BufferPos,BufferLeft-1,&converted);
+		BufferPos += converted;
+		BufferLeft -= converted;
+		len--;
+	}
+	SHVASSERT(len == 0);
+	
+	return len == 0;
+}
+
+/*************************************
+ * AddChars16
+ *************************************/
+SHVBool SHVStringStream16::AddChars16(const SHVWChar* chars, size_t len)
+{
+	if (len)
+	{
+		EnsureBufferSpaceFree(len);
+		::memcpy(BufferPos,chars,len*2);
+		BufferPos += len;
+		BufferLeft -= len;
+	}
+	return SHVBool::True;
+}
+
+/*************************************
+ * AddCharsUTF8
+ *************************************/
+SHVBool SHVStringStream16::AddCharsUTF8(const SHVChar* chars, size_t len)
+{
+size_t converted = 1;
+
+	if (ConvUtf8.IsNull())
+		ConvUtf8 = new SHVStringConv(SHVStringConv::EncUtf8,SHVStringConv::Enc16);
+	
+	while (len && converted)
+	{
+		EnsureBufferSpaceFree();
+		chars = (const SHVChar*)ConvUtf8->Convert((const SHVByte*)chars,BufferPos,BufferLeft-1,&converted);
+		BufferPos += converted;
+		BufferLeft -= converted;
+		len--;
+	}
+	SHVASSERT(len == 0);
+	
+	return len == 0;
 }
 
 /*************************************
