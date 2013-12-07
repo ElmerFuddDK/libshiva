@@ -71,6 +71,7 @@ public:
 	// Operations
 	virtual SHVBool BindAndListen(SHVIPv4Port port) = 0;
 	virtual SHVBool Close() = 0;
+	virtual SHVBool Shutdown() = 0;
 	virtual SHVBool ConnectAny(SHVIPv4Port port) = 0;
 	virtual SHVBool Connect(SHVIPv4Addr ip, SHVIPv4Port port) = 0;
 	virtual SHVBool Connect(const SHVStringC ipv4Addr, SHVIPv4Port port) = 0;

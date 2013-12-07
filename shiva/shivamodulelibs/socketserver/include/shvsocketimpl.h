@@ -43,6 +43,7 @@ public:
 	// Operations
 	virtual SHVBool BindAndListen(SHVIPv4Port port);
 	virtual SHVBool Close();
+	virtual SHVBool Shutdown();
 	virtual SHVBool ConnectAny(SHVIPv4Port port);
 	virtual SHVBool Connect(SHVIPv4Addr ip, SHVIPv4Port port);
 	virtual SHVBool Connect(const SHVStringC ipv4Addr, SHVIPv4Port port);

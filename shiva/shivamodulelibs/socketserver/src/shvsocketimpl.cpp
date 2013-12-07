@@ -62,7 +62,7 @@ struct tcp_keepalive { u_long  onoff; u_long  keepalivetime; u_long  keepalivein
 # include <errno.h>
 #endif
 
-#define __SHVSOCKET_SENDTIMEOUT 10
+#define __SHVSOCKET_SENDTIMEOUT 30
 
 
 //=========================================================================================================
@@ -255,19 +255,22 @@ bool retry = false;
 	if (State == SHVSocket::StateConnected)
 	{
 	int err = 0;
+	const SHVByte* bufPtr = buf.GetBufferConst();
+	int bufLen = (int)buf.GetSize();
+	int i;
 
-		for (int i=0; i<__SHVSOCKET_SENDTIMEOUT*10 && err == 0; i++)
+		for (i=0; i<__SHVSOCKET_SENDTIMEOUT*10 && err == 0 && bufLen > 0; i++)
 		{
 			retry = false;
 			if (!SSL.IsNull())
 			{
-				err = SSL->send(buf.GetBufferConst(),(int)buf.GetSize(), retry);
+				err = SSL->send(bufPtr,bufLen, retry);
 				if (err < 0)
 					err *= -1;
 			}
 			else
 			{
-				err = ::send(Socket,buf.GetBufferConst(),(int)buf.GetSize(),MSG_NOSIGNAL);
+				err = ::send(Socket,bufPtr,bufLen,MSG_NOSIGNAL);
 			}
 			if (err < 0)
 			{
@@ -290,13 +293,14 @@ bool retry = false;
 			}
 			else
 			{
-				SHVASSERT(err == (int)buf.GetSize());
+				SHVASSERT(err <= bufLen);
+				bufLen -= err;
+				bufPtr += err;
 				err = 0;
-				break;
 			}
 		}
 	
-		if (err)
+		if (err || i == __SHVSOCKET_SENDTIMEOUT*10)
 		{
 			Close();
 			retVal = SetError(SHVSocket::ErrGeneric);
@@ -631,6 +635,22 @@ SHVBool SHVSocketImpl::Close()
 		::close(sock);
 #endif
 		SocketServer->SocketServerLock.LockMultiple(tempUnlocks);
+	}
+	SocketServer->SocketServerLock.Unlock();
+	
+	return SHVBool::True;
+}
+
+/*************************************
+ * Shutdown
+ *************************************/
+SHVBool SHVSocketImpl::Shutdown()
+{
+	SocketServer->SocketServerLock.Lock();
+	if (Socket != InvalidSocket)
+	{
+		if (State == StateConnected)
+			::shutdown(Socket, 2); // close both recv and send
 	}
 	SocketServer->SocketServerLock.Unlock();
 	
