@@ -20,6 +20,8 @@ CONFIG += debug \
 dll
 TEMPLATE = lib
 
+SQLITE_FTS = -DSQLITE_ENABLE_FTS3 -DSQLITE_ENABLE_FTS3_PARENTHESIS
+
 HEADERS += ../../../include/sqlite/shvstringsqlite.h \
 ../../../include/sqlite/sqlitestatement.h \
 ../../../include/sqlite/sqlitewrapper.h \
@@ -29,6 +31,9 @@ QMAKE_CXXFLAGS_DEBUG += -DDEBUG \
   -DSHIVASQLITE_EXPORTS
 
 QMAKE_CXXFLAGS_RELEASE += -DSHIVASQLITE_EXPORTS
+
+QMAKE_CFLAGS += $$SQLITE_FTS
+QMAKE_CXXFLAGS += $$SQLITE_FTS
 
 !isEmpty(ANDROID_PLATFORM) {
   QMAKE_CFLAGS += -fno-exceptions
