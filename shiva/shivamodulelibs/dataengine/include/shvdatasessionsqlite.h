@@ -27,6 +27,8 @@ public:
 	virtual SHVDataRowListC* QueryTableIndexed(const SHVString8C& tableName, const SHVStringC& condition, size_t index);
 	virtual SHVDataRowList* CopyAlias(const SHVString8C& sourceAlias, const SHVString8C& destAlias);
 	virtual SHVBool ExecuteNonQuery(const SHVStringC& sql);
+	virtual int GetRecentChanges();
+	virtual int GetTotalChanges();
 
 	virtual void SubscribeDataChange(SHVEventSubscriberBase* sub);
 	virtual void* GetProvider(bool checkConnection = true);

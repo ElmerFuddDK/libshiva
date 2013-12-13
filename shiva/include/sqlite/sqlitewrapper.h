@@ -66,6 +66,8 @@ public:
 	virtual SHVBool SetBusyTimeout(int ms) = 0;
 	virtual SHVBool OpenInMemory() = 0;
 	virtual SHVBool Close() = 0;
+	virtual int GetRecentChanges() = 0;
+	virtual int GetTotalChanges() = 0;
 	virtual SHVSQLiteStatement* PrepareUTF8(SHVBool& ok, const SHVStringUTF8C& sql, SHVStringSQLite& notparsed) = 0;
 	inline SHVSQLiteStatement* Prepare(SHVBool& ok, const SHVStringC& sql, SHVString& notparsed);
 	virtual SHVSQLiteStatementRef ExecuteUTF8(SHVBool& ok, const SHVStringUTF8C& sql, SHVStringSQLite& notparsed) = 0;

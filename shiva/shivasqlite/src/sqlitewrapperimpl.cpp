@@ -115,6 +115,29 @@ SHVBool SHVSQLiteWrapperImpl::Close()
 		return SHVBool(SHVSQLiteWrapper::SQLite_ERROR);
 }
 
+
+/*************************************
+ * GetRecentChanges
+ *************************************/
+int SHVSQLiteWrapperImpl::GetRecentChanges()
+{
+	if (Sqlite)
+		return sqlite3_changes(Sqlite);
+	else
+		return -1;
+}
+
+/*************************************
+ * GetTotalChanges
+ *************************************/
+int SHVSQLiteWrapperImpl::GetTotalChanges()
+{
+	if (Sqlite)
+		return sqlite3_total_changes(Sqlite);
+	else
+		return -1;
+}
+
 /*************************************
  * PrepareUTF8
  *************************************/

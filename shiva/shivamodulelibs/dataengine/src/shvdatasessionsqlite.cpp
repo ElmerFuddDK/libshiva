@@ -333,6 +333,7 @@ SHVSQLiteStatementRef statement;
 				 retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE))
 			{
 				statement = SQLite->ExecuteUTF8(retVal, sqlUTF8, rest);
+				sqlUTF8 = rest;
 			}
 		}
 		if (retVal.GetError() == SHVSQLiteWrapper::SQLite_ROW ||
@@ -340,6 +341,28 @@ SHVSQLiteStatementRef statement;
 			retVal = SHVBool::True;
 	}
 	return retVal;
+}
+
+/*************************************
+ * GetRecentChanges
+ *************************************/
+int SHVDataSessionSQLite::GetRecentChanges()
+{
+	if (!SQLite.IsNull())
+		return SQLite->GetRecentChanges();
+	else
+		return -1;
+}
+
+/*************************************
+ * GetTotalChanges
+ *************************************/
+int SHVDataSessionSQLite::GetTotalChanges()
+{
+	if (!SQLite.IsNull())
+		return SQLite->GetTotalChanges();
+	else
+		return -1;
 }
 
 /*************************************

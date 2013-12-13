@@ -39,6 +39,8 @@ public:
 	virtual SHVDataRowListC* QueryTableIndexed(const SHVString8C& tableName, const SHVStringC& condition, size_t index) = 0;
 	virtual SHVDataRowList* CopyAlias(const SHVString8C& sourceAlias, const SHVString8C& destAlias) = 0;
 	virtual SHVBool ExecuteNonQuery(const SHVStringC& sql) = 0;
+	virtual int GetRecentChanges() = 0;
+	virtual int GetTotalChanges() = 0;
 
 	inline SHVBool IsEditting() const;
 
