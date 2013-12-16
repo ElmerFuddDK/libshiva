@@ -32,6 +32,7 @@
 #include "../../../include/platformspc.h"
 
 #include "../../../include/utils/shvfilebase.h"
+#include "../../../include/utils/shvstringutf8.h"
 
 #include "../../../include/utils/shvdir.h"
 
@@ -42,6 +43,7 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <unistd.h>
+# define FSUTF8MODE
 #endif
 
 
@@ -312,6 +314,8 @@ SHVBool retVal( (flags&FlagRead) || (flags&FlagWrite) ? (int)SHVBool::True : (in
 		File = wfopen((const wchar_t*)fileName.GetSafeBuffer(),(const wchar_t*)mode.GetSafeBuffer());
 #elif defined(__SHIVA_WIN32) && defined(UNICODE)
 		File = _tfopen(fileName.GetSafeBuffer(),mode.GetSafeBuffer());
+#elif defined(FSUTF8MODE)
+		File = fopen(fileName.ToStrUTF8().GetSafeBuffer(),mode.GetSafeBuffer());
 #else
 		File = fopen(fileName.GetSafeBuffer(),mode.GetSafeBuffer());
 #endif
