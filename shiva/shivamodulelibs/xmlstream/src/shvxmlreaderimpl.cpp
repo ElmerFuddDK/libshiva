@@ -65,6 +65,7 @@ SHVXmlReaderImpl::SHVXmlReaderImpl(ParserEncoding enc, size_t bufferSize)
 	InitializeExpat();
 	MultiDocument = false;
 	ValuePos = NULL;
+	Breakout = false;
 }
 
 /*************************************
@@ -275,7 +276,7 @@ SHVBool retVal = SHVBool::True;
 bool status;
 
 	CurrPos = 0;
-	while (retVal && more)
+	while (retVal && more && !Breakout)
 	{
 		more = false;
 		status = XML_Parse(Parser, buffer + CurrPos, actualLen, (isFinal ? 1 : 0)) == XML_STATUS_OK;
@@ -289,6 +290,8 @@ bool status;
 		else
 			retVal.SetError(XML_GetErrorCode(Parser));
 	}
+	if (Breakout)
+		retVal.SetError(-1);
 	return retVal;
 }
 
@@ -302,11 +305,13 @@ size_t actualLen;
 SHVBool retVal = SHVBool::True;
 	Attributes = NULL;
 	Value = NULL;
-	while (stream.ReadBuffer(buffer, BufferSize, actualLen) && retVal)
+	while (!Breakout && stream.ReadBuffer(buffer, BufferSize, actualLen) && retVal)
 	{
 		retVal = ParseDirect((const char*) buffer, (int) actualLen, stream.Eof());
 	}
 	free(buffer);
+	if (Breakout)
+		retVal.SetError(-1);
 	return retVal;
 }
 
@@ -315,7 +320,10 @@ SHVBool retVal = SHVBool::True;
  *************************************/
 int SHVXmlReaderImpl::GetErrorCode() const
 {
-	return XML_GetErrorCode(Parser);
+	if (Breakout)
+		return -1;
+	else
+		return XML_GetErrorCode(Parser);
 }
 
 /*************************************
@@ -374,6 +382,14 @@ bool SHVXmlReaderImpl::GetMultidocument() const
 }
 
 /*************************************
+ * GetMultidocument
+ *************************************/
+void SHVXmlReaderImpl::Break()
+{
+	Breakout = true;
+}
+
+/*************************************
  * InitializeExpat
  *************************************/
 void SHVXmlReaderImpl::InitializeExpat()
@@ -393,6 +409,8 @@ void SHVXmlReaderImpl::InitializeExpat()
 void SHVXmlReaderImpl::StartElementHandler(void *userData, const XML_Char *name, const XML_Char **atts)
 {
 SHVXmlReaderImpl* self = (SHVXmlReaderImpl*) userData;
+	if (self->Breakout)
+		return;
 	if (!self->ValueCol.IsNull())
 	{
 		if (self->ValueCallback)
@@ -415,6 +433,8 @@ SHVXmlReaderImpl* self = (SHVXmlReaderImpl*) userData;
 void SHVXmlReaderImpl::EndElementHandler(void *userData, const XML_Char *name)
 {
 SHVXmlReaderImpl* self = (SHVXmlReaderImpl*) userData;
+	if (self->Breakout)
+		return;
 	if (!self->ValueCol.IsNull())
 	{
 		if (self->ValueCallback)

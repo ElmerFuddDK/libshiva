@@ -46,6 +46,7 @@ public:
 	virtual void SetValueCallback(SHVXmlReaderCallbackBase* callback);
 	virtual void SetMultidocument(bool val);
 	virtual bool GetMultidocument() const;
+	virtual void Break();
 
 private:
 	void InitializeExpat();
@@ -74,6 +75,7 @@ private:
 	bool MultiDocument;
 	int DocLevel;
 	int CurrPos;
+	bool Breakout;
 };
 
 

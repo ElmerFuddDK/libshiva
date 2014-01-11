@@ -59,7 +59,7 @@ public:
 	virtual void SetValueCallback(SHVXmlReaderCallbackBase* callback) = 0;
 	virtual void SetMultidocument(bool val) = 0;
 	virtual bool GetMultidocument() const = 0;
-
+	virtual void Break() = 0;
 };
 typedef SHVPtrContainer<SHVXmlReader> SHVXmlReaderPtr;
 
