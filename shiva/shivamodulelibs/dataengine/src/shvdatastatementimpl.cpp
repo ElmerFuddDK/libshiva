@@ -7,25 +7,26 @@
 /*************************************
  * Constructor
  *************************************/
-SHVDataStatementImpl::SHVDataStatementImpl(SHVSQLiteWrapper* sqlite, const SHVStringC query)
+SHVDataStatementImpl::SHVDataStatementImpl(SHVSQLiteWrapper* sqlite, const SHVStringUTF8C query)
 {
-SHVString unparsed;
-SHVSQLiteStatementRef statement = sqlite->Prepare(Ok,query,unparsed);
+SHVStringSQLite unparsed("");
+SHVSQLiteStatementRef statement = sqlite->PrepareUTF8(Ok,query,unparsed);
 
 	if (Ok && !statement.IsNull())
 	{
-	SHVString query;
+	SHVStringUTF8 query;
 		Statements.Add(statement);
 		
-		while (Ok && !unparsed.IsEmpty())
+		query = unparsed;
+		while (Ok && !query.IsEmpty())
 		{
-			query = unparsed.ReleaseBuffer();
-			statement = sqlite->Prepare(Ok,query,unparsed);
+			statement = sqlite->PrepareUTF8(Ok,query,unparsed);
 			
 			if (Ok)
 			{
 				Statements.Add(statement);
 			}
+			query = unparsed;
 		}
 	}
 	

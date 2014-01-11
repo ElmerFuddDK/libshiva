@@ -158,7 +158,7 @@ SHVDataRowListC* innerList;
 /*************************************
  * Query
  *************************************/
-SHVDataRowListC* SHVDataSessionSQLite::Query(const SHVStringC& query, const SHVDataRowKey* sortKey)
+SHVDataRowListC* SHVDataSessionSQLite::QueryUTF8(const SHVStringUTF8C& query, const SHVDataRowKey* sortKey)
 {
 SHVDataRowListC* retVal = NULL;
 	SHVASSERT(SessionValid());
@@ -208,7 +208,7 @@ SHVStringStreamUTF8 sql;
 /*************************************
  * PrepareStatement
  *************************************/
-SHVDataStatement* SHVDataSessionSQLite::PrepareStatement(const SHVStringC& query)
+SHVDataStatement* SHVDataSessionSQLite::PrepareStatementUTF8(const SHVStringUTF8C &query)
 {
 	return new SHVDataStatementImpl(SQLite,query);
 }
@@ -312,12 +312,12 @@ SHVDataRowList* SHVDataSessionSQLite::CopyAlias(const SHVString8C& sourceAlias, 
 /*************************************
  * ExecuteNonQuery
  *************************************/
-SHVBool SHVDataSessionSQLite::ExecuteNonQuery(const SHVStringC& sql)
+SHVBool SHVDataSessionSQLite::ExecuteNonQueryUTF8(const SHVStringUTF8C &sql)
 {
 SHVBool retVal;
 SHVStringSQLite rest("");
-SHVStringUTF8 sqlUTF8 = sql.ToStrUTF8();
 SHVStringSQLite blank("");
+SHVStringUTF8 sqlUTF8 = sql;
 SHVSQLiteStatementRef statement;
 
 	SHVASSERT(SessionValid());
@@ -332,8 +332,8 @@ SHVSQLiteStatementRef statement;
 				(retVal.GetError() == SHVSQLiteWrapper::SQLite_ROW ||
 				 retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE))
 			{
-				statement = SQLite->ExecuteUTF8(retVal, sqlUTF8, rest);
 				sqlUTF8 = rest;
+				statement = SQLite->ExecuteUTF8(retVal, sql, rest);
 			}
 		}
 		if (retVal.GetError() == SHVSQLiteWrapper::SQLite_ROW ||

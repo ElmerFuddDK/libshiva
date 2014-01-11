@@ -11,7 +11,7 @@ class SHVDataStatementImpl : public SHVDataStatement
 {
 public:
 
-	SHVDataStatementImpl(SHVSQLiteWrapper* sqlite, const SHVStringC query);
+	SHVDataStatementImpl(SHVSQLiteWrapper* sqlite, const SHVStringUTF8C query);
 
 	// IsOk
 	virtual SHVBool IsOk() const;

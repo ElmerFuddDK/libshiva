@@ -5,6 +5,7 @@
 #include "../../framework/shveventsubscriber.h"
 #include "../../framework/shveventdata.h"
 #include "../../threadutils/shvmutex.h"
+#include "../../utils/shvstringutf8c.h"
 
 // forward declare
 class SHVDataRowList;
@@ -31,14 +32,18 @@ public:
 
 	virtual SHVDataRowList* GetRows(const SHVString8C& tableName, const SHVStringC& condition, size_t index) = 0;
 	virtual SHVDataRowList* GetRowsIndexed(const SHVString8C& tableName, const SHVStringC& condition, size_t index) = 0;
-	virtual SHVDataRowListC* Query(const SHVStringC& query, const SHVDataRowKey* sortKey = NULL) = 0;
+	virtual SHVDataRowListC* QueryUTF8(const SHVStringUTF8C& query, const SHVDataRowKey* sortKey = NULL) = 0;
+	inline SHVDataRowListC* Query(const SHVStringC& query, const SHVDataRowKey* sortKey = NULL);
 	virtual SHVDataFunction* PrepareFunction(const SHVStringC& query, const SHVDataRowKey* sortKey = NULL) = 0;
 	virtual SHVDataFunction* GetDataChangeFunction(SHVDataRowList* rowList, int function) = 0;
-	virtual SHVDataStatement* PrepareStatement(const SHVStringC& query) = 0;
+	inline SHVDataStatement* PrepareStatement(const SHVStringC& query);
+	virtual SHVDataStatement* PrepareStatementUTF8(const SHVStringUTF8C& query) = 0;
 	virtual SHVDataRowListC* QueryTable(const SHVString8C& tableName, const SHVStringC& condition, size_t index) = 0;
 	virtual SHVDataRowListC* QueryTableIndexed(const SHVString8C& tableName, const SHVStringC& condition, size_t index) = 0;
 	virtual SHVDataRowList* CopyAlias(const SHVString8C& sourceAlias, const SHVString8C& destAlias) = 0;
-	virtual SHVBool ExecuteNonQuery(const SHVStringC& sql) = 0;
+	virtual SHVBool ExecuteNonQueryUTF8(const SHVStringUTF8C& sql) = 0;
+	inline SHVBool ExecuteNonQuery(const SHVStringC& sql);
+
 	virtual int GetRecentChanges() = 0;
 	virtual int GetTotalChanges() = 0;
 
@@ -84,6 +89,30 @@ typedef SHVRefObjectContainer<SHVDataSession> SHVDataSessionRef;
 #include "shvdatafactory.h"
 #include "shvdatarowlistc.h"
 #include "shvdatastatement.h"
+
+/*************************************
+ * Query
+ *************************************/
+SHVDataRowListC *SHVDataSession::Query(const SHVStringC &query, const SHVDataRowKey *sortKey)
+{
+	return QueryUTF8(query.ToStrUTF8(), sortKey);
+}
+
+/*************************************
+ * PrepareStatement
+ *************************************/
+SHVDataStatement *SHVDataSession::PrepareStatement(const SHVStringC &query)
+{
+	return PrepareStatementUTF8(query.ToStrUTF8());
+}
+
+/*************************************
+ * IsEditting
+ *************************************/
+SHVBool SHVDataSession::ExecuteNonQuery(const SHVStringC &sql)
+{
+	return ExecuteNonQueryUTF8(sql.ToStrUTF8());
+}
 
 /*************************************
  * IsEditting
