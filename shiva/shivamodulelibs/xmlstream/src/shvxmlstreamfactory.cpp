@@ -110,7 +110,7 @@ SHVString retVal(_S("XmlStream"));
  *************************************/
 SHVBool SHVModuleFactoryXmlStream::ResolveModules(const SHVString8C symbol)
 {
-	if (symbol == __MODULESYMBOL_DEFAULTS)
+	if (symbol == __MODULESYMBOL_DEFAULTS || symbol == __MODULESYMBOL_XMLSTREAM)
 	{
 		Modules.AddModule(new SHVXmlStreamImpl(Modules));
 		return SHVBool::True;

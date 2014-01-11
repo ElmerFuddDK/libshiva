@@ -70,7 +70,7 @@ SHVString retVal(_S("Module library for json streaming"));
  *************************************/
 SHVBool SHVModuleFactoryJsonStream::ResolveModules(const SHVString8C symbol)
 {
-  if (symbol == __MODULESYMBOL_DEFAULTS)
+  if (symbol == __MODULESYMBOL_DEFAULTS || symbol == __MODULESYMBOL_JSONSTREAM)
   {
 	Modules.AddModule(new SHVJsonStreamImpl(Modules));
     return SHVBool::True;

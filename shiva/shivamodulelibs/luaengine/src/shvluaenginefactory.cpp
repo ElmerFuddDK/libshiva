@@ -72,7 +72,7 @@ SHVString retVal(_S("Module library for LuaEngine"));
  *************************************/
 SHVBool SHVModuleFactoryLuaEngine::ResolveModules(const SHVString8C symbol)
 {
-	if (symbol == __MODULESYMBOL_DEFAULTS)
+	if (symbol == __MODULESYMBOL_DEFAULTS || symbol == __MODULESYMBOL_LUAENGINE)
 	{
 		Modules.AddModule(new SHVLuaEngineImpl(Modules));
 		return SHVBool::True;

@@ -3,8 +3,14 @@
 
 #include "shvmodule.h"
 
-#define __MODULESYMBOL_DEFAULTS "Defaults"
+#define __MODULESYMBOL_DEFAULTS			"Defaults"
 
+#define __MODULESYMBOL_XMLSTREAM	 	"XmlStream"
+#define __MODULESYMBOL_DATAENGINE		"DataEngine"
+#define __MODULESYMBOL_SOCKETSERVER		"SocketServer"
+#define __MODULESYMBOL_LUAENGINE		"LuaEngine"
+#define __MODULESYMBOL_SUBPROCESS		"SubProcess"
+#define __MODULESYMBOL_JSONSTREAM		"JsonStream"
 
 //-=========================================================================================================
 /// SHVModuleFactory class - interface for instantiating modules from a module library

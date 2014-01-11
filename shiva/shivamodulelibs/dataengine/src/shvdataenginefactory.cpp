@@ -102,7 +102,7 @@ SHVString retVal(_S("Module library for DataEngine"));
  *************************************/
 SHVBool SHVModuleFactoryDataEngine::ResolveModules(const SHVString8C symbol)
 {
-	if (symbol == __MODULESYMBOL_DEFAULTS)
+	if (symbol == __MODULESYMBOL_DEFAULTS || symbol == __MODULESYMBOL_DATAENGINE)
 	{
 		Modules.AddModule(new SHVDataEngineImpl(Modules));
 		return SHVBool::True;

@@ -72,7 +72,7 @@ SHVString retVal(_S("Module library for SubProcess"));
  *************************************/
 SHVBool SHVModuleFactorySubProcess::ResolveModules(const SHVString8C symbol)
 {
-	if (symbol == __MODULESYMBOL_DEFAULTS)
+	if (symbol == __MODULESYMBOL_DEFAULTS || symbol == __MODULESYMBOL_SUBPROCESS)
 	{
 		Modules.AddModule(new SHVSubProcessServerImpl(Modules));
 		return SHVBool::True;

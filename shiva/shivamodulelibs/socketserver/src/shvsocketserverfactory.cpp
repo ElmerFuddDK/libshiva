@@ -102,7 +102,7 @@ SHVString retVal(_S("Module library for SocketServer"));
  *************************************/
 SHVBool SHVModuleFactorySocketServer::ResolveModules(const SHVString8C symbol)
 {
-	if (symbol == __MODULESYMBOL_DEFAULTS)
+	if (symbol == __MODULESYMBOL_DEFAULTS || symbol == __MODULESYMBOL_SOCKETSERVER)
 	{
 		Modules.AddModule(new SHVSocketServerImpl(Modules));
 		return SHVBool::True;
