@@ -13,6 +13,10 @@ QMAKE_PRE_LINK = copydeps.bat
 TARGET = shivasqlite
 TEMPLATE = lib
 
+SQLITE_FTS = -DSQLITE_ENABLE_FTS3 -DSQLITE_ENABLE_FTS3_PARENTHESIS
+QMAKE_CFLAGS += $$SQLITE_FTS
+QMAKE_CXXFLAGS += $$SQLITE_FTS
+
 HEADERS += ../../include/sqlite/shvstringsqlite.h \
            ../../include/sqlite/sqlitestatement.h \
            ../../include/sqlite/sqlitewrapper.h \
