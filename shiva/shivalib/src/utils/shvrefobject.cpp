@@ -99,7 +99,7 @@ void SHVRefObject::DestroyRef()
 }
 
 ///\cond INTERNAL
-#if defined(__SHIVA_WIN32) && !defined(__SHIVA_WINCE) && !defined(__GNUC__)
+/*#if defined(__SHIVA_WIN32) && !defined(__SHIVA_WINCE) && !defined(__GNUC__)
 void __fastcall RefObject_Inc(volatile int*)
 {
 	__asm
@@ -114,7 +114,7 @@ void __fastcall RefObject_Dec(volatile int*)
 		lock dec dword ptr [ecx]
 	}
 }
-#endif
+#endif*/
 ///\endcond
 
 /*************************************
@@ -132,7 +132,8 @@ void SHVRefObject::LockedIncrement(volatile int* ref)
 #elif defined(__SHIVA_WINCE)
 	InterlockedIncrement((LPLONG)ref); // does not work in 64 bit
 #elif defined(__SHIVA_WIN32)
-	RefObject_Inc(ref);
+	InterlockedIncrement((LPLONG)ref);
+//	RefObject_Inc(ref);
 #else
 	(*ref)++;
 #endif
@@ -153,7 +154,8 @@ void SHVRefObject::LockedDecrement(volatile int* ref)
 #elif defined(__SHIVA_WINCE)
 	InterlockedDecrement((LPLONG)ref); // does not work in 64 bit
 #elif defined(__SHIVA_WIN32)
-	RefObject_Dec(ref);
+	InterlockedDecrement((LPLONG)ref);
+//	RefObject_Dec(ref);
 #else
 	(*ref)--;
 #endif
