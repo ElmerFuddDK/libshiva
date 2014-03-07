@@ -38,6 +38,9 @@
 # define wremove _wremove
 # define wfopen _wfopen
 # include <shellapi.h>
+# if !defined(__SHIVA_WINCE)
+#  include <direct.h>
+# endif
 # ifndef INVALID_FILE_ATTRIBUTES
 #  define INVALID_FILE_ATTRIBUTES ((DWORD)-1)
 # endif
@@ -425,6 +428,26 @@ SHVBool retVal;
 }
 
 /*************************************
+ * ChangeDir
+ *************************************/
+/// Change current working directory
+SHVBool SHVDir::ChangeDir(const SHVStringC dirName)
+{
+SHVBool retVal(SHVBool::False);
+#if defined(__SHIVA_WINCE)
+#elif defined(__SHIVA_WIN32)
+# ifdef UNICODE
+	retVal = _wchdir((WCHAR*)dirName.GetBufferConst()) == 0;
+# else
+	retVal = _chdir(dirName.GetBufferConst()) == 0;
+# endif
+#else
+	retVal = chdir(dirName.GetBufferConst()) == 0;
+#endif
+	return retVal;
+}
+
+/*************************************
  * GetSize
  *************************************/
 /// Obtain file size of a file name
@@ -688,7 +711,7 @@ SHELLEXECUTEINFO info;
 	///\todo Implement SHVDir::Execute for symbian
 #else
 SHVString execstr;
-	execstr.Format(_S("%s %s &"), program.GetSafeBuffer(), args.GetSafeBuffer());
+	execstr.Format(_S("%s %s &"), EscapeParameter(program).GetSafeBuffer(), args.GetSafeBuffer());
 # ifdef FSUTF8MODE
 	::system(execstr.ToStrUTF8().GetSafeBuffer());
 # else
@@ -728,16 +751,18 @@ SHVFileListIterator itr(args);
 SHVString execstr;
 SHVString arg;
 SHVFileListIterator itr(args);
+SHVString tmpArg;
 
 	while (itr.MoveNext())
 	{
+		tmpArg = EscapeParameter(itr.Get());
 		if (arg.IsNull())
-			arg = itr.Get();
+			arg = tmpArg.ReleaseBuffer();
 		else
-			arg += _S(" ") + itr.Get();
+			arg += SHVStringC::Format(_S(" %s"), tmpArg.GetSafeBuffer());
 	}
 
-	execstr.Format(_S("%s %s &"), program.GetSafeBuffer(), arg.GetSafeBuffer());
+	execstr.Format(_S("%s %s &"), EscapeParameter(program).GetSafeBuffer(), arg.GetSafeBuffer());
 # ifdef FSUTF8MODE
 	::system(execstr.ToStrUTF8().GetSafeBuffer());
 # else
@@ -745,3 +770,101 @@ SHVFileListIterator itr(args);
 # endif
 #endif
 }
+
+/*************************************
+ * ExecuteAndWait
+ *************************************/
+/// Will execute a program with optional argument string
+SHVInt SHVDir::ExecuteAndWait(const SHVStringC program, const SHVStringC args)
+{
+SHVInt retVal;
+#if defined(__SHIVA_WINCE)
+#elif defined(__SHIVA_WIN32)
+SHVString execstr;
+	execstr.Format(_S("%s %s"), EscapeParameter(program).GetSafeBuffer(), args.GetSafeBuffer());
+	retVal = ::system(execstr.ToStr8().GetSafeBuffer());
+#elif defined(__SHIVA_EPOC)
+	///\todo Implement SHVDir::Execute for symbian
+#else
+SHVString execstr;
+	execstr.Format(_S("%s %s"), EscapeParameter(program).GetSafeBuffer(), args.GetSafeBuffer());
+# ifdef FSUTF8MODE
+	retVal = ::system(execstr.ToStrUTF8().GetSafeBuffer());
+# else
+	retVal = ::system(execstr.GetSafeBuffer());
+# endif
+#endif
+	return retVal;
+}
+
+/*************************************
+ * ExecuteAndWait
+ *************************************/
+/// Will execute a program with a provided argument list
+SHVInt SHVDir::ExecuteAndWait(const SHVStringC program, SHVFileList& args)
+{
+SHVInt retVal;
+#if defined(__SHIVA_WINCE)
+#elif defined(__SHIVA_WIN32)
+SHVString execstr;
+SHVString arg;
+SHVFileListIterator itr(args);
+SHVString tmpArg;
+
+	while (itr.MoveNext())
+	{
+		tmpArg = EscapeParameter(itr.Get());
+		if (arg.IsNull())
+			arg = tmpArg.ReleaseBuffer();
+		else
+			arg += SHVStringC::Format(_S(" %s"), tmpArg.GetSafeBuffer());
+	}
+
+	execstr.Format(_S("%s %s"), EscapeParameter(program).GetSafeBuffer(), arg.GetSafeBuffer());
+	retVal = ::system(execstr.ToStr8().GetSafeBuffer());
+#elif defined(__SHIVA_EPOC)
+	///\todo Implement SHVDir::Execute for symbian
+#else
+SHVString execstr;
+SHVString arg;
+SHVFileListIterator itr(args);
+SHVString tmpArg;
+
+	while (itr.MoveNext())
+	{
+		tmpArg = EscapeParameter(itr.Get());
+		if (arg.IsNull())
+			arg = tmpArg.ReleaseBuffer();
+		else
+			arg += SHVStringC::Format(_S(" %s"), tmpArg.GetSafeBuffer());
+	}
+
+	execstr.Format(_S("%s %s"), EscapeParameter(program).GetSafeBuffer(), arg.GetSafeBuffer());
+# ifdef FSUTF8MODE
+	retVal = ::system(execstr.ToStrUTF8().GetSafeBuffer());
+# else
+	retVal = ::system(execstr.GetSafeBuffer());
+# endif
+#endif
+	return retVal;
+}
+
+///\cond INTERNAL
+/*************************************
+ * EscapeParameter
+ *************************************/
+SHVStringBuffer SHVDir::EscapeParameter(const SHVStringC param)
+{
+SHVString retVal(param);
+
+	if (param.Find(_S(" ")) >= 0)
+	{
+		retVal.Replace(_S("\\"),_S("\\\\"));
+		retVal.Replace(_S("\""),_S("\\\""));
+		retVal = SHVStringC::Format(_S("\"%s\""),retVal.GetSafeBuffer());
+	}
+
+	return retVal.ReleaseBuffer();
+}
+///\endcond
+

@@ -42,6 +42,7 @@ public:
 	static SHVBool Move(const SHVStringC from, const SHVStringC to);
 	static SHVBool Copy(const SHVStringC from, const SHVStringC to);
 	static SHVBool CreateDir(const SHVStringC dirName);
+	static SHVBool ChangeDir(const SHVStringC dirName);
 
 
 	// Operations involving a file
@@ -62,6 +63,13 @@ public:
 	// Shell operations
 	static void Execute(const SHVStringC program, const SHVStringC args = NULL);
 	static void Execute(const SHVStringC program, SHVFileList& args);
+	static SHVInt ExecuteAndWait(const SHVStringC program, const SHVStringC args = NULL);
+	static SHVInt ExecuteAndWait(const SHVStringC program, SHVFileList& args);
+
+private:
+	///\cond INTERNAL
+	static SHVStringBuffer EscapeParameter(const SHVStringC param);
+	///\endcond
 };
 
 #endif
