@@ -1,7 +1,7 @@
 #ifndef __SHIVA_SUBPROCESSIMPL_SUBPROCESS_H
 #define __SHIVA_SUBPROCESSIMPL_SUBPROCESS_H
 
-#include "shiva/include/modules/subprocess/shvsubprocess.h"
+#include "../../../../include/modules/subprocess/shvsubprocess.h"
 ///\cond INTERNAL
 class SHVSubProcessStreamIn;
 class SHVSubProcessStreamOut;
@@ -50,15 +50,18 @@ private:
 	void ParseArgs(SHVFileList& argList, const SHVStringC args);
 	void Trim(const SHVTChar*& ch);
 
-	int PipeStdOut[2], PipeStdErr[2], PipeStdIn[2];
 	SHVSubProcessStreamIn *StreamStdOut, *StreamStdErr;
 	SHVSubProcessStreamOut *StreamStdIn;
 	SHVBool LastError;
 	bool NonBlocking;
 #ifdef __SHIVA_POSIX
 	pid_t Pid;
+	int PipeStdOut[2], PipeStdErr[2], PipeStdIn[2];
 
 	static void SafeCloseFd(int& fd);
+#elif defined(__SHIVA_WIN32)
+	PROCESS_INFORMATION Process;
+	int dummyFd;
 #endif
 	///\endcond
 };

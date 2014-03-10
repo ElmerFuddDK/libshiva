@@ -29,7 +29,7 @@
  */
 
 #include "stdafx.h"
-#include "shiva/include/platformspc.h"
+#include "../../../../include/platformspc.h"
 
 #include "shvsubprocessserverimpl.h"
 #include "shvsubprocessimpl.h"

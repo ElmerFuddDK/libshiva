@@ -29,10 +29,10 @@
  */
 
 #include "stdafx.h"
-#include "shiva/include/platformspc.h"
+#include "../../../../include/platformspc.h"
 
 #include "shvsubprocessimpl.h"
-#include "shiva/include/utils/shvbuffer.h"
+#include "../../../../include/utils/shvbuffer.h"
 
 #ifdef __SHIVA_POSIX
 # include <sys/types.h>
@@ -42,6 +42,11 @@
 # include <errno.h>
 # include <sys/ioctl.h>
 # include <fcntl.h>
+#elif defined(__SHIVA_WIN32)
+# include <io.h>
+# include <errno.h>
+# include <string.h>
+# define EWOULDBLOCK EAGAIN
 #else
 # error Not supported for current platform
 #endif
@@ -56,13 +61,21 @@
  *************************************/
 SHVSubProcessImpl::SHVSubProcessImpl() : SHVSubProcess(), LastError(ErrNone)
 {
+	NonBlocking = false;
+#ifdef __SHIVA_POSIX
 	StreamStdOut = new SHVSubProcessStreamIn(PipeStdOut[0]);
 	StreamStdErr = new SHVSubProcessStreamIn(PipeStdErr[0]);
 	StreamStdIn = new SHVSubProcessStreamOut(PipeStdIn[1]);
 	PipeStdOut[0] = PipeStdOut[1] = PipeStdErr[0] = PipeStdErr[1] = PipeStdIn[0] = PipeStdIn[1] = 0;
-	NonBlocking = false;
-#ifdef __SHIVA_POSIX
 	Pid = -1;
+#elif defined(__SHIVA_WIN32)
+	memset(&Process,0,sizeof(Process));
+
+	// We do not support streams to sub processes yet on win32
+	dummyFd = 0;
+	StreamStdOut = new SHVSubProcessStreamIn(dummyFd);
+	StreamStdErr = new SHVSubProcessStreamIn(dummyFd);
+	StreamStdIn = new SHVSubProcessStreamOut(dummyFd);
 #endif
 }
 
@@ -91,6 +104,24 @@ SHVBool retVal( Pid != -1 ? ErrNone : (LastError ? ErrGeneric : LastError) );
 		{
 			waitpid(Pid,&status,0);
 			Pid = -1;
+			StreamStdOut->Close();
+			StreamStdErr->Close();
+			StreamStdIn->Close();
+			retVal.SetError(ErrGeneric);
+		}
+	}
+	return retVal;
+#elif defined(__SHIVA_WIN32)
+SHVBool retVal( Process.hProcess ? ErrNone : (LastError ? ErrGeneric : LastError) );
+	if (retVal)
+	{
+		if (WaitForSingleObject(Process.hProcess,0) == WAIT_OBJECT_0)
+		{
+		DWORD exitCode;
+			GetExitCodeProcess(Process.hProcess,&exitCode);
+			CloseHandle(Process.hProcess);
+			CloseHandle(Process.hThread);
+			memset(&Process,0,sizeof(Process));
 			StreamStdOut->Close();
 			StreamStdErr->Close();
 			StreamStdIn->Close();
@@ -234,7 +265,48 @@ SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
 				WaitForTermination();
 			}
 		}
-		
+#elif defined(__SHIVA_WIN32)
+	SHVString cmdLine(program);
+	SHVFileListIterator itr(args);
+	STARTUPINFO si;
+
+		::memset(&si,0,sizeof(STARTUPINFO));
+		si.cb = sizeof(STARTUPINFO);
+
+		SHVASSERT(streams == 0);
+		SHVUNUSED_PARAM(streams);
+		SHVUNUSED_PARAM(nonBlocking);
+
+		if (cmdLine.Find(_S(" ")) >= 0)
+		{
+			cmdLine.Replace(_S("\\"),_S("\\\\"));
+			cmdLine.Replace(_S("\""),_S("\\\""));
+			cmdLine = SHVStringC::Format(_S("\"%s\""),cmdLine.GetSafeBuffer());
+		}
+
+		while (itr.MoveNext())
+		{
+			if (itr.Get().Find(_S(" ")) >= 0)
+			{
+			SHVString arg(itr.Get());
+				arg.Replace(_S("\\"),_S("\\\\"));
+				arg.Replace(_S("\""),_S("\\\""));
+				cmdLine += SHVStringC::Format(_S(" \"%s\""),arg.GetSafeBuffer());
+			}
+			else
+			{
+				cmdLine += _S(" ") + itr.Get();
+			}
+		}
+
+		if (::CreateProcess(NULL,(TCHAR*)cmdLine.GetSafeBuffer(),NULL,NULL,FALSE,0,NULL,NULL,&si,&Process))
+		{
+			LastError.SetError(ErrNone);
+		}
+		else
+		{
+			LastError.SetError(ErrGeneric);
+		}
 #endif
 	
 		retVal = LastError;
@@ -252,6 +324,9 @@ void SHVSubProcessImpl::Shutdown()
 	{
 #ifdef __SHIVA_POSIX
 		kill(Pid,SIGTERM);
+#elif defined(__SHIVA_WIN32)
+		///\todo Find a better way to shut down a windows process
+		TerminateProcess(Process.hProcess,-1);
 #else
 		abort();
 #endif
@@ -268,6 +343,8 @@ void SHVSubProcessImpl::Kill()
 #ifdef __SHIVA_POSIX
 		kill(-Pid,SIGKILL);
 		///\todo Run through the process tree and properly kill childs that have their own group
+#elif defined(__SHIVA_WIN32)
+		TerminateProcess(Process.hProcess,-1);
 #else
 		abort();
 #endif
@@ -285,6 +362,13 @@ void SHVSubProcessImpl::WaitForTermination()
 	int status;
 		waitpid(Pid,&status,0);
 		Pid = -1;
+#elif defined(__SHIVA_WIN32)
+	DWORD exitCode;
+		WaitForSingleObject(Process.hProcess,INFINITE);
+		GetExitCodeProcess(Process.hProcess,&exitCode);
+		CloseHandle(Process.hProcess);
+		CloseHandle(Process.hThread);
+		memset(&Process,0,sizeof(Process));
 #endif
 		StreamStdOut->Close();
 		StreamStdErr->Close();
@@ -381,7 +465,8 @@ SHVString val;
 					case '"':  val += _S("\""); break;
 					case 't':  val += _S("\t"); break;
 					default:
-						running = false;
+						SHVASSERT(false);
+						val += SHVStringC::Format(_S("\\%c"),c[pos]);
 						break;
 					}
 				}

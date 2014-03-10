@@ -1,7 +1,7 @@
 #ifndef __SHIVA_SUBPROCESSIMPL_SUBPROCESSSERVER_H
 #define __SHIVA_SUBPROCESSIMPL_SUBPROCESSSERVER_H
 
-#include "shiva/include/modules/subprocess/shvsubprocessserver.h"
+#include "../../../../include/modules/subprocess/shvsubprocessserver.h"
 
 
 //-=========================================================================================================
