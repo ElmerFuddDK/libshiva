@@ -41,6 +41,8 @@ public:
 	virtual SHVBool GetLastError() = 0;
 
 	virtual bool GetInUse() = 0;
+
+	virtual void ClearAllParameters() = 0;
 };
 typedef SHVRefObjectContainer<SHVDataFunction> SHVDataFunctionRef;
 

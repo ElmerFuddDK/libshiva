@@ -21,6 +21,8 @@ public:
 
 	virtual bool GetInUse();
 
+	virtual void ClearAllParameters();
+
 private:
 	inline SHVBool SetError(SHVBool err);
 

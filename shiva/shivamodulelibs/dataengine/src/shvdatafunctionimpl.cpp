@@ -109,3 +109,10 @@ bool SHVDataFunctionImpl::GetInUse()
 	return RowList->HasShareLock;
 }
 
+/*************************************
+ * ClearAllParameters
+ *************************************/
+void SHVDataFunctionImpl::ClearAllParameters()
+{
+	RowList->Statement->ClearAllParameters();
+}
