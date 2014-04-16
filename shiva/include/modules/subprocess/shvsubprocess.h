@@ -46,6 +46,10 @@ public:
 	virtual SHVStreamIn& GetStdOut() = 0;
 	virtual SHVStreamIn& GetStdErr() = 0;
 	virtual SHVStreamOut& GetStdIn() = 0;
+	
+	
+	// System properties
+	virtual SHVInt64 GetMemUsage() = 0;
 
 
 	// Startup and shutdown

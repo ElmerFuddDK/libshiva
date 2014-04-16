@@ -30,6 +30,10 @@ public:
 	virtual SHVStreamOut& GetStdIn();
 
 
+	// System properties
+	virtual SHVInt64 GetMemUsage();
+
+
 	// Startup and shutdown
 	virtual SHVBool Start(const SHVStringC program, const SHVStringC args = NULL, int streams = StreamDefaults, bool nonBlocking = false);
 	virtual SHVBool Start(const SHVStringC program, SHVFileList& args, int streams = StreamDefaults, bool nonBlocking = false);

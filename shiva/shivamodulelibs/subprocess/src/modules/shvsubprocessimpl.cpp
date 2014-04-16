@@ -46,6 +46,11 @@
 # include <io.h>
 # include <errno.h>
 # include <string.h>
+# ifdef PSAPI_VERSION
+#  include <psapi.h>
+# else
+#  pragma message("SubProcess does not support memusage - define PSAPI_VERSION=1 and link with psapi")
+# endif
 # define EWOULDBLOCK EAGAIN
 #else
 # error Not supported for current platform
@@ -156,6 +161,41 @@ SHVStreamIn& SHVSubProcessImpl::GetStdErr()
 SHVStreamOut& SHVSubProcessImpl::GetStdIn()
 {
 	return *StreamStdIn;
+}
+
+/*************************************
+ * GetMemUsage
+ *************************************/
+SHVInt64 SHVSubProcessImpl::GetMemUsage()
+{
+SHVInt64 retVal;
+	if (IsRunning())
+	{
+#if defined(__SHIVA_WIN32) && defined(PSAPI_VERSION)
+	PROCESS_MEMORY_COUNTERS pmc;
+		if (GetProcessMemoryInfo(Process.hProcess, &pmc, sizeof(pmc)))
+		{
+			retVal = pmc.WorkingSetSize;
+		}
+#elif defined(__SHIVA_LINUX)
+	unsigned long sz, resident, share, text, lib, data, dt;
+	FILE* f;
+	
+		f = fopen(SHVString8C::Format("/proc/%d/statm",Pid).GetBufferConst(),"r");
+	
+		if(f)
+		{
+			if(7 == fscanf(f,"%ld %ld %ld %ld %ld %ld %ld", &sz,&resident,&share,&text,&lib,&data,&dt))
+			{
+				retVal = resident * ::getpagesize();
+			}
+			fclose(f);
+		}
+#else
+		SHVASSERT(false); // unimplemented
+#endif
+	}
+	return retVal;
 }
 
 /*************************************
