@@ -41,6 +41,10 @@
 # include <e32hal.h>
 # include <e32base.h>
 #else
+# ifdef __SHIVA_POSIX_OSX
+#  include <mach/clock.h>
+#  include <mach/mach.h>
+# endif
 # include <signal.h>
 # include <pthread.h>
 # include <sched.h>
@@ -439,6 +443,19 @@ long SHVThreadBase::GetTickCount()
 	return ::GetTickCount();
 #elif defined(__SHIVA_EPOC)
 	return User::TickCount();
+#elif defined(__SHIVA_POSIX_OSX)
+clock_serv_t cclock;
+mach_timespec_t n;
+
+	host_get_clock_service(mach_host_self(), SYSTEM_CLOCK, &cclock);
+	if (clock_get_time(cclock, &n))
+	{
+		fprintf(stderr,"GETTICKCOUNT ERROR\n");
+		abort();
+	}
+	mach_port_deallocate(mach_task_self(), cclock);
+	
+	return long(n.tv_sec*1000000L + n.tv_nsec/1000L);
 #elif _POSIX_TIMERS > 0
 struct timespec n;
 	if (clock_gettime(CLOCK_MONOTONIC, &n))
@@ -475,6 +492,19 @@ long SHVThreadBase::GetTicksInMilliSecs()
 TTimeIntervalMicroSeconds32 t = 1;
 	UserHal::TickPeriod(t);
 	return User::TickCount()*t.Int();
+#elif defined(__SHIVA_POSIX_OSX)
+clock_serv_t cclock;
+mach_timespec_t n;
+
+	host_get_clock_service(mach_host_self(), SYSTEM_CLOCK, &cclock);
+	if (clock_get_time(cclock, &n))
+	{
+		fprintf(stderr,"GETTICKCOUNT ERROR\n");
+		abort();
+	}
+	mach_port_deallocate(mach_task_self(), cclock);
+	
+	return long(n.tv_sec*1000L + n.tv_nsec/1000000L);
 #elif _POSIX_TIMERS > 0
 struct timespec n;
 	if (clock_gettime(CLOCK_MONOTONIC, &n))

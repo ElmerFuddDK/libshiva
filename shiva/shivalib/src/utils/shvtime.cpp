@@ -38,6 +38,10 @@
 #if defined(__SHIVA_POSIX_LINUX) && !defined(CLOCK_BOOTTIME)
 # define CLOCK_BOOTTIME 7
 #endif
+#if defined(__SHIVA_POSIX_OSX)
+# include <mach/mach.h>
+# include <mach/mach_time.h>
+#endif
 ///\endcond
 
 
@@ -877,6 +881,18 @@ long SHVTime::GetRelativeTimeInMilliSecs()
 TTimeIntervalMicroSeconds32 t = 1;
 	UserHal::TickPeriod(t);
 	return User::TickCount()*t.Int();
+#elif defined(__SHIVA_POSIX_OSX)
+const int64_t kOneMillion = 1000 * 1000;
+static mach_timebase_info_data_t s_timebase_info;
+
+	if (s_timebase_info.denom == 0)
+	{
+		mach_timebase_info(&s_timebase_info);
+	}
+
+	// mach_absolute_time() returns billionth of seconds,
+	// so divide by one million to get milliseconds
+	return long((mach_absolute_time() * s_timebase_info.numer) / (int64_t(1000000) * s_timebase_info.denom));
 #elif _POSIX_TIMERS > 0
 struct timespec n;
 #ifdef CLOCK_BOOTTIME
