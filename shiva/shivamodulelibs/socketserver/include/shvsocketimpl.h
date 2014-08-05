@@ -61,6 +61,7 @@ public:
 	virtual SHVBool GetSocketOption(SocketOptions option, int& val1, int& val2);
 
 	virtual SHVBool SetServerCertificate(const SHVStringC keyfile, const SHVStringC certFile);
+	virtual SHVBool StartTLS(); // Converts a connected TCP socket to SSL
 
 protected:
 friend class SHVSocketServerImpl;
@@ -78,6 +79,7 @@ friend class SHVSSLSocket;
 	SHVBool SetError(SHVBool err = ErrGeneric);
 	int RetreiveSocketError();
 	SHVBool SSLAccept(const char* keyFile, const char* certFile);
+	bool SSLConnect();
 
 	SHVEventSubscriberBaseRef EventSubscriber;
 	SHVSocketServerImpl* SocketServer;

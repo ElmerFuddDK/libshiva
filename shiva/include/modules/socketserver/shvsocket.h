@@ -89,6 +89,7 @@ public:
 	virtual SHVBool GetSocketOption(SocketOptions option, int& val1, int& val2) = 0;
 
 	virtual SHVBool SetServerCertificate(const SHVStringC keyfile, const SHVStringC certFile) = 0;
+	virtual SHVBool StartTLS() = 0; // Converts a connected TCP socket to SSL
 
 protected:
 	///\cond INTERNAL

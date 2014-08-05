@@ -29,6 +29,9 @@ typedef void* SSL_METHOD;
 #define SSL_FILETYPE_ASN1	X509_FILETYPE_ASN1
 #define SSL_FILETYPE_PEM	X509_FILETYPE_PEM
 
+#define SSL_CTRL_MODE  33
+#define SSL_MODE_ENABLE_PARTIAL_WRITE 0x00000001L
+
 //-=========================================================================================================
 /// SHVSSLSocketFactory class - Creates a SSLSocket object
 //-=========================================================================================================
@@ -53,6 +56,7 @@ friend class SHVSSLSocket;
 	void (*_ssl_load_error_strings)(void );
 	int (*_ssl_library_init)(void );
 	SSL* (*_ssl_new)(SSL_CTX* ctx);
+	long (*_ssl_ctx_ctrl)(SSL_CTX* ctx,int cmd,long larg,void *parg);
 	SSL_CTX* (*_ssl_ctx_new)(SSL_METHOD *meth);
 	SSL_METHOD* (*_sslv23_client_method)(void);
 	SSL_METHOD* (*_sslv23_server_method)(void);

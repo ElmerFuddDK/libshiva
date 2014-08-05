@@ -27,6 +27,7 @@ SHVSSLSocketFactory::SHVSSLSocketFactory(): Supported(false)
 	Supported = Supported && OpenSSL.Resolve((void**) &_ssl_library_init, _S("SSL_library_init"));
 	Supported = Supported && OpenSSL.Resolve((void**) &_ssl_new, _S("SSL_new"));
 	Supported = Supported && OpenSSL.Resolve((void**) &_ssl_ctx_new, _S("SSL_CTX_new"));
+	Supported = Supported && OpenSSL.Resolve((void**) &_ssl_ctx_ctrl, _S("SSL_CTX_ctrl"));
 	Supported = Supported && OpenSSL.Resolve((void**) &_sslv23_client_method, _S("SSLv23_client_method"));
 	Supported = Supported && OpenSSL.Resolve((void**) &_sslv23_server_method, _S("SSLv23_server_method"));
 	Supported = Supported && OpenSSL.Resolve((void**) &_ssl_set_fd, _S("SSL_set_fd"));
@@ -91,6 +92,8 @@ SHVBool retVal(false);
 		SSLCTX = (*Factory->_ssl_ctx_new)((*Factory->_sslv23_client_method)());
 	if (SSLCTX)
 	{
+		(*Factory->_ssl_ctx_ctrl)(SSLCTX,SSL_CTRL_MODE,SSL_MODE_ENABLE_PARTIAL_WRITE,NULL);
+
 		if (!AlreadyInitialized())
 			SSLHandle = (*Factory->_ssl_new)(SSLCTX);
 		if (SSLHandle)
@@ -215,11 +218,9 @@ int retVal = -1;
 	retVal = (*Factory->_ssl_write)(SSLHandle, buffer, n);
 	if (retVal < 0)
 	{
-		retVal = (*Factory->_ssl_get_error)(SSLHandle, retVal);
-		if (retVal == SSL_ERROR_WANT_READ || retVal == SSL_ERROR_WANT_WRITE)
+	int sslerror = (*Factory->_ssl_get_error)(SSLHandle, retVal);
+		if (sslerror == SSL_ERROR_WANT_READ || sslerror == SSL_ERROR_WANT_WRITE)
 			retry = true;
-		else
-			retVal *= -1;
 	}
 	return retVal;
 }

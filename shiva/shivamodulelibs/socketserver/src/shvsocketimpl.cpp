@@ -64,6 +64,29 @@ struct tcp_keepalive { u_long  onoff; u_long  keepalivetime; u_long  keepalivein
 
 #define __SHVSOCKET_SENDTIMEOUT 30
 
+///\cond INTERNAL
+class SHVEventSocket : public SHVEvent
+{
+public:
+	
+	SHVEventSocket(SHVEventTarget* caller, SHVInt id, SHVInt subid, SHVRefObject* obj, SHVSocket* newSock);
+	virtual void* GetData();
+	
+private:
+	SHVSocketRef NewSocket;
+};
+
+SHVEventSocket::SHVEventSocket(SHVEventTarget* caller, SHVInt id, SHVInt subid, SHVRefObject* obj, SHVSocket* newSock)
+	: SHVEvent(caller,id,subid,obj), NewSocket(newSock)
+{
+}
+
+void* SHVEventSocket::GetData()
+{
+	return (SHVSocket*)NewSocket;
+}
+///\endcond
+
 
 //=========================================================================================================
 // SHVSocketImpl class - Implementation of sockets interface
@@ -257,16 +280,14 @@ bool retry = false;
 	int err = 0;
 	const SHVByte* bufPtr = buf.GetBufferConst();
 	int bufLen = (int)buf.GetSize();
-	int i;
+	int i = 0;
 
-		for (i=0; i<__SHVSOCKET_SENDTIMEOUT*10 && err == 0 && bufLen > 0; i++)
+		while (i<__SHVSOCKET_SENDTIMEOUT*10 && err == 0 && bufLen > 0)
 		{
 			retry = false;
 			if (!SSL.IsNull())
 			{
 				err = SSL->send(bufPtr,bufLen, retry);
-				if (err < 0)
-					err *= -1;
 			}
 			else
 			{
@@ -274,6 +295,7 @@ bool retry = false;
 			}
 			if (err < 0)
 			{
+				 i++;
 #ifdef __SHIVA_WIN32
 				if (SSL.IsNull() || err == SSL_ERROR_SYSCALL)
 					retry = WSAGetLastError() == WSAEWOULDBLOCK;
@@ -283,16 +305,21 @@ bool retry = false;
 #endif
 				if(retry)
 				{
-					SHVThreadBase::Sleep(100);
 					err = 0;
+					SHVThreadBase::Sleep(100);
 				}
 				else
 				{
 					err = -1;
 				}
 			}
+			else if (err == 0)
+			{
+				err = -1;
+			}
 			else
 			{
+				i=0;
 				SHVASSERT(err <= bufLen);
 				bufLen -= err;
 				bufPtr += err;
@@ -609,6 +636,31 @@ SHVBool retVal(true);
 	return retVal;
 }
 
+/*************************************
+ * StartTLS
+ *************************************/
+///\ Converts a connected TCP socket to SSL
+SHVBool SHVSocketImpl::StartTLS()
+{
+SHVBool retVal(SHVSocket::ErrInvalidOperation);
+bool sendEvent = false;
+	SocketServer->SocketServerLock.Lock();
+	if (Type == SHVSocket::TypeTCP || State == SHVSocket::StateConnected)
+	{
+		Type = SHVSocket::TypeSSL;
+		State = SHVSocket::StateConnecting;
+		retVal.SetError(SSLConnect() ? SHVBool::True : Error.GetError());
+		if (retVal && State == SHVSocket::StateConnected)
+			sendEvent = true;
+	}
+	SocketServer->SocketServerLock.Unlock();
+
+	if (sendEvent)
+		EventSubscriber->EmitNow(SocketServer->GetModules(), new SHVEventSocket(SocketServer,SHVSocketServer::EventSockStatus,SHVSocket::StateConnected,this,NULL));
+
+	return retVal;
+}
+
 
 /*************************************
  * Close
@@ -726,28 +778,6 @@ SHVBool SHVSocketImpl::Connect(const SHVStringC ipv4Addr, SHVIPv4Port port)
 
 
 ///\cond INTERNAL
-class SHVEventSocket : public SHVEvent
-{
-public:
-	
-	SHVEventSocket(SHVEventTarget* caller, SHVInt id, SHVInt subid, SHVRefObject* obj, SHVSocket* newSock);
-	virtual void* GetData();
-	
-private:
-	SHVSocketRef NewSocket;
-};
-
-SHVEventSocket::SHVEventSocket(SHVEventTarget* caller, SHVInt id, SHVInt subid, SHVRefObject* obj, SHVSocket* newSock)
-	: SHVEvent(caller,id,subid,obj), NewSocket(newSock)
-{
-}
-
-void* SHVEventSocket::GetData()
-{
-	return (SHVSocket*)NewSocket;
-}
-
-
 /*************************************
  * PerformEvent
  *************************************/
@@ -809,24 +839,11 @@ bool retry;
 		{
 			if (Type == SHVSocket::TypeSSL)
 			{
-				SSL = SocketServer->SSLFactory->CreateSSLSocket();
-				if (!SSL->Connect(this, retry))
-				{					
-					if (retry)
-					{
-						SSLState = SHVSocketImpl::SSLStateConnecting;
-						doEvent = false;
-					}
-					else
-					{
-						SetError(SHVSocket::ErrSSLConnection);
-					}
-				}
-				else
-				{
-					State = SHVSocket::StateConnected;
+				SSLConnect();
+				if (SSLState == SHVSocketImpl::SSLStateConnecting)
+					doEvent = false;
+				else if (State == SHVSocket::StateConnected)
 					subID = State;
-				}
 			}
 			else
 			{
@@ -909,7 +926,11 @@ bool retry;
 		}
 		break;
 	case SHVSocketImpl::SSLStateConnecting:
-		if (!SSL->Connect(this, retry))
+		if (SSL.IsNull())
+		{
+			SetError(SHVSocket::ErrSSLConnection);
+		}
+		else if (!SSL->Connect(this, retry))
 		{
 			if (retry)
 			{
@@ -1011,6 +1032,33 @@ bool retry;
 	else
 		retVal = SetError(SHVSocket::ErrListening);
 
+	return retVal;
+}
+
+/*************************************
+ * SSLConnect
+ *************************************/
+bool SHVSocketImpl::SSLConnect()
+{
+bool retry = false;
+bool retVal = true;
+	SSL = SocketServer->SSLFactory->CreateSSLSocket();
+	if (!SSL->Connect(this, retry))
+	{					
+		if (retry)
+		{
+			SSLState = SHVSocketImpl::SSLStateConnecting;
+		}
+		else
+		{
+			SetError(SHVSocket::ErrSSLConnection);
+			retVal = false;
+		}
+	}
+	else
+	{
+		State = SHVSocket::StateConnected;
+	}
 	return retVal;
 }
 
