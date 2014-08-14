@@ -179,9 +179,9 @@ size_t SHVDataStructCSQLite::IndexCount() const
 /*************************************
  * IsEqual
  *************************************/
-SHVBool SHVDataStructCSQLite::IsEqual(const SHVDataStructC* dataStruct) const
+SHVBool SHVDataStructCSQLite::IsEqual(const SHVDataStructC* dataStruct, bool strict) const
 {
-	return Struct->IsEqual(dataStruct);
+	return Struct->IsEqual(dataStruct, strict);
 }
 /*************************************
  * IsEqual

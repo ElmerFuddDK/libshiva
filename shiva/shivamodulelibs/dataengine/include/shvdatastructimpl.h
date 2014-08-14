@@ -77,7 +77,7 @@ public:
 	virtual SHVDataRowKey* CreateIndexKey() const;
 	virtual size_t AddIndex(SHVDataRowKey* index);
 	virtual size_t RemoveLastIndex();
-	virtual SHVBool IsEqual(const SHVDataStructC* dataStruct) const;
+	virtual SHVBool IsEqual(const SHVDataStructC* dataStruct, bool strict = false) const;
 	virtual SHVBool IsIndexesEqual(const SHVDataStructC* dataStruct) const;
 
 protected:

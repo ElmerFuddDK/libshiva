@@ -33,7 +33,7 @@ public:
 	virtual const SHVDataRowKey* GetIndex(size_t IdxID) const;
 	virtual size_t FindIndex(const SHVDataRowKey* key) const;
 	virtual size_t IndexCount() const;
-	virtual SHVBool IsEqual(const SHVDataStructC* dataStruct) const;
+	virtual SHVBool IsEqual(const SHVDataStructC* dataStruct, bool strict = false) const;
 	virtual SHVBool IsIndexesEqual(const SHVDataStructC* dataStruct) const;
 
 	inline SHVBool TableExists() { return !Struct.IsNull(); }

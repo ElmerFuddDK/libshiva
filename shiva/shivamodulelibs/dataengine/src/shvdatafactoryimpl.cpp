@@ -52,7 +52,7 @@ SHVDataFactoryImpl::SHVDataFactoryImpl(SHVDataEngine& engine, const SHVStringC& 
 /*************************************
  * RegisterTable
  *************************************/
-SHVBool SHVDataFactoryImpl::RegisterTable(const SHVDataStructC* dataStruct, SHVDataSession* useSession)
+SHVBool SHVDataFactoryImpl::RegisterTable(const SHVDataStructC* dataStruct, SHVDataSession* useSession, bool strict)
 {
 SHVDataFactoryExclusiveLocker lock(this);
 size_t found;
@@ -69,7 +69,7 @@ SHVDataStructRef newStruct = GetInternalStruct((SHVDataStructC*) dataStruct);
 	found = InternalFindStruct(dataStruct->GetTableName());
 	if (found != SIZE_T_MAX)
 	{
-		drop = create = !dataStruct->IsEqual(Schema[found]);
+		drop = create = !dataStruct->IsEqual(Schema[found],strict);
 		orgStruct = GetInternalStruct((SHVDataStructC*) Schema[found]);
 		Schema.Replace(found, newStruct);
 	}
@@ -80,7 +80,7 @@ SHVDataStructRef newStruct = GetInternalStruct((SHVDataStructC*) dataStruct);
 			orgStruct = NULL;
 		else
 			orgStruct = GetInternalStruct(dbStruct);
-		if (orgStruct.IsNull() || !orgStruct->IsEqual(dataStruct))
+		if (orgStruct.IsNull() || !orgStruct->IsEqual(dataStruct,strict))
 			create = true;
 		if (create && !orgStruct.IsNull())
 			drop = true;
@@ -728,14 +728,14 @@ long id = 0;
 /*************************************
  * TableMatch
  *************************************/
-bool SHVDataFactoryImpl::TableMatch(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct, const SHVString8C& tableName, bool& exists)
+bool SHVDataFactoryImpl::TableMatch(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct, const SHVString8C& tableName, bool& exists, bool strict)
 {
 SHVDataStructCRef sqliteStruct;
 	LockShared();
 	sqliteStruct = new SHVDataStructCSQLite(sqlite, tableName);
 	Unlock();
 	exists = sqliteStruct->GetColumnCount() != 0;
-	return sqliteStruct->IsEqual(dataStruct);
+	return sqliteStruct->IsEqual(dataStruct,strict);
 }
 
 /*************************************

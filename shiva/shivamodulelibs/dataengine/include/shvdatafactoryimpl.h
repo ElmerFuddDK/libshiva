@@ -46,7 +46,7 @@ public:
 	SHVDataFactoryImpl(SHVDataEngine& engine, const SHVStringC& database);
 
 	// from SHVDataFactory
-	virtual SHVBool RegisterTable(const SHVDataStructC* dataStruct, SHVDataSession* useSession = NULL);
+	virtual SHVBool RegisterTable(const SHVDataStructC* dataStruct, SHVDataSession* useSession = NULL, bool strict = false);
 	virtual SHVBool RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear = false, SHVDataSession* useSession = NULL);
 	virtual size_t RegisterIndex(const SHVString8C& table, SHVDataRowKey* IndexKey, SHVDataSession* useSession = NULL);
 	virtual SHVBool UnregisterAlias(const SHVString8C& alias, SHVDataSession* useSession = NULL);
@@ -84,7 +84,7 @@ protected:
 	virtual SHVBool CreateView(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct, const SHVString8C& viewName, int& id);
 	virtual SHVBool CreateIndex(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct, size_t index);
 	virtual int GetAliasID(SHVSQLiteWrapper* sqlite, const SHVString8C& alias, bool create);
-	virtual bool TableMatch(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct, const SHVString8C& tableName, bool& exists);
+	virtual bool TableMatch(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct, const SHVString8C& tableName, bool& exists, bool strict);
 	virtual SHVDataStructReg* InternalFindAlias(const SHVString8C& table) const;
 	virtual size_t InternalFindStruct(const SHVString8C& table) const;
 	virtual void SchemaChanged(SHVSQLiteWrapper* sqlite);

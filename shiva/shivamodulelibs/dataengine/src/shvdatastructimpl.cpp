@@ -304,7 +304,7 @@ void SHVDataStructImpl::SetPrimaryIndex(const SHVDataRowKey* key)
 /*************************************
  * IsEqual
  *************************************/
-SHVBool SHVDataStructImpl::IsEqual(const SHVDataStructC* dataStruct) const
+SHVBool SHVDataStructImpl::IsEqual(const SHVDataStructC* dataStruct, bool strict) const
 {
 SHVBool retVal = SHVBool::False;
 const SHVDataStructC& This = *this;
@@ -316,21 +316,24 @@ const SHVDataStructC& Struct = *dataStruct;
 		for (size_t i = 0; i < GetColumnCount() && retVal; i++)
 		{
 		size_t j;
-			retVal = SHVBool::False;
-			for (j = 0; j < Struct.GetColumnCount() && This[i]->GetColumnName() != Struct[j]->GetColumnName(); j++);
-			if (j != dataStruct->GetColumnCount())
+			if (strict)
 			{
-				retVal = 
-					This[i]->GetColumnName() == Struct[j]->GetColumnName() &&
-					This[i]->GetDataType() == Struct[j]->GetDataType() &&
-					This[i]->GetDataLength() == Struct[j]->GetDataLength() &&
-					This[i]->GetAutoInc() == Struct[j]->GetAutoInc() &&
-					This[i]->GetAllowNull() == Struct[j]->GetAllowNull();
+				j=i;
 			}
 			else
-				retVal = SHVBool::False;
+			{
+				for (j = 0; j < Struct.GetColumnCount() && This[i]->GetColumnName() != Struct[j]->GetColumnName(); j++);
+				if (j == dataStruct->GetColumnCount())
+					retVal = SHVBool::False;
+			}
+			retVal = retVal &&
+				This[i]->GetColumnName() == Struct[j]->GetColumnName() &&
+				This[i]->GetDataType() == Struct[j]->GetDataType() &&
+				This[i]->GetDataLength() == Struct[j]->GetDataLength() &&
+				This[i]->GetAutoInc() == Struct[j]->GetAutoInc() &&
+				This[i]->GetAllowNull() == Struct[j]->GetAllowNull();
 		}
-		if (Struct.IndexCount() > 0 && IndexCount() > 0)
+		if (retVal && Struct.IndexCount() > 0 && IndexCount() > 0)
 			retVal = Struct.GetPrimaryIndex()->KeyDefEquals(GetPrimaryIndex());
 		else
 			retVal = false;
