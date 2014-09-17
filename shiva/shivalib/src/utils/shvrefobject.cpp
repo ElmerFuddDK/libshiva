@@ -124,7 +124,7 @@ void __fastcall RefObject_Dec(volatile int*)
 void SHVRefObject::LockedIncrement(volatile int* ref)
 {
 #ifdef __APPLE__
-	OSAtomicIncrement32(ref);
+	OSAtomicAdd32(1,ref);
 #elif ANDROID
 	__atomic_inc(ref);
 #elif defined(__GNUC__)
@@ -146,7 +146,7 @@ void SHVRefObject::LockedIncrement(volatile int* ref)
 void SHVRefObject::LockedDecrement(volatile int* ref)
 {
 #ifdef __APPLE__
-	OSAtomicDecrement32(ref);
+	OSAtomicAdd32(-1,ref);
 #elif ANDROID
 	__atomic_dec(ref);
 #elif __GNUC__
