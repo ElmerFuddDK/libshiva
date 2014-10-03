@@ -61,6 +61,19 @@ SHVModuleListImpl::SHVModuleListImpl(SHVMainEventQueue& defaultQueue)
 
 
 /*************************************
+ * Destructor
+ *************************************/
+SHVModuleListImpl::~SHVModuleListImpl()
+{
+	Config.Clear();
+	UserConfigs.Clear();
+	Events.Clear();
+	ShutdownDelays.RemoveAll();
+	Modules.RemoveAll();
+}
+
+
+/*************************************
  * Initialize
  *************************************/
 SHVBool SHVModuleListImpl::Initialize()

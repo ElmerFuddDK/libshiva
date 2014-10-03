@@ -27,6 +27,7 @@ public:
 
 	// constructor
 	SHVModuleListImpl(SHVMainEventQueue& defaultQueue);
+	~SHVModuleListImpl();
 
 
 	// Initialization
