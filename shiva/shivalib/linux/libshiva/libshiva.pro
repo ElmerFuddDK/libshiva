@@ -193,10 +193,12 @@ ios {
   DEFINES += __SHIVA_LIBUNICODESTATIC __SHIVA_NO_TIMEGM __SHIVA_SYSINFOSYSCALL
   LIBS -= -lrt \
 		  -lpthread \
-		  -llog
+		  -llog \
+		  -lgnustl_shared
   QMAKE_CFLAGS += -fno-exceptions
   QMAKE_CXXFLAGS += -fno-exceptions
   QMAKE_LIBS = -lstdc++ -lsupc++ -llog
+  QMAKE_LIBS_PRIVATE -= -lgnustl_shared
   QMAKE_INCDIR -= $$ANDROID_SOURCES_CXX_STL_INCDIR
   QMAKE_LIBDIR -= $$ANDROID_SOURCES_CXX_STL_LIBDIR
 } else {
