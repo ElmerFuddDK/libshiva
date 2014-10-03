@@ -43,6 +43,7 @@ public:
 
 	// start the main thread event queue, and runs the application
 	virtual SHVBool Run();
+	virtual bool RunAsync();
 
 
 	// from SHVEventQueue

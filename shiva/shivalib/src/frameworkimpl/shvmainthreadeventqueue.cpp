@@ -190,22 +190,8 @@ SHVMainThreadEventQueue::~SHVMainThreadEventQueue()
  */
 SHVBool SHVMainThreadEventQueue::Run()
 {
-	RunReturnVal = SHVBool::True;
-	ThreadID = SHVThreadBase::GetCurrentThreadID();
-	
-	// initialize data for the event loop
-	RunReturnVal = Dispatcher->InitializeEventLoop();
-
-	SHVASSERT(GetModuleList().GetConfig().Contains(SHVModuleList::DefaultCfgAppPath));
-	SHVASSERT(GetModuleList().GetConfig().Contains(SHVModuleList::DefaultCfgAppName));
-	
-	if (RunReturnVal)
-		RunReturnVal = GetModuleList().Start();
-	
-	if (RunReturnVal)
+	if (RunAsync())
 	{
-		Running = SHVBool::True;
-	
 		// Now for the main event! ... loop
 		Dispatcher->RunEventLoop();
 
@@ -217,6 +203,36 @@ SHVBool SHVMainThreadEventQueue::Run()
 
 	GetModuleList().DestroyModules();
 
+	return RunReturnVal;
+}
+
+/*************************************
+ * RunAsync
+ *************************************/
+/// Runs the application asyncronously
+/**
+ * Use this instead of Run when the dispatcher uses an already started event system. This
+ * function returns true if the application is started, and then it is safe to return to
+ * the event loop.
+ \see SHVMainThreadEventQueue::Run
+ */
+bool SHVMainThreadEventQueue::RunAsync()
+{
+	RunReturnVal = SHVBool::True;
+	ThreadID = SHVThreadBase::GetCurrentThreadID();
+	
+	// initialize data for the event loop
+	RunReturnVal = Dispatcher->InitializeEventLoop();
+
+	SHVASSERT(GetModuleList().GetConfig().Contains(SHVModuleList::DefaultCfgAppPath));
+	SHVASSERT(GetModuleList().GetConfig().Contains(SHVModuleList::DefaultCfgAppName));
+	
+	if (RunReturnVal)
+		RunReturnVal = GetModuleList().Start();
+
+	if (RunReturnVal)
+		Running = SHVBool::True;
+	
 	return RunReturnVal;
 }
 
