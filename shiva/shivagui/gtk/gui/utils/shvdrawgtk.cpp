@@ -59,6 +59,7 @@ SHVRect parentRect;
 		{
 		case SHVControlContainer::SubTypeWindow:
 		case SHVControlContainer::SubTypeCustomDraw:
+		case SHVControlContainer::SubTypeTabPage:
 			parentRect = parent->GetRect();
 			WindowArea.MoveBy(parentRect.GetX(),parentRect.GetY());
 			parent = parent->GetParent();

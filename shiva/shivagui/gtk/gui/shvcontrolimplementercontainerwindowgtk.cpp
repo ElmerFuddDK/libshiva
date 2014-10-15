@@ -75,10 +75,11 @@ int SHVControlImplementerContainerWindowGtk::GetSubType(SHVControl* owner)
  *************************************/
 SHVBool SHVControlImplementerContainerWindowGtk::Create(SHVControl* owner, SHVControlImplementer* parent, int flags)
 {
-	if (!IsCreated() && parent && parent->IsCreated())
+	if (!IsCreated() && ((SubType == SHVControlContainer::SubTypeTabPage && !parent) || (parent && parent->IsCreated())))
 	{
 		SetHandle(gtk_fixed_new());
-		gtk_container_add(GTK_CONTAINER (parent->GetNative()), GetHandle());
+		if (parent)
+			gtk_container_add(GTK_CONTAINER (parent->GetNative()), GetHandle());
 		
 		g_signal_connect (G_OBJECT (GetHandle()), "size-allocate",
 						  G_CALLBACK (SHVControlImplementerContainerWindowGtk::on_size_allocate), owner);
@@ -235,11 +236,11 @@ void SHVControlImplementerContainerWindowGtk::on_size_allocate(GtkWidget * widge
 SHVControlContainer* owner = (SHVControlContainer*)data;
 SHVControlImplementerContainerWindowGtk* self = (SHVControlImplementerContainerWindowGtk*)owner->GetImplementor();
 
-	SHVUNUSED_PARAM(allocation);
-	
 	if (self->GetHandle() && self->GetHandle() == widget)
 	{
-	SHVRect newRect(self->GetRect(owner));
+	SHVRect newRect(self->SubType == SHVControlContainer::SubTypeTabPage
+					? SHVRect(allocation->x,allocation->y,allocation->x+allocation->width,allocation->y+allocation->height)
+					: self->GetRect(owner));
 		if (newRect != self->SizedRect)
 		{
 			self->SizedRect = newRect;

@@ -55,6 +55,7 @@ public:
 protected:
 
 	virtual void SetResizable(bool resizable);
+	inline const SHVRect& GetSizedRect();
 
 private:
 	///\cond INTERNAL
@@ -73,5 +74,10 @@ private:
 	SHVFontGtkRef Font;
 	///\endcond
 };
+
+const SHVRect& SHVControlImplementerContainerWindowGtk::GetSizedRect()
+{
+	return SizedRect;
+}
 
 #endif

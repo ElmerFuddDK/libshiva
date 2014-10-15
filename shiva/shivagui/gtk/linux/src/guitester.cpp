@@ -42,6 +42,7 @@
 #include "heyyou.xpm"
 
 #include "../../../../include/gui/shvform.h"
+#include "modules/shvtabtestform.h"
 class SHVFormTest : public SHVForm<>
 {
 protected:
@@ -170,10 +171,12 @@ public:
 	SHVControlEditRef Edit;
 	SHVControlListViewRef ListView;
 	SHVFormTestRef NewWindow;
+	SHVFormTabTestRef TabTest;
 	int Counter;
 	
 	enum Menus {
-		MenuQuit = 1
+		MenuTestTab = 1,
+		MenuQuit
 	};
 
 	SHVTest(SHVModuleList& modules) : SHVModule(modules,"Test")
@@ -242,7 +245,14 @@ public:
 
 	void OnMenuEvent(SHVEvent* event)
 	{
-		if (event->GetSubID() == SHVInt(MenuQuit))
+		if (event->GetSubID() == SHVInt(MenuTestTab))
+		{
+		SHVControlContainer* dlg;
+			TabTest = new SHVFormTabTest(GUIManager, dlg = GUIManager->NewDialog());
+			dlg->Create(SHVControl::FlagVisible);
+			TabTest->InitializeForm();
+		}
+		else if (event->GetSubID() == SHVInt(MenuQuit))
 		{
 			Modules.CloseApp();
 		}
@@ -311,7 +321,7 @@ public:
 
 		SHVMenuRef menu = GUIManager->GetMainWindow()->CreateMenu(new SHVEventSubscriberFunc<SHVTest>(this,&SHVTest::OnMenuEvent));
 		SHVMenuRef menu2 = menu->AddSubMenu(_S("test"));
-		menu2->AddStringItem(SHVInt(), _S("Test 1"));
+		menu2->AddStringItem(MenuTestTab, _S("Test 1 (tabs)"));
 		menu2->AddStringItem(SHVInt(), _S("Test 2"), SHVMenu::FlagDisabled);
 		menu2->AddStringItem(SHVInt(), _S("Test 3"));
 		SHVMenuRef menu3 = menu2->AddSubMenu(_S("Sub"));
@@ -347,6 +357,7 @@ public:
 		Button = NULL;
 		NewWindow = NULL;
 		Edit = NULL;
+		TabTest = NULL;
 	}
 };
 
