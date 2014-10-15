@@ -213,7 +213,7 @@ void SHVControlImplementerEditWin32::SetSelection(SHVControlEdit* owner, int pos
 		if (scroll != SHVControlEdit::ScrollNone)
 			::SendMessage(GetHandle(), EM_SCROLLCARET,0,0);
 
-		::SendMessage(GetHandle(), EM_SETSEL, selectFrom.IsNull() ? pos : selectFrom, pos);
+		::SendMessage(GetHandle(), EM_SETSEL, selectFrom.IfNull(pos), pos);
 		::SendMessage(GetHandle(), EM_SCROLLCARET,0,0);
 	}
 }

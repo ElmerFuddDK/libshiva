@@ -8,8 +8,13 @@
 # define GUIMAIN() int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
 # define GUIPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVStringC((const SHVTChar*)lpCmdLine))
 #elif defined(__SHIVA_WIN32)
-# define GUIMAIN() int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
-# define GUIPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVStringC((const SHVTChar*)lpCmdLine))
+# ifdef  __MINGW32__
+#   define GUIMAIN() int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+#   define GUIPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVString8C((const SHVChar*)lpCmdLine).ToStrT())
+# else
+#   define GUIMAIN() int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
+#   define GUIPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVStringC((const SHVTChar*)lpCmdLine))
+# endif
 #else
 # define GUIMAIN() int main(int argc, char *argv[])
 # define GUIPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,argc,argv)

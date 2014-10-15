@@ -147,7 +147,7 @@ void SHVControlImplementerComboBoxWin32::SetSelected(SHVControlComboBox* owner, 
 {
 	SHVASSERT(IsCreated());
 
-	::SendMessage(GetHandle(),CB_SETCURSEL,(index.IsNull() ? -1 : index),0);
+	::SendMessage(GetHandle(),CB_SETCURSEL,index.IfNull(-1),0);
 }
 
 /*************************************

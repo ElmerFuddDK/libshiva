@@ -34,7 +34,7 @@ public:
 	inline HFONT GetFont();
 
 
-	static SHVFontWin32* SHVFontWin32::CreateSystemFont();
+	static SHVFontWin32* CreateSystemFont();
 	static int MapStyles(LOGFONT& lf);
 	static int CalculateCellHeight(HFONT font);
 

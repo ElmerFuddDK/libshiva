@@ -102,6 +102,7 @@ SOURCES += ../src/framework/shvevent.cpp \
            ../src/framework/shveventsubscriptionlist.cpp \
            ../src/framework/shveventthreadpool.cpp \
            ../src/framework/shveventthread.cpp \
+           ../src/framework/shvgui.cpp \
            ../src/framework/shvmodule.cpp \
            ../src/framework/shvmodulelist.cpp \
            ../src/frameworkimpl/shvconfigimpl.cpp \
