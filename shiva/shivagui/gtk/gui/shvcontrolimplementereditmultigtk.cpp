@@ -65,7 +65,8 @@ SHVBool SHVControlImplementerEditMultiGtk::Create(SHVControl* owner, SHVControlI
 		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW (GetHandle()), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 		gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW (GetHandle()), GTK_SHADOW_ETCHED_IN);
 		
-		g_signal_connect (G_OBJECT (GetHandle()), "changed",
+		
+		g_signal_connect (G_OBJECT (gtk_text_view_get_buffer(GTK_TEXT_VIEW(TextView))), "changed",
 						  G_CALLBACK (SHVControlImplementerEditMultiGtk::on_changed), owner);
 		
 		owner->SetFont(NULL,true);
@@ -306,7 +307,7 @@ int SHVControlImplementerEditMultiGtk::CalculateNewHeight(SHVControl* owner, SHV
 /*************************************
  * on_changed
  *************************************/
-void SHVControlImplementerEditMultiGtk::on_changed(GtkEditable* widget, gpointer user_data)
+void SHVControlImplementerEditMultiGtk::on_changed(GtkTextBuffer* widget, gpointer user_data)
 {
 SHVControlEdit* owner = (SHVControlEdit*)user_data;
 SHVControlImplementerEditMultiGtk* self = (SHVControlImplementerEditMultiGtk*)owner->GetImplementor();
