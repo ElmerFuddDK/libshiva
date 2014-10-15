@@ -156,7 +156,7 @@ void SHVControlImplementerGtkWidgetBase::SetRect(SHVControl* owner, const SHVRec
 		{
 			gtk_fixed_move(parent, Window, rect.GetX(), rect.GetY());
 		}
-		gtk_widget_set_size_request(Window,rect.GetWidth(),rect.GetHeight());
+		gtk_widget_set_size_request(Window,rect.GetWidth() > 0 ? rect.GetWidth() : 0,rect.GetHeight() > 0 ? rect.GetHeight() : 0);
 	}
 }
 

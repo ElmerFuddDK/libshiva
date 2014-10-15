@@ -155,6 +155,7 @@ GdkColor* SHVDrawGtk::GetColor(SHVColor* color)
 GdkFill SHVDrawGtk::GetBrush(SHVBrush* brush)
 {
 //	return ((SHVBrushGtk*)brush)->GetBrush();
+	SHVUNUSED_PARAM(brush);
 	return GDK_SOLID;
 }
 

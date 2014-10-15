@@ -140,7 +140,7 @@ SHVDrawGtkRef draw = new SHVDrawGtk(owner->GetManager(),gdk_gc_new(GDK_DRAWABLE 
 	if (!self->Subscriber.IsNull())
 	{
 	SHVControlRef refToSelf = owner; // ensure the validity of the object through this function
-		self->Subscriber->EmitNow(owner->GetModuleList(),new SHVEventData<SHVDrawEventData>(SHVDrawEventData(draw),NULL,SHVControl::EventDraw,NULL,owner));
+		self->Subscriber->EmitNow(owner->GetModuleList(),new SHVEventData<SHVDrawEventData>(SHVDrawEventData(draw),NULL,SHVControl::EventDraw,SHVInt(),owner));
 	}
 	else
 	{
