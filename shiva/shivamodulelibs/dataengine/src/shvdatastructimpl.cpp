@@ -267,7 +267,7 @@ size_t SHVDataStructImpl::Add(const SHVString8C& colName, int dataType, int data
 SHVDataStructColumnImpl* col = new SHVDataStructColumnImpl();
 	col->SetColumnName(colName);
 	col->SetDataType(dataType);
-	col->SetDataLength(dataLength);
+	col->SetDataLength(dataType == SHVDataVariant::TypeString ? dataLength : -1);
 	col->SetAllowNull(AllowNull);
 	col->SetAutoInc(AutoInc);
 	return Add(col);
@@ -329,9 +329,7 @@ const SHVDataStructC& Struct = *dataStruct;
 			retVal = retVal &&
 				This[i]->GetColumnName() == Struct[j]->GetColumnName() &&
 				This[i]->GetDataType() == Struct[j]->GetDataType() &&
-				This[i]->GetDataLength() == Struct[j]->GetDataLength() &&
-				This[i]->GetAutoInc() == Struct[j]->GetAutoInc() &&
-				This[i]->GetAllowNull() == Struct[j]->GetAllowNull();
+				This[i]->GetDataLength() == Struct[j]->GetDataLength();
 		}
 		if (retVal && Struct.IndexCount() > 0 && IndexCount() > 0)
 			retVal = Struct.GetPrimaryIndex()->KeyDefEquals(GetPrimaryIndex());
