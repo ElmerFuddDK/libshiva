@@ -311,7 +311,7 @@ int week = 0;
 	// check for week 1 at the end
 	if (GetMonth() == 12 && GetDay() >= 28)
 	{
-		if ( ((CalculateLeapDayInEffect()+6)%7) + 31-GetDay() < 3 )
+		if ( ((CalculateDayOfWeek()+6)%7) + 31-GetDay() < 3 )
 			week = 1;
 	}
 
