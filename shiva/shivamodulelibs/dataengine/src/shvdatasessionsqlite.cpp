@@ -586,7 +586,8 @@ void SHVDataSessionSQLite::DeleteRowSQL(const SHVDataRowList *rowList, SHVString
  *************************************/
 void SHVDataSessionSQLite::InitDeleteFunction(SHVDataFunction *func, const SHVDataRow *row)
 {
-	InitDeleteFunction(func, row->GetKey(), row->GetStruct());
+SHVDataRowKeyRef key(row->GetKey());
+	InitDeleteFunction(func, key, row->GetStruct());
 }
 
 void SHVDataSessionSQLite::InitDeleteFunction(SHVDataFunction *func, const SHVDataRowKey *key, const SHVDataStructC *struc)
