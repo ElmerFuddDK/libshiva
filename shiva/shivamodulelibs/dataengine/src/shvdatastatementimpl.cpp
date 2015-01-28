@@ -14,7 +14,7 @@ SHVSQLiteStatementRef statement = sqlite->PrepareUTF8(Ok,query,unparsed);
 
 	if (Ok && !statement.IsNull())
 	{
-	SHVStringUTF8 query;
+	SHVStringUTF8 oldQuery, query;
 		Statements.Add(statement);
 		
 		query = unparsed;
@@ -26,7 +26,10 @@ SHVSQLiteStatementRef statement = sqlite->PrepareUTF8(Ok,query,unparsed);
 			{
 				Statements.Add(statement);
 			}
+			// Ensures the buffer doesn't get deleted before query is refilled - unparsed points into query
+			oldQuery = query.ReleaseBuffer();
 			query = unparsed;
+			oldQuery = NULL;
 		}
 	}
 	
