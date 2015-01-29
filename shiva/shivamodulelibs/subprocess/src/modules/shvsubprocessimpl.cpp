@@ -76,11 +76,11 @@ SHVSubProcessImpl::SHVSubProcessImpl() : SHVSubProcess(), LastError(ErrNone)
 #elif defined(__SHIVA_WIN32)
 	memset(&Process,0,sizeof(Process));
 
-	// We do not support streams to sub processes yet on win32
-	dummyFd = 0;
-	StreamStdOut = new SHVSubProcessStreamIn(dummyFd);
-	StreamStdErr = new SHVSubProcessStreamIn(dummyFd);
-	StreamStdIn = new SHVSubProcessStreamOut(dummyFd);
+	///\todo Stream support on windows will duplicate all shareable handles to the sub process at the moment ...
+	hStdOut = hStdErr = hStdIn = INVALID_HANDLE_VALUE;
+	StreamStdOut = new SHVSubProcessStreamIn(hStdOut);
+	StreamStdErr = new SHVSubProcessStreamIn(hStdErr);
+	StreamStdIn = new SHVSubProcessStreamOut(hStdIn);
 #endif
 }
 
@@ -309,13 +309,42 @@ SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
 	SHVString cmdLine(program);
 	SHVFileListIterator itr(args);
 	STARTUPINFO si;
+	SECURITY_ATTRIBUTES sa;
 
 		::memset(&si,0,sizeof(STARTUPINFO));
 		si.cb = sizeof(STARTUPINFO);
 
-		SHVASSERT(streams == 0);
-		SHVUNUSED_PARAM(streams);
+		sa.nLength= sizeof(SECURITY_ATTRIBUTES);
+		sa.lpSecurityDescriptor = NULL;
+		sa.bInheritHandle = TRUE;
+
+		if (streams&StdOut)
+		{
+		HANDLE hStdOutTmp;
+			si.dwFlags = STARTF_USESTDHANDLES;
+			::CreatePipe(&hStdOutTmp,&si.hStdOutput,&sa,0);
+			::DuplicateHandle(GetCurrentProcess(),hStdOutTmp,GetCurrentProcess(),&hStdOut,0,FALSE,DUPLICATE_SAME_ACCESS);
+			::CloseHandle(hStdOutTmp);
+		}
+		if (streams&StdErr)
+		{
+		HANDLE hStdErrTmp;
+			si.dwFlags = STARTF_USESTDHANDLES;
+			::CreatePipe(&hStdErrTmp,&si.hStdError,&sa,0);
+			::DuplicateHandle(GetCurrentProcess(),hStdErrTmp,GetCurrentProcess(),&hStdErr,0,FALSE,DUPLICATE_SAME_ACCESS);
+			::CloseHandle(hStdErrTmp);
+		}
+		if (streams&StdIn)
+		{
+		HANDLE hStdInTmp;
+			si.dwFlags = STARTF_USESTDHANDLES;
+			::CreatePipe(&si.hStdInput,&hStdInTmp,&sa,0);
+			::DuplicateHandle(GetCurrentProcess(),hStdInTmp,GetCurrentProcess(),&hStdIn,0,FALSE,DUPLICATE_SAME_ACCESS);
+			::CloseHandle(hStdInTmp);
+			SHVASSERT(!nonBlocking);
+		}
 		SHVUNUSED_PARAM(nonBlocking);
+
 
 		if (cmdLine.Find(_S(" ")) >= 0)
 		{
@@ -339,7 +368,7 @@ SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
 			}
 		}
 
-		if (::CreateProcess(NULL,(TCHAR*)cmdLine.GetSafeBuffer(),NULL,NULL,FALSE,0,NULL,NULL,&si,&Process))
+		if (::CreateProcess(NULL,(TCHAR*)cmdLine.GetSafeBuffer(),NULL,NULL,streams ? TRUE : FALSE,0,NULL,NULL,&si,&Process))
 		{
 			LastError.SetError(ErrNone);
 		}
@@ -347,6 +376,13 @@ SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
 		{
 			LastError.SetError(ErrGeneric);
 		}
+
+		if (streams&StdOut)
+			::CloseHandle(si.hStdOutput);
+		if (streams&StdErr)
+			::CloseHandle(si.hStdError);
+		if (streams&StdIn)
+			::CloseHandle(si.hStdInput);
 #endif
 	
 		retVal = LastError;
@@ -588,7 +624,11 @@ void SHVSubProcessImpl::SafeCloseFd(int& fd)
 /*************************************
  * Constructor
  *************************************/
+#ifdef __SHIVA_POSIX
 SHVSubProcessStreamIn::SHVSubProcessStreamIn(int& fd) : Fd(fd)
+#elif defined(__SHIVA_WIN32)
+SHVSubProcessStreamIn::SHVSubProcessStreamIn(HANDLE& fd) : Fd(fd)
+#endif
 {
 	EofFlag = false;
 	ExcessDataPos = 0;
@@ -635,9 +675,16 @@ SHVBool retVal(IsOk());
 		}
 		else
 		{
+#ifdef __SHIVA_POSIX
 		int bytesRead;
 			bytesRead = (int)read(Fd,buffer,bufferSize);
 			EofFlag = (bytesRead == 0);
+#elif defined(__SHIVA_WIN32)
+		DWORD bytesRead;
+			EofFlag = ReadFile(Fd,buffer,(DWORD)bufferSize,&bytesRead,NULL) != TRUE;
+			if (EofFlag && bytesRead < 0)
+				bytesRead = 0;
+#endif
 			if (bytesRead < 0) // test for error
 			{
 				if (errno == EAGAIN || errno == EWOULDBLOCK)
@@ -763,8 +810,13 @@ void SHVSubProcessStreamIn::Close()
 {
 	if (IsOk())
 	{
+#ifdef __SHIVA_POSIX
 		close(Fd);
 		Fd = 0;
+#elif defined(__SHIVA_WIN32)
+		CloseHandle(Fd);
+		Fd = INVALID_HANDLE_VALUE;
+#endif
 	}
 }
 
@@ -834,12 +886,22 @@ SHVBool retVal(IsOk());
 	if (retVal)
 	{
 	SHVBufferPtrRef buffer = new SHVBufferPtr();
+#ifdef __SHIVA_POSIX
 	int bytesRead;
 
 		buffer->SetBufferSize(sz);
 
 		bytesRead = (int)read(Fd,buffer->GetBuffer(),sz);
 		EofFlag = (bytesRead == 0);
+#elif defined(__SHIVA_WIN32)
+	DWORD bytesRead;
+
+		buffer->SetBufferSize(sz);
+
+		EofFlag = ReadFile(Fd,buffer->GetBuffer(),(DWORD)sz,&bytesRead,NULL) != TRUE;
+		if (EofFlag && bytesRead < 0)
+			bytesRead = 0;
+#endif
 		if (bytesRead < 0) // test for error
 		{
 			if (errno == EAGAIN || errno == EWOULDBLOCK)
@@ -873,7 +935,11 @@ SHVBool retVal(IsOk());
 /*************************************
  * Constructor
  *************************************/
+#ifdef __SHIVA_POSIX
 SHVSubProcessStreamOut::SHVSubProcessStreamOut(int& fd) : Fd(fd)
+#elif defined(__SHIVA_WIN32)
+SHVSubProcessStreamOut::SHVSubProcessStreamOut(HANDLE& fd) : Fd(fd)
+#endif
 {}
 
 /*************************************
@@ -893,7 +959,23 @@ SHVBool retVal(IsOk());
 
 	if (IsOk())
 	{
+#ifdef __SHIVA_POSIX
 		write(Fd,buffer,len);
+#else
+	DWORD dwLen((DWORD)len);
+	const char* chBuf((const char*)buffer);
+		while (dwLen)
+		{
+		DWORD bytesWrote;
+			if (!::WriteFile(Fd,chBuf,dwLen,&bytesWrote,NULL) && bytesWrote <= 0)
+			{
+				retVal = SHVBool::False;
+				break;
+			}
+			dwLen -= bytesWrote;
+			chBuf += bytesWrote;
+		}
+#endif
 	}
 
 	return retVal;
@@ -938,8 +1020,13 @@ void SHVSubProcessStreamOut::Close()
 {
 	if (IsOk())
 	{
+#ifdef __SHIVA_POSIX
 		close(Fd);
 		Fd = 0;
+#elif defined(__SHIVA_WIN32)
+		CloseHandle(Fd);
+		Fd = INVALID_HANDLE_VALUE;
+#endif
 	}
 }
 ///\endcond

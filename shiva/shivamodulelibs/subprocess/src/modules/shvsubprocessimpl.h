@@ -65,7 +65,7 @@ private:
 	static void SafeCloseFd(int& fd);
 #elif defined(__SHIVA_WIN32)
 	PROCESS_INFORMATION Process;
-	int dummyFd;
+	HANDLE hStdOut, hStdErr, hStdIn;
 #endif
 	///\endcond
 };
@@ -80,7 +80,11 @@ class SHVSubProcessStreamIn : public SHVStreamIn
 {
 public:
 
+#ifdef __SHIVA_POSIX
 	SHVSubProcessStreamIn(int& fd);
+#elif defined(__SHIVA_WIN32)
+	SHVSubProcessStreamIn(HANDLE& fd);
+#endif
 	
 	virtual bool Eof() const;
 	virtual SHVBool IsOk() const;
@@ -100,7 +104,11 @@ private:
 
 	SHVBool ReadIntoBuffer(size_t sz = 512);
 	
+#ifdef __SHIVA_POSIX
 	int& Fd;
+#elif defined(__SHIVA_WIN32)
+	HANDLE& Fd;
+#endif
 	bool EofFlag;
 	SHVBufferCStream ExcessData;
 	size_t ExcessDataPos;
@@ -113,7 +121,11 @@ class SHVSubProcessStreamOut : public SHVStreamOut
 {
 public:
 
+#ifdef __SHIVA_POSIX
 	SHVSubProcessStreamOut(int& fd);
+#elif defined(__SHIVA_WIN32)
+	SHVSubProcessStreamOut(HANDLE& fd);
+#endif
 	
 	virtual SHVBool IsOk() const;
 	virtual SHVBool WriteBuffer(const void* buffer, size_t len);
@@ -126,7 +138,11 @@ public:
 	virtual void Close();
 
 private:
+#ifdef __SHIVA_POSIX
 	int& Fd;
+#elif defined(__SHIVA_WIN32)
+	HANDLE& Fd;
+#endif
 };
 ///\endcond
 

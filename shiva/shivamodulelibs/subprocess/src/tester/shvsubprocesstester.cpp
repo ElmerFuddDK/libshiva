@@ -92,9 +92,9 @@ void SHVSubProcessTester::OnEvent(SHVEvent* event)
 			}
 			SubProcess = SubProcessServer->New();
 			
-			args.AddTail("-c");
-			args.AddTail("awk 'BEGIN {print \"starting ...\"; fflush()}; /exit/ {print \"Subprocess exiting\"; fflush(); exit}; /$/ { print \"Subprocess got \" $0; fflush() }'");
-			if (!SubProcess->Start("sh",args, SHVSubProcess::StdIn))
+			args.AddTail(_S("-c"));
+			args.AddTail(_S("awk 'BEGIN {print \"starting ...\"; fflush()}; /exit/ {print \"Subprocess exiting\"; fflush(); exit}; /$/ { print \"Subprocess got \" $0; fflush() }'"));
+			if (!SubProcess->Start(_S("sh"),args, SHVSubProcess::StdIn))
 			{
 				SHVConsole::Printf8("Failed to start awk\n");
 			}
@@ -133,8 +133,8 @@ void SHVSubProcessTester::OnEvent(SHVEvent* event)
 void SHVSubProcessTester::ThreadProcess()
 {
 SHVFileList args;
-	args.AddTail("BEGIN {print \"starting ...\"; fflush()}; /exit/ {print \"Subprocess exiting\"; fflush(); exit}; /$/ { print \"Subprocess got \" $0; fflush() }");
-	if (!ThreadSubProcess->Start("awk",args))
+	args.AddTail(_S("BEGIN {print \"starting ...\"; fflush()}; /exit/ {print \"Subprocess exiting\"; fflush(); exit}; /$/ { print \"Subprocess got \" $0; fflush() }"));
+	if (!ThreadSubProcess->Start(_S("awk"),args))
 	{
 		SHVConsole::Printf8("Failed to start subprocess\n");
 	}

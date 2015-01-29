@@ -41,6 +41,12 @@ mingw32-make.exe -w distclean
 qmake socketserver.pro -r CONFIG-=debug CONFIG+=release
 mingw32-make.exe -w
 
+echo Building modules/subprocess
+cd "%CurDir%\shivamodulelibs\subprocess\windows"
+mingw32-make.exe -w distclean
+qmake subprocess.pro -r CONFIG-=debug CONFIG+=release
+mingw32-make.exe -w
+
 echo Building modules/xmlstream
 cd "%CurDir%\shivamodulelibs\xmlstream\windows"
 mingw32-make.exe -w distclean

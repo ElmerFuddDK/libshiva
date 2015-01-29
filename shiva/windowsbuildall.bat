@@ -24,6 +24,10 @@ echo Building modules/socketserver
 devenv.exe "%CD%\shivamodulelibs\socketserver\windows\socketserver.vcproj" /rebuild Debug
 devenv.exe "%CD%\shivamodulelibs\socketserver\windows\socketserver.vcproj" /rebuild Release
 
+echo Building modules/subprocess
+devenv.exe "%CD%\shivamodulelibs\subprocess\windows\subprocess.vcproj" /rebuild Debug
+devenv.exe "%CD%\shivamodulelibs\subprocess\windows\subprocess.vcproj" /rebuild Release
+
 echo Building modules/xmlstream
 devenv.exe "%CD%\shivamodulelibs\xmlstream\windows\xmlstream.vcproj" /rebuild Debug
 devenv.exe "%CD%\shivamodulelibs\xmlstream\windows\xmlstream.vcproj" /rebuild Release
