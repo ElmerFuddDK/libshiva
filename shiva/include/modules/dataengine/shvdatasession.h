@@ -56,6 +56,7 @@ public:
 
 	// inlines
 	inline SHVBool SessionValid() const;
+	inline void InvalidateConnection();
 
 
 protected:
@@ -128,6 +129,14 @@ SHVBool SHVDataSession::IsEditting() const
 SHVBool SHVDataSession::SessionValid() const
 {
 	return GetFactory() != NULL && IsValid();
+}
+
+/*************************************
+ * InvalidateConnection
+ *************************************/
+void SHVDataSession::InvalidateConnection()
+{
+	SchemaChanged();
 }
 
 /*************************************
