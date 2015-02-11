@@ -332,8 +332,9 @@ SHVSQLiteStatementRef statement;
 				(retVal.GetError() == SHVSQLiteWrapper::SQLite_ROW ||
 				 retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE))
 			{
+			SHVStringUTF8 oldQuery(sqlUTF8.ReleaseBuffer()); // Ensures the buffer doesn't get deleted before sqlUTF8 is refilled - rest points into query
 				sqlUTF8 = rest;
-				statement = SQLite->ExecuteUTF8(retVal, sql, rest);
+				statement = SQLite->ExecuteUTF8(retVal, sqlUTF8, rest);
 			}
 		}
 		if (retVal.GetError() == SHVSQLiteWrapper::SQLite_ROW ||
