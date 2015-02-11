@@ -295,6 +295,7 @@ void SHVConfigImpl::Clear()
 SHVBool SHVConfigImpl::Load(const SHVStringC fileName)
 {
 SHVBool retVal(SHVBool::True);
+SHVString backupFileName;
 SHVFile file;
 
 	Lock.Lock();
@@ -303,7 +304,15 @@ SHVFile file;
 	else
 		FileName = fileName;
 
-	if (retVal && SHVDir::FileExist(FileName) && file.Open(FileName,SHVFileBase::FlagOpen|SHVFileBase::FlagRead))
+	if (retVal)
+	{
+		backupFileName.Format(_S("%s~"), fileName.GetSafeBuffer());
+		retVal = (SHVDir::FileExist(backupFileName) && file.Open(backupFileName,SHVFileBase::FlagOpen|SHVFileBase::FlagRead));
+		if (!retVal)
+			retVal = (SHVDir::FileExist(FileName) && file.Open(FileName,SHVFileBase::FlagOpen|SHVFileBase::FlagRead));
+	}
+
+	if (retVal)
 	{
 	SHVString8 line;
 	SHVString8 name;
@@ -379,6 +388,7 @@ SHVFile file;
 SHVBool SHVConfigImpl::Save(const SHVStringC newFileName)
 {
 SHVBool retVal(SHVBool::True);
+SHVString backupFileName;
 SHVFile file;
 
 	Lock.Lock();
@@ -386,6 +396,13 @@ SHVFile file;
 		retVal = !FileName.IsNull();
 	else
 		FileName = newFileName;
+
+	if (retVal)
+	{
+		backupFileName.Format(_S("%s~"), FileName.GetSafeBuffer());
+		if (!SHVDir::FileExist(backupFileName) && SHVDir::FileExist(FileName))
+			retVal = SHVDir::Move(FileName,backupFileName);
+	}
 
 	if (retVal && file.Open(FileName,SHVFileBase::FlagCreate|SHVFileBase::FlagWrite|SHVFileBase::FlagOverride|SHVFileBase::FlagOpen))
 	{
@@ -401,6 +418,7 @@ SHVFile file;
 			if (!line.IsNull())
 				retVal = file.WriteLine8(line.ToStrUTF8().GetSafeBuffer());
 		}
+		SHVDir::DeleteFile(backupFileName);
 	}
 	Lock.Unlock();
 
