@@ -45,7 +45,7 @@
  *************************************/
 SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias): StructCache((SHVDataStructC*)dataStruct), DataSession(session), Ok(true), RowCount(-1), Alias(alias), HasShareLock(false)
 {
-	AliasID = SHVDataRowListC::GetAliasID(alias);
+	AliasID = dataStruct->GetIsMultiInstance() ? SHVDataRowListC::GetAliasID(alias) : -1;
 }
 
 SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVStringC& sql, const SHVDataRowKey* sortKey): DataSession(session), RowCount(-1), Alias(""), HasShareLock(false)
@@ -86,7 +86,7 @@ SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
 SHVStringUTF8 sql;
 
 	Ok = SHVBool::True;
-	AliasID = SHVDataRowListC::GetAliasID(alias);
+	AliasID = dataStruct->GetIsMultiInstance() ? SHVDataRowListC::GetAliasID(alias) : -1;
 	SHVASSERT(dataStruct->GetIndex(index));
 	if (!dataStruct->GetIndex(index))
 	{
@@ -104,7 +104,7 @@ SHVStringUTF8 sql;
 SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, SHVSQLiteStatement* statement, const SHVDataStructC* dataStruct, const SHVString8C& alias, size_t index): StructCache((SHVDataStructC*)dataStruct), DataSession(session), RowCount(-1), Alias(alias), HasShareLock(false)
 {
 	SHVASSERT(dataStruct->GetIndex(index));
-	AliasID = SHVDataRowListC::GetAliasID(alias);
+	AliasID = dataStruct->GetIsMultiInstance() ? SHVDataRowListC::GetAliasID(alias) : -1;
 	Ok = SHVBool::True;
 	if (!dataStruct->GetIndex(index))
 	{
