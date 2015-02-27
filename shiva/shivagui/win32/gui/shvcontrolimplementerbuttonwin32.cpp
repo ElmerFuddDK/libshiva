@@ -44,6 +44,7 @@
  *************************************/
 SHVControlImplementerButtonWin32::SHVControlImplementerButtonWin32() : SHVControlImplementerWin32<SHVControlImplementerButton>()
 {
+    ActivationKey = 0;
 }
 
 /*************************************
@@ -126,13 +127,26 @@ SHVControlButtonRef refToSelf;
 
 	switch (message) 
 	{
+	case WM_KEYDOWN:
+		switch (wParam)
+		{
+		case VK_RETURN:
+		case VK_SPACE:
+			self->ActivationKey = wParam;
+			break;
+		}
+		return CallWindowProc(self->OrigProc,hWnd, message, wParam, lParam);
 	case WM_KEYUP:
 		switch (wParam)
 		{
 		case VK_RETURN:
 		case VK_SPACE:
-			refToSelf = owner; // ensure the validity of the object through this function
-			owner->PerformClicked();
+			if (self->ActivationKey == wParam)
+			{
+				self->ActivationKey = 0;
+				refToSelf = owner; // ensure the validity of the object through this function
+				owner->PerformClicked();
+			}
 			break;
 		}
 		return CallWindowProc(self->OrigProc,hWnd, message, wParam, lParam);

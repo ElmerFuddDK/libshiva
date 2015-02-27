@@ -39,6 +39,8 @@ public:
 private:
 	///\cond INTERNAL
 	WNDPROC OrigProc;
+	WPARAM ActivationKey;
+
 
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	///\endcond
