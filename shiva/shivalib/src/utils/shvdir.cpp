@@ -317,7 +317,7 @@ SHVBool SHVDir::Move(const SHVStringC from, const SHVStringC to)
 {
 SHVBool retVal;
 
-	if (!SHVDir::FileExist(from))
+	if ((SHVDir::IsFile(from) && !SHVDir::FileExist(from)) || (SHVDir::IsDir(from) && !SHVDir::DirExist(from)))
 	{
 		retVal.SetError(ErrDoesNotExist);
 	}
@@ -421,6 +421,34 @@ SHVBool retVal;
 		retVal = (mkdir(dirName.ToStrUTF8().GetSafeBuffer(),0777) == 0);
 #else
 		retVal = (mkdir(dirName.GetSafeBuffer(),0777) == 0);
+#endif
+	}
+
+	return retVal;
+}
+
+/*************************************
+ * DeleteDir
+ *************************************/
+/// Deletes a directory
+SHVBool SHVDir::DeleteDir(const SHVStringC dirName)
+{
+SHVBool retVal;
+
+	if (!SHVDir::DirExist(dirName))
+	{
+		retVal.SetError(ErrDoesNotExist);
+	}
+	else
+	{
+#ifdef __SHIVA_WIN32
+		retVal = (::RemoveDirectory((const TCHAR*)dirName.GetSafeBuffer()) ? SHVBool::True : SHVBool::False);
+#elif defined(UNICODE)
+		retVal = (wremove((const TCHAR*)dirName.GetSafeBuffer()) ? SHVBool::False : SHVBool::True);
+#elif defined(FSUTF8MODE)
+		retVal = (remove(dirName.ToStrUTF8().GetSafeBuffer()) ? SHVBool::False : SHVBool::True);
+#else
+		retVal = (remove(dirName.GetSafeBuffer()) ? SHVBool::False : SHVBool::True);
 #endif
 	}
 

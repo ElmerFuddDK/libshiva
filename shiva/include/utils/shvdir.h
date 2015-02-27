@@ -42,6 +42,7 @@ public:
 	static SHVBool Move(const SHVStringC from, const SHVStringC to);
 	static SHVBool Copy(const SHVStringC from, const SHVStringC to);
 	static SHVBool CreateDir(const SHVStringC dirName);
+	static SHVBool DeleteDir(const SHVStringC dirName);
 	static SHVBool ChangeDir(const SHVStringC dirName);
 
 
