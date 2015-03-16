@@ -1,3 +1,5 @@
+include(../../../../shiva/include/shiva.pri)
+
 SOURCES =shivasqlite.cpp \
 ../../src/sqlite/sqlite3.c \
 ../../src/sqlitestatementimpl.cpp \
@@ -27,13 +29,9 @@ HEADERS += ../../../include/sqlite/shvstringsqlite.h \
 ../../../include/sqlite/sqlitewrapper.h \
 ../../include/sqlitestatementimpl.h \
 ../../include/sqlitewrapperimpl.h
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG \
-  -DSHIVASQLITE_EXPORTS
-
-QMAKE_CXXFLAGS_RELEASE += -DSHIVASQLITE_EXPORTS
 
 QMAKE_CFLAGS += $$SQLITE_FTS
-QMAKE_CXXFLAGS += $$SQLITE_FTS
+QMAKE_CXXFLAGS += $$SQLITE_FTS -DSHIVASQLITE_EXPORTS
 
 !isEmpty(ANDROID_PLATFORM) {
   QMAKE_CFLAGS += -fno-exceptions

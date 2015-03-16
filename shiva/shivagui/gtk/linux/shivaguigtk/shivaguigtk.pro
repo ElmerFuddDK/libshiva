@@ -2,13 +2,13 @@
 # ------------------------------------------- 
 # Subdir relative project main directory: ./shivaguigtk
 # Target is a library:  
+include(../../../../../shiva/include/shiva.pri)
 
 LIBS += -lgdk-x11-2.0 \
         -lgtk-x11-2.0 \
         $$QMAKE_LIBS_DYNLOAD \
         -lshiva 
 QMAKE_LIBDIR = ../../../../shivalib/linux/libshiva
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
 # QMAKE_LFLAGS = -Wl
 DEFINES = __SHIVA_GTK
 CONFIG = debug \

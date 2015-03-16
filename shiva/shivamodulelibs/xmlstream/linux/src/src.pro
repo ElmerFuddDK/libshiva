@@ -1,3 +1,5 @@
+include(../../../../../shiva/include/shiva.pri)
+
 SOURCES =xmlstream.cpp \
 ../../src/shvxmlreaderimpl.cpp \
 ../../src/shvxmlstreamfactory.cpp \
@@ -34,7 +36,6 @@ HEADERS += ../../include/shvxmlreaderimpl.h \
 ../../src/expat/xmlrole.h \
 ../../src/expat/xmltok.h \
 ../../src/expat/xmltok_impl.h
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG
 
 DEFINES += _STATIC
 SOURCES -= ../../src/expat/xmltok_impl.c \

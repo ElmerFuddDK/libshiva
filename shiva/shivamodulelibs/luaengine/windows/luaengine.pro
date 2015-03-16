@@ -1,3 +1,5 @@
+include(../../../../shiva/include/shiva.pri)
+
 QT       -= core gui
 
 LIBS += -L. \
@@ -86,5 +88,3 @@ HEADERS += \
 INCLUDEPATH += ../../../..
 
 DEF_FILE = luaengine.def
-
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG 

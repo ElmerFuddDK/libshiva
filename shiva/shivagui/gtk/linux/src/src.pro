@@ -2,6 +2,7 @@
 # ------------------------------------------- 
 # Subdir relative project main directory: ./src
 # Target is an application:  ../bin/guitester
+include(../../../../../shiva/include/shiva.pri)
 
 HEADERS += modules/shvcontroltester.h \
     modules/shvtabtestpageform.h \
@@ -13,7 +14,6 @@ SOURCES += guitester.cpp \
 LIBS += $$QMAKE_LIBS_DYNLOAD \
 -lshiva
 QMAKE_LIBDIR = ../../../../shivalib/linux/libshiva
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG
 TARGET = ../bin/guitester
 CONFIG = debug \
 warn_on

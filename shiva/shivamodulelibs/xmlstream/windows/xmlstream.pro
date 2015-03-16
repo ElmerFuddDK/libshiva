@@ -3,6 +3,7 @@
 # Project created by QtCreator 2010-06-29T15:14:45
 #
 #-------------------------------------------------
+include(../../../../shiva/include/shiva.pri)
 
 QT       -= core gui
 
@@ -42,6 +43,5 @@ SOURCES = xmlstream.cpp \
 
 DEF_FILE = xmlstream.def
 
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG
 QMAKE_CXXFLAGS += -D_STATIC -D_UNICODE
 QMAKE_CFLAGS += -D_STATIC -D_UNICODE

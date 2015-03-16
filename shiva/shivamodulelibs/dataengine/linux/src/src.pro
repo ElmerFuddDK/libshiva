@@ -2,9 +2,9 @@
 # ------------------------------------------- 
 # Subdir relative project main directory: ./src
 # Target is an application:  ../bin/sedtemplatesed
+include(../../../../../shiva/include/shiva.pri)
 
 INCLUDEPATH += ../../ 
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
 CONFIG = debug \
           warn_on 
 TEMPLATE = app 

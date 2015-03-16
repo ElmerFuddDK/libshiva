@@ -2,9 +2,9 @@
 # ------------------------------------------- 
 # Subdir relative project main directory: ./dataengine
 # Target is a library:  
+include(../../../../../shiva/include/shiva.pri)
 
 INCLUDEPATH += ../../ 
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
 CONFIG = $$QMAKE_PLATFORM \
 	debug \
          warn_on \

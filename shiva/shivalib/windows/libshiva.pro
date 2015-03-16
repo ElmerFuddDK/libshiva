@@ -3,6 +3,7 @@
 # Project created by QtCreator 2010-06-29T15:14:45
 #
 #-------------------------------------------------
+include(../../../shiva/include/shiva.pri)
 
 QT       -= core gui
 
@@ -152,5 +153,3 @@ SOURCES += ../src/framework/shvevent.cpp \
            ../src/framework/shvconsole.cpp
 
 LIBS += -lWs2_32
-
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG 

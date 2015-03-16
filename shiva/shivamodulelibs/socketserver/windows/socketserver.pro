@@ -3,6 +3,7 @@
 # Project created by QtCreator 2010-06-29T15:14:45
 #
 #-------------------------------------------------
+include(../../../../shiva/include/shiva.pri)
 
 QT       -= core gui
 
@@ -30,5 +31,3 @@ SOURCES += ../src/shvsocketimpl.cpp \
 DEF_FILE = socketserver.def
 
 LIBS += -lws2_32
-
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG 

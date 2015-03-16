@@ -1,3 +1,5 @@
+include(../../../../../shiva/include/shiva.pri)
+
 TEMPLATE = lib
 
 CONFIG = dll \
@@ -8,8 +10,6 @@ LIBS += $$QMAKE_LIBS_DYNLOAD \
  -L../../../../../shiva/shivalib/linux/libshiva
 
 TARGET =../bin/luaengine
-
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG
 
 SOURCES += ../../src/modules/shvluaengineimpl.cpp \
  ../../src/shvluaenginefactory.cpp \

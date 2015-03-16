@@ -3,6 +3,7 @@
 # Project created by QtCreator 2010-06-29T15:14:45
 #
 #-------------------------------------------------
+include(../../../shiva/include/shiva.pri)
 
 QT       -= core gui
 
@@ -27,5 +28,3 @@ SOURCES += shivasqlite.cpp \
            ../src/sqlitestatementimpl.cpp \
            ../src/sqlitewrapperimpl.cpp
 DEF_FILE = shivasqlite.def
-
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG 

@@ -2,6 +2,7 @@
 # ------------------------------------------- 
 # Subdir relative project main directory: ./libshiva
 # Target is a library:  shiva
+include(../../../../shiva/include/shiva.pri)
 
 HEADERS += ../../../include/platformspc.h \
            ../../../include/shvlogger.h \
@@ -144,7 +145,6 @@ SOURCES += ../../src/framework/shvconsole.cpp \
  ../../src/utils/shvmathtokenhashmap.cpp \
  ../../src/threadutils/shvthreadpoolbase.cpp \
     ../../src/utils/shvbase64.cpp
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
 TARGET = shiva 
 CONFIG = $$QMAKE_PLATFORM debug \
          warn_on \

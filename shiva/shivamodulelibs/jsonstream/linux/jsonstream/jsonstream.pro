@@ -1,3 +1,5 @@
+include(../../../../../shiva/include/shiva.pri)
+
 TEMPLATE = lib
 
 CONFIG = dll \
@@ -8,8 +10,6 @@ LIBS += $$QMAKE_LIBS_DYNLOAD \
  -L../../../../shivalib/linux/libshiva
 
 TARGET =../bin/jsonstream
-
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG
 
 SOURCES += \
     ../../src/jsonparser/JSON_parser.c \

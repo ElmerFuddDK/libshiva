@@ -1,3 +1,5 @@
+include(../../../SHVRelPathSHV/shiva/include/shiva.pri)
+
 TEMPLATE = lib
 
 CONFIG = dll \
@@ -8,8 +10,6 @@ LIBS += $$QMAKE_LIBS_DYNLOAD \
  -L../../../SHVRelPathSHV/shiva/shivalib/linux/libshiva
 
 TARGET =../bin/shvtemplateshv
-
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG
 
 SOURCES += ../../src/modules/shvshvtemplateshvimpl.cpp \
  ../../src/shvshvtemplateshvfactory.cpp \

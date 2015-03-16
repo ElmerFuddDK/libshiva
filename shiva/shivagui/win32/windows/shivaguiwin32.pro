@@ -3,6 +3,7 @@
 # Project created by QtCreator 2010-06-29T15:14:45
 #
 #-------------------------------------------------
+include(../../../../shiva/include/shiva.pri)
 
 QT       -= core gui
 
@@ -55,5 +56,3 @@ SOURCES +=  ./shivaguiwin32.cpp \
 
 
 DEF_FILE = shivaguiwin32.def
-
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG 

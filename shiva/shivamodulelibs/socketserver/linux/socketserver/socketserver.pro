@@ -1,3 +1,5 @@
+include(../../../../../shiva/include/shiva.pri)
+
 TEMPLATE = lib
 
 CONFIG = dll \
@@ -6,8 +8,6 @@ debug \
 LIBS += $$QMAKE_LIBS_DYNLOAD \
 -lshiva \
  -L../../../../shivalib/linux/libshiva
-
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG
 
 SOURCES += ../../src/shvsocketimpl.cpp \
 ../../src/shvsocketserverimpl.cpp \

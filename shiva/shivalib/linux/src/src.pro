@@ -2,12 +2,12 @@
 # ------------------------------------------- 
 # Subdir relative project main directory: ./src
 # Target is an application:  ../bin/shiva
+include(../../../../shiva/include/shiva.pri)
 
 #TARGETDEPS += ../libshiva/libshiva.so 
 LIBS += $$QMAKE_LIBS_DYNLOAD \
         -lshiva 
 QMAKE_LIBDIR += ../libshiva 
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
 TARGET = ../bin/shiva 
 CONFIG = debug \
          warn_on 

@@ -1,3 +1,5 @@
+include(../../../../shiva/include/shiva.pri)
+
 SOURCES += main.cpp
 
 TEMPLATE = app
@@ -11,8 +13,6 @@ LIBS += -L/usr/lib \
   $$QMAKE_LIBS_DYNLOAD
 
 DESTDIR = ../bin
-
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG
 
 CONFIG -= release \
  qt

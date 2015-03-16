@@ -1,3 +1,5 @@
+include(../../../../shiva/include/shiva.pri)
+
 QT       -= core gui
 
 LIBS += -L. \
@@ -21,5 +23,4 @@ INCLUDEPATH += ../../../..
 
 DEF_FILE = subprocess.def
 
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG 
 QMAKE_CXXFLAGS += PSAPI_VERSION=1

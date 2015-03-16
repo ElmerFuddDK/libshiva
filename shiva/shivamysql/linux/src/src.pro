@@ -1,3 +1,5 @@
+include(../../../../shiva/include/shiva.pri)
+
 TEMPLATE = lib
 
 CONFIG += dll \
@@ -21,6 +23,3 @@ HEADERS += ../../include/shvmysqlconnectionimpl.h \
 ../../../include/mysql/shvmysqlconnection.h \
 ../../../include/mysql/shvmysqlresultset.h
 DESTDIR = ../bin
-
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG
-

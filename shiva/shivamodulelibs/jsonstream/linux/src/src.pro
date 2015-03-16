@@ -1,3 +1,5 @@
+include(../../../../../shiva/include/shiva.pri)
+
 SOURCES = ../../src/tester/main.cpp \
 ../../src/tester/shvjsonstreamtester.cpp
 HEADERS += ../../src/tester/shvjsonstreamtester.h
@@ -6,7 +8,6 @@ TEMPLATE = app
 LIBS += -L../../../../shivalib/linux/libshiva \
 $$QMAKE_LIBS_DYNLOAD \
 -lshiva
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG
 
 CONFIG -= release \
  qt

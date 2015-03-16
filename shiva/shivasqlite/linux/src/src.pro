@@ -1,3 +1,5 @@
+include(../../../../shiva/include/shiva.pri)
+
 SOURCES += tester.cpp
 
 TEMPLATE = app
@@ -9,8 +11,6 @@ LIBS += -L../../../shivalib/linux/libshiva \
   -ldl
 
 DESTDIR = ../bin
-
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG
 
 CONFIG -= release \
  qt

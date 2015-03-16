@@ -1,3 +1,5 @@
+include(../../../../../shiva/include/shiva.pri)
+
 SOURCES = ../../src/main.cpp \
     ../../src/forms/shvformmain.cpp \
     ../../src/logger/shvtestloggerconsole.cpp \
@@ -54,7 +56,6 @@ TEMPLATE = app
 LIBS += -L../../../../shivalib/linux/libshiva \
 $$QMAKE_LIBS_DYNLOAD \
 -lshiva
-QMAKE_CXXFLAGS_DEBUG += -DDEBUG
 
 CONFIG -= release \
  qt
