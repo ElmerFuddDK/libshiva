@@ -150,6 +150,7 @@ SOURCES += ../src/framework/shvevent.cpp \
            ../src/gui/utils/shvrect.cpp \
            ../src/utils/shvmathtokenhashmap.cpp \
            ../src/threadutils/shvthreadpoolbase.cpp \
-           ../src/framework/shvconsole.cpp
+           ../src/framework/shvconsole.cpp \
+           ../../src/utils/shvbase64.cpp
 
 LIBS += -lWs2_32
