@@ -35,6 +35,7 @@
 #include "../../../include/frameworkimpl/shvmainthreadeventqueue.h"
 #include "../../../include/framework/shvmodule.h"
 #include "../../../include/utils/shvstring.h"
+#include "../../../include/utils/shvstringutf8.h"
 
 #include "../../../include/frameworkimpl/shvtimerimpl.h"
 
@@ -227,6 +228,22 @@ SHVBool SHVModuleListImpl::ParseArgs(SHVConfig& cfg, int argc, char *argv[])
 {
 SHVBool retVal(SHVBool::True);
 SHVString8 param, val;
+bool utf8mode = false;
+
+#ifdef __SHIVA_POSIX
+	{
+	SHVString8C charset(getenv("LC_CTYPE"));
+		if (charset.IsEmpty())
+		{
+			charset = getenv("LANG");
+		}
+		if (charset.Right(5).CompareNoCase("UTF-8") == 0 
+		    || charset.Right(4).CompareNoCase("utf8") == 0)
+		{
+			utf8mode = true;
+		}
+	}
+#endif
 
 	for (int i=1; i<argc && retVal; i++)
 	{
@@ -236,12 +253,18 @@ SHVString8 param, val;
 		}
 		else
 		{
-			param = argv[i]+1;
+			if (utf8mode)
+				param = SHVStringUTF8C(argv[i]+1).ToStr8();
+			else
+				param = argv[i]+1;
 			
 			if (i+1 < argc && *argv[i+1] != '-')
 			{
 				i++;
-				val = argv[i];
+				if (utf8mode)
+					val = SHVStringUTF8C(argv[i]).ToStr8();
+				else
+					val = argv[i];
 			}
 			else
 			{
