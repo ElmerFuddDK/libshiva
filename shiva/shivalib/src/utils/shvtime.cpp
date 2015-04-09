@@ -1046,6 +1046,8 @@ time_t ttime2;
 ///\cond INTERNAL
 time_t SHVTime::TimeGm(struct tm *t, bool setDst)
 {
+	if (t->tm_year == 0)
+		return 0;
 ///\todo Implement support for setting tm_dst and tm_gmtoff on non-linux
 #if !defined(__SHIVA_POSIX) || defined(__SHIVA_NO_TIMEGM)
 time_t retVal;
@@ -1186,6 +1188,8 @@ short year;
 
 time_t SHVTime::MkTime(struct tm *t)
 {
+	if (t->tm_year == 0)
+		return 0;
 #ifdef __SHIVA_EPOC
 	///TODO: Implement a proper mktime conversion for symbian, since it only knows utc
 	return mktime(t);
