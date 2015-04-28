@@ -3,6 +3,7 @@
 
 #include "shvluaengineimpl.h"
 #include "shiva/include/utils/shvvector.h"
+#include "shvluaclassimpl.h"
 
 
 //-=========================================================================================================
@@ -25,6 +26,7 @@ public:
 
 	// From SHVLuaScript
 	virtual SHVEventQueue& GetEventQueue();
+	virtual SHVModuleList& GetModuleList();
 	virtual bool IsActive() const;
 	virtual bool IsHandlingErrors() const;
 	
@@ -40,18 +42,25 @@ public:
 	virtual SHVLuaValuesRef ExecuteFunction(const char* name, SHVLuaValues* args = NULL);
 
 	virtual void RegisterFunc(const char* name, SHVLuaFuncBase* func);
+	virtual void RegisterClass(const char* name, SHVLuaMetaClassBase* meta);
+
+	virtual void GarbageCollect();
 
 	virtual void StopScript();
 
 
 private:
+friend class SHVLuaClassImpl;
+
 	///\cond INTERNAL
 	enum InternalEvents {
 		EventInternalExecute,
 		EventInternalExecuteFromFile,
 		EventInternalExecuteFunction,
-		EventInternalStopScript,
-		EventInternalRegisterFunc
+		EventInternalRegisterFunc,
+		EventInternalRegisterClass,
+		EventInternalGarbageCollect,
+		EventInternalStopScript
 	};
 	
 	SHVBool AddToActiveList();
@@ -73,6 +82,14 @@ private:
 		inline RegisterFuncData(const char* n, SHVLuaFuncBase* f) : name(n), func(f) {}
 	};
 
+	struct RegisterClassData {
+	
+		const char* name;
+		SHVLuaMetaClassBase* meta;
+		
+		inline RegisterClassData(const char* n, SHVLuaMetaClassBase* m) : name(n), meta(m) {}
+	};
+
 	struct ExecFuncData {
 	
 		const char* name;
@@ -89,6 +106,7 @@ private:
 	void* LuaState;
 	void* LuaErrorFunc;
 	SHVVector<SHVLuaFuncBase> Funcs;
+	SHVVector<SHVLuaClassImpl> Classes;
 	SHVList<SHVString,SHVStringBuffer> Errors;
 	///\endcond
 };

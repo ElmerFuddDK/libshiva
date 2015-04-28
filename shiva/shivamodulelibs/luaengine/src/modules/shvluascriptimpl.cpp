@@ -69,6 +69,7 @@ SHVLuaScriptImpl::~SHVLuaScriptImpl()
 	if (LuaState)
 		lua_close((lua_State*)LuaState);
 	Funcs.Clear();
+	Classes.Clear();
 }
 
 /*************************************
@@ -77,6 +78,14 @@ SHVLuaScriptImpl::~SHVLuaScriptImpl()
 SHVEventQueue& SHVLuaScriptImpl::GetEventQueue()
 {
 	return Queue;
+}
+
+/*************************************
+ * GetModuleList
+ *************************************/
+SHVModuleList& SHVLuaScriptImpl::GetModuleList()
+{
+	return Engine.GetModuleList();
 }
 
 /*************************************
@@ -336,6 +345,51 @@ void SHVLuaScriptImpl::RegisterFunc(const char* name, SHVLuaFuncBase* func)
 }
 
 /*************************************
+ * RegisterClass
+ *************************************/
+void SHVLuaScriptImpl::RegisterClass(const char* name, SHVLuaMetaClassBase* meta)
+{
+	if (SHVThreadBase::GetCurrentThreadID() == Queue.GetThreadID() || !Engine.GetModuleList().IsRegistered())
+	{
+		if (LuaState)
+		{
+		SHVLuaClassImpl* luaClass = new SHVLuaClassImpl(meta);
+		
+			if (luaClass->Initialize(name,this))
+				Classes.Add(luaClass);
+			else
+				delete luaClass;
+		}
+		else
+		{
+			delete meta;
+		}
+	}
+	else
+	{
+		Subscriber->EmitNow(Engine.GetModuleList(),new SHVEventData<RegisterClassData>(RegisterClassData(name,meta),NULL,EventInternalRegisterClass));
+	}
+}
+
+/*************************************
+ * GarbageCollect
+ *************************************/
+void SHVLuaScriptImpl::GarbageCollect()
+{
+	if (SHVThreadBase::GetCurrentThreadID() == Queue.GetThreadID() || !Engine.GetModuleList().IsRegistered())
+	{
+		if (LuaState)
+		{
+			lua_gc((lua_State*)LuaState,LUA_GCCOLLECT,0);
+		}
+	}
+	else
+	{
+		Subscriber->EmitNow(Engine.GetModuleList(),new SHVEvent(NULL,EventInternalGarbageCollect));
+	}
+}
+
+/*************************************
  * StopScript
  *************************************/
 void SHVLuaScriptImpl::StopScript()
@@ -349,6 +403,7 @@ void SHVLuaScriptImpl::StopScript()
 			lua_close((lua_State*)LuaState);
 			LuaState = NULL;
 			Funcs.Clear();
+			Classes.Clear();
 		}
 	}
 	else if (LuaState)
@@ -458,11 +513,17 @@ void SHVLuaScriptImpl::OnInternalEvent(SHVEvent *event)
 	case EventInternalExecuteFunction:
 		ExecuteFunction(SHVEventData<ExecFuncData>::Get(event).name,SHVEventData<ExecFuncData>::Get(event).args);
 		break;
-	case EventInternalStopScript:
-		StopScript();
-		break;
 	case EventInternalRegisterFunc:
 		RegisterFunc(SHVEventData<RegisterFuncData>::Get(event).name,SHVEventData<RegisterFuncData>::Get(event).func);
+		break;
+	case EventInternalRegisterClass:
+		RegisterClass(SHVEventData<RegisterClassData>::Get(event).name,SHVEventData<RegisterClassData>::Get(event).meta);
+		break;
+	case EventInternalGarbageCollect:
+		GarbageCollect();
+		break;
+	case EventInternalStopScript:
+		StopScript();
 		break;
 	}
 }

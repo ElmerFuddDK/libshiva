@@ -3,6 +3,7 @@
 
 #include "shiva/include/modules/luaengine/shvluafunc.h"
 class SHVLuaScriptImpl;
+class SHVLuaClassImpl;
 
 
 //-=========================================================================================================
@@ -16,7 +17,7 @@ class SHVLuaFuncArgsImpl : public SHVLuaFuncArgs
 {
 public:
 
-	SHVLuaFuncArgsImpl(void* state);
+	SHVLuaFuncArgsImpl(void* state, int argOffset = 1);
 
 	// Arguments
 	virtual int ArgCount();
@@ -38,13 +39,14 @@ public:
 	virtual void PushRef(SHVLuaValues::RefStruct refObj);
 
 
-	static SHVLuaValue* ToValue(void* state, int idx);
+	static SHVLuaValue* ToValue(void* state, int idx, int argOffset = 1);
 
 protected:
 friend class SHVLuaScriptImpl;
+friend class SHVLuaClassImpl;
 
 	void* State;
-	int Args, ReturnVals;
+	int Args, ArgOffset, ReturnVals;
 
 };
 

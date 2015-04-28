@@ -19,9 +19,9 @@ extern "C"{
 /*************************************
  * Constructor
  *************************************/
-SHVLuaFuncArgsImpl::SHVLuaFuncArgsImpl(void *state)
+SHVLuaFuncArgsImpl::SHVLuaFuncArgsImpl(void* state, int argOffset) : ArgOffset(argOffset)
 {
-	Args = lua_gettop((lua_State*)state);
+	Args = lua_gettop((lua_State*)state) + 1 - argOffset;
 	State = state;
 	ReturnVals = 0;
 }
@@ -39,9 +39,9 @@ int SHVLuaFuncArgsImpl::ArgCount()
  *************************************/
 SHVInt SHVLuaFuncArgsImpl::ArgAsInt(int idx)
 {
-	if (lua_type((lua_State*)State,idx+1) == LUA_TNIL)
+	if (lua_type((lua_State*)State,idx+ArgOffset) == LUA_TNIL)
 		return SHVInt();
-	return lua_tointeger((lua_State*)State,idx+1);
+	return lua_tointeger((lua_State*)State,idx+ArgOffset);
 }
 
 /*************************************
@@ -49,9 +49,9 @@ SHVInt SHVLuaFuncArgsImpl::ArgAsInt(int idx)
  *************************************/
 SHVStringBuffer SHVLuaFuncArgsImpl::ArgAsString(int idx)
 {
-	if (lua_type((lua_State*)State,idx+1) == LUA_TNIL)
+	if (lua_type((lua_State*)State,idx+ArgOffset) == LUA_TNIL)
 		return SHVString().ReleaseBuffer();
-	return SHVString8C(lua_tostring((lua_State*)State,idx+1)).ToStrT();
+	return SHVString8C(lua_tostring((lua_State*)State,idx+ArgOffset)).ToStrT();
 }
 
 /*************************************
@@ -59,9 +59,9 @@ SHVStringBuffer SHVLuaFuncArgsImpl::ArgAsString(int idx)
  *************************************/
 SHVDouble SHVLuaFuncArgsImpl::ArgAsDouble(int idx)
 {
-	if (lua_type((lua_State*)State,idx+1) == LUA_TNIL)
+	if (lua_type((lua_State*)State,idx+ArgOffset) == LUA_TNIL)
 		return SHVDouble();
-	return lua_tonumber((lua_State*)State,idx+1);
+	return lua_tonumber((lua_State*)State,idx+ArgOffset);
 }
 
 /*************************************
@@ -69,9 +69,9 @@ SHVDouble SHVLuaFuncArgsImpl::ArgAsDouble(int idx)
  *************************************/
 bool SHVLuaFuncArgsImpl::ArgAsBool(int idx)
 {
-	if (lua_type((lua_State*)State,idx+1) == LUA_TNIL)
+	if (lua_type((lua_State*)State,idx+ArgOffset) == LUA_TNIL)
 		return false;
-	return lua_toboolean((lua_State*)State,idx+1);
+	return lua_toboolean((lua_State*)State,idx+ArgOffset);
 }
 
 /*************************************
@@ -79,7 +79,7 @@ bool SHVLuaFuncArgsImpl::ArgAsBool(int idx)
  *************************************/
 SHVRefObject* SHVLuaFuncArgsImpl::ArgAsRef(int idx, const char* typeID)
 {
-	return SHVLuaRefObjectType::ToRefByType(State,idx+1,typeID);
+	return SHVLuaRefObjectType::ToRefByType(State,idx+ArgOffset,typeID);
 }
 
 /*************************************
@@ -87,7 +87,7 @@ SHVRefObject* SHVLuaFuncArgsImpl::ArgAsRef(int idx, const char* typeID)
  *************************************/
 SHVLuaValue* SHVLuaFuncArgsImpl::ArgToValue(int idx)
 {
-	return ToValue(State,idx);
+	return ToValue(State,idx,ArgOffset);
 }
 
 /*************************************
@@ -149,9 +149,9 @@ void SHVLuaFuncArgsImpl::PushRef(SHVLuaValues::RefStruct refObj)
 /*************************************
  * ToValue
  *************************************/
-SHVLuaValue* SHVLuaFuncArgsImpl::ToValue(void *state, int idx)
+SHVLuaValue* SHVLuaFuncArgsImpl::ToValue(void *state, int idx, int argOffset)
 {
-	idx++; // Offset to match lua index
+	idx+=argOffset; // Offset to match lua index
 	switch (lua_type((lua_State*)state,idx))
 	{
 	case LUA_TNUMBER:

@@ -47,7 +47,8 @@ SOURCES += ../src/modules/shvluaengineimpl.cpp \
     ../src/modules/shvluascriptimpl.cpp \
     ../src/modules/shvluafuncargsimpl.cpp \
     ../src/modules/shvluavalueimpl.cpp \
-    ../src/modules/shvluarefobjecttype.cpp
+    ../src/modules/shvluarefobjecttype.cpp \
+    ../src/modules/shvluaclassimpl.cpp
 HEADERS += \
  ../src/modules/shvluaengineimpl.h \
  ../src/shvluaenginefactory.h \
@@ -83,7 +84,11 @@ HEADERS += \
     ../src/modules/shvluafuncargsimpl.h \
     ../../../include/modules/luaengine/shvluavalue.h \
     ../src/modules/shvluavalueimpl.h \
-    ../src/modules/shvluarefobjecttype.h
+    ../src/modules/shvluarefobjecttype.h \
+    ../../../include/modules/luaengine/shvluareftype.h \
+    ../../../include/modules/luaengine/shvluaclass.h \
+    ../../../include/modules/luaengine/shvluaclassbase.h \
+    ../src/modules/shvluaclassimpl.h
 
 INCLUDEPATH += ../../../..
 

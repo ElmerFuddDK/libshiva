@@ -231,6 +231,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\src\modules\shvluaclassimpl.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\src\modules\shvluascriptimpl.cpp"
 						>
 					</File>

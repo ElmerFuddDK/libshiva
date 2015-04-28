@@ -4,6 +4,7 @@
 #include "../../utils/shvrefobject.h"
 #include "../../framework/shvevent.h"
 #include "shvluafunc.h"
+#include "shvluaclassbase.h"
 #include "shvluavalue.h"
 
 
@@ -44,6 +45,7 @@ public:
 
 	// properties
 	virtual SHVEventQueue& GetEventQueue() = 0;
+	virtual SHVModuleList& GetModuleList() = 0;
 	virtual bool IsActive() const = 0;
 	virtual bool IsHandlingErrors() const = 0;
 	
@@ -59,6 +61,9 @@ public:
 	virtual SHVLuaValuesRef ExecuteFunction(const char* name, SHVLuaValues* args = NULL) = 0;
 
 	virtual void RegisterFunc(const char* name, SHVLuaFuncBase* func) = 0;
+	virtual void RegisterClass(const char* name, SHVLuaMetaClassBase* constructor) = 0;
+
+	virtual void GarbageCollect() = 0;
 
 	virtual void StopScript() = 0;
 

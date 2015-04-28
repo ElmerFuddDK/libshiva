@@ -29,6 +29,11 @@ SHVBool SHVLuaEngineTester::Register()
 		return false;
 
 	LuaScript = LuaEngine->CreateScript();
+	LuaScript->RegisterClass("TesterClass",
+							 new SHVLuaMetaClassData<SHVLuaTesterClass,SHVLuaTesterClass::MetaData>(
+										SHVLuaTesterClass::MetaData(this)
+									));
+	// SHVLuaTesterClass::Register("TesterClass",LuaScript);
 	LuaScript->RegisterFunc("TestFunc",new SHVLuaFunc<SHVLuaEngineTester>(this,&SHVLuaEngineTester::LuaTestFunc));
 	LuaScript->SetHandlingErrors(true,new SHVEventSubscriber(this));
 	
@@ -86,7 +91,16 @@ void SHVLuaEngineTester::OnEvent(SHVEvent* event)
 	
 		if (str.Left(5) == SHVString8C("/run "))
 		{
+#ifdef UNICODE
+			LuaScript->Execute(SHVString8C(str.GetSafeBuffer()+5).ToStrT());
+#else
 			LuaScript->Execute(str.GetSafeBuffer()+5);
+#endif
+		}
+		else if (str == SHVString8C("/gc"))
+		{
+			SHVConsole::Printf8("Running gc\n");
+			LuaScript->GarbageCollect();
 		}
 		else if (str == SHVString8C("/quit"))
 		{
@@ -97,6 +111,8 @@ void SHVLuaEngineTester::OnEvent(SHVEvent* event)
 			SHVConsole::Printf8("Commands available:\n"
 								" /quit         Will quit ...\n"
 								" /help         Displays this info\n"
+								" /run <lua>    Runs Lua code\n"
+								" /gc           Runs garbage collection\n"
 								"\n");
 		}
 		else
@@ -125,3 +141,71 @@ void SHVLuaEngineTester::LuaTestFunc(SHVLuaScript* script, SHVLuaFuncArgs &args)
 	args.PushRef(SHVLuaRefInt().Obj(new SHVRefInt(512)));
 }
 
+
+/*************************************
+ * Constructor
+ *************************************/
+SHVLuaTesterClass::SHVLuaTesterClass(SHVLuaMetaClassBase* meta, SHVLuaScript* script, SHVLuaFuncArgs& args) : SHVLuaClass<SHVLuaTesterClass>(meta,script,args), Modules(script->GetModuleList())
+{
+	SHVLuaMetaClassData<SHVLuaTesterClass,SHVLuaTesterClass::MetaData>::Get(meta).ObjCount++;
+	SHVTRACE(_S("In SHVLuaTesterClass constructor %d times\n"),SHVLuaMetaClassData<SHVLuaTesterClass,SHVLuaTesterClass::MetaData>::Get(meta).ObjCount);
+}
+
+/*************************************
+ * Destructor
+ *************************************/
+SHVLuaTesterClass::~SHVLuaTesterClass()
+{
+	SHVTRACE(_S("In SHVLuaTesterClass::~SHVLuaTesterClass\n"));
+}
+
+/*************************************
+ * SetValue
+ *************************************/
+void SHVLuaTesterClass::SetValue(SHVLuaMetaClassBase* meta, SHVLuaScript* script, SHVLuaFuncArgs& args)
+{
+	SHVUNUSED_PARAM(meta);
+	SHVUNUSED_PARAM(script);
+	
+	if (args.ArgCount() == 1)
+	{
+		Modules.GetConfig().Set(args.ArgAsString(0),SHVInt());
+	}
+	else if (args.ArgCount() == 2)
+	{
+	SHVLuaValuePtr val = args.ArgToValue(1);
+		switch (val->GetType())
+		{
+		case SHVLuaValue::TypeInt:
+			Modules.GetConfig().Set(args.ArgAsString(0),val->AsInt());
+			break;
+		default:
+		case SHVLuaValue::TypeDouble:
+		case SHVLuaValue::TypeString:
+			Modules.GetConfig().Set(args.ArgAsString(0),val->AsString());
+			break;
+		}
+	}
+}
+
+/*************************************
+ * SetValue
+ *************************************/
+void SHVLuaTesterClass::GetValue(SHVLuaMetaClassBase* meta, SHVLuaScript* script, SHVLuaFuncArgs& args)
+{
+	SHVUNUSED_PARAM(meta);
+	SHVUNUSED_PARAM(script);
+	for(int i=0; i<args.ArgCount(); i++)
+	{
+		args.PushString(Modules.GetConfig().Find(args.ArgAsString(i))->ToString());
+	}
+}
+
+/*************************************
+ * RegisterMethods
+ *************************************/
+void SHVLuaTesterClass::RegisterMethods(SHVLuaClassMethods& methods)
+{
+	RegisterMethod(methods,"SetValue",&SHVLuaTesterClass::SetValue);
+	RegisterMethod(methods,"GetValue",&SHVLuaTesterClass::GetValue);
+}
