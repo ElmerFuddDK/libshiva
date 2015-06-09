@@ -337,7 +337,7 @@ size_t SHVBufferCIterator::GetPosition()
 /// Set the current position in the iterator
 SHVBool SHVBufferCIterator::SetPosition(size_t pos)
 {
-	if (pos > pos)
+	if (pos > Pos)
 		return SetError(SHVBool::False);
 		
 	Pos = pos;
