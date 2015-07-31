@@ -43,6 +43,21 @@
 #include <android/log.h>
 #endif
 
+#undef HASGLIBCBACKTRACE
+#if defined(__GLIBC__)
+# if __GLIBC_PREREQ(2, 10)
+#  define HASGLIBCBACKTRACE
+#  include "../../../include/threadutils/shvthreadbase.h"
+#  include "../../../include/utils/shvtime.h"
+#  include <stdlib.h>
+#  include <execinfo.h>
+#  include <sys/types.h>
+#  include <sys/stat.h>
+#  include <fcntl.h>
+#  include <unistd.h>
+# endif
+#endif
+
 /// \class SHVAssert shvassert.h "shiva/include/utils/shvassert.h"
 
 bool SHVAPI SHVAssert::ReportError(const char* fileName, int lineNo)
@@ -97,5 +112,55 @@ SHVVA_LIST args;
 	__android_log_print(ANDROID_LOG_DEBUG,"Shiva", "%s", str.GetSafeBuffer());
 #else
 	SHVConsole::ErrPrintf(_S("%s"),str.GetSafeBuffer());
+#endif
+}
+
+void SHVAssert::DumpStackTrace(const char* dir, const char* basename, const void* ptr, bool append, const char* xtrainfo)
+{
+#if defined(HASGLIBCBACKTRACE)
+char fname[512];
+void *array[10];
+size_t size;
+int fd;
+
+	if (::snprintf(fname,sizeof(fname),"%s/%s_%zd_%zd.txt",dir,basename,(ssize_t)ptr,SHVThreadBase::GetCurrentThreadID()) >= (int)sizeof(fname))
+		return;
+
+	fd = (append ? ::open(fname,O_WRONLY|O_CREAT|O_APPEND,00666) : ::creat(fname,00666));
+	if (fd)
+	{
+	SHVString tStr(SHVTime::CreateDateStringNow());
+		::write(fd,tStr.GetSafeBuffer(),tStr.GetLength());
+		::write(fd,"\n",1);
+		if (xtrainfo)
+			::write(fd,xtrainfo,SHVString8C::StrLen(xtrainfo));
+		size = ::backtrace(array, 10);
+		if (size > 1)
+		::backtrace_symbols_fd(array+1, size-1, fd);
+		::close(fd);
+	}
+#else
+	SHVUNUSED_PARAM(dir);
+	SHVUNUSED_PARAM(basename);
+	SHVUNUSED_PARAM(ptr);
+	SHVUNUSED_PARAM(append);
+	SHVUNUSED_PARAM(xtrainfo);
+#endif
+}
+
+void SHVAssert::ClearStackTrace(const char* dir, const char* basename, const void* ptr)
+{
+#if defined(HASGLIBCBACKTRACE)
+char fname[512];
+
+	if (::snprintf(fname,sizeof(fname),"%s/%s_%zd_%zd.txt",dir,basename,(ssize_t)ptr,SHVThreadBase::GetCurrentThreadID()) >= (int)sizeof(fname))
+		return;
+	
+	::remove(fname);
+
+#else
+	SHVUNUSED_PARAM(dir);
+	SHVUNUSED_PARAM(basename);
+	SHVUNUSED_PARAM(ptr);
 #endif
 }
