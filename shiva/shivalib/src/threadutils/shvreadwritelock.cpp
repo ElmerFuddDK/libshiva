@@ -33,6 +33,7 @@
 
 #include "../../../include/threadutils/shvreadwritelock.h"
 
+// #define EXCLUSIVELOCKSTACKTRACE 1
 
 
 //=========================================================================================================
@@ -72,6 +73,10 @@ void SHVReadWriteLock::LockShared()
 	else
 	{
 		RefCount++;
+#if defined(EXCLUSIVELOCKSTACKTRACE) && defined(DEBUG)
+		if (ExclusiveOwner == SHVThreadBase::GetCurrentThreadID())
+			SHVADDSTACKTRACE_EX("/run/shm","readwritelock",this,SHVString8C::Format("LockCount : %d\n",RefCount).GetSafeBuffer());
+#endif
 	}
 	Lock.Unlock();
 }
@@ -100,6 +105,9 @@ void SHVReadWriteLock::LockExclusive()
 		RefCount++;
 		ExclusiveOwner = SHVThreadBase::GetCurrentThreadID();
 	}
+#if defined(EXCLUSIVELOCKSTACKTRACE) && defined(DEBUG)
+	SHVADDSTACKTRACE_EX("/run/shm","readwritelock",this,SHVString8C::Format("LockCount : %d\n",RefCount).GetSafeBuffer());
+#endif
 	Lock.Unlock();
 }
 
@@ -133,6 +141,12 @@ void SHVReadWriteLock::Unlock()
 	SHVASSERT(RefCount > 0);
 	if (--RefCount == 0)
 	{
+#if defined(EXCLUSIVELOCKSTACKTRACE) && defined(DEBUG)
+		if (IsExclusiveLocked())
+		{
+			SHVCLEARSTACKTRACE("/run/shm","readwritelock",this);
+		}
+#endif
 		if (WaitQueue.GetCount())
 		{
 			do 
@@ -149,6 +163,12 @@ void SHVReadWriteLock::Unlock()
 			ExclusiveOwner = SHVThreadBase::InvalidThreadID;
 		}
 	}
+#if defined(EXCLUSIVELOCKSTACKTRACE) && defined(DEBUG)
+	else if (IsExclusiveLocked())
+	{
+		SHVADDSTACKTRACE_EX("/run/shm","readwritelock",this,SHVString8C::Format("LockCount : %d\n",RefCount).GetSafeBuffer());
+	}
+#endif
 	Lock.Unlock();
 }
 
