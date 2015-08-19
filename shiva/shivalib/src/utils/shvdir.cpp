@@ -809,7 +809,7 @@ SHVInt retVal;
 #if defined(__SHIVA_WINCE)
 #elif defined(__SHIVA_WIN32)
 SHVString execstr;
-	execstr.Format(_S("%s %s"), EscapeParameter(program).GetSafeBuffer(), args.GetSafeBuffer());
+	execstr.Format(_S("\"%s %s\""), EscapeParameter(program).GetSafeBuffer(), args.GetSafeBuffer());
 	retVal = ::system(execstr.ToStr8().GetSafeBuffer());
 #elif defined(__SHIVA_EPOC)
 	///\todo Implement SHVDir::Execute for symbian
@@ -847,8 +847,7 @@ SHVString tmpArg;
 		else
 			arg += SHVStringC::Format(_S(" %s"), tmpArg.GetSafeBuffer());
 	}
-
-	execstr.Format(_S("%s %s"), EscapeParameter(program).GetSafeBuffer(), arg.GetSafeBuffer());
+	execstr.Format(_S("\"%s %s\""), EscapeParameter(program).GetSafeBuffer(), arg.GetSafeBuffer());
 	retVal = ::system(execstr.ToStr8().GetSafeBuffer());
 #elif defined(__SHIVA_EPOC)
 	///\todo Implement SHVDir::Execute for symbian
@@ -884,14 +883,20 @@ SHVString tmpArg;
 SHVStringBuffer SHVDir::EscapeParameter(const SHVStringC param)
 {
 SHVString retVal(param);
-
+#ifdef __SHIVA_WIN32
+	if (param.Find(_S("\"")) >= 0)
+	{
+		retVal.Replace(_S("\""),_S("\"\""));		
+	}
+	retVal = SHVStringC::Format(_S("\"%s\""),retVal.GetSafeBuffer());
+#else
 	if (param.Find(_S(" ")) >= 0)
 	{
 		retVal.Replace(_S("\\"),_S("\\\\"));
 		retVal.Replace(_S("\""),_S("\\\""));
 		retVal = SHVStringC::Format(_S("\"%s\""),retVal.GetSafeBuffer());
 	}
-
+#endif
 	return retVal.ReleaseBuffer();
 }
 ///\endcond
