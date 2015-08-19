@@ -840,6 +840,7 @@ size_t newlinePos = SIZE_T_MAX;
 		
 		SHVVERIFY(ExcessData.ReadBytes((SHVByte*)line.GetBuffer(), (newSize+1)*sizeof(SHVChar), ExcessDataPos));
 		line[newSize/sizeof(SHVChar)] = '\0';
+		line.TrimRight("\r");
 		ExcessData.Truncate(ExcessDataPos);
 		
 		EofFlag = EofFlag && !ExcessDataLeft();
@@ -855,6 +856,7 @@ SHVBool SHVSubProcessStreamIn::ReadLine16(SHVString16& line)
 {
 SHVBool retVal(SHVSubProcess::ErrNone);
 size_t newlinePos = SIZE_T_MAX;
+static const SHVWChar carReturn[] = { '\r', '\0' };
 
 	while (retVal && (newlinePos = ExcessData.SeekShort('\n',ExcessDataPos)) >= ExcessData.GetSize())
 	{
@@ -868,6 +870,7 @@ size_t newlinePos = SIZE_T_MAX;
 		
 		SHVVERIFY(ExcessData.ReadBytes((SHVByte*)line.GetBuffer(), (newSize+1)*sizeof(SHVWChar), ExcessDataPos));
 		line[newSize/sizeof(SHVWChar)] = '\0';
+		line.TrimRight(carReturn);
 		ExcessData.Truncate(ExcessDataPos);
 		
 		EofFlag = EofFlag && !ExcessDataLeft();
