@@ -78,6 +78,7 @@ friend class SHVConsole;
 #elif defined(__SHIVA_WIN32)
 	bool Initializing;
 	bool QuirksMode;
+	HANDLE StdinHandle;
 	SHVModuleList* ModuleList;
 	SHVMutexBase Signal;
 	SHVEventSubscriberRef selfSubs;

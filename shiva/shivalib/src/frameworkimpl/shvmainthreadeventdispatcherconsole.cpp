@@ -104,8 +104,14 @@ TCHAR name[MAX_PATH];
 		freopen("CON", "w", stdout);
 		freopen("CON", "w", stderr);
 		freopen("CONIN$", "r", stdin);
+
+		StdinHandle = INVALID_HANDLE_VALUE;
 	}
-	// else got a console already - must be console application
+	else
+	{
+		// got a console already - must be console application
+		::DuplicateHandle(GetCurrentProcess(),GetStdHandle(STD_INPUT_HANDLE),GetCurrentProcess(),&StdinHandle,0,FALSE,DUPLICATE_SAME_ACCESS);
+	}
 
 #else
 	// Initialize pipe signaller for the select statement
@@ -141,7 +147,7 @@ SHVMainThreadEventDispatcherConsole::~SHVMainThreadEventDispatcherConsole()
 		if (QuirksMode)
 			::FreeConsole();
 		else
-			::CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
+			::CloseHandle(StdinHandle);
 		for (int i=10;StdinThread.IsRunning();i+=10)
 			SHVThreadBase::Sleep(i);
 	}
@@ -321,7 +327,7 @@ MSG msg;
 	if (QuirksMode)
 		::FreeConsole();
 	else
-		::CloseHandle(GetStdHandle(STD_INPUT_HANDLE));
+		::CloseHandle(StdinHandle);
 	for (int i=10;StdinThread.IsRunning();i+=10)
 		SHVThreadBase::Sleep(i);
 #endif
@@ -350,11 +356,14 @@ SHVString8 str, cmd, data;
 
 	while ( (newline = StdinStream.SeekByte('\n', StdinPos)) < StdinStream.GetSize())
 	{
-		str.SetBufferSize(newline - StdinPos);
+	size_t bufSize = newline - StdinPos;
+		str.SetBufferSize(bufSize);
 		StdinStream.ReadString8(str,newline - StdinPos,StdinPos);
 		StdinPos = newline + 1;
 		
 #if defined(__SHIVA_WIN32) && !defined(__SHIVA_WINCE)
+		if (bufSize > 1 && str.GetBuffer()[bufSize-1] == '\r')
+			str.GetBuffer()[bufSize-1] = '\0';
 		this->selfSubs->EmitNow(*ModuleList,new SHVEvent(this,EventInternalSdin,SHVInt(),new SHVEventStdin(NULL,str.ReleaseBuffer())));
 #else
 		Queue->GetModuleList().EmitEvent(new SHVEventStdin(NULL,str.ReleaseBuffer()));
@@ -780,9 +789,17 @@ int retVal;
 		}
 
 		if (QuirksMode)
+		{
 			retVal = (int)fread(readBuf->GetBuffer()+bufReadPos, 1, 1 /*StdinBufSize-bufReadPos*/, stdin);
+		}
 		else
-			retVal = _read(0,readBuf->GetBuffer()+bufReadPos, (unsigned int)StdinBufSize-bufReadPos);
+		{
+		DWORD bytesRead;
+		bool eofFlag = (ReadFile(StdinHandle,readBuf->GetBuffer()+bufReadPos,(DWORD)(StdinBufSize-bufReadPos),&bytesRead,NULL) ? true : false);
+			if (eofFlag && bytesRead < 0)
+				bytesRead = 0;
+			retVal = (int)bytesRead;
+		}
 		
 		if (retVal <=0)
 		{
