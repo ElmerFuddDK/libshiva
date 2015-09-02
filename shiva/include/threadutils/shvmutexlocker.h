@@ -30,9 +30,41 @@ private:
 };
 
 
+//-=========================================================================================================
+///  SHVMutexTempUnlocker class - convenience class to temporarily releasing all locks
+/**
+ * Convenience class to handle unlocks. See example.
+\code
+	void examplefunc()
+	{
+	SHVMutexLocker lock(myLock);
+		doSomething();
+		if (checkSomeThing())
+		{
+		SHVMutexTempUnlocker (myLock);
+			// We are now unlocked within this scope
+			doSomeUnlocked();
+		}
+		doSomethingElse(); // We are locked again
+	}
+\endcode
+ */
+
+class SHVMutexTempUnlocker
+{
+public:
+	inline SHVMutexTempUnlocker(const SHVMutex* mutex): Mutex(*(SHVMutex*)mutex) { Count = Mutex.UnlockAll(); }
+	inline SHVMutexTempUnlocker(const SHVMutex& mutex): Mutex(*((SHVMutex*)&mutex))  { Count = Mutex.UnlockAll(); }
+	inline ~SHVMutexTempUnlocker() { Mutex.LockMultiple(Count); }
+private:
+	SHVMutex& Mutex;
+	int Count;
+};
+
 
 // ============================================== documentation ============================================= //
 
 /// \class SHVMutexLocker shvmutexlocker.h "shiva/include/threadutils/shvmutexlocker.h"
+/// \class SHVMutexTempUnlocker shvmutexlocker.h "shiva/include/threadutils/shvmutexlocker.h"
 
 #endif
