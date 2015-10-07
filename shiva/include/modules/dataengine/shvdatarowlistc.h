@@ -54,9 +54,6 @@ friend class SHVDataRowList;
 // inlines
 	inline SHVBool InternalRowChanged(SHVDataRowListC* list, SHVDataRow* row);
 
-
-private:
-	int RowCount;
 };
 typedef SHVRefObjectContainer<SHVDataRowListC> SHVDataRowListCRef;
 

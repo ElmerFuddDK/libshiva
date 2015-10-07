@@ -138,7 +138,7 @@ public:
 	inline void SetField(int field);
 	inline SHVBool SetError(SHVBool err = SHVBool::False);
 	inline size_t GetPosition();
-	inline SHVBool SetPosition(size_t pos);
+	inline SHVBufferCIterator& SetPosition(size_t pos);
 	
 	
 	// Read functions
@@ -335,14 +335,11 @@ SHVBool SHVBufferCIterator::SetError(SHVBool err)
 size_t SHVBufferCIterator::GetPosition()
 { return Pos; }
 /// Set the current position in the iterator
-SHVBool SHVBufferCIterator::SetPosition(size_t pos)
+SHVBufferCIterator& SHVBufferCIterator::SetPosition(size_t pos)
 {
-	if (pos > Pos)
-		return SetError(SHVBool::False);
-		
 	Pos = pos;
 	
-	return SHVBool::True;
+	return *this;
 }
 
 /*************************************
