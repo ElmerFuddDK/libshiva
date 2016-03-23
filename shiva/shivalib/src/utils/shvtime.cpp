@@ -41,6 +41,8 @@
 #if defined(__SHIVA_POSIX_OSX)
 # include <mach/mach.h>
 # include <mach/mach_time.h>
+# include <sys/types.h>
+# include <sys/sysctl.h>
 #endif
 ///\endcond
 
@@ -882,17 +884,29 @@ TTimeIntervalMicroSeconds32 t = 1;
 	UserHal::TickPeriod(t);
 	return User::TickCount()*t.Int();
 #elif defined(__SHIVA_POSIX_OSX)
-const int64_t kOneMillion = 1000 * 1000;
-static mach_timebase_info_data_t s_timebase_info;
+struct timeval bootTime;
+size_t bootSize = sizeof(bootTime);
+int sysArg[2] = {CTL_KERN, KERN_BOOTTIME};
+struct timeval now;
+struct timezone tz;
+long retVal;
 
-	if (s_timebase_info.denom == 0)
+	/*
+	 * time() carries on incrementing while the device is asleep, but of course can be manipulated by the operating system
+	 * or user. However, the Kernel boottime (a timestamp of when the system last booted) also changes when the system clock
+	 * is changed, therefore even though both these values are not fixed, the offset between them is.
+	 */
+	if (gettimeofday(&now, &tz) == 0 && sysctl(sysArg, 2, &bootTime, &bootSize, NULL, 0) != -1 && bootTime.tv_sec != 0)
 	{
-		mach_timebase_info(&s_timebase_info);
+		retVal = ((now.tv_sec - bootTime.tv_sec) * 1000L) + ((now.tv_usec - bootTime.tv_usec) / 1000L);
 	}
-
-	// mach_absolute_time() returns billionth of seconds,
-	// so divide by one million to get milliseconds
-	return long((mach_absolute_time() * s_timebase_info.numer) / (int64_t(1000000) * s_timebase_info.denom));
+	else
+	{
+		fprintf(stderr,"GETTICKCOUNT ERROR\n");
+		abort();
+	}
+	
+	return retVal;
 #elif _POSIX_TIMERS > 0
 struct timespec n;
 #ifdef CLOCK_BOOTTIME
