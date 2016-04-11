@@ -502,7 +502,7 @@ SHVStringUTF8CRef::SHVStringUTF8CRef(const SHVChar* buffer)
 	size_t len = SHVString8C::StrLen(buffer)+1;
 	Header* header = (Header*)malloc(sizeof(Header)+len*sizeof(SHVChar));
 
-		header->RefCount = 1;
+		header->RefCount.Initialize(1);
 #ifdef __SHVSTRING_HEAPPROTECT
 		header->DestroyBuffer = DestroyBuffer;
 #endif
@@ -522,7 +522,7 @@ SHVStringUTF8CRef::SHVStringUTF8CRef(const SHVStringUTF8CRef& buffer) : SHVStrin
 	Header* header = (Header*)buffer.Buffer;
 		header--; // the actual buffer was stored from the beginning of the string
 
-		SHVRefObject::LockedIncrement(& header->RefCount);
+		header->RefCount.LockedIncrement();
 
 	}
 
@@ -539,10 +539,8 @@ SHVStringUTF8CRef::~SHVStringUTF8CRef()
 	Header* header = (Header*)Buffer;
 		header--; // the actual buffer was stored from the beginning of the string
 
-		SHVRefObject::LockedDecrement(& header->RefCount);
-
 		// dereference and check if we must delete it
-		if ( header->RefCount <= 0 )
+		if ( header->RefCount.LockedDecrementAndCheckDelete() )
 		{
 #ifdef __SHVSTRING_HEAPPROTECT
 			(header->DestroyBuffer)(header);
@@ -564,10 +562,8 @@ SHVStringUTF8CRef& SHVStringUTF8CRef::operator=(const SHVStringUTF8CRef& str)
 		Header* header = (Header*)Buffer;
 		header--; // the actual buffer was stored from the beginning of the string
 
-		SHVRefObject::LockedDecrement(& header->RefCount);
-
 		// dereference and check if we must delete it
-		if ( header->RefCount <= 0 )
+		if ( header->RefCount.LockedDecrementAndCheckDelete() )
 		{
 #ifdef __SHVSTRING_HEAPPROTECT
 			(header->DestroyBuffer)(header);
@@ -583,7 +579,7 @@ SHVStringUTF8CRef& SHVStringUTF8CRef::operator=(const SHVStringUTF8CRef& str)
 		Header* header = (Header*)str.Buffer;
 		header--; // the actual buffer was stored from the beginning of the string
 
-		SHVRefObject::LockedIncrement(& header->RefCount);
+		header->RefCount.LockedIncrement();
 
 	}
 

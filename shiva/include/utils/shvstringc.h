@@ -2,6 +2,7 @@
 #define __SHIVA_UTILS_STRINGC_H
 
 #include "shvhashvalue.h"
+#include "shvrefobject.h"
 
 #if defined(__SHIVA_WIN32)
 # define __SHVSTRING_HEAPPROTECT
@@ -181,7 +182,7 @@ private:
 	///\cond INTERNAL
 	struct Header
 	{
-		volatile int RefCount;
+		SHVRefObject::RefData RefCount;
 #ifdef __SHVSTRING_HEAPPROTECT
 		typedef void (*DestroyFunc)(Header*);
 		DestroyFunc DestroyBuffer;

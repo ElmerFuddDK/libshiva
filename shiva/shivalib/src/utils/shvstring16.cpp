@@ -707,7 +707,7 @@ SHVString16CRef::SHVString16CRef(const SHVWChar* buffer)
 	size_t len = StrLen(buffer)+1;
 	Header* header = (Header*)malloc(sizeof(Header)+len*sizeof(SHVWChar));
 
-		header->RefCount = 1;
+		header->RefCount.Initialize(1);
 #ifdef __SHVSTRING_HEAPPROTECT
 		header->DestroyBuffer = DestroyBuffer;
 #endif
@@ -727,7 +727,7 @@ SHVString16CRef::SHVString16CRef(const SHVString16CRef& buffer) : SHVString16C()
 	Header* header = (Header*)buffer.Buffer;
 		header--; // the actual buffer was stored from the beginning of the string
 
-		SHVRefObject::LockedIncrement(& header->RefCount);
+		header->RefCount.LockedIncrement();
 
 	}
 
@@ -744,10 +744,8 @@ SHVString16CRef::~SHVString16CRef()
 	Header* header = (Header*)Buffer;
 		header--; // the actual buffer was stored from the beginning of the string
 
-		SHVRefObject::LockedDecrement(& header->RefCount);
-
 		// dereference and check if we must delete it
-		if ( header->RefCount <= 0 )
+		if ( header->RefCount.LockedDecrementAndCheckDelete() )
 		{
 #ifdef __SHVSTRING_HEAPPROTECT
 			(header->DestroyBuffer)(header);
@@ -769,10 +767,8 @@ SHVString16CRef& SHVString16CRef::operator=(const SHVString16CRef& str)
 		Header* header = (Header*)Buffer;
 		header--; // the actual buffer was stored from the beginning of the string
 
-		SHVRefObject::LockedDecrement(& header->RefCount);
-
 		// dereference and check if we must delete it
-		if ( header->RefCount <= 0 )
+		if ( header->RefCount.LockedDecrementAndCheckDelete() )
 		{
 #ifdef __SHVSTRING_HEAPPROTECT
 			(header->DestroyBuffer)(header);
@@ -788,7 +784,7 @@ SHVString16CRef& SHVString16CRef::operator=(const SHVString16CRef& str)
 		Header* header = (Header*)str.Buffer;
 		header--; // the actual buffer was stored from the beginning of the string
 
-		SHVRefObject::LockedIncrement(& header->RefCount);
+		header->RefCount.LockedIncrement();
 
 	}
 

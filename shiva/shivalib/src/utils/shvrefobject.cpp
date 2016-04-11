@@ -32,6 +32,7 @@
 #include "../../../include/platformspc.h"
 
 #include "../../../include/utils/shvrefobject.h"
+#include "../../../include/threadutils/shvmutexbase.h"
 
 #if __APPLE__
 # include <libkern/OSAtomic.h>
@@ -54,6 +55,29 @@
 
 #endif
 
+// Defines for handling how reference counting is made atomic
+///\cond INTERNAL
+#ifdef __APPLE__
+# define __SHIVA_REFOBJ_APPLE
+# define __SHIVA_REFOBJ_HASATOMICDECCHECK
+#elif ANDROID
+# define __SHIVA_REFOBJ_ANDROID
+# define __SHIVA_REFOBJ_HASATOMICDECCHECK
+#elif defined(__GNUC__)
+# define __SHIVA_REFOBJ_GNUC
+# define __SHIVA_REFOBJ_HASATOMICDECCHECK
+#elif defined(__SHIVA_WIN32)
+# define __SHIVA_REFOBJ_WIN32
+# define __SHIVA_REFOBJ_HASATOMICDECCHECK
+#else
+static SHVMutexBase RefObj_GlobalRefLock;
+# warning No atomic add - using global lock
+#endif
+
+#ifndef __SHIVA_REFOBJ_HASATOMICDECCHECK
+static SHVMutexBase RefObj_GlobalDeleteLock;
+#endif
+///\endcond
 
 
 //=========================================================================================================
@@ -67,8 +91,8 @@
 /// Creates a reference, and returns the pointer
 SHVRefObject* SHVRefObject::CreateRef()
 {
-	SHVASSERT(!DeleteInProgress);
-	LockedIncrement(&References);
+	SHVASSERT(!References.DeleteInProgress);
+	References.LockedIncrement();
 	return this;
 }
 
@@ -81,7 +105,7 @@ SHVRefObject* SHVRefObject::CreateRef()
  */
 void SHVRefObject::ReleaseRef()
 {
-	LockedDecrement(&References);
+	References.LockedDecrement();
 } 
 
 /*************************************
@@ -90,32 +114,9 @@ void SHVRefObject::ReleaseRef()
 /// Releases a reference
 void SHVRefObject::DestroyRef()
 {
-	LockedDecrement(&References);
-	if (References <= 0 && !DeleteInProgress)
-	{
-		DeleteInProgress = true;
+	if (References.LockedDecrementAndCheckDelete())
 		delete this;
-	}
 }
-
-///\cond INTERNAL
-/*#if defined(__SHIVA_WIN32) && !defined(__SHIVA_WINCE) && !defined(__GNUC__)
-void __fastcall RefObject_Inc(volatile int*)
-{
-	__asm
-	{
-		lock inc dword ptr [ecx]
-	}
-}
-void __fastcall RefObject_Dec(volatile int*)
-{
-	__asm
-	{
-		lock dec dword ptr [ecx]
-	}
-}
-#endif*/
-///\endcond
 
 /*************************************
  * LockedIncrement
@@ -123,19 +124,18 @@ void __fastcall RefObject_Dec(volatile int*)
 /// Thread safe ++
 void SHVRefObject::LockedIncrement(volatile int* ref)
 {
-#ifdef __APPLE__
+#ifdef __SHIVA_REFOBJ_APPLE
 	OSAtomicAdd32(1,ref);
-#elif ANDROID
+#elif defined(__SHIVA_REFOBJ_ANDROID)
 	__atomic_inc(ref);
-#elif defined(__GNUC__)
+#elif defined(__SHIVA_REFOBJ_GNUC)
 	GNUC_NAMESPACE::__atomic_add(ref,1);
-#elif defined(__SHIVA_WINCE)
-	InterlockedIncrement((LPLONG)ref); // does not work in 64 bit
-#elif defined(__SHIVA_WIN32)
+#elif defined(__SHIVA_REFOBJ_WIN32)
 	InterlockedIncrement((LPLONG)ref);
-//	RefObject_Inc(ref);
 #else
+	RefObj_GlobalRefLock.Lock();
 	(*ref)++;
+	RefObj_GlobalRefLock.Unlock();
 #endif
 }
 
@@ -145,18 +145,78 @@ void SHVRefObject::LockedIncrement(volatile int* ref)
 /// Thread safe --
 void SHVRefObject::LockedDecrement(volatile int* ref)
 {
-#ifdef __APPLE__
+
+
+#ifdef __SHIVA_REFOBJ_APPLE
 	OSAtomicAdd32(-1,ref);
-#elif ANDROID
+#elif defined(__SHIVA_REFOBJ_ANDROID)
 	__atomic_dec(ref);
-#elif __GNUC__
+#elif defined(__SHIVA_REFOBJ_GNUC)
 	GNUC_NAMESPACE::__atomic_add(ref,-1);
-#elif defined(__SHIVA_WINCE)
-	InterlockedDecrement((LPLONG)ref); // does not work in 64 bit
-#elif defined(__SHIVA_WIN32)
+#elif defined(__SHIVA_REFOBJ_WIN32)
 	InterlockedDecrement((LPLONG)ref);
-//	RefObject_Dec(ref);
 #else
+	RefObj_GlobalRefLock.Lock();
 	(*ref)--;
+	RefObj_GlobalRefLock.Unlock();
 #endif
 }
+
+///\cond INTERNAL
+/*************************************
+ * RefData::LockedDecrementAndCheckDelete
+ *************************************/
+bool SHVRefObject::RefData::LockedDecrementAndCheckDelete()
+{
+bool retVal;
+#ifdef __SHIVA_REFOBJ_HASATOMICDECCHECK
+
+# ifdef __SHIVA_REFOBJ_APPLE
+	retVal = (OSAtomicAdd32(-1,&References) <= 0);
+# elif defined(__SHIVA_REFOBJ_ANDROID)
+	retVal = (__atomic_dec(&References) <= 1);
+# elif defined(__SHIVA_REFOBJ_GNUC)
+	retVal = (GNUC_NAMESPACE::__exchange_and_add(&References,-1) <= 1);
+# elif defined(__SHIVA_REFOBJ_WIN32)
+	retVal = (InterlockedDecrement((LPLONG)&References) <= 0);
+# else
+#  error Define FUBAR in SHVRefObject
+# endif
+
+	if (retVal)
+		DeleteInProgress = true;
+	
+#else
+
+	RefObj_GlobalDeleteLock.Lock();
+	SHVRefObject::LockedDecrement(&References);
+	if (References <= 0 && !DeleteInProgress)
+		retVal = DeleteInProgress = true;
+	else
+		retVal = false;
+	RefObj_GlobalDeleteLock.Unlock();
+
+#endif
+	
+	return retVal;
+}
+
+/*************************************
+ * RefData::RefInvalid
+ *************************************/
+bool SHVRefObject::RefData::RefInvalid()
+{
+bool retVal;
+
+	if (References <= 0 && !DeleteInProgress)
+	{
+		retVal = DeleteInProgress = true;
+	}
+	else
+	{
+		retVal = false;
+	}
+	
+	return retVal;
+}
+///\endcond

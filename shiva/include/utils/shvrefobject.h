@@ -13,6 +13,20 @@ class SHVAPI SHVRefObject
 {
 public:
 
+	struct SHVAPI RefData
+	{
+		volatile int References;
+		bool DeleteInProgress;
+		
+		inline void Initialize(int refs = 0);
+		
+		inline void LockedIncrement();
+		inline void LockedDecrement();
+		bool LockedDecrementAndCheckDelete();
+		
+		bool RefInvalid();
+	};
+	
 
 	// property
 	inline int GetRefCount();
@@ -38,8 +52,7 @@ protected:
 	inline SHVRefObject(const SHVRefObject&);
 	inline SHVRefObject& operator=(const SHVRefObject&);
 private:
-	volatile int References;
-	bool DeleteInProgress;
+	RefData References;
 	///\endcond
 };
 
@@ -138,41 +151,50 @@ typedef SHVRefObjectContainer<SHVRefObject> SHVObjectRef;
 
 
 
+// ================================ implementation - SHVRefObject::RefData ================================ //
+
+///\cond INTERNAL
+void SHVRefObject::RefData::Initialize(int refs) { References = refs; DeleteInProgress = false; }
+void SHVRefObject::RefData::LockedIncrement() { SHVRefObject::LockedIncrement(&References); }
+void SHVRefObject::RefData::LockedDecrement() { SHVRefObject::LockedDecrement(&References); }
+///\endcond
+
+
 // ===================================== implementation - SHVRefObject ==================================== //
 
 ///\cond INTERNAL
 /*************************************
  * Constructor
  *************************************/
-SHVRefObject::SHVRefObject() { References = 0; DeleteInProgress = false; }
+SHVRefObject::SHVRefObject() { References.Initialize(); }
 
 /*************************************
  * ObjectIsDeleting
  *************************************/
-bool SHVRefObject::ObjectIsDeleting() const { return DeleteInProgress; }
+bool SHVRefObject::ObjectIsDeleting() const { return References.DeleteInProgress; }
 
 /*************************************
  * Copy constructor
  *************************************/
-SHVRefObject::SHVRefObject(const SHVRefObject&) { References = 0; DeleteInProgress = false; }
+SHVRefObject::SHVRefObject(const SHVRefObject&) { References.Initialize(); }
 
 /*************************************
  * Assignment operator
  *************************************/
-SHVRefObject& SHVRefObject::operator=(const SHVRefObject&) { References = 0; DeleteInProgress = false; return *this; }
+SHVRefObject& SHVRefObject::operator=(const SHVRefObject&) { return *this; }
 ///\endcond
 
 /*************************************
  * GetRefCount
  *************************************/
 /// Returns the number of references to the object
-int SHVRefObject::GetRefCount() { return References; }
+int SHVRefObject::GetRefCount() { return References.References; }
 
 /*************************************
  * ValidateRefCount
  *************************************/
 /// Validates if the object needs to be deleted, and deletes if so
-void SHVRefObject::ValidateRefCount() { if (References <= 0 && !DeleteInProgress) { DeleteInProgress = true; delete this; } }
+void SHVRefObject::ValidateRefCount() { if (References.RefInvalid()) delete this; }
 
 
 // ================================= implementation - SHVRefObjectTemplate ================================ //
