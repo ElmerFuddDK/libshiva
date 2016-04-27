@@ -5,7 +5,7 @@
 
 
 // typedef for an IPv4 address and port
-typedef unsigned long SHVIPv4Addr;
+typedef unsigned int SHVIPv4Addr;
 typedef unsigned short SHVIPv4Port;
 
 
@@ -56,7 +56,8 @@ public:
 	enum Types {
 		TypeTCP,
 		TypeUDP,
-		TypeSSL
+		TypeSSL,
+		TypeUnix
 	};
 
 
@@ -70,11 +71,13 @@ public:
 	
 	// Operations
 	virtual SHVBool BindAndListen(SHVIPv4Port port) = 0;
+	virtual SHVBool BindAndListenUnix(const SHVStringC fileName) = 0;
 	virtual SHVBool Close() = 0;
 	virtual SHVBool Shutdown() = 0;
 	virtual SHVBool ConnectAny(SHVIPv4Port port) = 0;
 	virtual SHVBool Connect(SHVIPv4Addr ip, SHVIPv4Port port) = 0;
 	virtual SHVBool Connect(const SHVStringC ipv4Addr, SHVIPv4Port port) = 0;
+	virtual SHVBool ConnectUnix(const SHVStringC fileName) = 0;
 	
 	virtual SHVBool Send(const SHVBufferC& buf) = 0;
 	virtual SHVBool SendTo(const SHVBufferC& buf, SHVIPv4Addr ip, SHVIPv4Port port) = 0;

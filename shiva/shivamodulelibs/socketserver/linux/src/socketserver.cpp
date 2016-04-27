@@ -197,7 +197,7 @@ public:
 					printf("Attempting to start server at %d\n", port);
 					SHVASSERT(Socket->BindAndListen(port ? port : 1234));
 				}
-				if (str.Left(11) == SHVString8C("/serverssl "))
+				else if (str.Left(11) == SHVString8C("/serverssl "))
 				{
 				SHVChar* c;
 				SHVIPv4Port port = SHVString8C::StrToL(str.GetSafeBuffer() + 11, &c);
@@ -226,6 +226,28 @@ public:
 							printf("Attempting to start server at %d\n", port);
 							SHVASSERT(Socket->BindAndListen(port ? port : 1234));
 						}
+					}
+				}
+				else if (str.Left(12) == SHVString8C("/serverunix "))
+				{
+				SHVString8 filepath(str.Mid(12));
+
+					if (!Socket.IsNull())
+					{
+						Socket->Close();
+						Socket = NULL;
+					}
+
+					Socket = SocketServer->CreateSocket(SocketSubscriber, SHVSocket::TypeUnix);
+					if (Socket.IsNull())
+					{
+						printf("Unix socket not supported\n");
+					}
+					else
+					{
+						Socket->SetSocketOption(SHVSocket::SockOptReuseAddr,1);
+						printf("Attempting to start server at \"%s\"\n", filepath.GetSafeBuffer());
+						SHVASSERT(Socket->BindAndListenUnix(filepath.ToStrT()));
 					}
 				}
 				else if (str.Left(9) == SHVString8C("/connect "))
@@ -290,6 +312,27 @@ public:
 					{
 						printf("Attempting secure connect to \"%s\" port %d\n", ip.GetSafeBuffer(), port);
 						SHVASSERT(Socket->Connect(SocketServer->Inetv4ResolveHost(ip.ToStrT()),port ? port : 1234));
+					}
+				}
+				else if (str.Left(13) == SHVString8C("/unixconnect "))
+				{
+				SHVString8 filepath(str.Mid(13));
+
+					if (!Socket.IsNull())
+					{
+						Socket->Close();
+						Socket = NULL;
+					}
+
+					Socket = SocketServer->CreateSocket(SocketSubscriber, SHVSocket::TypeUnix);
+					if (Socket.IsNull())
+					{
+						printf("Unix socket not supported\n");
+					}
+					else
+					{
+						printf("Attempting connect to \"%s\"\n", filepath.GetSafeBuffer());
+						SHVASSERT(Socket->ConnectUnix(filepath));
 					}
 				}
 				else if (str == SHVString8C("/udp"))

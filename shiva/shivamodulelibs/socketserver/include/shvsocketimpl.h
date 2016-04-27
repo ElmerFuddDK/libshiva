@@ -42,11 +42,13 @@ public:
 	
 	// Operations
 	virtual SHVBool BindAndListen(SHVIPv4Port port);
+	virtual SHVBool BindAndListenUnix(const SHVStringC fileName);
 	virtual SHVBool Close();
 	virtual SHVBool Shutdown();
 	virtual SHVBool ConnectAny(SHVIPv4Port port);
 	virtual SHVBool Connect(SHVIPv4Addr ip, SHVIPv4Port port);
 	virtual SHVBool Connect(const SHVStringC ipv4Addr, SHVIPv4Port port);
+	virtual SHVBool ConnectUnix(const SHVStringC fileName);
 	
 	virtual SHVBool Send(const SHVBufferC& buf);
 	virtual SHVBool SendTo(const SHVBufferC& buf, SHVIPv4Addr ip, SHVIPv4Port port);

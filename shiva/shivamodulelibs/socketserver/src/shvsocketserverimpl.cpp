@@ -213,7 +213,19 @@ SHVIPv4Addr retVal = Inetv4Addr(host);
  *************************************/
 bool SHVSocketServerImpl::SocketTypeSupported(SHVSocket::Types type)
 {
-	return (type != SHVSocket::TypeSSL || SSLFactory->IsSupported());
+	switch (type)
+	{
+	case SHVSocket::TypeSSL:
+		return SSLFactory->IsSupported();
+	case SHVSocket::TypeUnix:
+#ifdef __SHIVA_POSIX
+		return true;
+#else
+		return false;
+#endif
+	default:
+		return true;
+	}
 }
 
 

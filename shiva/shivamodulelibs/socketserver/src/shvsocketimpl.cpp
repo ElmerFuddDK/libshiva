@@ -61,6 +61,9 @@ struct tcp_keepalive { u_long  onoff; u_long  keepalivetime; u_long  keepalivein
 # include <fcntl.h>
 # include <errno.h>
 #endif
+#ifdef __SHIVA_POSIX
+# include <sys/un.h>
+#endif
 
 #define __SHVSOCKET_SENDTIMEOUT 30
 
@@ -132,7 +135,24 @@ SHVSocketImpl::SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* 
 		return;
 	}
 
-	Socket = ::socket( PF_INET, (Type == SHVSocket::TypeTCP || Type == SHVSocket::TypeSSL ? SOCK_STREAM : SOCK_DGRAM), 0 );
+	switch (Type)
+	{
+	case SHVSocket::TypeTCP:
+	case SHVSocket::TypeSSL:
+		Socket = ::socket( PF_INET, SOCK_STREAM, 0 );
+		break;
+	case SHVSocket::TypeUDP:
+		Socket = ::socket( PF_INET, SOCK_DGRAM, 0 );
+		break;
+#ifdef __SHIVA_POSIX
+	case SHVSocket::TypeUnix:
+		Socket = ::socket( AF_UNIX, SOCK_STREAM, 0 );
+		break;
+#endif
+	default:
+		Socket = InvalidSocket;
+		break;
+	}
 
 	if (Socket != InvalidSocket)
 	{
@@ -189,6 +209,9 @@ SHVSocket::Types SHVSocketImpl::GetType()
 SHVBool SHVSocketImpl::BindAndListen(SHVIPv4Port port)
 {
 SHVBool retVal;
+
+	if (Type == SHVSocket::TypeUnix)
+		return SHVBool(SHVSocket::ErrInvalidOperation);
 
 	SocketServer->SocketServerLock.Lock();
 	if (State == SHVSocket::StateNone)
@@ -264,6 +287,74 @@ SHVBool retVal;
 	}
 	
 	return retVal;
+}
+
+/*************************************
+ * BindAndListenUnix
+ *************************************/
+SHVBool SHVSocketImpl::BindAndListenUnix(const SHVStringC fileName)
+{
+#ifdef __SHIVA_POSIX
+SHVBool retVal;
+
+	if (Type != SHVSocket::TypeUnix)
+		return SHVBool(SHVSocket::ErrInvalidOperation);
+
+	SocketServer->SocketServerLock.Lock();
+	if (State == SHVSocket::StateNone)
+	{
+	sockaddr_un sockAddr;
+	int status;
+	int val1, val2;
+
+		// If "reuseaddr" is set then fake the behavior by deleting the old file
+		if (GetSocketOption(SHVSocket::SockOptReuseAddr,val1,val2) && val1)
+			SHVDir::DeleteFile(fileName);
+	
+		retVal = SHVSocket::ErrNone;
+
+		memset(&sockAddr, 0, sizeof(sockAddr));
+		sockAddr.sun_family = AF_UNIX;
+		strncpy(sockAddr.sun_path, fileName.GetSafeBuffer(), sizeof(sockAddr.sun_path)-1);
+		status = ::bind(Socket, (struct sockaddr*)&sockAddr, sizeof(sockAddr));
+
+		if (!status)
+		{
+			status = ::listen(Socket, 5);
+
+			if (!status)
+			{
+				State = SHVSocket::StateListening;
+# ifdef __SHIVASOCKETS_NOSELECTMODE
+				StartReadThread();
+# endif
+				retVal = SHVBool::True;
+			}
+			else
+			{
+				retVal = SetError(SHVSocket::ErrListening);
+			}
+		}
+		else
+		{
+			retVal = SetError(SHVSocket::ErrBinding);
+		}
+	}
+	else
+	{
+		retVal = SHVSocket::ErrInvalidOperation;
+	}
+	SocketServer->SocketServerLock.Unlock();
+	
+	if (retVal == SHVBool::True)
+	{
+		SocketServer->SocketServerThread.SignalDispatcher();
+	}
+	
+	return retVal;
+#else
+	return SHVBool(SHVSocket::ErrInvalidOperation);
+#endif
 }
 
 /*************************************
@@ -730,7 +821,7 @@ SHVBool SHVSocketImpl::Connect(SHVIPv4Addr ip, SHVIPv4Port port)
 SHVBool retVal(SHVSocket::ErrInvalidOperation);
 
 	SocketServer->SocketServerLock.Lock();
-	if (State == SHVSocket::StateNone)
+	if (State == SHVSocket::StateNone && Type != SHVSocket::TypeUnix)
 	{
 	sockaddr_in host;
 	int result;
@@ -773,6 +864,50 @@ SHVBool retVal(SHVSocket::ErrInvalidOperation);
 SHVBool SHVSocketImpl::Connect(const SHVStringC ipv4Addr, SHVIPv4Port port)
 {
 	return Connect(SocketServer->Inetv4Addr(ipv4Addr),port);
+}
+
+/*************************************
+ * ConnectUnix
+ *************************************/
+SHVBool SHVSocketImpl::ConnectUnix(const SHVStringC fileName)
+{
+SHVBool retVal(SHVSocket::ErrInvalidOperation);
+
+#ifdef __SHIVA_POSIX
+	SocketServer->SocketServerLock.Lock();
+	if (State == SHVSocket::StateNone && Type == SHVSocket::TypeUnix)
+	{
+	sockaddr_un host;
+	int result;
+
+		memset(&host, 0, sizeof(host));
+		host.sun_family = AF_UNIX;
+		strncpy(host.sun_path, fileName.GetSafeBuffer(), sizeof(host.sun_path)-1);
+		
+		result = ::connect(Socket, (sockaddr*)&host, sizeof(sockaddr_un));
+		if (result == -1 && errno != EINPROGRESS) // failure
+		{
+			Close();
+			retVal = SetError(SHVSocket::ErrGeneric);
+		}
+		else
+		{
+			State = SHVSocket::StateConnecting;
+			retVal.SetError(SHVSocket::ErrNone);
+# ifdef __SHIVASOCKETS_NOSELECTMODE
+			StartReadThread();
+# endif
+		}
+	}
+	SocketServer->SocketServerLock.Unlock();
+	
+	if (retVal == SHVBool::True)
+	{
+		SocketServer->SocketServerThread.SignalDispatcher();
+	}
+#endif
+	
+	return retVal;
 }
 
 
