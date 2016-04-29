@@ -36,6 +36,7 @@ public:
 	inline SHVPtrContainer<T> Remove(size_t index);
 	inline SHVPtrContainer<T> Replace(size_t index, T* item);
 	inline SHVPtrContainer<T> Pop();
+	inline T* Get(size_t index);
 
 	inline void Truncate();
 	inline void Compress();
@@ -167,6 +168,15 @@ template<class T, int GrowSize>
 SHVPtrContainer<T> SHVVector<T,GrowSize>::Pop()
 {
 	return (T*)SHVVectorBase::Pop(GrowSize);
+}
+
+/*************************************
+ * Get
+ *************************************/
+template<class T, int GrowSize>
+T* SHVVector<T,GrowSize>::Get(size_t index)
+{
+	return (T*)SHVVectorBase::Get(index);
 }
 
 /*************************************

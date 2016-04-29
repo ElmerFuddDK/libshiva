@@ -39,6 +39,7 @@ public:
 	void* Remove(size_t index);
 	void* Replace(size_t index, void* item);
 	void* Pop(size_t growSize);
+	inline void* Get(size_t index);
 
 	void Truncate(size_t growSize);
 	void Compress(size_t growSize);
@@ -58,5 +59,10 @@ private:
 bool SHVVectorBase::Eof(size_t index)
 {
 	return ( (Array+index) < ArrayEnd );
+}
+
+void* SHVVectorBase::Get(size_t index)
+{
+	return (*this)[index];
 }
 #endif

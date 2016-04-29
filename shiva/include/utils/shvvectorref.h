@@ -36,6 +36,7 @@ public:
 	inline void Remove(size_t index);
 	inline void Replace(size_t index, T* item);
 	inline void Pop();
+	inline T* Get(size_t index);
 
 	inline void Truncate();
 	inline void Compress();
@@ -171,6 +172,15 @@ void SHVVectorRef<T,GrowSize>::Pop()
 T* oldItem = (T*)SHVVectorBase::Pop(GrowSize);
 	if (oldItem)
 		oldItem->DestroyRef();
+}
+
+/*************************************
+ * Get
+ *************************************/
+template<class T, int GrowSize>
+T* SHVVectorRef<T,GrowSize>::Get(size_t index)
+{
+	return (T*)SHVVectorBase::Get(index);
 }
 
 /*************************************
