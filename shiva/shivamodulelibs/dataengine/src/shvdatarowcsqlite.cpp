@@ -183,7 +183,7 @@ SHVDataRowKeyImpl* Result = new SHVDataRowKeyImpl();
 	{
 		for (size_t i = 0; i < ResultDef->Count(); i++)
 		{
-			Result->AddKey((*ResultDef)[i].Key, GetValue(ColumnIndex((*ResultDef)[i].Key)), (*ResultDef)[i].Desc);
+			Result->AddKeyWithValue((*ResultDef)[i].Key, GetValue(ColumnIndex((*ResultDef)[i].Key)), (*ResultDef)[i].Desc);
 		}
 	}
 	return Result;

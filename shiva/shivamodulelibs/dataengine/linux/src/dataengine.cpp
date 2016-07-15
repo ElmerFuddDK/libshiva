@@ -143,7 +143,7 @@ public:
 			SHVDataRowListCRef l = DataSession->GetRows("testtable", _S(""), 0);
 
 				v->SetInt(500);
-				key->AddKey("key", v, false);
+				key->AddKeyWithValue("key", v, false);
 				l->SetPosition(key);
 				printf("Found %s\n", l->GetCurrentRow()->AsString("col1").GetSafeBuffer());
 				printf("Done\n");
@@ -214,7 +214,7 @@ public:
 				l->StartEdit();
 				printf("Deleting\n");
 				v->SetInt(500);
-				key->AddKey("key", v, false);
+				key->AddKeyWithValue("key", v, false);
 				if (l->DeleteRow(key))
 					printf("Now 500 is gone\n");
 				if (!l->DeleteRow(key))

@@ -104,7 +104,7 @@ long p;
 	if (GetCurrentRow() && Statement->GetLong(p, (int) GetStruct()->GetColumnCount()))
 	{
 		retVal = new SHVDataRowKeyImpl();	
-		retVal->AddKey("idx", new SHVDataVariantImpl(SHVInt(p)), false);
+		retVal->AddKeyWithValue("idx", new SHVDataVariantImpl(SHVInt(p)), false);
 	}
 	return retVal;
 }

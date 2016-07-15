@@ -123,20 +123,20 @@ void SHVDataRowKeyImpl::SetKeyNull(size_t idx)
 /*************************************
  * AddKey
  *************************************/
-void SHVDataRowKeyImpl::AddKey(const SHVString8C& columnName, SHVDataVariant* value, bool desc)
-{
-	KeyValuePair* k = new KeyValuePair();
-	k->Key = columnName;
-	k->Value = value;
-	k->Desc = desc;
-	Keys.Add(k);
-}
-
 SHVDataRowKey& SHVDataRowKeyImpl::AddKey(const SHVString8C& columnName, bool desc)
 {
 	KeyValuePair* k = new KeyValuePair();
 	k->Key = columnName;
 	k->Value = NULL;
+	k->Desc = desc;
+	Keys.Add(k);
+	return *this;
+}
+SHVDataRowKey& SHVDataRowKeyImpl::AddKeyWithValue(const SHVString8C& columnName, SHVDataVariant* value, bool desc)
+{
+	KeyValuePair* k = new KeyValuePair();
+	k->Key = columnName;
+	k->Value = value;
 	k->Desc = desc;
 	Keys.Add(k);
 	return *this;

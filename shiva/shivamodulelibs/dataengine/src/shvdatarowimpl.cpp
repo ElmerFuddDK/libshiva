@@ -370,7 +370,7 @@ SHVDataRowKeyImpl* retVal = NULL;
 		retVal = new SHVDataRowKeyImpl();
 		for (size_t i = 0; i < idx->Count(); i++)
 		{
-			retVal->AddKey((*idx)[i].Key, GetValue(ColumnIndex((*idx)[i].Key)), (*idx)[i].Desc);
+			retVal->AddKeyWithValue((*idx)[i].Key, GetValue(ColumnIndex((*idx)[i].Key)), (*idx)[i].Desc);
 		}
 	}
 	return retVal;

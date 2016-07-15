@@ -26,8 +26,8 @@ public:
 	virtual void SetKeyValue(size_t idx, const SHVStringC& val);
 	virtual void SetKeyNull(size_t idx);
 
-	virtual void AddKey(const SHVString8C& columnName, SHVDataVariant* value, bool desc);
 	virtual SHVDataRowKey& AddKey(const SHVString8C& columnName, bool desc);
+	virtual SHVDataRowKey& AddKeyWithValue(const SHVString8C& columnName, SHVDataVariant* value, bool desc);
 
 	virtual size_t Count() const;
 	virtual SHVBool Unique() const;
