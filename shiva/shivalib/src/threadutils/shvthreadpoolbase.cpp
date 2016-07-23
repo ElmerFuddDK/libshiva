@@ -281,12 +281,12 @@ SHVThreadPoolBase* self = t->Self;
 	{
 		threadData->Lock.Lock();
 		
-		if (self->Running && threadData->Func)
+		if (threadData->Func)
 		{
 			(*threadData->Func)(threadData->Data);
 			
 			self->Lock.Lock();
-			if (self->WaitQueue.GetCount())
+			if (self->Running && self->WaitQueue.GetCount())
 			{
 			PoolThreadWaitData* data = self->WaitQueue.PopHead();
 				threadData->Lock.Unlock();
@@ -303,7 +303,7 @@ SHVThreadPoolBase* self = t->Self;
 			self->Lock.Unlock();
 		}
 	}
-	while (self->Running);
+	while (self->Running || threadData->Func);
 	
 	threadData->Lock.Unlock();
 	threadData->Thread.ResetHandle();

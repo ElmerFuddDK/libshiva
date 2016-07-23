@@ -115,6 +115,7 @@ SHVThreadPoolTester::TestObject::TestObject(SHVTestBase* self, int maxThreads) :
  *************************************/
 void SHVThreadPoolTester::TestObject::ThreadStarting()
 {
+	SHVThreadBase::Sleep(25);
 	SHVRefObject::LockedDecrement(&ThreadStartingCounter);
 }
 void SHVThreadPoolTester::TestObject::ThreadFuncSimple(void*)
