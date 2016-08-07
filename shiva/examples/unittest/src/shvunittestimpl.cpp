@@ -338,7 +338,7 @@ void SHVUnitTestImpl::OnMenuEvent(SHVEvent* event)
 	{
 		PerformTestFromString("all");
 	}
-	else if (event->GetSubID() < SHVInt((int)ActionMenuItems.CalculateCount()))
+	else if (!event->GetSubID().IsNull() && event->GetSubID() < SHVInt((int)ActionMenuItems.CalculateCount()))
 	{
 	ActionMenuItem* item = ActionMenuItems[event->GetSubID()];
 
