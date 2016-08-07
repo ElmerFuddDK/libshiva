@@ -1,6 +1,6 @@
 #if !defined(__SHIVA_MFC) // include this if you have an MFC project
 # if defined(DEBUG) && !defined(__SHIVA_WINCE)
-#  ifndef __MINGW32__
+#  if !defined(__MINGW32__) && !defined(WINELIB)
 #    define _CRTDBG_MAP_ALLOC
 #    include <crtdbg.h>
 #    define SHVBREAKPOINT (_CrtDbgBreak(), 0)

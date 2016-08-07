@@ -42,7 +42,7 @@
 #include "../../../../include/gui/shvregisterbitmap.h"
 
 #include "modules/shvcontroltester.h"
-#include "resource.h"
+#include "Resource.h"
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
@@ -78,7 +78,7 @@ int retVal = -1;
 
 	guilib.Unload();
 
-#ifdef DEBUG
+#if defined(DEBUG) && !defined(WINELIB)
 	_CrtDumpMemoryLeaks();
 #endif
 
