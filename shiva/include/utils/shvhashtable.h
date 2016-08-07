@@ -10,6 +10,10 @@ template<class K, class D, class CopyK = const K, class CopyD = const D>
 class SHVHashTableIterator;
 template<class D, class CopyD = const D>
 class SHVHashTableStringIterator;
+///\cond INTERNAL
+template<class K, class D, class CopyK, class CopyD>
+class SHVHashTableBuffer;
+///\endcond
 
 
 
@@ -31,6 +35,10 @@ public:
 
 	// constructor
 	SHVHashTable(size_t estimateCount=1000);
+	SHVHashTable(const SHVHashTableBuffer<K,D,CopyK,CopyD>& buffer);
+	
+	SHVHashTable<K,D,CopyK,CopyD>& operator=(const SHVHashTableBuffer<K,D,CopyK,CopyD>& buffer);
+	SHVHashTable<K,D,CopyK,CopyD>& operator+=(const SHVHashTableBuffer<K,D,CopyK,CopyD>& buffer);
 
 
 	// properties
@@ -51,6 +59,8 @@ public:
 
 	// operators
 	D& operator[](CopyK& key);
+	
+	SHVHashTableBuffer<K,D,CopyK,CopyD> ReleaseBuffer();
 
 
 protected:
@@ -79,6 +89,8 @@ class SHVHashTableString : public SHVHashTable<SHVString,D,const SHVStringC,Copy
 friend class SHVHashTableStringIterator<D,CopyD>;
 public:
 	SHVHashTableString(size_t estimateCount=1000);
+	inline SHVHashTableString(const SHVHashTableBuffer<SHVString,D,const SHVStringC,CopyD>& buffer) : SHVHashTable<SHVString,D,const SHVStringC,CopyD>(buffer) {}
+	inline SHVHashTableString<D,CopyD>& operator =(const SHVHashTableBuffer<SHVString,D,const SHVStringC,CopyD>& buffer) { SHVHashTable<SHVString,D,const SHVStringC,CopyD>::operator =(buffer); return *this; }
 private:
 ///\cond INTERNAL
 	inline SHVHashIteratorBase CreateIterator();
@@ -136,6 +148,18 @@ public:
 
 // ============================================= implementation ============================================= //
 
+///\cond INTERNAL
+template<class K, class D, class CopyK, class CopyD>
+class SHVHashTableBuffer : public SHVHashTableBufferBase
+{
+friend class SHVHashTable<K,D,CopyK,CopyD>;
+	SHVHashTableBuffer(const SHVHashTableBufferBase& buffer) : SHVHashTableBufferBase(buffer) {}
+public:
+	SHVHashTableBuffer(const SHVHashTableBuffer<K,D,CopyK,CopyD>& buffer) : SHVHashTableBufferBase(buffer) {}
+	virtual ~SHVHashTableBuffer() {}
+};
+///\endcond
+
 /// \class SHVHashTable shvhashtable.h "shiva/include/utils/shvhashtable.h"
 /// \class SHVHashTableString shvhashtable.h "shiva/include/utils/shvhashtable.h"
 /// \class SHVHashTableIterator shvhashtable.h "shiva/include/utils/shvhashtable.h"
@@ -170,11 +194,33 @@ public:
  *************************************/
 template<class K, class D, class CopyK, class CopyD>
 SHVHashTable<K,D,CopyK,CopyD>::SHVHashTable(size_t estimateCount) : SHVHashTableBase(Match,CreateHash,Destroy,estimateCount) {}
+template<class K, class D, class CopyK, class CopyD>
+SHVHashTable<K,D,CopyK,CopyD>::SHVHashTable(const SHVHashTableBuffer<K,D,CopyK,CopyD>& buffer) : SHVHashTableBase(buffer) {}
 template<class D, class CopyD>
 SHVHashTableString<D,CopyD>::SHVHashTableString(size_t estimateCount) : SHVHashTable<SHVString,D,const SHVStringC,CopyD>(estimateCount)
 {
 	SHVHashTableBase::OverrideMatchFunc(&MatchString);
 } 
+
+/*************************************
+ * Operator=
+ *************************************/
+template<class K, class D, class CopyK, class CopyD>
+SHVHashTable<K,D,CopyK,CopyD>& SHVHashTable<K,D,CopyK,CopyD>::operator=(const SHVHashTableBuffer<K,D,CopyK,CopyD>& buffer)
+{
+	SHVHashTableBase::operator =(buffer);
+	return *this;
+}
+
+/*************************************
+ * Operator+=
+ *************************************/
+template<class K, class D, class CopyK, class CopyD>
+SHVHashTable<K,D,CopyK,CopyD>& SHVHashTable<K,D,CopyK,CopyD>::operator+=(const SHVHashTableBuffer<K,D,CopyK,CopyD>& buffer)
+{
+	SHVHashTableBase::operator +=(buffer);
+	return *this;
+}
 
 /*************************************
  * IsEmpty
@@ -279,6 +325,14 @@ SHVHashPair<K,D,CopyK,CopyD>* pair = (SHVHashPair<K,D,CopyK,CopyD>*)SHVHashTable
 	return pair->GetData();
 }
 
+/*************************************
+ * ReleaseBuffer
+ *************************************/
+template<class K, class D, class CopyK, class CopyD>
+SHVHashTableBuffer<K,D,CopyK,CopyD> SHVHashTable<K,D,CopyK,CopyD>::ReleaseBuffer()
+{
+	return SHVHashTableBuffer<K,D,CopyK,CopyD>(SHVHashTableBase::ReleaseBuffer());
+}
 
 ///\cond INTERNAL
 /*************************************

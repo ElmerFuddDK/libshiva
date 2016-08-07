@@ -3,6 +3,9 @@
 
 #include "shvvectorbase.h"
 #include "shvrefobject.h"
+///\cond INTERNAL
+template<class T, int GrowSize> class SHVVectorRefBuffer;
+///\endcond
 
 //-=========================================================================================================
 /// SHVVectorRef template class
@@ -18,7 +21,11 @@ public:
 
 	// constructor
 	SHVVectorRef();
+	SHVVectorRef(const SHVVectorRefBuffer<T,GrowSize>& buffer);
 	~SHVVectorRef();
+	
+	inline SHVVectorRef<T,GrowSize>& operator=(const SHVVectorRefBuffer<T,GrowSize>& buffer);
+	inline SHVVectorRef<T,GrowSize>& operator+=(const SHVVectorRefBuffer<T,GrowSize>& buffer);
 
 
 	// properties
@@ -40,6 +47,8 @@ public:
 
 	inline void Truncate();
 	inline void Compress();
+	
+	inline SHVVectorRefBuffer<T,GrowSize> ReleaseBuffer();
 
 private:
 	///\cond INTERNAL
@@ -52,6 +61,19 @@ private:
 
 // ============================================= implementation ============================================= //
 /// \class SHVVectorRef shvvectorref.h "shiva/include/utils/shvvectorref.h"
+
+///\cond INTERNAL
+template<class T,  int GrowSize = 10 >
+class SHVVectorRefBuffer : public SHVVectorBufferBase
+{
+friend class SHVVectorRef<T,GrowSize>;
+	SHVVectorRefBuffer(const SHVVectorBufferBase& buffer) : SHVVectorBufferBase(buffer) {}
+	static void DestroyData(void* data) { ((T*) data)->DestroyRef(); }
+public:
+	SHVVectorRefBuffer(const SHVVectorRefBuffer<T,GrowSize>& buffer) : SHVVectorBufferBase(buffer) {}
+	virtual ~SHVVectorRefBuffer() { SHVVectorBufferBase::Clear(DestroyData); }
+};
+///\endcond
 
 
 /*************************************
@@ -66,6 +88,9 @@ private:
 template<class T, int GrowSize>
 SHVVectorRef<T,GrowSize>::SHVVectorRef()
 {}
+template<class T, int GrowSize>
+SHVVectorRef<T,GrowSize>::SHVVectorRef(const SHVVectorRefBuffer<T,GrowSize>& buffer) : SHVVectorBase(buffer)
+{}
 
 /*************************************
  * Destructor
@@ -74,6 +99,27 @@ template<class T, int GrowSize>
 SHVVectorRef<T,GrowSize>::~SHVVectorRef()
 {
 	SHVVectorBase::Clear(DestroyData);
+}
+
+/*************************************
+ * operator=
+ *************************************/
+template<class T, int GrowSize>
+SHVVectorRef<T,GrowSize>& SHVVectorRef<T,GrowSize>::operator=(const SHVVectorRefBuffer<T,GrowSize>& buffer)
+{
+	Clear();
+	SHVVectorBase::operator =(buffer);
+	return *this;
+}
+
+/*************************************
+ * operator+=
+ *************************************/
+template<class T, int GrowSize>
+SHVVectorRef<T,GrowSize>& SHVVectorRef<T,GrowSize>::operator+=(const SHVVectorRefBuffer<T,GrowSize>& buffer)
+{
+	SHVVectorBase::AddFromBuffer(buffer, GrowSize);
+	return *this;
 }
 
 
@@ -199,6 +245,39 @@ template<class T, int GrowSize>
 void SHVVectorRef<T,GrowSize>::Compress()
 {
 	SHVVectorBase::Compress(GrowSize);
+}
+
+/*************************************
+ * ReleaseBuffer
+ *************************************/
+/// Releases contents from the vector
+/**
+ * Returns a buffer object containing the contents of the vector,
+ * releasing them from the object. Use this to transfer contents
+ * to a different vector\n
+\code
+typedef SHVRefObjectTemplate<int> SHVIntObj;
+
+SHVVectorRefBuffer<SHVIntObj> GenerateList()
+{
+SHVVectorRef<SHVIntObj> vector;
+	vector.Add(new SHVIntObj(1));
+	vector.Add(new SHVIntObj(2));
+	vector.Add(new SHVIntObj(3));
+	return vector.ReleaseBuffer();
+}
+
+void main()
+{
+SHVVectorRef<SHVIntObj> result(GenerateList());
+	// result now contains the 3 objects added in the function
+}
+\endcode
+ */
+template<class T, int GrowSize>
+SHVVectorRefBuffer<T,GrowSize> SHVVectorRef<T,GrowSize>::ReleaseBuffer()
+{
+	return SHVVectorRefBuffer<T,GrowSize>(SHVVectorBase::ReleaseBuffer());
 }
 
 ///\cond INTERNAL

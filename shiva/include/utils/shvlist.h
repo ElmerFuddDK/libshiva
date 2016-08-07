@@ -3,6 +3,9 @@
 
 #include "shvlistbase.h"
 #include "shvptrcontainer.h"
+///\cond INTERNAL
+template<class T, class S> class SHVListBuffer;
+///\endcond
 
 
 //-=========================================================================================================
@@ -16,6 +19,10 @@ class SHVList : public SHVListBase
 {
 public:
 	SHVList();
+	SHVList(const SHVListBuffer<T,S>& buffer);
+	
+	SHVList<T,S>& operator=(const SHVListBuffer<T,S>& buffer);
+	SHVList<T,S>& operator+=(const SHVListBuffer<T,S>& buffer);
 
 	void AddHead(S item);
 	void AddTail(S item);
@@ -36,6 +43,8 @@ public:
 
 	SHVListPos Find(S item) const;
 	SHVListPos FindIndex(int index) const;
+
+	SHVListBuffer<T,S> ReleaseBuffer();
 
 };
 
@@ -98,6 +107,16 @@ friend class SHVListIterator<T,S>;
 	SHVListNodeTemp(S data) : Data(data) {}
 	inline operator T*() { return &Data; }
 };
+
+template<class T, class S = T>
+class SHVListBuffer : public SHVListBufferBase
+{
+friend class SHVList<T,S>;
+	SHVListBuffer(const SHVListBufferBase& buffer) : SHVListBufferBase(buffer) {}
+public:
+	SHVListBuffer(const SHVListBuffer<T,S>& buffer) : SHVListBufferBase(buffer) {}
+	virtual ~SHVListBuffer() {}
+};
 ///\endcond
 
 
@@ -107,6 +126,28 @@ friend class SHVListIterator<T,S>;
  *************************************/
 template<class T, class S>
 SHVList<T,S>::SHVList() {}
+template<class T, class S>
+SHVList<T,S>::SHVList(const SHVListBuffer<T,S>& buffer) : SHVListBase(buffer) {}
+
+/*************************************
+ * operator=
+ *************************************/
+template<class T, class S>
+SHVList<T,S>& SHVList<T,S>::operator=(const SHVListBuffer<T,S>& buffer)
+{
+	SHVListBase::operator =(buffer);
+	return *this;
+}
+
+/*************************************
+ * operator+=
+ *************************************/
+template<class T, class S>
+SHVList<T,S>& SHVList<T,S>::operator+=(const SHVListBuffer<T,S>& buffer)
+{
+	SHVListBase::operator +=(buffer);
+	return *this;
+}
 
 /*************************************
  * AddHead
@@ -206,6 +247,38 @@ SHVListIterator<T,S> retVal(*this);
 
 	return retVal.Pos();
 }
+
+/*************************************
+ * ReleaseBuffer
+ *************************************/
+/// Releases contents from the list
+/**
+ * Returns a buffer object containing the contents of the list,
+ * releasing them from the object. Use this to transfer contents
+ * to a different list\n
+\code
+SHVListBuffer<int> GenerateList()
+{
+SHVList<int> list;
+	list.AddTail(1);
+	list.AddTail(2);
+	list.AddTail(3);
+	return list.ReleaseBuffer();
+}
+
+void main()
+{
+SHVList<int> result(GenerateList());
+	// result now contains the 3 items added in the function
+}
+\endcode
+ */
+template<class T, class S>
+SHVListBuffer<T,S> SHVList<T,S>::ReleaseBuffer()
+{
+	return SHVListBuffer<T,S>(SHVListBase::ReleaseBuffer());
+}
+
 
 /*************************************
  * Iterator::MoveNext

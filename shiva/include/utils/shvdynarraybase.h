@@ -1,6 +1,10 @@
 #ifndef __SHIVA_UTILS_DYNARRAYBASE_H
 #define __SHIVA_UTILS_DYNARRAYBASE_H
 
+///\cond INTERNAL
+class SHVDynArrayBufferBase;
+///\endcond
+
 
 //-=========================================================================================================
 /// SHVDynArrayBase class - A basic dynamic array containing void pointers
@@ -24,7 +28,11 @@ public:
 
 
 	SHVDynArrayBase(int growSize, int initSize=0, bool zeroed = false);
+	SHVDynArrayBase(const SHVDynArrayBufferBase& buffer);
 	~SHVDynArrayBase();
+	
+	SHVDynArrayBase& operator=(const SHVDynArrayBufferBase& buffer);
+	SHVDynArrayBase& operator+=(const SHVDynArrayBufferBase& buffer);
 
 
 	// properties
@@ -60,6 +68,8 @@ public:
 	void* FindMatch(void* val, MatchFunc func);
 	size_t FindFirstMatchIndex(void* val, MatchFunc func);
 	void* FindFirstMatch(void* val, MatchFunc func);
+	
+	SHVDynArrayBufferBase ReleaseBuffer();
 
 private:
 	void** Array;
@@ -75,6 +85,27 @@ private:
 
 
 // ============================================ implementation ============================================ //
+
+///\cond INTERNAL
+//-=========================================================================================================
+/// SHVDynArrayBufferBase class
+
+class SHVAPI SHVDynArrayBufferBase
+{
+friend class SHVDynArrayBase;
+	inline SHVDynArrayBufferBase() {}
+public:
+	SHVDynArrayBufferBase(const SHVDynArrayBufferBase& buffer);
+	virtual ~SHVDynArrayBufferBase();
+
+	void Clear(SHVDynArrayBase::DestroyFunc func=NULL);
+private:
+	void** Array;
+	size_t Items,ArrayLen;
+	int GrowSize;
+	bool Zeroed;
+};
+///\endcond
 
 size_t SHVDynArrayBase::GetCount() const
 { return Items; }

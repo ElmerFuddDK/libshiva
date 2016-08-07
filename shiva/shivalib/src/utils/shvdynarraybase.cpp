@@ -58,6 +58,17 @@ SHVDynArrayBase::SHVDynArrayBase(int growSize, int initSize, bool zeroed)
 
 	ClearAndInit(initSize);
 }
+SHVDynArrayBase::SHVDynArrayBase(const SHVDynArrayBufferBase& buffer)
+{
+SHVDynArrayBufferBase* unConst = (SHVDynArrayBufferBase*)&buffer;
+	Array = unConst->Array;
+	Items = unConst->Items;
+	ArrayLen = unConst->ArrayLen;
+	GrowSize = unConst->GrowSize;
+	Zeroed = unConst->Zeroed;
+	unConst->Items = unConst->ArrayLen = 0;
+	unConst->Array = NULL;
+}
 
 /*************************************
  * Destructor
@@ -65,6 +76,53 @@ SHVDynArrayBase::SHVDynArrayBase(int growSize, int initSize, bool zeroed)
 SHVDynArrayBase::~SHVDynArrayBase()
 {
 	ClearAndInit(0);
+}
+
+/*************************************
+ * Operator=
+ *************************************/
+SHVDynArrayBase& SHVDynArrayBase::operator=(const SHVDynArrayBufferBase& buffer)
+{
+SHVDynArrayBufferBase* unConst = (SHVDynArrayBufferBase*)&buffer;
+
+	ClearAndInit(0);
+	
+	Array = unConst->Array;
+	Items = unConst->Items;
+	ArrayLen = unConst->ArrayLen;
+	GrowSize = unConst->GrowSize;
+	Zeroed = unConst->Zeroed;
+	unConst->Items = unConst->ArrayLen = 0;
+	unConst->Array = NULL;
+	
+	return *this;
+}
+
+/*************************************
+ * Operator+=
+ *************************************/
+SHVDynArrayBase& SHVDynArrayBase::operator+=(const SHVDynArrayBufferBase& buffer)
+{
+SHVDynArrayBase buf(buffer);
+int bufItems = (int)buf.Items;
+int surplusItems = int(ArrayLen-Items);
+
+	if (bufItems)
+	{
+	
+		if (surplusItems < bufItems)
+		{
+		int newLen = ((ArrayLen+bufItems-surplusItems+GrowSize-1)/GrowSize)*GrowSize;
+			Resize(newLen-ArrayLen);
+		}
+		
+		::memcpy(Array+Items,buf.Array,sizeof(void*)*bufItems);
+		Items+=buf.Items;
+	}
+	
+	buf.ClearAndInit();
+	
+	return *this;
 }
 
 /*************************************
@@ -500,3 +558,82 @@ void* SHVDynArrayBase::FindFirstMatch(void* val, SHVDynArrayBase::MatchFunc func
 size_t index = FindFirstMatchIndex(val,func);
 	return (index<Items ? Array[index] : NULL);
 }
+
+/*************************************
+ * ReleaseBuffer
+ *************************************/
+/// ReleaseBuffer
+/**
+ * Returns a buffer object containing the contents of the dyn array,
+ * releasing them from the object.\n
+ \note Be very careful when using this method in the base version of
+ * the array, as the transferring object nows nothing of the
+ * contents. It cannot destroy it, so if it is not transferred to
+ * an identical base array with the same destroy function it will
+ * leak.
+ */
+SHVDynArrayBufferBase SHVDynArrayBase::ReleaseBuffer()
+{
+SHVDynArrayBufferBase retVal;
+	retVal.Items = Items;
+	retVal.ArrayLen = ArrayLen;
+	retVal.Array = Array;
+	retVal.GrowSize = GrowSize;
+	retVal.Zeroed = Zeroed;
+	Items = ArrayLen = 0;
+	Array = NULL;
+	return retVal;
+}
+
+///\cond INTERNAL
+// =========================================================================================================
+//  SHVDynArrayBufferBase class
+// =========================================================================================================
+
+/*************************************
+ * Constructor
+ *************************************/
+SHVDynArrayBufferBase::SHVDynArrayBufferBase(const SHVDynArrayBufferBase& buffer)
+{
+SHVDynArrayBufferBase* unConst = (SHVDynArrayBufferBase*)&buffer;
+	Array = unConst->Array;
+	Items = unConst->Items;
+	ArrayLen = unConst->ArrayLen;
+	GrowSize = unConst->GrowSize;
+	Zeroed = unConst->Zeroed;
+	unConst->Items = unConst->ArrayLen = 0;
+	unConst->Array = NULL;
+}
+
+/*************************************
+ * Destructor
+ *************************************/
+SHVDynArrayBufferBase::~SHVDynArrayBufferBase()
+{
+	// Potentional memory leak
+	Array = NULL;
+}
+
+/*************************************
+ * Clear
+ *************************************/
+void SHVDynArrayBufferBase::Clear(SHVDynArrayBase::DestroyFunc func)
+{
+	if (func)
+	{
+		for(size_t i=0; i<Items; i++)
+		{
+			if (Array[i])
+				func(Array[i]);
+		}
+	}
+
+	if (Array)
+	{
+		free(Array);
+		Array = NULL;
+	}
+
+	Items = ArrayLen = 0;
+}
+///\endcond

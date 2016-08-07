@@ -13,6 +13,7 @@ public:
 	// test modes
 	enum Actions {
 		ActionStringInsert = 0x01,
+		ActionReleaseBuffer = 0x02,
 	};
 
 	virtual const SHVString8C GetGroup() const;
@@ -23,6 +24,7 @@ public:
 	// sub tests
 private:
 	static bool TestStringInsert(SHVModuleList& modules, SHVTestBase* self, int flag);
+	static bool TestReleaseBuffer(SHVModuleList& modules, SHVTestBase* self, int flag);
 
 	// helpers
 private:

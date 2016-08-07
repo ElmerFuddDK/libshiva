@@ -3,6 +3,9 @@
 
 #include "shvdynarraybase.h"
 #include "shvptrcontainer.h"
+///\cond INTERNAL
+template<class T, class S> class SHVDynArrayBuffer;
+///\endcond
 
 //-=========================================================================================================
 /// SHVDynArray template class
@@ -23,7 +26,11 @@ public:
 
 
 	SHVDynArray(int growSize = 10, int initSize=0);
+	SHVDynArray(const SHVDynArrayBuffer<T,S>& buffer);
 	~SHVDynArray();
+	
+	inline SHVDynArray<T,S>& operator=(const SHVDynArrayBuffer<T,S>& buffer);
+	inline SHVDynArray<T,S>& operator+=(const SHVDynArrayBuffer<T,S>& buffer);
 
 
 	// properties
@@ -58,6 +65,8 @@ public:
 	inline T* FindMatch(S* val, MatchFunc func);
 	inline size_t FindFirstMatchIndex(S* val, MatchFunc func);
 	inline T* FindFirstMatch(S* val, MatchFunc func);
+	
+	inline SHVDynArrayBuffer<T,S> ReleaseBuffer();
 
 private:
 	///\cond INTERNAL
@@ -72,6 +81,19 @@ private:
 // ============================================= implementation ============================================= //
 /// \class SHVDynArray shvdynarray.h "shiva/include/utils/shvdynarray.h"
 
+///\cond INTERNAL
+template<class T,  class S>
+class SHVDynArrayBuffer : public SHVDynArrayBufferBase
+{
+friend class SHVDynArray<T,S>;
+	SHVDynArrayBase::DestroyFunc Destroy;
+	SHVDynArrayBuffer(const SHVDynArrayBufferBase& buffer, SHVDynArrayBase::DestroyFunc destroy) : SHVDynArrayBufferBase(buffer), Destroy(destroy) {}
+public:
+	SHVDynArrayBuffer(const SHVDynArrayBuffer<T,S>& buffer) : SHVDynArrayBufferBase(buffer), Destroy(buffer.Destroy) {}
+	virtual ~SHVDynArrayBuffer() { SHVDynArrayBufferBase::Clear(Destroy); }
+};
+///\endcond
+
 /*************************************
  * Constructor
  *************************************/
@@ -83,6 +105,9 @@ private:
 template<class T, class S>
 SHVDynArray<T,S>::SHVDynArray(int growSize, int initSize) : SHVDynArrayBase(growSize,initSize), Destroy(DefaultDestroy)
 {}
+template<class T, class S>
+SHVDynArray<T,S>::SHVDynArray(const SHVDynArrayBuffer<T,S>& buffer) : SHVDynArrayBase(buffer), Destroy((SHVDynArray<T,S>::DestroyFunc)buffer.Destroy)
+{}
 
 /*************************************
  * Destructor
@@ -91,6 +116,28 @@ template<class T, class S>
 SHVDynArray<T,S>::~SHVDynArray()
 {
 	ClearAndInit();
+}
+
+/*************************************
+ * operator=
+ *************************************/
+template<class T, class S>
+SHVDynArray<T,S>& SHVDynArray<T,S>::operator=(const SHVDynArrayBuffer<T,S>& buffer)
+{
+	ClearAndInit();
+	SHVDynArrayBase::operator =(buffer);
+	Destroy = (SHVDynArray<T,S>::DestroyFunc)buffer.Destroy;
+	return *this;
+}
+
+/*************************************
+ * operator+=
+ *************************************/
+template<class T, class S>
+SHVDynArray<T,S>& SHVDynArray<T,S>::operator+=(const SHVDynArrayBuffer<T,S>& buffer)
+{
+	SHVDynArrayBase::operator +=(buffer);
+	return *this;
 }
 
 /*************************************
@@ -286,5 +333,36 @@ template<class T, class S>
 T* SHVDynArray<T,S>::FindFirstMatch(S* val, MatchFunc func)
 { return (T*)SHVDynArrayBase::FindFirstMatch((void*)val, (SHVDynArrayBase::MatchFunc)func); }
 
+
+/*************************************
+ * ReleaseBuffer
+ *************************************/
+/// Releases contents from the array
+/**
+ * Returns a buffer object containing the contents of the array,
+ * releasing them from the object. Use this to transfer contents
+ * to a different array\n
+\code
+SHVDynArrayBuffer<int> GenerateList()
+{
+SHVVector<int> array;
+	array.Add(new int(1));
+	array.Add(new int(2));
+	array.Add(new int(3));
+	return array.ReleaseBuffer();
+}
+
+void main()
+{
+SHVDynArray<int> result(GenerateList());
+	// result now contains the 3 objects added in the function
+}
+\endcode
+ */
+template<class T, class S>
+SHVDynArrayBuffer<T,S> SHVDynArray<T,S>::ReleaseBuffer()
+{
+	return SHVDynArrayBuffer<T,S>(SHVDynArrayBase::ReleaseBuffer(),(SHVDynArrayBase::DestroyFunc)Destroy);
+}
 
 #endif

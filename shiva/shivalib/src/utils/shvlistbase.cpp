@@ -46,6 +46,15 @@ SHVListBase::SHVListBase()
 	Nodes = 0;
 	First = Last = NULL;
 }
+SHVListBase::SHVListBase(const SHVListBufferBase& buffer)
+{
+SHVListBufferBase* unConst = (SHVListBufferBase*)&buffer;
+	First = unConst->First;
+	Last = unConst->Last;
+	Nodes = unConst->Nodes;
+	unConst->First = unConst->Last = NULL;
+	unConst->Nodes = 0;
+}
 
 /*************************************
  * Destructor
@@ -53,6 +62,56 @@ SHVListBase::SHVListBase()
 SHVListBase::~SHVListBase()
 {
 	RemoveAll();
+}
+
+/*************************************
+ * Operator=
+ *************************************/
+SHVListBase& SHVListBase::operator=(const SHVListBufferBase& buffer)
+{
+SHVListBufferBase* unConst = (SHVListBufferBase*)&buffer;
+
+	RemoveAll();
+	
+	First = unConst->First;
+	Last = unConst->Last;
+	Nodes = unConst->Nodes;
+	unConst->First = unConst->Last = NULL;
+	unConst->Nodes = 0;
+	
+	return *this;
+}
+
+/*************************************
+ * Operator+=
+ *************************************/
+SHVListBase& SHVListBase::operator+=(const SHVListBufferBase& buffer)
+{
+
+	if (buffer.Nodes)
+	{
+	SHVListBufferBase* unConst = (SHVListBufferBase*)&buffer;
+	
+		if (Nodes)
+		{
+			Last->Next = unConst->First;
+			unConst->First->Prev = Last;
+			Last = unConst->Last;
+			
+			Nodes += unConst->Nodes;
+		}
+		else
+		{
+			First = unConst->First;
+			Last = unConst->Last;
+			Nodes = unConst->Nodes;
+		}
+		
+		unConst->First = unConst->Last = NULL;
+		unConst->Nodes = 0;
+	}
+	
+	return *this;
 }
 
 /*************************************
@@ -319,6 +378,22 @@ SHVListPos retVal;
 	return retVal;
 }
 
+/*************************************
+ * ReleaseBuffer
+ *************************************/
+SHVListBufferBase SHVListBase::ReleaseBuffer()
+{
+SHVListBufferBase retVal;
+	retVal.First = First;
+	retVal.Last = Last;
+	retVal.Nodes = Nodes;
+	
+	First = Last = NULL;
+	Nodes = 0;
+	
+	return retVal;
+}
+
 // public:
 
 /*************************************
@@ -479,10 +554,40 @@ long SHVListBase::GetCount() const
 // ========================================================================================================
 //  SHVListNode class
 // ========================================================================================================
-/// \class SHVListNode shvlistbase.h "shiva/include/utils/shvlistbase.h"
 
 /*************************************
  * Destructor
  *************************************/
 SHVListNode::~SHVListNode()
 {}
+
+///\cond INTERNAL
+// ========================================================================================================
+//  SHVListBufferBase class
+// ========================================================================================================
+
+/*************************************
+ * Constructor
+ *************************************/
+SHVListBufferBase::SHVListBufferBase(const SHVListBufferBase& buffer)
+{
+SHVListBufferBase* unConst = (SHVListBufferBase*)&buffer;
+	First = unConst->First;
+	Last = unConst->Last;
+	Nodes = unConst->Nodes;
+	unConst->First = unConst->Last = NULL;
+	unConst->Nodes = 0;
+}
+
+/*************************************
+ * Destructor
+ *************************************/
+SHVListBufferBase::~SHVListBufferBase()
+{
+SHVListNode* p;
+	for (SHVListNode* n = First; n != NULL;)
+	{
+		p = n; n = n->Next; delete p;
+	}
+}
+///\endcond

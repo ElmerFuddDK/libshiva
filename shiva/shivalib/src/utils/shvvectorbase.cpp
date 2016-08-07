@@ -49,6 +49,13 @@ SHVVectorBase::SHVVectorBase()
 {
 	Array = ArrayEnd = NULL;
 }
+SHVVectorBase::SHVVectorBase(const SHVVectorBufferBase& buffer)
+{
+SHVVectorBufferBase* unConst = (SHVVectorBufferBase*)&buffer;
+	Array = unConst->Array;
+	ArrayEnd = unConst->ArrayEnd;
+	unConst->Array = unConst->ArrayEnd = NULL;
+}
 
 /*************************************
  * Destructor
@@ -56,6 +63,22 @@ SHVVectorBase::SHVVectorBase()
 SHVVectorBase::~SHVVectorBase()
 {
 	Clear();
+}
+
+/*************************************
+ * Operator=
+ *************************************/
+SHVVectorBase& SHVVectorBase::operator=(const SHVVectorBufferBase& buffer)
+{
+SHVVectorBufferBase* unConst = (SHVVectorBufferBase*)&buffer;
+
+	Clear();
+	
+	Array = unConst->Array;
+	ArrayEnd = unConst->ArrayEnd;
+	unConst->Array = unConst->ArrayEnd = NULL;
+	
+	return *this;
 }
 
 // properties
@@ -149,6 +172,46 @@ size_t count = CalculateCount();
 	ArrayEnd++;
 
 	return count;
+}
+
+/*************************************
+ * AddFromBuffer
+ *************************************/
+SHVVectorBase& SHVVectorBase::AddFromBuffer(const SHVVectorBufferBase& buffer, size_t growSize)
+{
+SHVVectorBase buf(buffer);
+size_t count = CalculateCount();
+size_t bufCount = buf.CalculateCount();
+
+	if (bufCount)
+	{
+	size_t curLen = ((count+growSize-1)/growSize)*growSize;
+	size_t newLen = ((count+bufCount+growSize-1)/growSize)*growSize;
+		if (!Array)
+		{
+			Array = ArrayEnd = (void**)::malloc(sizeof(void*)*newLen);
+		}
+		else if (curLen < newLen) // we need to expand the array
+		{
+		void** oldArray = Array;
+	
+			// set the item first, to avoid setting the pointer twice after copying
+	
+			Array = (void**)::malloc(sizeof(void*)*newLen);
+	
+			::memcpy(Array,oldArray,sizeof(void*)*count);
+			::free(oldArray);
+	
+			ArrayEnd = Array+count;
+		}
+		
+		::memcpy(ArrayEnd,buf.Array,sizeof(void*)*bufCount);
+		ArrayEnd+=bufCount;
+	}
+	
+	buf.Clear();
+
+	return *this;
 }
 
 /*************************************
@@ -271,3 +334,74 @@ void SHVVectorBase::Compress(size_t growSize)
 		}
 	}
 }
+
+/*************************************
+ * ReleaseBuffer
+ *************************************/
+/// ReleaseBuffer
+/**
+ * Returns a buffer object containing the contents of the vector,
+ * releasing them from the object.\n
+ \note Be very careful when using this method in the base version of
+ * the vector, as the transferring object nows nothing of the
+ * contents. It cannot destroy it, so if it is not transferred to
+ * an identical base vector with the same destroy function it will
+ * leak.
+ */
+SHVVectorBufferBase SHVVectorBase::ReleaseBuffer()
+{
+SHVVectorBufferBase retVal;
+	retVal.Array = Array;
+	retVal.ArrayEnd = ArrayEnd;
+	Array = ArrayEnd = NULL;
+	return retVal;
+}
+
+
+///\cond INTERNAL
+// =========================================================================================================
+//  SHVVectorBufferBase class
+// =========================================================================================================
+
+/*************************************
+ * Constructor
+ *************************************/
+SHVVectorBufferBase::SHVVectorBufferBase(const SHVVectorBufferBase& buffer)
+{
+SHVVectorBufferBase* unConst = (SHVVectorBufferBase*)&buffer;
+	Array = unConst->Array;
+	ArrayEnd = unConst->ArrayEnd;
+	unConst->Array = unConst->ArrayEnd = NULL;
+}
+
+/*************************************
+ * Destructor
+ *************************************/
+SHVVectorBufferBase::~SHVVectorBufferBase()
+{
+	// Potentional memory leak
+	Array = ArrayEnd = NULL;
+}
+
+/*************************************
+ * Clear
+ *************************************/
+void SHVVectorBufferBase::Clear(SHVVectorBase::DestroyFunc func)
+{
+	if (Array)
+	{
+		if (func)
+		{
+		void** ptr;
+			for (ptr = Array; ptr < ArrayEnd; ptr++)
+			{
+				if (*ptr)
+					func(*ptr);
+			}
+		}
+
+		::free(Array);
+		Array = ArrayEnd = NULL;
+	}
+}
+///\endcond

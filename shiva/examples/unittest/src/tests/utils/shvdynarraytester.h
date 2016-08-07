@@ -5,6 +5,7 @@
 
 #include "shiva/include/utils/shvstring.h"
 #include "shiva/include/utils/shvdynarray.h"
+#include "shiva/include/utils/shvdynarrayref.h"
 
 
 class SHVDynArrayTester : public SHVTest
@@ -16,6 +17,7 @@ public:
 		ActionInsert = 0x01,
 		ActionSort = 0x02,
 		ActionRemove = 0x04,
+		ActionReleaseBuffer = 0x08,
 	};
 
 	virtual const SHVString8C GetGroup() const;
@@ -28,6 +30,7 @@ private:
 	static bool TestInsert(SHVModuleList& modules, SHVTestBase* self, int);
 	static bool TestSort(SHVModuleList& modules, SHVTestBase* self, int);
 	static bool TestRemove(SHVModuleList& modules, SHVTestBase* self, int);
+	static bool TestReleaseBuffer(SHVModuleList& modules, SHVTestBase* self, int flag);
 
 	// helpers
 private:

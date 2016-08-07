@@ -3,6 +3,9 @@
 
 #include "shvrefobject.h"
 #include "shvdynarraybase.h"
+///\cond INTERNAL
+template<class T> class SHVDynArrayRefBuffer;
+///\endcond
 
 
 // ========================================================================================================
@@ -18,7 +21,11 @@ public:
 
 
 	SHVDynArrayRef(int growSize = 50, int initSize=0, bool zeroed=false);
+	SHVDynArrayRef(const SHVDynArrayRefBuffer<T>& buffer);
 	~SHVDynArrayRef();
+	
+	SHVDynArrayRef<T>& operator=(const SHVDynArrayRefBuffer<T>& buffer);
+	SHVDynArrayRef<T>& operator+=(const SHVDynArrayRefBuffer<T>& buffer);
 
 
 	// properties
@@ -40,8 +47,11 @@ public:
 
 	void Truncate();
 	void Compress();
+	
+	inline SHVDynArrayRefBuffer<T> ReleaseBuffer();
 
 private:
+friend class SHVDynArrayRefBuffer<T>;
 	static void Destroy(void* val);
 };
 
@@ -49,12 +59,27 @@ private:
 // ============================================= implementation ============================================= //
 /// \class SHVDynArrayRef shvdynarrayref.h "shiva/include/utils/shvdynarrayref.h"
 
+///\cond INTERNAL
+template<class T>
+class SHVDynArrayRefBuffer : public SHVDynArrayBufferBase
+{
+friend class SHVDynArrayRef<T>;
+	SHVDynArrayRefBuffer(const SHVDynArrayBufferBase& buffer) : SHVDynArrayBufferBase(buffer) {}
+public:
+	SHVDynArrayRefBuffer(const SHVDynArrayRefBuffer<T>& buffer) : SHVDynArrayBufferBase(buffer) {}
+	virtual ~SHVDynArrayRefBuffer() { SHVDynArrayBufferBase::Clear(&SHVDynArrayRef<T>::Destroy); }
+};
+///\endcond
+
 
 /*************************************
  * Constructor
  *************************************/
 template< class T >
 SHVDynArrayRef<T>::SHVDynArrayRef(int growSize, int initSize, bool zeroed) : SHVDynArrayBase(growSize,initSize,zeroed)
+{}
+template<class T>
+SHVDynArrayRef<T>::SHVDynArrayRef(const SHVDynArrayRefBuffer<T>& buffer) : SHVDynArrayBase(buffer)
 {}
 
 /*************************************
@@ -64,6 +89,27 @@ template< class T >
 SHVDynArrayRef<T>::~SHVDynArrayRef()
 {
 	SHVDynArrayBase::ClearAndInit(0,&SHVDynArrayRef<T>::Destroy);
+}
+
+/*************************************
+ * operator=
+ *************************************/
+template<class T>
+SHVDynArrayRef<T>& SHVDynArrayRef<T>::operator=(const SHVDynArrayRefBuffer<T>& buffer)
+{
+	ClearAndInit();
+	SHVDynArrayBase::operator =(buffer);
+	return *this;
+}
+
+/*************************************
+ * operator+=
+ *************************************/
+template<class T>
+SHVDynArrayRef<T>& SHVDynArrayRef<T>::operator+=(const SHVDynArrayRefBuffer<T>& buffer)
+{
+	SHVDynArrayBase::operator +=(buffer);
+	return *this;
 }
 
 /*************************************
@@ -205,6 +251,39 @@ template< class T >
 void SHVDynArrayRef<T>::Destroy(void* val)
 {
 	((T*)val)->DestroyRef();
+}
+
+/*************************************
+ * ReleaseBuffer
+ *************************************/
+/// Releases contents from the array
+/**
+ * Returns a buffer object containing the contents of the array,
+ * releasing them from the object. Use this to transfer contents
+ * to a different array\n
+\code
+typedef SHVRefObjectTemplate<int> SHVIntObj;
+
+SHVDynArrayRefBuffer<SHVIntObj> GenerateList()
+{
+SHVDynArrayRef<SHVIntObj> array;
+	array.Add(new SHVIntObj(1));
+	array.Add(new SHVIntObj(2));
+	array.Add(new SHVIntObj(3));
+	return array.ReleaseBuffer();
+}
+
+void main()
+{
+SHVDynArrayRef<SHVIntObj> result(GenerateList());
+	// result now contains the 3 objects added in the function
+}
+\endcode
+ */
+template<class T>
+SHVDynArrayRefBuffer<T> SHVDynArrayRef<T>::ReleaseBuffer()
+{
+	return SHVDynArrayRefBuffer<T>(SHVDynArrayBase::ReleaseBuffer());
 }
 
 #endif

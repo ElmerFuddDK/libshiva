@@ -36,6 +36,7 @@ static const SHVTestBase::Action actions[] = {
 	{ ActionInsert, "insert", _S("Insert into dyn array"), _S("This will test insertion into dyn array"), &SHVDynArrayTester::TestInsert },
 	{ ActionSort, "sort", _S("Sorting of the array"), _S("This will test sorting"), &SHVDynArrayTester::TestSort },
 	{ ActionRemove, "remove", _S("Removal of items in the array"), _S("Remove items from an array"), &SHVDynArrayTester::TestRemove },
+	{ ActionReleaseBuffer, "releasebuffer", _S("ReleaseBuffer"), _S("This will transferring contents between objects"), &SHVDynArrayTester::TestReleaseBuffer },
 	{ 0, NULL, NULL, NULL, NULL } }; // Termination
 	
 	return actions;
@@ -102,6 +103,103 @@ bool ok;
 	ok = (ok && (array[7] && *array[7] == _S("5")));
 
 	self->AddLine(_S("Test result: %s"), self->Success(modules,ok).GetSafeBuffer());
+	return ok;
+}
+bool SHVDynArrayTester::TestReleaseBuffer(SHVModuleList& modules, SHVTestBase* self, int)
+{
+bool ok = true;
+SHVDynArray<SHVString, const SHVStringC> arr1;
+SHVDynArray<SHVString, const SHVStringC> arr2;
+SHVDynArrayRef< SHVRefObjectTemplate<int> > arrRef1;
+SHVDynArrayRef< SHVRefObjectTemplate<int> > arrRef2;
+
+	arr1.Add(new SHVString(_S("0")));
+	arr1.Add(new SHVString(_S("1")));
+	arr1.Add(new SHVString(_S("2")));
+	arr1.Add(new SHVString(_S("3")));
+	arr1.Add(new SHVString(_S("4")));
+	arr1.Add(new SHVString(_S("5")));
+	
+	arr2.Add(new SHVString(_S("test")));
+	
+	ok = (ok && arr1.GetCount() == 6);
+	
+	arr2 = arr1.ReleaseBuffer();
+
+	arr2.Add(new SHVString(_S("6")));
+	arr2.Add(new SHVString(_S("7")));
+	arr2.Add(new SHVString(_S("8")));
+	arr2.Add(new SHVString(_S("9")));
+	arr2.Add(new SHVString(_S("10")));
+	
+	ok = (ok && arr2.GetCount() == 11);
+	
+	if (ok)
+	{
+	SHVDynArray<SHVString, const SHVStringC> arr3(arr2.ReleaseBuffer());
+		ok = (ok && arr2.GetCount() == 0);
+		ok = (ok && arr3.GetCount() == 11);
+		arr2 = arr3.ReleaseBuffer();
+		arr3.Add(new SHVString(_S("test")));
+		arr3.ReleaseBuffer();
+	}
+	
+	if (ok)
+	{
+	SHVDynArray<SHVString, const SHVStringC> arrAdd;
+		arrAdd.Add(new SHVString(_S("add1")));
+		arr2 += arrAdd.ReleaseBuffer();
+		arr2 += arrAdd.ReleaseBuffer(); // Go crazy
+		ok = (ok && arr2.GetCount() == 12);
+		arrAdd.Add(new SHVString(_S("add2")));
+		arrAdd.Add(new SHVString(_S("add3")));
+		arrAdd.Add(new SHVString(_S("add4")));
+		arrAdd.Add(new SHVString(_S("add5")));
+		arrAdd.Add(new SHVString(_S("add6")));
+		arrAdd.Add(new SHVString(_S("add7")));
+		arrAdd.Add(new SHVString(_S("add8")));
+		arrAdd.Add(new SHVString(_S("add9")));
+		arrAdd.Add(new SHVString(_S("add10")));
+		arr2 += arrAdd.ReleaseBuffer();
+		ok = (ok && arr2.GetCount() == 21);
+		ok = (ok && *arr2[20] == _S("add10"));
+		arr2 += arr2.ReleaseBuffer();
+		ok = (ok && *arr2[20] == _S("add10"));
+	}
+	
+
+	arrRef1.Add(new SHVRefObjectTemplate<int>(0));
+	arrRef1.Add(new SHVRefObjectTemplate<int>(1));
+	arrRef1.Add(new SHVRefObjectTemplate<int>(2));
+	arrRef1.Add(new SHVRefObjectTemplate<int>(3));
+	arrRef1.Add(new SHVRefObjectTemplate<int>(4));
+	arrRef1.Add(new SHVRefObjectTemplate<int>(5));
+	
+	arrRef2.Add(new SHVRefObjectTemplate<int>(1234));
+	
+	ok = (ok && arrRef1.GetCount() == 6);
+	
+	arrRef2 = arrRef1.ReleaseBuffer();
+	arrRef2 = arrRef2.ReleaseBuffer(); // This is a weird test
+	if (ok)
+	{
+	SHVDynArrayRef< SHVRefObjectTemplate<int> > arrRef3(arrRef2.ReleaseBuffer());
+		ok = (ok && arrRef2.GetCount() == 0);
+		ok = (ok && arrRef3.GetCount() == 6);
+		arrRef2 = arrRef3.ReleaseBuffer();
+	}
+
+	arrRef2.Add(new SHVRefObjectTemplate<int>(6));
+	arrRef2.Add(new SHVRefObjectTemplate<int>(7));
+	arrRef2.Add(new SHVRefObjectTemplate<int>(8));
+	arrRef2.Add(new SHVRefObjectTemplate<int>(9));
+	arrRef2.Add(new SHVRefObjectTemplate<int>(10));
+	
+	ok = (ok && arrRef2.GetCount() == 11);
+	ok = (ok && arrRef2[6]->Object() == 6);
+	
+	self->AddLine(_S("Test result: %s"), self->Success(modules,ok).GetSafeBuffer());
+	
 	return ok;
 }
 

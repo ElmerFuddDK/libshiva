@@ -43,6 +43,17 @@ static const SHVTestBase::Action actions[] = {
 /*************************************
  * sub tests
  *************************************/
+SHVListBuffer<SHVString,SHVStringC> ListTester_GetEntries()
+{
+SHVList<SHVString,SHVStringC> retVal;
+	
+	retVal.AddTail(_S("5"));
+	retVal.AddTail(_S("6"));
+	retVal.AddTail(_S("7"));
+	retVal.AddTail(_S("8"));
+	
+	return retVal.ReleaseBuffer();
+}
 bool SHVListTester::TestAll(SHVModuleList& modules, SHVTestBase* self, int )
 {
 bool ok = true;
@@ -82,6 +93,34 @@ int i;
 	ok = (ok && (list.FindIndex(1)) );
 	ok = (ok && (list.GetAt(pos = list.FindIndex(1)) == _S("R belong 2 US")) );
 	ok = (ok && (!list.FindIndex(6)) );
+	
+	if (ok)
+	{
+	SHVList<SHVString,SHVStringC> list1;
+	SHVList<SHVString,SHVStringC> listTemp(list.ReleaseBuffer());
+		list1.AddTail(_S("This is a test"));
+		list1 = listTemp.ReleaseBuffer();
+		
+		ok = (ok && list1.GetCount() == 6);
+		ok = (ok && listTemp.GetCount() == 0);
+		ok = (ok && list.GetCount() == 0);
+		
+		ok = (ok && (list1.GetAt(pos = list1.Find(_S("2"))) == _S("2")) );
+		ok = (ok && (list1.FindIndex(1)) );
+		ok = (ok && (list1.GetAt(pos = list1.FindIndex(1)) == _S("R belong 2 US")) );
+		
+		list1 += ListTester_GetEntries();
+		ok = (ok && list1.GetCount() == 10);
+		ok = (ok && (list1.GetAt(pos = list1.Find(_S("2"))) == _S("2")) );
+		ok = (ok && (list1.GetAt(pos = list1.Find(_S("5"))) == _S("5")) );
+		if (ok)
+		{
+			list1 += list1.ReleaseBuffer();
+			i=0;
+			for(SHVListPos pos=NULL; list1.MovePrev(pos);i++);
+			ok = (ok && i == 10);
+		}
+	}
 	
 	self->AddLine(_S("Test result: %s"), self->Success(modules,ok).GetSafeBuffer());
 	

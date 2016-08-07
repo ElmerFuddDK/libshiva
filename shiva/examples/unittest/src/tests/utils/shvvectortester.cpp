@@ -36,6 +36,7 @@ const SHVTestBase::Action* SHVVectorTester::GetActions() const
 static const SHVTestBase::Action actions[] = {
 	{ ActionInsert, "insert", _S("Insert"), _S("This will test Insert"), &SHVVectorTester::TestInsert },
 	{ ActionRemove, "remove", _S("Remove"), _S("This will test Remove"), &SHVVectorTester::TestRemove },
+	{ ActionReleaseBuffer, "releasebuffer", _S("ReleaseBuffer"), _S("This will transferring contents between objects"), &SHVVectorTester::TestReleaseBuffer },
 	{ 0, NULL, NULL, NULL, NULL } }; // Termination
 	
 	return actions;
@@ -127,6 +128,92 @@ size_t i;
 	}
 
 
+	self->AddLine(_S("Test result: %s"), self->Success(modules,ok).GetSafeBuffer());
+	
+	return ok;
+}
+bool SHVVectorTester::TestReleaseBuffer(SHVModuleList& modules, SHVTestBase* self, int )
+{
+bool ok = true;
+SHVVector<SHVString,5> vec1;
+SHVVector<SHVString,5> vec2;
+SHVVectorRef<SHVRefObjectTemplate<int>,5> vecRef1;
+SHVVectorRef<SHVRefObjectTemplate<int>,5> vecRef2;
+
+	vec1.Add(new SHVString(_S("0")));
+	vec1.Add(new SHVString(_S("1")));
+	vec1.Add(new SHVString(_S("2")));
+	vec1.Add(new SHVString(_S("3")));
+	vec1.Add(new SHVString(_S("4")));
+	vec1.Add(new SHVString(_S("5")));
+	
+	vec2.Add(new SHVString(_S("test")));
+	
+	ok = (ok && vec1.CalculateCount() == 6);
+	
+	vec2 = vec1.ReleaseBuffer();
+
+	vec2.Add(new SHVString(_S("6")));
+	vec2.Add(new SHVString(_S("7")));
+	vec2.Add(new SHVString(_S("8")));
+	vec2.Add(new SHVString(_S("9")));
+	vec2.Add(new SHVString(_S("10")));
+	
+	ok = (ok && vec2.CalculateCount() == 11);
+	
+	if (ok)
+	{
+	SHVVector<SHVString,5> vecAdd;
+		vecAdd.Add(new SHVString(_S("add1")));
+		vec2 += vecAdd.ReleaseBuffer();
+		vec2 += vecAdd.ReleaseBuffer(); // Go crazy
+		ok = (ok && vec2.CalculateCount() == 12);
+		vecAdd.Add(new SHVString(_S("add2")));
+		vecAdd.Add(new SHVString(_S("add3")));
+		vecAdd.Add(new SHVString(_S("add4")));
+		vecAdd.Add(new SHVString(_S("add5")));
+		vecAdd.Add(new SHVString(_S("add6")));
+		vecAdd.Add(new SHVString(_S("add7")));
+		vecAdd.Add(new SHVString(_S("add8")));
+		vecAdd.Add(new SHVString(_S("add9")));
+		vecAdd.Add(new SHVString(_S("add10")));
+		vec2 += vecAdd.ReleaseBuffer();
+		ok = (ok && vec2.CalculateCount() == 21);
+		ok = (ok && *vec2[20] == _S("add10"));
+		vec2 += vec2.ReleaseBuffer();
+		ok = (ok && *vec2[20] == _S("add10"));
+	}
+	
+	vecRef1.Add(new SHVRefObjectTemplate<int>(0));
+	vecRef1.Add(new SHVRefObjectTemplate<int>(1));
+	vecRef1.Add(new SHVRefObjectTemplate<int>(2));
+	vecRef1.Add(new SHVRefObjectTemplate<int>(3));
+	vecRef1.Add(new SHVRefObjectTemplate<int>(4));
+	vecRef1.Add(new SHVRefObjectTemplate<int>(5));
+	
+	vecRef2.Add(new SHVRefObjectTemplate<int>(1234));
+	
+	ok = (ok && vecRef1.CalculateCount() == 6);
+	
+	vecRef2 = vecRef1.ReleaseBuffer();
+	vecRef2 = vecRef2.ReleaseBuffer(); // This is a weird test
+	if (ok)
+	{
+	SHVVectorRef<SHVRefObjectTemplate<int>,5> vecRef3(vecRef2.ReleaseBuffer());
+		ok = (ok && vecRef2.CalculateCount() == 0);
+		ok = (ok && vecRef3.CalculateCount() == 6);
+		vecRef2 = vecRef3.ReleaseBuffer();
+	}
+
+	vecRef2.Add(new SHVRefObjectTemplate<int>(6));
+	vecRef2.Add(new SHVRefObjectTemplate<int>(7));
+	vecRef2.Add(new SHVRefObjectTemplate<int>(8));
+	vecRef2.Add(new SHVRefObjectTemplate<int>(9));
+	vecRef2.Add(new SHVRefObjectTemplate<int>(10));
+	
+	ok = (ok && vecRef2.CalculateCount() == 11);
+	ok = (ok && vecRef2[6]->Object() == 6);
+	
 	self->AddLine(_S("Test result: %s"), self->Success(modules,ok).GetSafeBuffer());
 	
 	return ok;

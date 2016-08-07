@@ -10,6 +10,9 @@
 
 class SHVHashDataBase;
 class SHVHashIteratorBase;
+///\cond INTERNAL
+class SHVHashTableBufferBase;
+///\endcond
 
 
 //-=========================================================================================================
@@ -37,7 +40,11 @@ public:
 
 
 	SHVHashTableBase(MatchFunc match, CreateHashFunc createHash, DestroyFunc destroy, size_t estimateCount=1000);
+	SHVHashTableBase(const SHVHashTableBufferBase& buffer);
 	~SHVHashTableBase();
+	
+	SHVHashTableBase& operator=(const SHVHashTableBufferBase& buffer);
+	SHVHashTableBase& operator+=(const SHVHashTableBufferBase& buffer);
 
 
 	// properties
@@ -63,6 +70,8 @@ public:
 	static size_t HashString(const SHVStringC& str);
 
 	static size_t CalculateBuckets(size_t estimateCount);
+	
+	SHVHashTableBufferBase ReleaseBuffer();
 
 
 	// helper functions for sub classes
@@ -131,6 +140,27 @@ public:
 
 
 // ============================================ implementation ============================================ //
+
+///\cond INTERNAL
+//-=========================================================================================================
+/// SHVHashTableBufferBase class
+
+class SHVAPI SHVHashTableBufferBase
+{
+friend class SHVHashTableBase;
+	inline SHVHashTableBufferBase() : Buckets(5,0,true) {}
+public:
+	SHVHashTableBufferBase(const SHVHashTableBufferBase& buffer);
+	virtual ~SHVHashTableBufferBase();
+private:
+	int Count;
+	SHVDynArrayBase Buckets;
+
+	SHVHashTableBase::MatchFunc Match;
+	SHVHashTableBase::CreateHashFunc CreateHash;
+	SHVHashTableBase::DestroyFunc Destroy;
+};
+///\endcond
 
 void SHVHashTableBase::OverrideMatchFunc(MatchFunc func)
 { Match = func; }

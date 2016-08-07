@@ -57,6 +57,17 @@ SHVHashTableBase::SHVHashTableBase(MatchFunc match, CreateHashFunc createHash, D
 	Destroy = destroy;
 	Count = 0;
 }
+SHVHashTableBase::SHVHashTableBase(const SHVHashTableBufferBase& buffer) : Buckets(5,0,true)
+{
+SHVHashTableBufferBase* unConst = (SHVHashTableBufferBase*)&buffer;
+	Count = unConst->Count;
+	Buckets = unConst->Buckets.ReleaseBuffer();
+	Match = unConst->Match;
+	CreateHash = unConst->CreateHash;
+	Destroy = unConst->Destroy;
+	
+	unConst->Count = 0;
+}
 
 /*************************************
  * Destructor
@@ -64,6 +75,55 @@ SHVHashTableBase::SHVHashTableBase(MatchFunc match, CreateHashFunc createHash, D
 SHVHashTableBase::~SHVHashTableBase()
 {
 	Clear();
+}
+
+/*************************************
+ * Operator=
+ *************************************/
+SHVHashTableBase& SHVHashTableBase::operator=(const SHVHashTableBufferBase& buffer)
+{
+SHVHashTableBufferBase* unConst = (SHVHashTableBufferBase*)&buffer;
+
+	Clear();
+
+	Count = unConst->Count;
+	Buckets = unConst->Buckets.ReleaseBuffer();
+	Match = unConst->Match;
+	CreateHash = unConst->CreateHash;
+	Destroy = unConst->Destroy;
+	
+	unConst->Count = 0;
+	
+	return *this;
+}
+
+/*************************************
+ * Operator+=
+ *************************************/
+SHVHashTableBase& SHVHashTableBase::operator+=(const SHVHashTableBufferBase& buffer)
+{
+SHVHashTableBase buf(buffer);
+SHVVectorBase* bucket;
+size_t i,j, count;
+
+	for (i=0; i<buf.Buckets.GetCount(); i++)
+	{
+		if (buf.Buckets[i])
+		{
+			bucket = (SHVVectorBase*)buf.Buckets[i];
+			count=bucket->CalculateCount();
+			for (j=0; j<count; j++)
+			{
+				if ( (*bucket)[j] )
+					InsertReal((SHVHashDataBase*)(*bucket)[j]);
+			}
+		}
+	}
+
+	buf.Destroy = NULL;
+	buf.Clear();
+	
+	return *this;
 }
 
 /*************************************
@@ -375,6 +435,25 @@ size_t SHVHashTableBase::CalculateBuckets(size_t estimate)
 	return estimate/75;
 }
 
+/*************************************
+ * ReleaseBuffer
+ *************************************/
+SHVHashTableBufferBase SHVHashTableBase::ReleaseBuffer()
+{
+SHVHashTableBufferBase retVal;
+
+	retVal.Count = Count;
+	retVal.Buckets = Buckets.ReleaseBuffer();
+	retVal.Match = Match;
+	retVal.CreateHash = CreateHash;
+	retVal.Destroy = Destroy;
+	
+	Count = 0;
+	Buckets.ClearAndInit(retVal.Buckets.GetArrayLen());
+	
+	return retVal;
+}
+
 
 //=========================================================================================================
 // SHVHashIteratorBase class
@@ -446,3 +525,43 @@ void SHVHashIteratorBase::Reset()
 	Eof = true;
 	Bucket = Index = 0;
 }
+
+///\cond INTERNAL
+//=========================================================================================================
+// SHVHashTableBufferBase class
+//=========================================================================================================
+
+/*************************************
+ * Constructor
+ *************************************/
+SHVHashTableBufferBase::SHVHashTableBufferBase(const SHVHashTableBufferBase& buffer) : Buckets(5,0,true)
+{
+SHVHashTableBufferBase* unConst = (SHVHashTableBufferBase*)&buffer;
+	Count = unConst->Count;
+	Buckets = unConst->Buckets.ReleaseBuffer();
+	Match = unConst->Match;
+	CreateHash = unConst->CreateHash;
+	Destroy = unConst->Destroy;
+	
+	unConst->Count = 0;
+}
+
+/*************************************
+ * Destructor
+ *************************************/
+SHVHashTableBufferBase::~SHVHashTableBufferBase()
+{
+SHVVectorBase* bucket;
+
+	for (size_t i=0; i<Buckets.GetCount(); i++)
+	{
+		if (Buckets[i])
+		{
+			bucket = (SHVVectorBase*)Buckets[i];
+			bucket->Clear((SHVDynArrayBase::DestroyFunc)Destroy);
+			Buckets.Remove(i);
+			delete bucket;
+		}
+	}
+}
+///\endcond

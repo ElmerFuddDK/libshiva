@@ -1,6 +1,10 @@
 #ifndef __SHIVA_UTILS_VECTORBASE_H
 #define __SHIVA_UTILS_VECTORBASE_H
 
+///\cond INTERNAL
+class SHVVectorBufferBase;
+///\endcond
+
 
 //-=========================================================================================================
 /// SHVVectorBase class
@@ -22,7 +26,10 @@ public:
 
 	// constructor
 	SHVVectorBase();
+	SHVVectorBase(const SHVVectorBufferBase& buffer);
 	~SHVVectorBase();
+	
+	SHVVectorBase& operator=(const SHVVectorBufferBase& buffer);
 
 
 	// properties
@@ -36,6 +43,7 @@ public:
 
 	void* operator[](size_t index);
 	size_t Add(void* item, size_t growSize);
+	SHVVectorBase& AddFromBuffer(const SHVVectorBufferBase& buffer, size_t growSize);
 	void* Remove(size_t index);
 	void* Replace(size_t index, void* item);
 	void* Pop(size_t growSize);
@@ -43,6 +51,8 @@ public:
 
 	void Truncate(size_t growSize);
 	void Compress(size_t growSize);
+	
+	SHVVectorBufferBase ReleaseBuffer();
 
 
 private:
@@ -54,7 +64,27 @@ private:
 };
 
 
+
 // ============================================ implementation ============================================ //
+
+///\cond INTERNAL
+//-=========================================================================================================
+/// SHVVectorBufferBase class
+
+class SHVAPI SHVVectorBufferBase
+{
+friend class SHVVectorBase;
+	inline SHVVectorBufferBase() {}
+public:
+	SHVVectorBufferBase(const SHVVectorBufferBase& buffer);
+	virtual ~SHVVectorBufferBase();
+
+	void Clear(SHVVectorBase::DestroyFunc func = NULL);
+private:
+	void** Array;
+	void** ArrayEnd;
+};
+///\endcond
 
 bool SHVVectorBase::Eof(size_t index)
 {

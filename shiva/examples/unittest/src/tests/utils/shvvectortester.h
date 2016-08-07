@@ -5,6 +5,7 @@
 
 #include "shiva/include/utils/shvstring.h"
 #include "shiva/include/utils/shvvector.h"
+#include "shiva/include/utils/shvvectorref.h"
 
 
 class SHVVectorTester : public SHVTest
@@ -15,6 +16,7 @@ public:
 	enum Actions {
 		ActionInsert = 0x01,
 		ActionRemove = 0x02,
+		ActionReleaseBuffer = 0x04,
 	};
 
 	virtual const SHVString8C GetGroup() const;
@@ -26,6 +28,7 @@ public:
 private:
 	static bool TestInsert(SHVModuleList& modules, SHVTestBase* self, int flag);
 	static bool TestRemove(SHVModuleList& modules, SHVTestBase* self, int flag);
+	static bool TestReleaseBuffer(SHVModuleList& modules, SHVTestBase* self, int flag);
 
 };
 

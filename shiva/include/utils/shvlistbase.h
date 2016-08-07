@@ -3,6 +3,9 @@
 
 // forward declare
 class SHVListNode;
+///\cond INTERNAL
+class SHVListBufferBase;
+///\endcond
 typedef SHVListNode* SHVListPos;
 
 
@@ -21,7 +24,11 @@ protected:
 
 
 	SHVListBase();
+	SHVListBase(const SHVListBufferBase& buffer);
 	~SHVListBase();
+
+	SHVListBase& operator=(const SHVListBufferBase& buffer);
+	SHVListBase& operator+=(const SHVListBufferBase& buffer);
 
 
 	// List management
@@ -44,6 +51,9 @@ protected:
 	SHVListNode* GetLast() const;
 
 	SHVListNode* indexer(int i) const;
+
+	SHVListBufferBase ReleaseBuffer();
+
 
 public:
 
@@ -87,6 +97,7 @@ private:
 class SHVAPI SHVListNode
 {
 friend class SHVListBase;
+friend class SHVListBufferBase;
 protected:
 	virtual ~SHVListNode();
 public:
@@ -100,6 +111,24 @@ private:
 
 
 // ============================================ implementation ============================================ //
+
+///\cond INTERNAL
+//-========================================================================================================
+/// SHVListBufferBase class
+
+class SHVAPI SHVListBufferBase
+{
+friend class SHVListBase;
+	inline SHVListBufferBase() {}
+public:
+	SHVListBufferBase(const SHVListBufferBase& buffer);
+	virtual ~SHVListBufferBase();
+private:
+	SHVListNode* First;
+	SHVListNode* Last;
+	long Nodes;
+};
+///\endcond
 
 /*************************************
  * GetHeadPosition
