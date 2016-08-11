@@ -333,6 +333,31 @@ const SHVDataStructC* retVal;
 }
 
 /*************************************
+ * ReloadStruct
+ *************************************/
+const SHVDataStructC* SHVDataFactoryImpl::ReloadStruct(const SHVString8C& table, SHVDataSession* useSession)
+{
+
+SHVDataStructC* retVal = NULL;
+
+	((SHVDataFactoryImpl*) this)->LockShared();
+
+	retVal = RetrieveStruct(table,useSession);
+	if (retVal)
+	{
+	size_t found = InternalFindStruct(table);
+		if (found != SIZE_T_MAX)
+			Schema.Replace(found, retVal);
+		else
+			Schema.Add(retVal);
+	}
+	
+	((SHVDataFactoryImpl*) this)->Unlock();
+	
+	return retVal;
+}
+
+/*************************************
  * GetDataSchema
  *************************************/
 const SHVDataSchema& SHVDataFactoryImpl::GetDataSchema() const

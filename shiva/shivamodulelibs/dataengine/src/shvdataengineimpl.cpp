@@ -153,6 +153,14 @@ const SHVDataStructC* SHVDataEngineImpl::FindStruct(const SHVString8C& table) co
 }
 
 /*************************************
+ * ReloadStruct
+ *************************************/
+const SHVDataStructC* SHVDataEngineImpl::ReloadStruct(const SHVString8C& table, SHVDataSession* useSession)
+{
+	return Factory->ReloadStruct(table, useSession);
+}
+
+/*************************************
  * GetDataSchema
  *************************************/
 const SHVDataSchema& SHVDataEngineImpl::GetDataSchema() const

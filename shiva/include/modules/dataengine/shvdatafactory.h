@@ -37,6 +37,7 @@ public:
 	virtual SHVBool ClearTable(const SHVString8C& table, SHVDataSession* useSession = NULL) = 0;
 
 	virtual const SHVDataStructC* FindStruct(const SHVString8C& table) const = 0;
+	virtual const SHVDataStructC* ReloadStruct(const SHVString8C& table, SHVDataSession* useSession = NULL) = 0;
 	virtual const SHVDataSchema& GetDataSchema() const = 0;
 
 	virtual SHVDataSession* CreateSession() = 0;
