@@ -71,6 +71,7 @@ SHVTime::SHVTime(bool localTime)
 {
 	::memset(&Time,0,sizeof(tm));
 	Time.tm_isdst = Time.tm_wday = Time.tm_yday = -1;
+	Millisecond = 0;
 
 	LocalTime = localTime;
 }
@@ -182,51 +183,68 @@ int SHVTime::GetSecond() const
 {
 	return Time.tm_sec;
 }
+/// Returns Millisecond property
+int SHVTime::GetMillisecond() const
+{
+	return Millisecond;
+}
 
 /*************************************
  * Set*
  *************************************/
 /// Set Year property
-void SHVTime::SetYear(int year)
+SHVTime& SHVTime::SetYear(int year)
 {
 	Time.tm_wday = -1; // weekday needs to be recalculated
 	Time.tm_isdst = -1; // dst needs to be recalculated
 	Time.tm_year = year-1900;
+	return *this;
 }
 /// Set Month property
-void SHVTime::SetMonth(int month)
+SHVTime& SHVTime::SetMonth(int month)
 {
 	Time.tm_wday = -1; // weekday needs to be recalculated
 	Time.tm_isdst = -1; // dst needs to be recalculated
 	Time.tm_mon = month-1;
+	return *this;
 }
 /// Set Day property
-void SHVTime::SetDay(int day)
+SHVTime& SHVTime::SetDay(int day)
 {
 	Time.tm_wday = -1; // weekday needs to be recalculated
 	Time.tm_isdst = -1; // dst needs to be recalculated
 	Time.tm_mday = day;
+	return *this;
 }
 /// Set Hour property
-void SHVTime::SetHour(int hour)
+SHVTime& SHVTime::SetHour(int hour)
 {
 	Time.tm_wday = -1; // weekday needs to be recalculated
 	Time.tm_isdst = -1; // dst needs to be recalculated
 	Time.tm_hour = hour;
+	return *this;
 }
 /// Set Minute property
-void SHVTime::SetMinute(int minute)
+SHVTime& SHVTime::SetMinute(int minute)
 {
 	Time.tm_wday = -1; // weekday needs to be recalculated
 	Time.tm_isdst = -1; // dst needs to be recalculated
 	Time.tm_min = minute;
+	return *this;
 }
 /// Set Second property
-void SHVTime::SetSecond(int second)
+SHVTime& SHVTime::SetSecond(int second)
 {
 	Time.tm_wday = -1; // weekday needs to be recalculated
 	Time.tm_isdst = -1; // dst needs to be recalculated
 	Time.tm_sec = second;
+	return *this;
+}
+/// Set Millisecond property
+SHVTime& SHVTime::SetMillisecond(int msecond)
+{
+	Millisecond = msecond;
+	return *this;
 }
 
 
@@ -353,7 +371,9 @@ bool SHVTime::CalculateIsDst() // Is daylight savings
  * date string. A SHIVA date string is in the following format:\n
  * YYYY-MM-DDTHH:MM:SS\n
  * The seconds are optional, and are set to 0 if not provided.
- * The 'T' represents a separator and can be any character.
+ * The 'T' represents a separator and can be any character.\n
+ * The date string can contain an optional millisecond part by
+ * adding .NNN
  */
 SHVBool SHVTime::SetFromDateString(const SHVStringC& dateStr)
 {
@@ -367,6 +387,7 @@ SHVBool retVal(dateStr.GetLength() >= 16 ? (int)SHVBool::True : (int)ErrInvalidS
 		SetHour  ( dateStr.Mid(11,2).ToLong() );
 		SetMinute( dateStr.Mid(14,2).ToLong() );
 		SetSecond( dateStr.Mid(17,2).ToLong() );
+		SetMillisecond( dateStr.Mid(20,3).ToLong() );
 
 
 		if (GetYear() < 1900 || GetMonth() < 1 || GetMonth() > 12 || GetDay() < 1 || GetDay() > 31 ||
@@ -391,17 +412,25 @@ SHVBool retVal(dateStr.GetLength() >= 16 ? (int)SHVBool::True : (int)ErrInvalidS
  *************************************/
 /// Returns a date string representation of SHVTime
 /**
+ \param msFlag Should millisecond be included or not
+ * 
  * Will return a date string in the SHIVA date string format:\n
- * YYYY-MM-DDTHH:MM:SS
+ * YYYY-MM-DDTHH:MM:SS\n
+ * If the msFlag is set to MillisecInclude, or MillisecAuto and
+ * its value is other than 0 (default) then the date string will
+ * have milliseconds added in the end as the format .NNN
  \see SHVTime::FromDateString(const SHVStringC& dateStr)
  */
-SHVStringBuffer SHVTime::ToDateString() const
+SHVStringBuffer SHVTime::ToDateString(MillisecFlags msFlag) const
 {
 SHVString retVal;
 
 	if (!IsNull())
 	{
-		retVal.Format(_S("%04d-%02d-%02dT%02d:%02d:%02d"), GetYear(), GetMonth(), GetDay(), GetHour(), GetMinute(), GetSecond());
+		if (msFlag == MillisecInclude || (msFlag == MillisecAuto && Millisecond))
+			retVal.Format(_S("%04d-%02d-%02dT%02d:%02d:%02d.%03d"), GetYear(), GetMonth(), GetDay(), GetHour(), GetMinute(), GetSecond(), GetMillisecond());
+		else
+			retVal.Format(_S("%04d-%02d-%02dT%02d:%02d:%02d"), GetYear(), GetMonth(), GetDay(), GetHour(), GetMinute(), GetSecond());
 	}
 
 	return retVal.ReleaseBuffer();
@@ -432,7 +461,7 @@ SHVString retVal(s);
 	sysTime.wHour      = GetHour();
 	sysTime.wMinute    = GetMinute();
 	sysTime.wSecond    = GetSecond();
-	sysTime.wMilliseconds = 0;
+	sysTime.wMilliseconds = Millisecond;
 
 	///\todo Implement more format types in SHVTime::Format for Windows CE
 
@@ -678,12 +707,44 @@ SHVTChar* retVal = new SHVTChar[__SHVTIME_MAXDATESTR];
 /**
  \param diffInSeconds Seconds to add to 'now'.
  *
+ * This function only has precision to the level os a second.
+ * Use SetNowWithMilliseconds for better accuracy, but heavier
+ * CPU load.
  \note This function respects the LocalTime property.
  */
 void SHVTime::SetNow(int diffInSeconds)
 {
 time_t now = TimeNow() + diffInSeconds;
 	
+	GmTime_r(&now,&Time);
+	Millisecond = 0;
+
+	if (LocalTime)
+	{
+		LocalTime = false;
+		SetLocalTime(true);
+	}
+	Time.tm_isdst = -1;
+}
+
+/*************************************
+ * SetNowWithMilliseconds
+ *************************************/
+/// Sets the date/time to now including milliseconds
+/**
+ \param diffInMilliseconds Milliseconds to add to 'now'.
+ *
+ * This function is more CPU intensive than SetNow, so only use this
+ * if you require milliseconds.
+ \note This function respects the LocalTime property.
+ */
+void SHVTime::SetNowWithMilliseconds(int diffInMilliseconds)
+{
+time_t now = TimeNowWithMilliseconds(Millisecond);
+
+	now += diffInMilliseconds/1000;
+	Millisecond += diffInMilliseconds%1000;
+
 	GmTime_r(&now,&Time);
 
 	if (LocalTime)
@@ -781,7 +842,7 @@ SYSTEMTIME sysTime;
 	sysTime.wHour      = GetHour();
 	sysTime.wMinute    = GetMinute();
 	sysTime.wSecond    = GetSecond();
-	sysTime.wMilliseconds = 0;
+	sysTime.wMilliseconds = GetMillisecond();
 
 	// Daylight savings fix for windows ce - it doesn't set the dst flag correctly
 # ifdef __SHIVA_WINCE
@@ -791,7 +852,7 @@ SYSTEMTIME sysTime;
 #else
 timeval tv;
 	tv.tv_sec = TimeGm(&Time);
-	tv.tv_usec = 0;
+	tv.tv_usec = Millisecond*1000;
 	return (settimeofday(&tv, NULL) ? false : true);
 #endif
 	return false;
@@ -819,37 +880,37 @@ bool operator>(const SHVTime& tTime1, const SHVTime& tTime2)
 {
 time_t t1 = SHVTime::TimeGm((tm*)&tTime1.Time, false);
 time_t t2 = SHVTime::TimeGm((tm*)&tTime2.Time, false);
-	return (t1 > t2);
+	return (t1 == t2 ? tTime1.Millisecond > tTime2.Millisecond : t1 > t2);
 }
 bool operator<(const SHVTime& tTime1, const SHVTime& tTime2)
 {
 time_t t1 = SHVTime::TimeGm((tm*)&tTime1.Time, false);
 time_t t2 = SHVTime::TimeGm((tm*)&tTime2.Time, false);
-	return (t1 < t2);
+	return (t1 == t2 ? tTime1.Millisecond < tTime2.Millisecond : t1 < t2);
 }
 bool operator>=(const SHVTime& tTime1, const SHVTime& tTime2)
 {
 time_t t1 = SHVTime::TimeGm((tm*)&tTime1.Time, false);
 time_t t2 = SHVTime::TimeGm((tm*)&tTime2.Time, false);
-	return (t1 >= t2);
+	return (t1 == t2 ? tTime1.Millisecond >= tTime2.Millisecond : t1 >= t2);
 }
 bool operator<=(const SHVTime& tTime1, const SHVTime& tTime2)
 {
 time_t t1 = SHVTime::TimeGm((tm*)&tTime1.Time, false);
 time_t t2 = SHVTime::TimeGm((tm*)&tTime2.Time, false);
-	return (t1 <= t2);
+	return (t1 == t2 ? tTime1.Millisecond <= tTime2.Millisecond : t1 <= t2);
 }
 bool operator!=(const SHVTime& tTime1, const SHVTime& tTime2)
 {
 time_t t1 = SHVTime::TimeGm((tm*)&tTime1.Time, false);
 time_t t2 = SHVTime::TimeGm((tm*)&tTime2.Time, false);
-	return (t1 != t2);
+	return (t1 != t2 && tTime1.Millisecond != tTime2.Millisecond);
 }
 bool operator==(const SHVTime& tTime1, const SHVTime& tTime2)
 {
 time_t t1 = SHVTime::TimeGm((tm*)&tTime1.Time, false);
 time_t t2 = SHVTime::TimeGm((tm*)&tTime2.Time, false);
-	return (t1 == t2);
+	return (t1 == t2 && tTime1.Millisecond == tTime2.Millisecond);
 }
 
 
@@ -1246,6 +1307,43 @@ tm t;
 	return TimeGm(&t);
 #else
 	return time(NULL);
+#endif
+}
+time_t SHVTime::TimeNowWithMilliseconds(int& msecs)
+{
+#ifdef __SHIVA_WINCE
+SYSTEMTIME st;
+tm t;
+	GetSystemTime(&st);
+	t.tm_year = st.wYear-1900;
+	t.tm_mon  = st.wMonth-1;
+	t.tm_mday = st.wDay;
+	t.tm_hour = st.wHour;
+	t.tm_min  = st.wMinute;
+	t.tm_sec  = st.wSecond;
+	msecs = str.wMilliseconds;
+
+	return TimeGm(&t);
+#elif defined(__SHIVA_EPOC)
+TTime tt; tt.UniversalTime();
+TDateTime dt(tt.DateTime());
+tm t;
+	t.tm_year = dt.Year()-1900;
+	t.tm_mon  = dt.Month()-1;
+	t.tm_mday = dt.Day();
+	t.tm_hour = dt.Hour();
+	t.tm_min  = dt.Minute();
+	t.tm_sec  = dt.Second();
+	msecs = dt.MicroSecond()/1000;
+
+	return TimeGm(&t);
+#else
+struct timeval tv;
+
+	gettimeofday(&tv, NULL);
+	msecs = tv.tv_usec/1000;
+	
+	return tv.tv_sec;
 #endif
 }
 

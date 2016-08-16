@@ -44,6 +44,12 @@ public:
 		DayInSeconds = 24*60*60
 	};
 
+	enum MillisecFlags {
+		MillisecExclude,
+		MillisecInclude,
+		MillisecAuto
+	};
+
 
 	// constructor
 	SHVTime(bool localTime=false);
@@ -61,12 +67,14 @@ public:
 	int GetHour() const;
 	int GetMinute() const;
 	int GetSecond() const;
-	void SetYear(int year);
-	void SetMonth(int month);
-	void SetDay(int day);
-	void SetHour(int hour);
-	void SetMinute(int minute);
-	void SetSecond(int second);
+	int GetMillisecond() const;
+	SHVTime& SetYear(int year);
+	SHVTime& SetMonth(int month);
+	SHVTime& SetDay(int day);
+	SHVTime& SetHour(int hour);
+	SHVTime& SetMinute(int minute);
+	SHVTime& SetSecond(int second);
+	SHVTime& SetMillisecond(int msecond);
 
 
 	// calculated properties
@@ -78,9 +86,10 @@ public:
 
 	// functions
 	SHVBool SetFromDateString(const SHVStringC& dateStr);
-	SHVStringBuffer ToDateString() const;
+	SHVStringBuffer ToDateString(MillisecFlags msFlag = MillisecAuto) const;
 	SHVStringBuffer Format(const SHVStringC s) const;
 	void SetNow(int diffInSeconds=0);
+	void SetNowWithMilliseconds(int diffInMilliseconds=0);
 	void AddSeconds(int seconds);
 
 
@@ -111,6 +120,7 @@ public:
 private:
 	///\cond INTERNAL
 	tm Time;
+	int Millisecond;
 	bool LocalTime;
 
 	static time_t TimeGm(struct tm *t, bool setDst = true);
@@ -118,6 +128,7 @@ private:
 	static struct tm* GmTime_r(const time_t *timep, struct tm *result);
 	static time_t MkTime(struct tm *t);
 	static time_t TimeNow();
+	static time_t TimeNowWithMilliseconds(int& msecs);
 	#ifdef __SHIVA_WINCE
 	static void SetDstAndWeekday(struct tm* t, time_t* ttime = NULL, bool addingBias = false);
 	static void SetWeekdayAndYearday(struct tm* t); // gets called from the above function
