@@ -165,6 +165,7 @@ void SHVFreeTDSTester::OnEvent(SHVEvent* event)
 			SHVString8 value, colType;
 			SHVVector<int> colLengths;
 			int i, len, valLen;
+			bool isNull;
 			
 				while (Connection->NextResult())
 				{
@@ -174,13 +175,13 @@ void SHVFreeTDSTester::OnEvent(SHVEvent* event)
 						Connection->GetColumnType8(colType,i);
 						Connection->GetColumnName8(value,i);
 
-						if (value == "int") len = 8;
-						else if (value == "int64") len = 10;
-						else if (value == "double") len = 10;
+						if (colType == "int") len = 8;
+						else if (colType == "int64") len = 10;
+						else if (colType == "double") len = 10;
 						else len = 50;
 						
-						if (len < 16)
-							len = 16;
+						if (len < 8)
+							len = 8;
 						else if (len > 50)
 							len = 50;
 						colLengths.Add(new int(len));
@@ -205,7 +206,8 @@ void SHVFreeTDSTester::OnEvent(SHVEvent* event)
 						stream.Reset();
 						for (i=0; i<Connection->GetColumnCount(); i++)
 						{
-							Connection->GetString(value,i);
+							if (!Connection->GetString(value,i))
+								value = "<NULL>";
 							len = *colLengths[i];
 							valLen = (int)value.GetLength();
 							if (valLen > len)

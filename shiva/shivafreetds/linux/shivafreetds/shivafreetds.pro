@@ -1,4 +1,4 @@
-include(../../../shiva/include/shiva.pri)
+include(../../../../shiva/include/shiva.pri)
 
 TEMPLATE = lib
 
@@ -7,7 +7,7 @@ debug \
  warn_on
 LIBS += $$QMAKE_LIBS_DYNLOAD \
  -lshiva \
- -L../../../../shiva/shiva/shivalib/linux/libshiva
+ -L../../../../shiva/shivalib/linux/libshiva
 
 TARGET =../bin/shivafreetds
 
@@ -20,6 +20,6 @@ HEADERS += \
  ../../src/shvfreetdsconnectionimpl.h \
  ../../src/shvfreetdscommon.h
 
-INCLUDEPATH += ../../.. ../..
+INCLUDEPATH += ../../../..
 
 LIBS += -lsybdb

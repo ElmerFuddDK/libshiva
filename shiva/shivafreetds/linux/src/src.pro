@@ -1,4 +1,4 @@
-include(../../../shiva/include/shiva.pri)
+include(../../../../shiva/include/shiva.pri)
 
 SOURCES = ../../src/tester/main.cpp \
     ../../src/tester/shvfreetdstester.cpp
@@ -8,7 +8,7 @@ HEADERS += \
 
 TARGET =../bin/shivafreetdstester
 TEMPLATE = app
-LIBS += -L../../../../shiva/shiva/shivalib/linux/libshiva \
+LIBS += -L../../../../shiva/shivalib/linux/libshiva \
 $$QMAKE_LIBS_DYNLOAD \
 -lshiva
 
@@ -20,4 +20,4 @@ QMAKE_POST_LINK = ../bin/copydeps.sh
 
 QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN\''
 
-INCLUDEPATH += ../../.. ../..
+INCLUDEPATH += ../../../..

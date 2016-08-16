@@ -413,7 +413,7 @@ SHVBool SHVFreeTDSConnectionImpl::GetColumnTypeUTF8(SHVStringUTF8& colType, int 
 }
 SHVBool SHVFreeTDSConnectionImpl::GetColumnType8(SHVString8& colType, int columnIdx) const
 {
-	if (columnIdx < 0 || columnIdx >= ColCount || Columns[columnIdx].Status == -1)
+	if (columnIdx < 0 || columnIdx >= ColCount)
 		return false;
 	switch (Columns[columnIdx].InternalType)
 	{
