@@ -1311,7 +1311,7 @@ tm t;
 }
 time_t SHVTime::TimeNowWithMilliseconds(int& msecs)
 {
-#ifdef __SHIVA_WINCE
+#ifdef __SHIVA_WIN32
 SYSTEMTIME st;
 tm t;
 	GetSystemTime(&st);
@@ -1321,7 +1321,7 @@ tm t;
 	t.tm_hour = st.wHour;
 	t.tm_min  = st.wMinute;
 	t.tm_sec  = st.wSecond;
-	msecs = str.wMilliseconds;
+	msecs = st.wMilliseconds;
 
 	return TimeGm(&t);
 #elif defined(__SHIVA_EPOC)
