@@ -29,6 +29,12 @@ mingw32-make.exe -w distclean
 qmake shivasqlite.pro -r CONFIG-=debug CONFIG+=release
 mingw32-make.exe -w
 
+echo Building shivafreetds
+cd "%CurDir%\shivafreetds\windows"
+mingw32-make.exe -w distclean
+qmake shivasqlite.pro -r CONFIG-=debug CONFIG+=release
+mingw32-make.exe -w
+
 echo Building modules/dataengine
 cd "%CurDir%\shivamodulelibs\dataengine\windows"
 mingw32-make.exe -w distclean

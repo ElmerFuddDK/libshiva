@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../shiva"
+				AdditionalIncludeDirectories="../../..;freetds-vs/include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;SHIVAFREETDS_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../../shiva/shivalib/windows/$(ConfigurationName)/libshiva.lib"
+				AdditionalDependencies="../../shivalib/windows/$(ConfigurationName)/libshiva.lib freetds-vs/lib/sybdb.lib"
 				LinkIncremental="2"
 				ModuleDefinitionFile="shivafreetds.def"
 				GenerateDebugInformation="true"
@@ -118,7 +118,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../../shiva"
+				AdditionalIncludeDirectories="../../..;freetds-vs/include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;SHIVAFREETDS_EXPORTS"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -137,7 +137,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../../shiva/shivalib/windows/$(ConfigurationName)/libshiva.lib"
+				AdditionalDependencies="../../shivalib/windows/$(ConfigurationName)/libshiva.lib freetds-vs/lib/sybdb.lib"
 				LinkIncremental="1"
 				ModuleDefinitionFile="shivafreetds.def"
 				GenerateDebugInformation="true"
@@ -207,20 +207,20 @@
 			<Filter
 				Name="src"
 				>
-				<Filter
-					Name="modules"
-					>
-					<File
-						RelativePath="..\src\modules\shvshivafreetdsimpl.cpp"
-						>
-					</File>
-				</Filter>
 				<File
-					RelativePath="..\src\shvshivafreetdsexports.cpp"
+					RelativePath="..\src\shvfreetdsconnectionimpl.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\src\shvshivafreetdsfactory.cpp"
+					RelativePath="..\src\shvfreetdstransactionimpl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\shvfreetdswrapperimpl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\shvshivafreetdsexports.cpp"
 					>
 				</File>
 			</Filter>
@@ -235,30 +235,18 @@
 				>
 			</File>
 			<Filter
-				Name="include"
-				>
-				<Filter
-					Name="modules"
-					>
-					<File
-						RelativePath="..\include\modules\shvshivafreetds.h"
-						>
-					</File>
-				</Filter>
-			</Filter>
-			<Filter
 				Name="src"
 				>
-				<Filter
-					Name="modules"
-					>
-					<File
-						RelativePath="..\src\modules\shvshivafreetdsimpl.h"
-						>
-					</File>
-				</Filter>
 				<File
-					RelativePath="..\src\shvshivafreetdsfactory.h"
+					RelativePath="..\src\shvfreetdsconnectionimpl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\shvfreetdstransactionimpl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\shvfreetdswrapperimpl.h"
 					>
 				</File>
 			</Filter>

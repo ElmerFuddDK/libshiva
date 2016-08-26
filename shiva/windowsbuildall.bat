@@ -16,6 +16,10 @@ echo Building shivasqlite
 devenv.exe "%CD%\shivasqlite\windows\shivasqlite.vcproj" /rebuild Debug
 devenv.exe "%CD%\shivasqlite\windows\shivasqlite.vcproj" /rebuild Release
 
+echo Building shivafreetds
+devenv.exe "%CD%\shivafreetds\windows\shivafreetds.vcproj" /rebuild Debug
+devenv.exe "%CD%\shivafreetds\windows\shivafreetds.vcproj" /rebuild Release
+
 echo Building modules/dataengine
 devenv.exe "%CD%\shivamodulelibs\dataengine\windows\dataengine.vcproj" /rebuild Debug
 devenv.exe "%CD%\shivamodulelibs\dataengine\windows\dataengine.vcproj" /rebuild Release

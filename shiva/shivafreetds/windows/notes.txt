@@ -1,0 +1,26 @@
+Building for windows:
+
+You will need to build FreeTDS yourself and place the headers and lib files in
+the following directory structures, depending on whether you use mingw or
+visual studio:
+
+
+MinGW:
+------
+Headers:
+ shiva/shivafreetds/windows/freetds/include/*.h
+Lib files:
+ shiva/shivafreetds/windows/freetds/lib/sybdb*
+
+Visual studio:
+--------------
+Headers:
+ shiva/shivafreetds/windows/freetds-vs/include/*.h
+Lib files:
+ shiva/shivafreetds/windows/freetds-vs/lib/sybdb*
+
+
+It is possible to obtain some prebuilt versions for visual studio from here:
+https://github.com/ramiro/freetds/releases
+
+Good luck.

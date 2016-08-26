@@ -8,6 +8,12 @@
 #include "shiva/include/utils/shvvectorref.h"
 #include "shiva/include/threadutils/shvmutex.h"
 #include "shvfreetdsconnectionimpl.h"
+#include "shvfreetdstransactionimpl.h"
+///\cond INTERNAL
+class SHVFreeTDSWrapperImpl;
+typedef SHVRefObjectContainer<SHVFreeTDSWrapperImpl> SHVFreeTDSWrapperImplRef;
+bool shiva_tds_wrapper_findbyproc(DBPROCESS* dbproc, SHVFreeTDSWrapperImplRef& wrapper, SHVFreeTDSConnectionImplRef& conn);
+///\endcond
 
 
 //-=========================================================================================================
@@ -30,23 +36,23 @@ public:
 
 	virtual bool PropertiesValid();
 	
-	virtual SHVFreeTDSConnection* CreateConnection(SHVEventSubscriberBase* subs);
-
-/*	virtual SHVBool OpenUTF8(const SHVStringUTF8C& fileName, int option = 6);
-	virtual SHVBool OpenInMemory();
-	virtual SHVBool SetBusyTimeout(int ms);
-	virtual SHVBool Close();
-	virtual int GetRecentChanges();
-	virtual int GetTotalChanges();
-
-	virtual SHVSQLiteStatement* PrepareUTF8(SHVBool& ok, const SHVStringUTF8C& sql, SHVStringSQLite& notparsed);
-	virtual SHVSQLiteStatementRef ExecuteUTF8(SHVBool& ok, const SHVStringUTF8C& sql, SHVStringSQLite& notparsed);
-	virtual SHVStringUTF8C GetErrorMsgUTF8(); */
+	virtual SHVFreeTDSConnection* CreateConnection();
+	virtual SHVFreeTDSTransaction* CreateTransaction(SHVFreeTDSConnection* existingConnection, IsolationLevels lvl = IsolationLevelRepeatableRead, SHVInt maxRetries = SHVInt());
 	
-	bool FindConnectionByProcInternal(DBPROCESS* dbproc, SHVFreeTDSConnectionImplRef& conn);
+	virtual void InterruptAll();
+	
 	
 private:
 friend class SHVFreeTDSConnectionImpl;
+friend class SHVFreeTDSTransactionImpl;
+///\cond INTERNAL
+friend bool shiva_tds_wrapper_findbyproc(DBPROCESS* dbproc, SHVFreeTDSWrapperImplRef& wrapper, SHVFreeTDSConnectionImplRef& conn);
+
+	// Used internally, never use this from the outside!
+	bool FindConnectionByProcInternal(DBPROCESS* dbproc, SHVFreeTDSConnectionImplRef& conn);
+	// validates the pointer still exists as active connection and returns reference (Thread safe)
+	bool ValidateConnectionIsActive(SHVFreeTDSConnectionImpl* ptr, SHVFreeTDSConnectionImplRef& conn);
+///\endcond
 
 	void DisconnectAll();
 
@@ -83,5 +89,4 @@ friend class SHVFreeTDSConnectionImpl;
 	
 	SHVVectorRef<SHVFreeTDSConnectionImpl> ActiveConnections;
 };
-typedef SHVRefObjectContainer<SHVFreeTDSWrapperImpl> SHVFreeTDSWrapperImplRef;
 #endif

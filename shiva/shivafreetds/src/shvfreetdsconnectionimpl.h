@@ -6,6 +6,7 @@
 #include "shvfreetdscommon.h"
 
 class SHVFreeTDSWrapperImpl;
+class SHVFreeTDSTransactionImpl;
 
 
 //-=========================================================================================================
@@ -17,22 +18,28 @@ class SHVFreeTDSConnectionImpl : public SHVFreeTDSConnection
 {
 public:
 	
-	SHVFreeTDSConnectionImpl(SHVFreeTDSWrapperImpl* owner, SHVEventSubscriberBase* subs);
+	SHVFreeTDSConnectionImpl(SHVFreeTDSWrapperImpl* owner);
 	virtual ~SHVFreeTDSConnectionImpl();
 
-	virtual SHVBool GetError();
+	virtual SHVBool IsOK();
 
 	virtual SHVBool Connect();
 	virtual void Disconnect();
 	virtual bool IsConnected();
+	virtual void Interrupt();
+	virtual SHVBool Reset();
 
 	// Performing a query
-	virtual SHVBool ExecQuery(const SHVStringUTF8C query);
+	virtual SHVBool ExecQuery(const SHVStringUTF8C query, bool clearMessagesAndSqlError);
+	virtual SHVBool ExecQueryPartial(const SHVStringUTF8C query, SHVStringUTF8C* rest, bool clearMessagesAndSqlError);
 	
 	// Iteration methods
 	virtual SHVBool NextResult();
 	virtual SHVBool NextRow();
-	virtual SHVBool Reset();
+	
+	virtual bool HasTDSMessage();
+	virtual bool PopTDSMessage(TDSMessage& msg);
+	virtual void ClearTDSMessages();
 	
 	// GetValue
 	virtual SHVBool GetLong(long& val, int columnIdx) const;
@@ -58,18 +65,22 @@ public:
 	///\cond INTERNAL
 	void HandleTdsErrorInternal(int severity, int dberr, int oserr, char* dberrstr, char* oserrstr);
 	void HandleTdsMessageInternal(DBINT msgno, int msgstate, int severity, char* msgtext, char* srvname, char* procname, int line);
+	void SetInterrupted();
 	///\endcond
 
 private:
 friend class SHVFreeTDSWrapperImpl;
+friend class SHVFreeTDSTransactionImpl;
 
 	void DisconnectInternal();
 	void CleanupCols();
-	SHVTime DbDateToTime(const DBDATETIME* dateTime) const;
+	int CalculateRetryDelay(int tries);
+	SHVBool SplitQuery(const SHVString8C query, SHVString8 &queryPart, SHVString8C &rest);
 
+	size_t ConnectionThreadID;
 	SHVFreeTDSWrapperImpl* Owner;
-	SHVEventSubscriberBaseRef Subscriber;
 	SHVBool OK;
+	SHVInt RandomSeed;
 	
 	///\cond INTERNAL
 	SHVFreeTDSLoginRef Login;
@@ -100,6 +111,22 @@ friend class SHVFreeTDSWrapperImpl;
 	TDSColumn* Columns;
 	int ColCount;
 	
+	SHVList<TDSMessage> SqlMessages;
+	TDSErrorLevels SqlErrorLevel;
+
+	RETCODE AllocateColumnBuffer(int i, TDSColumn* col);
+	TDSColumn* ReleaseColumnsInternal();
+	
+	SHVTime DbDateToTime(const DBDATETIME* dateTime) const;
+	SHVBool GetLongInternal(long& val, const TDSColumn& col) const;
+	SHVBool GetInt64Internal(SHVInt64Val& val, const TDSColumn& col) const;
+	SHVBool GetDoubleInternal(double& val, const TDSColumn& col) const;
+	SHVBool GetStringUTF8Internal(SHVStringUTF8& text, const TDSColumn& col) const;
+	SHVBool GetTimeInternal(SHVTime& val, const TDSColumn& col) const;
+	SHVBool GetUUIDInternal(SHVUUID::ID& val, const TDSColumn& col) const;
+	SHVBool GetColumnTypeUTF8Internal(SHVStringUTF8& colType, int internalType) const;
+	SHVBool GetColumnType8Internal(SHVString8& colType, int internalType) const;
+	SHVBool GetColumnType16Internal(SHVString16& colType, int internalType) const;
 	///\endcond
 };
 typedef SHVRefObjectContainer<SHVFreeTDSConnectionImpl> SHVFreeTDSConnectionImplRef;

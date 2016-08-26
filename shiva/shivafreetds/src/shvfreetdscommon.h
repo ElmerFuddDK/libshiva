@@ -3,8 +3,6 @@
 
 ///\cond INTERNAL
 
-extern "C"
-{
 #ifdef INLINE_FREETDS
 # include <freetds/tds.h>
 # include <freetds/iconv.h>
@@ -18,7 +16,6 @@ extern "C"
 #  define SYBUNIQUE 36 // Missing uuid support
 # endif
 #endif
-}
 
 #include "shiva/include/utils/shvrefobject.h"
 

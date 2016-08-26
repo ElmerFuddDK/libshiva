@@ -5,6 +5,7 @@
 #include "shiva/include/utils/shvptrcontainer.h"
 #include "shiva/include/framework/shvevent.h"
 #include "shvfreetdsconnection.h"
+#include "shvfreetdstransaction.h"
 
 
 //-=========================================================================================================
@@ -33,7 +34,18 @@ public:
 		ErrConnecting,
 		ErrSelectingDb,
 		ErrNotConnected,
-		ErrQuery
+		ErrQuery,
+		ErrQueryRetriable,
+		ErrInterrupted
+	};
+	
+	enum IsolationLevels {
+		IsolationLevelKeepExisting = 0,
+		IsolationLevelReadUncommitted = 1,
+		IsolationLevelReadCommitted = 2,
+		IsolationLevelRepeatableRead = 3,
+		IsolationLevelSerializable = 4,
+		IsolationLevelSnapshot = 5
 	};
 	
 	virtual SHVFreeTDSWrapper& SetProperty(Properties prop, const SHVStringC value) = 0;
@@ -44,8 +56,11 @@ public:
 	
 	virtual bool PropertiesValid() = 0;
 
-	virtual SHVFreeTDSConnection* CreateConnection(SHVEventSubscriberBase* subs) = 0;
+	virtual SHVFreeTDSConnection* CreateConnection() = 0;
+	virtual SHVFreeTDSTransaction* CreateTransaction(SHVFreeTDSConnection* existingConnection, IsolationLevels lvl = IsolationLevelRepeatableRead, SHVInt maxRetries = SHVInt()) = 0;
 	
+	virtual void InterruptAll() = 0; // Can be used to cancel all current queries
+
 
 protected:
 	inline SHVFreeTDSWrapper() {}

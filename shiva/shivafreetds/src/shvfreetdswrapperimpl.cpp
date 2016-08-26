@@ -9,11 +9,12 @@
 #define SHIVATDSWRAPPERS_GROWSIZE 5
 static SHVMutexBase shiva_tds_wrappers_lock;
 static SHVVectorBase shiva_tds_wrappers;
-static int shiva_tds_error_handler(DBPROCESS* dbproc, int severity, int dberr, int oserr, char* dberrstr, char* oserrstr);
-static int shiva_tds_message_handler(DBPROCESS* dbproc, DBINT msgno, int msgstate, int severity, char* msgtext, char* srvname, char *procname, int line);
-static bool shiva_tds_wrapper_findbyproc(DBPROCESS* dbproc, SHVFreeTDSWrapperImplRef& wrapper, SHVFreeTDSConnectionImplRef& conn);
-static bool shiva_tds_wrapper_add(SHVFreeTDSWrapperImpl* wrapper);
-static void shiva_tds_wrapper_rem(SHVFreeTDSWrapperImpl* wrapper);
+int shiva_tds_error_handler(DBPROCESS* dbproc, int severity, int dberr, int oserr, char* dberrstr, char* oserrstr);
+int shiva_tds_message_handler(DBPROCESS* dbproc, DBINT msgno, int msgstate, int severity, char* msgtext, char* srvname, char *procname, int line);
+bool shiva_tds_wrapper_add(SHVFreeTDSWrapperImpl* wrapper);
+void shiva_tds_wrapper_rem(SHVFreeTDSWrapperImpl* wrapper);
+int shiva_tds_dbchkintr(void* dbproc);
+int shiva_tds_dbhndlintr(void* dbproc);
 ///\endcond
 
 
@@ -65,7 +66,7 @@ SHVMutexLocker l(PropertyLock);
 	if (prop ==SHVFreeTDSWrapper::PropHostport)
 		Hostport = (short)value.ToLong();
 	
-	if (prop < 0 || prop >= Props.CalculateCount())
+	if (prop < 0 || (size_t)prop >= Props.CalculateCount())
 	{
 		SHVASSERT(false);
 	}
@@ -112,7 +113,7 @@ const SHVStringCRef SHVFreeTDSWrapperImpl::GetProperty(SHVFreeTDSWrapper::Proper
 {
 SHVMutexLocker l(PropertyLock);
 
-	if (prop >= 0 || prop < Props.CalculateCount())
+	if (prop >= 0 || (size_t)prop < Props.CalculateCount())
 	{
 		return Props[prop]->Value;
 	}
@@ -148,11 +149,40 @@ bool SHVFreeTDSWrapperImpl::PropertiesValid()
 /*************************************
  * CreateConnection
  *************************************/
-SHVFreeTDSConnection* SHVFreeTDSWrapperImpl::CreateConnection(SHVEventSubscriberBase* subs)
+SHVFreeTDSConnection* SHVFreeTDSWrapperImpl::CreateConnection()
 {
-	return new SHVFreeTDSConnectionImpl(this, subs);
+	return new SHVFreeTDSConnectionImpl(this);
 }
 
+/*************************************
+ * CreateTransaction
+ *************************************/
+SHVFreeTDSTransaction* SHVFreeTDSWrapperImpl::CreateTransaction(SHVFreeTDSConnection* existingConnection, SHVFreeTDSWrapper::IsolationLevels lvl, SHVInt maxRetries)
+{
+bool connOwner = (existingConnection ? false : true);
+
+	if (!existingConnection)
+		existingConnection = CreateConnection();
+
+	return new SHVFreeTDSTransactionImpl((SHVFreeTDSConnectionImpl*)existingConnection, connOwner, lvl, maxRetries);
+}
+
+/*************************************
+ * InterruptAll
+ *************************************/
+void SHVFreeTDSWrapperImpl::InterruptAll()
+{
+SHVMutexLocker l(PropertyLock);
+size_t i,count;
+	count = ActiveConnections.CalculateCount();
+	for (i=0; i<count; i++)
+	{
+		if (ActiveConnections[i])
+			ActiveConnections[i]->Interrupt();
+	}
+}
+
+///\cond INTERNAL
 /*************************************
  * FindConnectionByProcInternal
  *************************************/
@@ -172,6 +202,30 @@ size_t i,count;
 	}
 	return retVal;
 }
+
+/*************************************
+ * ValidateConnectionIsActive
+ *************************************/
+bool SHVFreeTDSWrapperImpl::ValidateConnectionIsActive(SHVFreeTDSConnectionImpl* ptr, SHVFreeTDSConnectionImplRef& conn)
+{
+bool retVal = false;
+	if (ptr)
+	{
+	SHVMutexLocker l(PropertyLock);
+	size_t i,count;
+		count = ActiveConnections.CalculateCount();
+		for (i=0; i<count && !retVal; i++)
+		{
+			if (ActiveConnections[i] == ptr)
+			{
+				conn = ActiveConnections[i];
+				retVal = true;
+			}
+		}
+	}
+	return retVal;
+}
+///\endcond
 
 /*************************************
  * DisconnectAll
@@ -244,14 +298,23 @@ SHVBool retVal(ErrNone);
 
 	if (Initialized &&  Modules->IsRegistered())
 	{
-		conn->DbProc = dbopen(Login->Login,GetDbProperty(SHVFreeTDSWrapper::PropHostname).GetSafeBuffer());
-		if (!conn->DbProc)
+	DBPROCESS* dbProc;
+	SHVStringUTF8CRef database = GetDbProperty(SHVFreeTDSWrapper::PropDatabase);
+		dbProc = dbopen(Login->Login,GetDbProperty(SHVFreeTDSWrapper::PropHostname).GetSafeBuffer());
+		if (!dbProc)
 		{
 			retVal.SetError(ErrConnecting);
 		}
-		else if (dbuse(conn->DbProc, GetDbProperty(SHVFreeTDSWrapper::PropDatabase).GetSafeBuffer()) == FAIL)
+		else if (!database.IsEmpty() && dbuse(dbProc, database.GetSafeBuffer()) == FAIL)
 		{
 			retVal.SetError(ErrSelectingDb);
+			dbclose(dbProc);
+		}
+		else
+		{
+			conn->DbProc = dbProc;
+			conn->ConnectionThreadID = SHVThreadBase::GetCurrentThreadID();
+			dbsetinterrupt(conn->DbProc,&shiva_tds_dbchkintr,&shiva_tds_dbhndlintr);
 		}
 	}
 	else
@@ -310,7 +373,7 @@ const SHVStringUTF8CRef SHVFreeTDSWrapperImpl::GetDbProperty(SHVFreeTDSWrapper::
 {
 SHVMutexLocker l(PropertyLock);
 
-	if (prop >= 0 || prop < Props.CalculateCount())
+	if (prop >= 0 || (size_t)prop < Props.CalculateCount())
 	{
 		return Props[prop]->DbValue;
 	}
@@ -337,7 +400,7 @@ size_t count = Props.CalculateCount();
 
 
 ///\cond INTERNAL
-static int shiva_tds_error_handler(DBPROCESS* dbproc, int severity, int dberr, int oserr, char* dberrstr, char* oserrstr)
+int shiva_tds_error_handler(DBPROCESS* dbproc, int severity, int dberr, int oserr, char* dberrstr, char* oserrstr)
 {
 SHVFreeTDSWrapperImplRef wrapper;
 SHVFreeTDSConnectionImplRef conn;
@@ -351,7 +414,7 @@ SHVFreeTDSConnectionImplRef conn;
 	return INT_CANCEL;
 }
  
-static int shiva_tds_message_handler(DBPROCESS* dbproc, DBINT msgno, int msgstate, int severity, char* msgtext, char* srvname, char* procname, int line)
+int shiva_tds_message_handler(DBPROCESS* dbproc, DBINT msgno, int msgstate, int severity, char* msgtext, char* srvname, char* procname, int line)
 {
 SHVFreeTDSWrapperImplRef wrapper;
 SHVFreeTDSConnectionImplRef conn;
@@ -364,7 +427,7 @@ SHVFreeTDSConnectionImplRef conn;
 	
 	return 0;
 }
-static bool shiva_tds_wrapper_add(SHVFreeTDSWrapperImpl* wrapper)
+bool shiva_tds_wrapper_add(SHVFreeTDSWrapperImpl* wrapper)
 {
 size_t i,count;
 bool initialized;
@@ -378,8 +441,8 @@ bool initialized;
 		
 		if (initialized)
 		{
-			dberrhandle(shiva_tds_error_handler);
-			dbmsghandle(shiva_tds_message_handler);
+			dberrhandle(&shiva_tds_error_handler);
+			dbmsghandle(&shiva_tds_message_handler);
 		}
 	}
 	else
@@ -404,7 +467,7 @@ bool initialized;
 	shiva_tds_wrappers_lock.Unlock();
 	return initialized;
 }
-static void shiva_tds_wrapper_rem(SHVFreeTDSWrapperImpl* wrapper)
+void shiva_tds_wrapper_rem(SHVFreeTDSWrapperImpl* wrapper)
 {
 size_t i,count;
 	shiva_tds_wrappers_lock.Lock();
@@ -429,7 +492,7 @@ size_t i,count;
 	}
 	shiva_tds_wrappers_lock.Unlock();
 }
-static bool shiva_tds_wrapper_findbyproc(DBPROCESS* dbproc, SHVFreeTDSWrapperImplRef& wrapper, SHVFreeTDSConnectionImplRef& conn)
+bool shiva_tds_wrapper_findbyproc(DBPROCESS* dbproc, SHVFreeTDSWrapperImplRef& wrapper, SHVFreeTDSConnectionImplRef& conn)
 {
 bool retVal = false;
 size_t i,count;
@@ -447,5 +510,33 @@ SHVFreeTDSWrapperImpl* wrapperIdx;
 	}
 	shiva_tds_wrappers_lock.Unlock();
 	return retVal;
+}
+
+int shiva_tds_dbchkintr(void* dbproc)
+{
+SHVFreeTDSWrapperImplRef wrapper;
+SHVFreeTDSConnectionImplRef conn;
+
+	// Locate the active connection
+	if (shiva_tds_wrapper_findbyproc((DBPROCESS*)dbproc,wrapper,conn))
+	{
+		if (conn->IsOK())
+			return FALSE;
+	}
+	
+	return TRUE;
+}
+int shiva_tds_dbhndlintr(void* dbproc)
+{
+SHVFreeTDSWrapperImplRef wrapper;
+SHVFreeTDSConnectionImplRef conn;
+
+	// Locate the active connection
+	if (shiva_tds_wrapper_findbyproc((DBPROCESS*)dbproc,wrapper,conn))
+	{
+		conn->SetInterrupted();
+	}
+	
+	return INT_CANCEL;
 }
 ///\endcond

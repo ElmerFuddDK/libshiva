@@ -1,34 +1,37 @@
-#ifndef __SHIVA_FREETDS_CONNECTION_H
-#define __SHIVA_FREETDS_CONNECTION_H
+#ifndef __SHIVA_FREETDS_TRANSACTION_H
+#define __SHIVA_FREETDS_TRANSACTION_H
 
 #include "shvfreetdsresultset.h"
 
 
 //-=========================================================================================================
-///  SHVFreeTDSConnection class - Connection via FreeTDS
+///  SHVFreeTDSTransaction class - Perform transactions against the SQL server
 /**
+ * This class makes it easy to perform transactions against the
+ * SQL server. You can add queries to it, and when you call
+ * PerformTransaction it will send it all to the SQL server
+ * encapsulated in a BEGIN/COMMIT TRANSACTION. All retriable
+ * errors are automatically retried, and the results will be
+ * cached. This way when you get a succesful return you will
+ * know the result is performed correctly.\n
  * This object is not thread safe and must only be used by the
- * creating thread.\n
- * However, Interrupt is safe and necessary to use from other
- * threads to interrupt a runnning query.
+ * creating thread.
  */
 	
-class SHVFreeTDSConnection : public SHVFreeTDSResultset
+class SHVFreeTDSTransaction : public SHVFreeTDSResultset
 {
 	
 public:
 
 	virtual SHVBool IsOK() = 0;
 
-	virtual SHVBool Connect() = 0;
 	virtual void Disconnect() = 0;
 	virtual bool IsConnected() = 0;
 	virtual void Interrupt() = 0;
-	virtual SHVBool Reset() = 0;
 	
-	// Performing a query
-	virtual SHVBool ExecQuery(const SHVStringUTF8C query, bool clearMessagesAndSqlError = true) = 0;
-	virtual SHVBool ExecQueryPartial(const SHVStringUTF8C query, SHVStringUTF8C* rest = NULL, bool clearMessagesAndSqlError = true) = 0;
+	// Performing the transaction
+	virtual SHVBool AddQuery(const SHVStringUTF8C query) = 0;
+	virtual SHVBool PerformTransaction() = 0;
 	
 	
 	// From SHVFreeTDSResultset
@@ -64,6 +67,7 @@ public:
 	virtual int GetColumnCount() const = 0;
 
 };
-typedef SHVRefObjectContainer<SHVFreeTDSConnection> SHVFreeTDSConnectionRef;
+typedef SHVRefObjectContainer<SHVFreeTDSTransaction> SHVFreeTDSTransactionRef;
+
 
 #endif
