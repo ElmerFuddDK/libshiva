@@ -160,10 +160,10 @@ size_t converted = 1;
 	while (len && converted)
 	{
 		EnsureBufferSpaceFree();
-		chars = (const SHVWChar*)Conv16->Convert((const SHVByte*)chars,BufferPos,BufferLeft-1,&converted);
+		chars = (const SHVWChar*)Conv16->Convert((const SHVByte*)chars,BufferPos,(len < BufferLeft-1 ? len : BufferLeft-1),&converted);
 		BufferPos += converted;
 		BufferLeft -= converted;
-		len--;
+		len-=converted;
 	}
 	SHVASSERT(len == 0);
 	
@@ -183,10 +183,10 @@ size_t converted = 1;
 	while (len && converted)
 	{
 		EnsureBufferSpaceFree();
-		chars = (const SHVChar*)ConvUtf8->Convert((const SHVByte*)chars,BufferPos,BufferLeft-1,&converted);
+		chars = (const SHVChar*)ConvUtf8->Convert((const SHVByte*)chars,BufferPos,(len < BufferLeft-1 ? len : BufferLeft-1),&converted);
 		BufferPos += converted;
 		BufferLeft -= converted;
-		len--;
+		len-=converted;
 	}
 	SHVASSERT(len == 0);
 	
@@ -344,10 +344,10 @@ size_t converted = 1;
 	while (len && converted)
 	{
 		EnsureBufferSpaceFree();
-		chars = (const SHVChar*)Conv8->Convert((const SHVByte*)chars,BufferPos,BufferLeft-1,&converted);
+		chars = (const SHVChar*)Conv8->Convert((const SHVByte*)chars,BufferPos,(len < BufferLeft-1 ? len : BufferLeft-1),&converted);
 		BufferPos += converted;
 		BufferLeft -= converted;
-		len--;
+		len-=converted;
 	}
 	SHVASSERT(len == 0);
 	
@@ -367,10 +367,10 @@ size_t converted = 1;
 	while (len && converted)
 	{
 		EnsureBufferSpaceFree();
-		chars = (const SHVWChar*)Conv16->Convert((const SHVByte*)chars,BufferPos,BufferLeft-1,&converted);
+		chars = (const SHVWChar*)Conv16->Convert((const SHVByte*)chars,BufferPos,(len < BufferLeft-1 ? len : BufferLeft-1),&converted);
 		BufferPos += converted;
 		BufferLeft -= converted;
-		len--;
+		len-=converted;
 	}
 	SHVASSERT(len == 0);
 	
@@ -543,10 +543,10 @@ size_t converted = 1;
 	while (len && converted)
 	{
 		EnsureBufferSpaceFree();
-		chars = (const SHVChar*)Conv8->Convert((const SHVByte*)chars,BufferPos,BufferLeft-1,&converted);
+		chars = (const SHVChar*)Conv8->Convert((const SHVByte*)chars,BufferPos,(len < BufferLeft-1 ? len : BufferLeft-1),&converted);
 		BufferPos += converted;
 		BufferLeft -= converted;
-		len--;
+		len-=converted;
 	}
 	SHVASSERT(len == 0);
 	
@@ -581,7 +581,7 @@ size_t converted = 1;
 	while (len && converted)
 	{
 		EnsureBufferSpaceFree();
-		chars = (const SHVChar*)ConvUtf8->Convert((const SHVByte*)chars,BufferPos,BufferLeft-1,&converted);
+		chars = (const SHVChar*)ConvUtf8->Convert((const SHVByte*)chars,BufferPos,(len < BufferLeft-1 ? len : BufferLeft-1),&converted);
 		BufferPos += converted;
 		BufferLeft -= converted;
 		len--;
