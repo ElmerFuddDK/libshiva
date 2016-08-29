@@ -22,6 +22,9 @@ public:
 	{
 		SHVChar Bytes[16];
 
+		operator SHVHashValue() const;
+		bool operator==(const ID& id) const;
+
 		SHVStringBuffer8 ToString8();
 		SHVStringBuffer16 ToString16();
 		inline SHVStringBuffer ToString();

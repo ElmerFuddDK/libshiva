@@ -234,6 +234,21 @@ int SHVUUID::CharToInt(bool& ok, const char ch)
 /// \struct SHVUUID::ID shvuuid.h "shiva/include/utils/shvuuid.h"
 
 /*************************************
+ * Operators
+ *************************************/
+SHVUUID::ID::operator SHVHashValue() const
+{
+size_t retVal = 0;
+	for(size_t i = 0; i < 16; i++)
+		retVal = Bytes[i] + retVal * 5;
+	return retVal;
+}
+bool SHVUUID::ID::operator==(const SHVUUID::ID& id) const
+{
+	return memcmp(Bytes,id.Bytes,16) == 0;
+}
+
+/*************************************
  * ToString8
  *************************************/
 SHVStringBuffer8 SHVUUID::ID::ToString8()
