@@ -2,7 +2,7 @@
 @echo off
 
 set OLDPATH=%PATH%
-PATH=%PATH%;c:\Program Files\Microsoft Visual Studio 8\Common7\IDE
+PATH=%PATH%;c:\Program Files (x86)\Microsoft Visual Studio 8\Common7\IDE;c:\Program Files\Microsoft Visual Studio 8\Common7\IDE
 
 echo Building libshiva
 devenv.exe "%CD%\shivalib\windows\libshiva.vcproj" /rebuild Debug
