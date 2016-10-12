@@ -14,7 +14,6 @@
 /**
  * Use this class for launching sub processes that you can interact with. You can launch the
  * sub process in a way that allows you to read from its stdout/err or write to its stdin.
- \note At the moment it is only supported in linux
  */
 
 class SHVSubProcess
@@ -37,6 +36,8 @@ public:
 		ErrAlreadyRunning
 	};
 
+	typedef size_t ProcessID;
+
 
 	virtual ~SHVSubProcess() {}
 
@@ -46,6 +47,7 @@ public:
 	virtual SHVStreamIn& GetStdOut() = 0;
 	virtual SHVStreamIn& GetStdErr() = 0;
 	virtual SHVStreamOut& GetStdIn() = 0;
+	virtual ProcessID GetPID() = 0;
 	
 	
 	// System properties

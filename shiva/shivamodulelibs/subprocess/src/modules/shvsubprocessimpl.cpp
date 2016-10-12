@@ -164,6 +164,20 @@ SHVStreamOut& SHVSubProcessImpl::GetStdIn()
 }
 
 /*************************************
+ * GetPID
+ *************************************/
+SHVSubProcess::ProcessID SHVSubProcessImpl::GetPID()
+{
+#if defined(__SHIVA_WIN32)
+	return (SHVSubProcess::ProcessID)Process.dwProcessId;
+#elif defined(__SHIVA_LINUX)
+	return (SHVSubProcess::ProcessID)Pid;
+#else
+	return 0;
+#endif
+}
+
+/*************************************
  * GetMemUsage
  *************************************/
 SHVInt64 SHVSubProcessImpl::GetMemUsage()

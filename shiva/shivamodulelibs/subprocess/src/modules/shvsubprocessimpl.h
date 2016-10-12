@@ -28,6 +28,7 @@ public:
 	virtual SHVStreamIn& GetStdOut();
 	virtual SHVStreamIn& GetStdErr();
 	virtual SHVStreamOut& GetStdIn();
+	virtual ProcessID GetPID();
 
 
 	// System properties
