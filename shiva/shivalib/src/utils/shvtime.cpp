@@ -1015,11 +1015,12 @@ SHVTime retVal;
 /// returns unix time representation of SHVTime
 /**
  * unix time is a representation of the unix epoch (seconds since 1970-01-01T00:00:00)
+ \note The returned value ignores the LocalTime property and returns the exact unix time representation of SHVTime values.
  */
 SHVInt64Val SHVTime::ToUnixTime(const SHVTime& time)
 {
 tm t = time.Time;
-	return time.MkTime(&t);
+	return time.TimeGm(&t);
 }
 
 /*************************************
