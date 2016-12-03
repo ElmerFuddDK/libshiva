@@ -25,6 +25,8 @@ class SHVSemaphoreLocker
 public:
 	inline SHVSemaphoreLocker(const SHVSemaphore* semaphore, unsigned resources = 1);
 	inline SHVSemaphoreLocker(const SHVSemaphore& semaphore, unsigned resources = 1);
+	inline SHVSemaphoreLocker(const SHVSemaphoreLocker &l);
+	inline const SHVSemaphoreLocker& operator =(const SHVSemaphoreLocker& l);
 	inline ~SHVSemaphoreLocker();
 private:
 	SHVSemaphore* Semaphore;
@@ -50,6 +52,25 @@ SHVSemaphoreLocker::SHVSemaphoreLocker(const SHVSemaphore& semaphore, unsigned r
 {
 	if (Semaphore)
 		Semaphore->Wait(Resources);
+}
+SHVSemaphoreLocker::SHVSemaphoreLocker(const SHVSemaphoreLocker& l) : Semaphore(((SHVSemaphoreLocker*)&l)->Semaphore), Resources(l.Resources)
+{
+	((SHVSemaphoreLocker*)&l)->Semaphore = NULL;
+}
+
+/*************************************
+ * operator =
+ *************************************/
+const SHVSemaphoreLocker& SHVSemaphoreLocker::operator =(const SHVSemaphoreLocker& l)
+{
+	if (Semaphore)
+		Semaphore->Signal(Resources);
+	
+	Semaphore = ((SHVSemaphoreLocker*)&l)->Semaphore;
+	Resources = l.Resources;
+	((SHVSemaphoreLocker*)&l)->Semaphore = NULL;
+	
+	return *this;
 }
 
 /*************************************
