@@ -208,6 +208,7 @@ char dummyBuffer[50];
 SHVListIterator<SHVSocketImplRef,SHVSocketImpl*> SocketListItr(SocketServer->SocketList);
 SHVList<SHVSocketImplRef,SHVSocketImpl*> pendingList;
 SHVListIterator<SHVSocketImplRef,SHVSocketImpl*> pendingListItr(pendingList);
+SHVString8 SelectErrorMessage;
 
 	SignalDispatcher();
 
@@ -247,15 +248,25 @@ SHVListIterator<SHVSocketImplRef,SHVSocketImpl*> pendingListItr(pendingList);
 		{
 			continue;
 		}
-		else if (
-				retVal == -1
-# ifdef __SHIVA_POSIX
-				&& errno != EINTR
-#endif
-				) // ERROR!
+		else if (retVal == -1)
 		{
-			// insert error handling here
-			KillSignal = true;
+# ifdef __SHIVA_POSIX
+			if (errno == EINTR)
+			{
+				// We got interrupted - try again
+			}
+			else if (errno == EBADF)
+			{
+				// One of the file descriptors got closed between building the list and select - probably
+				// Sleep a bit and try again
+				SHVThreadBase::Sleep(10);
+			}
+			else
+# endif
+			{
+				SelectErrorMessage.Format("SocketServer select error : (%d) %s", errno, strerror(errno));
+				KillSignal = true;
+			}
 			continue;
 		}
 		
@@ -300,5 +311,7 @@ SHVListIterator<SHVSocketImplRef,SHVSocketImpl*> pendingListItr(pendingList);
 #ifdef __SHIVASOCKETS_NOSELECTMODE
 	SocketServer->ThreadSignal.Unlock(); // release the signal
 #endif
+	if (!SelectErrorMessage.IsNull())
+		fprintf(stderr,"%s\n", SelectErrorMessage.GetSafeBuffer());
 }
 ///\endcond
