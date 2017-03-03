@@ -7,6 +7,8 @@
 // typedef for an IPv4 address and port
 typedef unsigned int SHVIPv4Addr;
 typedef unsigned short SHVIPv4Port;
+struct SHVIPv6Addr { unsigned char bytes[16]; };
+#define SHVIPv6Port SHVIPv4Port
 
 
 //-=========================================================================================================
@@ -76,16 +78,19 @@ public:
 	virtual SHVBool Shutdown() = 0;
 	virtual SHVBool ConnectAny(SHVIPv4Port port) = 0;
 	virtual SHVBool Connect(SHVIPv4Addr ip, SHVIPv4Port port) = 0;
-	virtual SHVBool Connect(const SHVStringC ipv4Addr, SHVIPv4Port port) = 0;
+	virtual SHVBool Connect6(SHVIPv6Addr ip, SHVIPv6Port port) = 0;
+	virtual SHVBool Connect(const SHVStringC ipAddr, SHVIPv4Port port) = 0;
 	virtual SHVBool ConnectUnix(const SHVStringC fileName) = 0;
 	
 	virtual SHVBool Send(const SHVBufferC& buf) = 0;
 	virtual SHVBool SendTo(const SHVBufferC& buf, SHVIPv4Addr ip, SHVIPv4Port port) = 0;
+	virtual SHVBool SendTo6(const SHVBufferC& buf, SHVIPv6Addr ip, SHVIPv6Port port) = 0;
 
 	virtual SHVBool SetReceiveBufferSize(size_t sz) = 0;
 	virtual size_t GetReceiveBufferSize() = 0;
 	virtual SHVBuffer* PopReceiveBuffer(size_t& bytesRead) = 0;
-	virtual SHVBuffer* PopReceiveBuffer(size_t& bytesRead, SHVIPv4Addr &fromIP, SHVIPv4Port &fromPort) = 0;
+	virtual SHVBuffer* PopReceiveBuffer(size_t& bytesRead, SHVIPv4Addr& fromIP, SHVIPv4Port& fromPort) = 0;
+	virtual SHVBuffer* PopReceiveBuffer6(size_t& bytesRead, SHVIPv6Addr& fromIP, SHVIPv6Port& fromPort) = 0;
 	virtual SHVBool HasReceivedData() = 0;
 
 	virtual SHVBool SetSocketOption(SocketOptions option, int val1, int val2 = 0) = 0;

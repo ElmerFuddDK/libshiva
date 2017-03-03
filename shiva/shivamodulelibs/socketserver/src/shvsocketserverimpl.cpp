@@ -38,6 +38,10 @@
 # include <netdb.h>
 #endif
 
+#if defined(__SHIVA_WIN32) && !defined(__SHIVASOCKETS_IPV6DISABLED)
+# include <ws2tcpip.h>
+#endif
+
 
 
 //=========================================================================================================
@@ -208,6 +212,136 @@ SHVIPv4Addr retVal = Inetv4Addr(host);
 	return retVal;
 }
 
+
+/*************************************
+ * Inetv6Addr
+ *************************************/
+SHVIPv6Addr SHVSocketServerImpl::Inetv6Addr(const SHVStringC strIp)
+{
+SHVIPv6Addr retVal;
+#ifdef __SHIVASOCKETS_IPV6DISABLED
+	::memset(&retVal,0,sizeof(retVal));
+	SHVUNUSED_PARAM(strIp);
+#else
+SHVString8 strIp8;
+	if (strIp.Find(_S(":")) < 0)
+		strIp8.Format("::FFFF:%s", strIp.ToStr8().GetSafeBuffer());
+	else
+		strIp8 = strIp.ToStr8();
+# ifdef __SHIVA_WIN32
+sockaddr_in6 host;
+INT sockAddrLen = sizeof(host);
+	if (WSAStringToAddressA((LPSTR)strIp8.GetSafeBuffer(),AF_INET6,NULL,(LPSOCKADDR)&host,&sockAddrLen) == 0)
+	{
+		retVal = *(SHVIPv6Addr*)&host.sin6_addr;
+	}
+	else
+# else
+	if (inet_pton(AF_INET6,strIp8.GetSafeBuffer(),&retVal) <= 0)
+# endif
+	{
+		::memset(&retVal,0,sizeof(retVal));
+	}
+#endif
+	return retVal;
+}
+
+/*************************************
+ * Inetv6ToAddr
+ *************************************/
+SHVStringBuffer SHVSocketServerImpl::Inetv6ToAddr(SHVIPv6Addr ip)
+{
+SHVString retVal;
+#ifdef __SHIVASOCKETS_IPV6DISABLED
+	SHVUNUSED_PARAM(ip);
+#else
+char strIp8[128];
+char* strIp8Ptr = NULL;
+# ifdef __SHIVA_WIN32
+sockaddr_in6 sockAddr;
+int sockAddrLen = sizeof(sockAddr);
+DWORD strIp8Len = 127;
+
+	::memset(&sockAddr, 0, sizeof(sockaddr_in6));
+
+	sockAddr.sin6_family = AF_INET6;
+	sockAddr.sin6_addr = *(in6_addr*)&ip;
+	
+	if (WSAAddressToStringA((LPSOCKADDR)&sockAddr, sockAddrLen, NULL, strIp8, &strIp8Len) == 0)
+	{
+		strIp8Ptr = strIp8;
+		if (*strIp8 == '[' && strIp8Len > 1)
+		{
+			strIp8Ptr++;
+			strIp8[strIp8Len-1] = '\0';
+		}
+	}
+# else
+	if (inet_ntop(AF_INET6,&ip,strIp8,128))
+	{
+		strIp8Ptr = strIp8;
+	}
+# endif
+	
+	// Strip the ::FFFF: part if the IP was really an ipv4 address
+	if (strIp8Ptr)
+	{
+		if (strIp8Ptr[0] == ':' && strIp8Ptr[1] == ':'
+		        && (strIp8Ptr[2] == 'f' || strIp8Ptr[2] == 'F')
+		        && strIp8Ptr[3] == strIp8Ptr[2]
+		        && strIp8Ptr[4] == strIp8Ptr[2]
+		        && strIp8Ptr[5] == strIp8Ptr[2]
+		        && strIp8Ptr[6] == ':')
+		{
+			strIp8Ptr += 7;
+		}
+
+		retVal = SHVString8C(strIp8Ptr).ToStrT();
+	}
+#endif
+	return retVal.ReleaseBuffer();
+}
+
+/*************************************
+ * Inetv6ResolveHost
+ *************************************/
+SHVIPv6Addr SHVSocketServerImpl::Inetv6ResolveHost(const SHVStringC host)
+{
+SHVIPv6Addr retVal = Inetv6Addr(host);
+
+#ifndef __SHIVASOCKETS_IPV6DISABLED
+	if (::memcmp(&retVal,&in6addr_any,sizeof(retVal)) == 0)
+	{
+	struct addrinfo hints;
+	struct addrinfo *result = NULL;
+	SHVString8 host8(host.ToStr8());
+	
+		memset(&hints, 0, sizeof(hints));
+		hints.ai_family = AF_UNSPEC;
+		hints.ai_socktype = SOCK_STREAM;
+		hints.ai_protocol = IPPROTO_TCP;
+		
+		if (getaddrinfo(host8.GetSafeBuffer(), NULL, &hints, &result) == 0 && result)
+		{
+			if (result->ai_family == AF_INET6)
+			{
+				retVal = *(SHVIPv6Addr*)&((sockaddr_in6*)result->ai_addr)->sin6_addr;
+			}
+			else if (result->ai_family == AF_INET)
+			{
+				retVal = IPv4ToIPv6(((sockaddr_in*)result->ai_addr)->sin_addr.s_addr);
+			}
+			else
+			{
+				SHVASSERT(false);
+			}
+			freeaddrinfo(result);
+		}
+	}
+#endif
+	return retVal;
+}
+
 /*************************************
  * SocketTypeSupported
  *************************************/
@@ -226,6 +360,14 @@ bool SHVSocketServerImpl::SocketTypeSupported(SHVSocket::Types type)
 	default:
 		return true;
 	}
+}
+
+/*************************************
+ * IPv6Supported
+ *************************************/
+bool SHVSocketServerImpl::IPv6Supported()
+{
+	return IPv6SupportedInternal();
 }
 
 
@@ -262,6 +404,38 @@ bool running = true;
 		}
 	}
 	SocketServerLock.Unlock();
+}
+
+/*************************************
+ * IPv6SupportedInternal
+ *************************************/
+bool SHVSocketServerImpl::IPv6SupportedInternal()
+{
+#ifdef __SHIVASOCKETS_IPV6DISABLED
+	return false;
+#elif defined(__SHIVA_WIN32)
+int osVerMajor = (DWORD)(LOBYTE(LOWORD(GetVersion())));
+	return osVerMajor > 5; // Newer than xp/2k3
+#else
+	return true;
+#endif
+}
+
+/*************************************
+ * IPv4ToIPv6
+ *************************************/
+SHVIPv6Addr SHVSocketServerImpl::IPv4ToIPv6(SHVIPv4Addr ipAddr)
+{
+SHVIPv6Addr retVal;
+const unsigned char ipv4header[] = { 0x00, 0x00, 0x00, 0x00, 0x00,
+									 0x00, 0x00, 0x00, 0x00, 0x00,
+									 0xFF, 0xFF };
+char* ipv4offset = ((char*)&retVal)+12;
+
+	::memcpy(&retVal,ipv4header,12);
+	::memcpy(ipv4offset,&ipAddr,4);
+
+	return retVal;
 }
 
 ///\endcond

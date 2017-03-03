@@ -42,7 +42,14 @@ public:
 	virtual SHVStringBuffer Inetv4ToAddr(SHVIPv4Addr ip) = 0;
 	virtual SHVIPv4Addr Inetv4ResolveHost(const SHVStringC host) = 0;
 
+	virtual SHVIPv6Addr Inetv6Addr(const SHVStringC strIp) = 0;
+	virtual SHVStringBuffer Inetv6ToAddr(SHVIPv6Addr ip) = 0;
+	virtual SHVIPv6Addr Inetv6ResolveHost(const SHVStringC host) = 0;
+
+	inline SHVStringBuffer InetResolveHost(const SHVStringC host);
+
 	virtual bool SocketTypeSupported(SHVSocket::Types type) = 0;
+	virtual bool IPv6Supported() = 0;
 
 	// Obtain socket from a socket server event
 	inline static SHVSocket* SocketFromEvent(SHVEvent* event);
@@ -57,6 +64,25 @@ protected:
 
 
 // ============================================= implementation ============================================= //
+
+/*************************************
+ * InetResolveHost
+ *************************************/
+SHVStringBuffer SHVSocketServer::InetResolveHost(const SHVStringC host)
+{
+SHVString retVal;
+
+	if (IPv6Supported())
+	{
+		retVal = Inetv6ToAddr(Inetv6ResolveHost(host));
+	}
+	else
+	{
+		retVal = Inetv4ToAddr(Inetv4ResolveHost(host));
+	}
+	
+	return retVal.ReleaseBuffer();
+}
 
 /*************************************
  * SocketFromEvent

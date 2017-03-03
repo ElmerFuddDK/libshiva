@@ -10,6 +10,10 @@
 # define SHVSOCKTYPE int
 #endif
 
+#if defined(__SHIVA_WINCE) || defined(__SHIVA_EPOC)
+# define __SHIVASOCKETS_IPV6DISABLED
+#endif
+
 #ifdef __SHIVASOCKETS_NOSELECTMODE
 # include "../../../include/threadutils/shvthread.h"
 # include "../../../include/threadutils/shvmutexbase.h"
@@ -47,16 +51,19 @@ public:
 	virtual SHVBool Shutdown();
 	virtual SHVBool ConnectAny(SHVIPv4Port port);
 	virtual SHVBool Connect(SHVIPv4Addr ip, SHVIPv4Port port);
-	virtual SHVBool Connect(const SHVStringC ipv4Addr, SHVIPv4Port port);
+	virtual SHVBool Connect6(SHVIPv6Addr ip, SHVIPv6Port port);
+	virtual SHVBool Connect(const SHVStringC ipAddr, SHVIPv4Port port);
 	virtual SHVBool ConnectUnix(const SHVStringC fileName);
 	
 	virtual SHVBool Send(const SHVBufferC& buf);
 	virtual SHVBool SendTo(const SHVBufferC& buf, SHVIPv4Addr ip, SHVIPv4Port port);
+	virtual SHVBool SendTo6(const SHVBufferC& buf, SHVIPv6Addr ip, SHVIPv6Port port);
 
 	virtual SHVBool SetReceiveBufferSize(size_t sz);
 	virtual size_t GetReceiveBufferSize();
 	virtual SHVBuffer* PopReceiveBuffer(size_t& bytesRead);
-	virtual SHVBuffer* PopReceiveBuffer(size_t& bytesRead, SHVIPv4Addr &fromIP, SHVIPv4Port &fromPort);
+	virtual SHVBuffer* PopReceiveBuffer(size_t& bytesRead, SHVIPv4Addr& fromIP, SHVIPv4Port& fromPort);
+	virtual SHVBuffer* PopReceiveBuffer6(size_t& bytesRead, SHVIPv6Addr& fromIP, SHVIPv6Port& fromPort);
 	virtual SHVBool HasReceivedData();
 
 	virtual SHVBool SetSocketOption(SocketOptions option, int val1, int val2 = 0);
@@ -77,6 +84,8 @@ friend class SHVSSLSocket;
 	
 	enum { InvalidSocket = -1 };
 	
+	SHVBool SendToInternal(const SHVBufferC& buf, void* host, size_t hostLen);
+	
 	void PerformEvent();
 	SHVBool SetError(SHVBool err = ErrGeneric);
 	int RetreiveSocketError();
@@ -91,11 +100,17 @@ friend class SHVSSLSocket;
 	{
 		SHVBufferRef Buffer;
 		size_t BytesRead;
-		SHVIPv4Addr FromIP;
+		bool IPv6Mode;
+		union {
+			SHVIPv4Addr FromIP4;
+			SHVIPv6Addr FromIP6;
+		};
 		SHVIPv4Port FromPort;
-
+		
 		inline BufferInstance(SHVBuffer* buffer, size_t bytesRead, SHVIPv4Addr fromIP, SHVIPv4Port fromPort)
-			: Buffer(buffer), BytesRead(bytesRead), FromIP(fromIP), FromPort(fromPort)  {}
+			: Buffer(buffer), BytesRead(bytesRead), IPv6Mode(false), FromIP4(fromIP), FromPort(fromPort)  {}
+		inline BufferInstance(SHVBuffer* buffer, size_t bytesRead, SHVIPv6Addr fromIP, SHVIPv6Port fromPort)
+			: Buffer(buffer), BytesRead(bytesRead), IPv6Mode(true), FromIP6(fromIP), FromPort(fromPort)  {}
 	};
 	
 	SHVList<BufferInstance> ReceiveBuffers;

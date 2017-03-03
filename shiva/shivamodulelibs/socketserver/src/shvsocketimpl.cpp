@@ -44,6 +44,9 @@ struct tcp_keepalive { u_long  onoff; u_long  keepalivetime; u_long  keepalivein
 # include <sys/types.h>
 # include <fcntl.h>
 # include <errno.h>
+# if !defined(__SHIVASOCKETS_IPV6DISABLED)
+#  include <ws2tcpip.h>
+# endif
 #elif defined(__SHIVA_WIN32)
 # define MSG_DONTWAIT 0
 # define MSG_NOSIGNAL 0
@@ -52,6 +55,9 @@ struct tcp_keepalive { u_long  onoff; u_long  keepalivetime; u_long  keepalivein
 #  include <errno.h>
 # endif
 # include <mstcpip.h>
+# if !defined(__SHIVASOCKETS_IPV6DISABLED)
+#  include <ws2tcpip.h>
+# endif
 #else
 # include <netinet/in.h>
 # include <netinet/tcp.h>
@@ -63,6 +69,10 @@ struct tcp_keepalive { u_long  onoff; u_long  keepalivetime; u_long  keepalivein
 #endif
 #ifdef __SHIVA_POSIX
 # include <sys/un.h>
+#endif
+
+#if defined(__SHIVA_WIN32) && !defined(IPV6_V6ONLY)
+# define IPV6_V6ONLY 27
 #endif
 
 #define __SHVSOCKET_SENDTIMEOUT 30
@@ -117,6 +127,11 @@ SHVSocketImpl::SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* 
 SHVSocketImpl::SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* socketServer, SHVSocket::Types type)
 	: SHVSocket(socketServer->GetModules().CreateTag(),SHVSocket::StateNone), EventSubscriber(subs), Type(type), SSLState(SHVSocketImpl::SSLStateNone)
 {
+#ifdef __SHIVASOCKETS_IPV6DISABLED
+int ipAddrFamily = PF_INET;
+#else
+int ipAddrFamily = (SHVSocketServerImpl::IPv6SupportedInternal() ? PF_INET6 : PF_INET);
+#endif
 	SocketServer = socketServer;
 	RecvPending = false;
 	BytesRead = 0;
@@ -139,10 +154,18 @@ SHVSocketImpl::SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* 
 	{
 	case SHVSocket::TypeTCP:
 	case SHVSocket::TypeSSL:
-		Socket = ::socket( PF_INET, SOCK_STREAM, 0 );
+		Socket = ::socket( ipAddrFamily, SOCK_STREAM, 0 );
+#ifndef __SHIVASOCKETS_IPV6DISABLED
+		if (ipAddrFamily == PF_INET6)
+		{ int ipv6only = 0; ::setsockopt( Socket, IPPROTO_IPV6, IPV6_V6ONLY, (char*)&ipv6only, sizeof(ipv6only) ); }
+#endif
 		break;
 	case SHVSocket::TypeUDP:
-		Socket = ::socket( PF_INET, SOCK_DGRAM, 0 );
+		Socket = ::socket( ipAddrFamily, SOCK_DGRAM, 0 );
+#ifndef __SHIVASOCKETS_IPV6DISABLED
+		if (ipAddrFamily == PF_INET6)
+		{ int ipv6only = 0; ::setsockopt( Socket, IPPROTO_IPV6, IPV6_V6ONLY, (char*)&ipv6only, sizeof(ipv6only) ); }
+#endif
 		break;
 #ifdef __SHIVA_POSIX
 	case SHVSocket::TypeUnix:
@@ -216,25 +239,44 @@ SHVBool retVal;
 	SocketServer->SocketServerLock.Lock();
 	if (State == SHVSocket::StateNone)
 	{
-#ifdef __SHIVA_WIN32
-	SOCKADDR_IN sockAddr;
-#else
-	sockaddr_in sockAddr;
-#endif
 	int status;
-		
-		retVal = SHVSocket::ErrNone;
-
-		sockAddr.sin_port   = htons(port);
-		sockAddr.sin_family = AF_INET;
-#ifdef __SHIVA_WIN32
-		sockAddr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
-		status = ::bind(Socket, (LPSOCKADDR) &sockAddr, sizeof(SOCKADDR_IN));
-#else
-		sockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-		status = ::bind(Socket, (sockaddr*) &sockAddr, sizeof(sockaddr_in));
+#ifndef __SHIVASOCKETS_IPV6DISABLED
+		if (!SHVSocketServerImpl::IPv6SupportedInternal())
 #endif
+		{
+#ifdef __SHIVA_WIN32
+		SOCKADDR_IN sockAddr;
+#else
+		sockaddr_in sockAddr;
+#endif
+			
+			retVal = SHVSocket::ErrNone;
 	
+			sockAddr.sin_port   = htons(port);
+			sockAddr.sin_family = AF_INET;
+#ifdef __SHIVA_WIN32
+			sockAddr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
+			status = ::bind(Socket, (LPSOCKADDR) &sockAddr, sizeof(SOCKADDR_IN));
+#else
+			sockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+			status = ::bind(Socket, (sockaddr*) &sockAddr, sizeof(sockaddr_in));
+#endif
+		}
+#ifndef __SHIVASOCKETS_IPV6DISABLED
+		else
+		{
+		sockaddr_in6 sockAddr;
+			
+			retVal = SHVSocket::ErrNone;
+			
+			::memset(&sockAddr, 0, sizeof(sockaddr_in6));
+			
+			sockAddr.sin6_port   = htons(port);
+			sockAddr.sin6_family = AF_INET6;
+			status = ::bind(Socket, (sockaddr*) &sockAddr, sizeof(sockaddr_in6));
+		}
+#endif
+		
 		if (Type == SHVSocket::TypeTCP || Type == SHVSocket::TypeSSL)
 		{
 			if (!status)
@@ -444,51 +486,44 @@ SHVBool retVal(SHVSocket::ErrInvalidOperation);
 	if (Type == TypeUDP && (State == SHVSocket::StateConnected || State == SHVSocket::StateNone))
 	{
 	sockaddr_in host;
-	int err = 0;
 
 		host.sin_family=AF_INET;
 		host.sin_addr.s_addr = ip;
 		host.sin_port = htons(port);
 		
-		for (int i=0; i<__SHVSOCKET_SENDTIMEOUT*10 && err == 0; i++)
-		{
-			err = ::sendto(Socket,buf.GetBufferConst(),(int)buf.GetSize(),MSG_NOSIGNAL,(sockaddr*) &host,sizeof(sockaddr_in));
-			if (err < 0)
-			{
-#ifdef __SHIVA_WIN32
-				err = WSAGetLastError();
-				if (err == WSAEWOULDBLOCK)
-#else
-				err = errno;
-				if (err == EAGAIN || err == EWOULDBLOCK)
-#endif
-				{
-					SHVThreadBase::Sleep(100);
-					err = 0;
-				}
-				else
-				{
-					err = -1;
-				}
-			}
-			else
-			{
-				SHVASSERT(err == (int)buf.GetSize());
-				err = 0;
-				break;
-			}
-		}
-		if (err)
-		{
-			Close();
-			retVal = SetError(SHVSocket::ErrGeneric);
-		}
-		else
-		{
-			retVal.SetError(SHVSocket::ErrNone);
-		}
+		retVal = SendToInternal(buf,&host,sizeof(host));
 	}
 	SocketServer->SocketServerLock.Unlock();
+	
+	return retVal;
+}
+
+/*************************************
+ * SendTo6
+ *************************************/
+SHVBool SHVSocketImpl::SendTo6(const SHVBufferC& buf, SHVIPv6Addr ip, SHVIPv4Port port)
+{
+SHVBool retVal(SHVSocket::ErrInvalidOperation);
+
+#ifdef __SHIVASOCKETS_IPV6DISABLED
+	SHVUNUSED_PARAM(buf);
+	SHVUNUSED_PARAM(ip);
+	SHVUNUSED_PARAM(port);
+#else
+	SocketServer->SocketServerLock.Lock();
+	if (Type == TypeUDP && (State == SHVSocket::StateConnected || State == SHVSocket::StateNone) && SHVSocketServerImpl::IPv6SupportedInternal())
+	{
+	sockaddr_in6 host;
+
+		::memset(&host,0,sizeof(host));
+		host.sin6_family=AF_INET6;
+		host.sin6_addr = *(in6_addr*)&ip;
+		host.sin6_port = htons(port);
+		
+		retVal = SendToInternal(buf,&host,sizeof(host));
+	}
+	SocketServer->SocketServerLock.Unlock();
+#endif
 	
 	return retVal;
 }
@@ -528,7 +563,7 @@ SHVBuffer* retVal = NULL;
 	{
 		retVal = ReceiveBuffers.GetFirst().Buffer.ReleaseReference();
 		bytesRead = ReceiveBuffers.GetFirst().BytesRead;
-		fromIP = ReceiveBuffers.GetFirst().FromIP;
+		fromIP = (ReceiveBuffers.GetFirst().IPv6Mode ? (SHVIPv4Addr)InvalidIPv4 : ReceiveBuffers.GetFirst().FromIP4);
 		fromPort = ReceiveBuffers.GetFirst().FromPort;
 		
 		ReceiveBuffers.RemoveHead();
@@ -537,6 +572,42 @@ SHVBuffer* retVal = NULL;
 	else
 	{
 		fromIP = InvalidIPv4;
+		fromPort = 0;
+		bytesRead = 0;
+	}
+	SocketServer->SocketServerLock.Unlock();
+	
+	return retVal;
+}
+SHVBuffer *SHVSocketImpl::PopReceiveBuffer6(size_t &bytesRead, SHVIPv6Addr &fromIP, SHVIPv4Port &fromPort)
+{
+SHVBuffer* retVal = NULL;
+
+	SocketServer->SocketServerLock.Lock();
+	if (ReceiveBuffers.GetCount())
+	{
+		retVal = ReceiveBuffers.GetFirst().Buffer.ReleaseReference();
+		bytesRead = ReceiveBuffers.GetFirst().BytesRead;
+		if (ReceiveBuffers.GetFirst().IPv6Mode)
+			fromIP = ReceiveBuffers.GetFirst().FromIP6;
+		else
+#ifdef __SHIVASOCKETS_IPV6DISABLED
+			::memset(&fromIP, 0, sizeof(SHVIPv6Addr));
+#else
+			fromIP = *(SHVIPv6Addr*)&in6addr_any;
+#endif
+		fromPort = ReceiveBuffers.GetFirst().FromPort;
+		
+		ReceiveBuffers.RemoveHead();
+		BytesRead -= bytesRead;
+	}
+	else
+	{
+#ifdef __SHIVASOCKETS_IPV6DISABLED
+		::memset(&fromIP, 0, sizeof(SHVIPv6Addr));
+#else
+		fromIP = *(SHVIPv6Addr*)&in6addr_any;
+#endif
 		fromPort = 0;
 		bytesRead = 0;
 	}
@@ -808,7 +879,14 @@ SHVBool SHVSocketImpl::ConnectAny(SHVIPv4Port port)
 SHVBool retVal(SHVSocket::ErrInvalidOperation);
 
 	if (Type == SHVSocket::TypeUDP)
-		retVal = Connect(INADDR_ANY,port);
+	{
+#ifndef __SHIVASOCKETS_IPV6DISABLED
+		if (SHVSocketServerImpl::IPv6SupportedInternal())
+			retVal = Connect6(*(SHVIPv6Addr*)&in6addr_any,port);
+		else
+#endif
+			retVal = Connect(INADDR_ANY,port);
+	}
 
 	return retVal;
 }
@@ -861,9 +939,63 @@ SHVBool retVal(SHVSocket::ErrInvalidOperation);
 	
 	return retVal;
 }
-SHVBool SHVSocketImpl::Connect(const SHVStringC ipv4Addr, SHVIPv4Port port)
+SHVBool SHVSocketImpl::Connect6(SHVIPv6Addr ip, SHVIPv4Port port)
 {
-	return Connect(SocketServer->Inetv4Addr(ipv4Addr),port);
+SHVBool retVal(SHVSocket::ErrInvalidOperation);
+
+#ifdef __SHIVASOCKETS_IPV6DISABLED
+	SHVUNUSED_PARAM(ip);
+	SHVUNUSED_PARAM(port);
+#else
+	SocketServer->SocketServerLock.Lock();
+	if (State == SHVSocket::StateNone && Type != SHVSocket::TypeUnix && SHVSocketServerImpl::IPv6SupportedInternal())
+	{
+	sockaddr_in6 host;
+	int result;
+
+		::memset(&host,0,sizeof(host));
+		host.sin6_family=AF_INET6;
+		host.sin6_addr = *(in6_addr*)&ip;
+		host.sin6_port = htons(port);
+		
+		result = ::connect(Socket, (sockaddr*)&host, sizeof(sockaddr_in6));
+# ifdef __SHIVA_WIN32
+		if (result == -1 && WSAGetLastError() != WSAEWOULDBLOCK) // failure
+# else
+		if (result == -1 && errno != EINPROGRESS) // failure
+# endif
+		{
+# ifndef __SHIVA_WIN32
+			printf("SOCKET CONNECT Err: %d\n", errno);
+# endif
+			Close();
+			retVal = SetError(SHVSocket::ErrGeneric);
+		}
+		else
+		{
+			State = SHVSocket::StateConnecting;
+			retVal.SetError(SHVSocket::ErrNone);
+# ifdef __SHIVASOCKETS_NOSELECTMODE
+			StartReadThread();
+# endif
+		}
+	}
+	SocketServer->SocketServerLock.Unlock();
+	
+	if (retVal == SHVBool::True)
+	{
+		SocketServer->SocketServerThread.SignalDispatcher();
+	}
+#endif
+	return retVal;
+}
+SHVBool SHVSocketImpl::Connect(const SHVStringC ipAddr, SHVIPv4Port port)
+{
+#ifdef __SHIVASOCKETS_IPV6DISABLED
+	return Connect(SocketServer->Inetv4Addr(ipAddr),port);
+#else
+	return (SHVSocketServerImpl::IPv6SupportedInternal() ? Connect6(SocketServer->Inetv6Addr(ipAddr),port) : Connect(SocketServer->Inetv4Addr(ipAddr),port));
+#endif
 }
 
 /*************************************
@@ -914,6 +1046,55 @@ SHVBool retVal(SHVSocket::ErrInvalidOperation);
 
 ///\cond INTERNAL
 /*************************************
+ * SendToInternal
+ *************************************/
+SHVBool SHVSocketImpl::SendToInternal(const SHVBufferC& buf, void* host, size_t hostLen)
+{
+SHVBool retVal;
+int err = 0;
+
+	for (int i=0; i<__SHVSOCKET_SENDTIMEOUT*10 && err == 0; i++)
+	{
+		err = ::sendto(Socket,buf.GetBufferConst(),(int)buf.GetSize(),MSG_NOSIGNAL,(sockaddr*)host,hostLen);
+		if (err < 0)
+		{
+#ifdef __SHIVA_WIN32
+			err = WSAGetLastError();
+			if (err == WSAEWOULDBLOCK)
+#else
+			err = errno;
+			if (err == EAGAIN || err == EWOULDBLOCK)
+#endif
+			{
+				SHVThreadBase::Sleep(100);
+				err = 0;
+			}
+			else
+			{
+				err = -1;
+			}
+		}
+		else
+		{
+			SHVASSERT(err == (int)buf.GetSize());
+			err = 0;
+			break;
+		}
+	}
+	if (err)
+	{
+		Close();
+		retVal = SetError(SHVSocket::ErrGeneric);
+	}
+	else
+	{
+		retVal.SetError(SHVSocket::ErrNone);
+	}
+	
+	return retVal;
+}
+
+/*************************************
  * PerformEvent
  *************************************/
 void SHVSocketImpl::PerformEvent()
@@ -927,8 +1108,12 @@ int evCode = SHVSocketServer::EventSockStatus;
 bool doEvent = true;
 int sockerr;
 int sz;
-SHVIPv4Addr fromip = InvalidIPv4;
+SHVIPv4Addr fromip4 = InvalidIPv4;
 SHVIPv4Port fromport = 0;
+#ifndef __SHIVASOCKETS_IPV6DISABLED
+SHVIPv6Addr fromip6 = *(SHVIPv6Addr*)&in6addr_any;
+bool ipv6Mode = SHVSocketServerImpl::IPv6SupportedInternal();
+#endif
 int state = (SSLState != SHVSocketImpl::SSLStateNone ? (int) SSLState : (int) State);
 bool retry;
 
@@ -994,21 +1179,47 @@ bool retry;
 
 		if (Type == TypeUDP)
 		{
-		sockaddr_in host;
-		
-			host.sin_family=AF_INET;
-			host.sin_addr.s_addr = 0;
-			host.sin_port = 0;
-			
-#ifdef __SHIVA_WIN32
-		int len = sizeof(sockaddr_in);
-			sz = ::recvfrom(Socket,(char*)bufPtr->GetBufferAsVoid(),(int)BufferSize,MSG_DONTWAIT, (sockaddr*) &host, &len);
-#else
-		socklen_t len = sizeof(sockaddr_in);
-			sz = ::recvfrom(Socket,bufPtr->GetBufferAsVoid(),BufferSize,MSG_DONTWAIT, (sockaddr*) &host, &len);
+#ifndef __SHIVASOCKETS_IPV6DISABLED
+			if (!ipv6Mode)
 #endif
-			fromip = host.sin_addr.s_addr;
-			fromport = ntohs(host.sin_port);
+			{
+			sockaddr_in host;
+			
+				host.sin_family=AF_INET;
+				host.sin_addr.s_addr = 0;
+				host.sin_port = 0;
+				
+#ifdef __SHIVA_WIN32
+			int len = sizeof(sockaddr_in);
+				sz = ::recvfrom(Socket,(char*)bufPtr->GetBufferAsVoid(),(int)BufferSize,MSG_DONTWAIT, (sockaddr*) &host, &len);
+#else
+			socklen_t len = sizeof(sockaddr_in);
+				sz = ::recvfrom(Socket,bufPtr->GetBufferAsVoid(),BufferSize,MSG_DONTWAIT, (sockaddr*) &host, &len);
+#endif
+				fromip4 = host.sin_addr.s_addr;
+				fromport = ntohs(host.sin_port);
+			}
+#ifndef __SHIVASOCKETS_IPV6DISABLED
+			else
+			{
+			sockaddr_in6 host;
+			
+				::memset(&host,0,sizeof(host));
+				host.sin6_family=AF_INET6;
+				host.sin6_addr = in6addr_any;
+				host.sin6_port = 0;
+				
+#ifdef __SHIVA_WIN32
+			int len = sizeof(sockaddr_in6);
+				sz = ::recvfrom(Socket,(char*)bufPtr->GetBufferAsVoid(),(int)BufferSize,MSG_DONTWAIT, (sockaddr*) &host, &len);
+#else
+			socklen_t len = sizeof(sockaddr_in6);
+				sz = ::recvfrom(Socket,bufPtr->GetBufferAsVoid(),BufferSize,MSG_DONTWAIT, (sockaddr*) &host, &len);
+#endif
+				fromip6 = *(SHVIPv6Addr*)&host.sin6_addr;
+				fromport = ntohs(host.sin6_port);
+			}
+#endif
 		}
 		else
 		{
@@ -1036,7 +1247,11 @@ bool retry;
 			}
 			else
 			{
-				ReceiveBuffers.AddTail(BufferInstance(bufPtr,(size_t)sz,fromip,fromport));
+#ifdef __SHIVASOCKETS_IPV6DISABLED
+				ReceiveBuffers.AddTail(BufferInstance(bufPtr,(size_t)sz,fromip4,fromport));
+#else
+				ReceiveBuffers.AddTail(ipv6Mode ? BufferInstance(bufPtr,(size_t)sz,fromip6,fromport) : BufferInstance(bufPtr,(size_t)sz,fromip4,fromport));
+#endif
 				BytesRead += (size_t)sz;
 				evCode = SHVSocketServer::EventSockDataRead;
 			}

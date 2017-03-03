@@ -38,7 +38,12 @@ public:
 	virtual SHVStringBuffer Inetv4ToAddr(SHVIPv4Addr ip);
 	virtual SHVIPv4Addr Inetv4ResolveHost(const SHVStringC host);
 
+	virtual SHVIPv6Addr Inetv6Addr(const SHVStringC strIp);
+	virtual SHVStringBuffer Inetv6ToAddr(SHVIPv6Addr ip);
+	virtual SHVIPv6Addr Inetv6ResolveHost(const SHVStringC host);
+
 	virtual bool SocketTypeSupported(SHVSocket::Types type);
+	virtual bool IPv6Supported();
 
 private:
 friend class SHVSocketServerThread;
@@ -47,6 +52,8 @@ friend class SHVSocketImpl;
 	///\cond INTERNAL
 	void AddToList(SHVSocketImpl* sock);
 	void RemoveFromList(SHVSocketImpl* sock);
+	static bool IPv6SupportedInternal();
+	SHVIPv6Addr IPv4ToIPv6(SHVIPv4Addr ipAddr);
 	inline SHVModuleList& GetModules() { return Modules; }
 	
 #ifdef __SHIVA_WIN32
