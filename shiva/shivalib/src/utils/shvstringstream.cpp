@@ -584,7 +584,7 @@ size_t converted = 1;
 		chars = (const SHVChar*)ConvUtf8->Convert((const SHVByte*)chars,BufferPos,(len < BufferLeft-1 ? len : BufferLeft-1),&converted);
 		BufferPos += converted;
 		BufferLeft -= converted;
-		len--;
+		len-=converted;
 	}
 	SHVASSERT(len == 0);
 	
