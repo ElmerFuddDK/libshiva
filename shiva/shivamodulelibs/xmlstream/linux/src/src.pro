@@ -40,10 +40,12 @@ HEADERS += ../../include/shvxmlreaderimpl.h \
 DEFINES += _STATIC
 SOURCES -= ../../src/expat/xmltok_impl.c \
 ../../src/expat/xmltok_ns.c
+
 !isEmpty(ANDROID_PLATFORM) {
-  QMAKE_CFLAGS += -fno-exceptions -fno-rtti
+  QMAKE_CFLAGS += -fno-exceptions
   QMAKE_CXXFLAGS += -fno-exceptions -fno-rtti
-  QMAKE_LIBS = -lstdc++ -lsupc++ -llog
+  QMAKE_LIBS += -llog
+  QMAKE_LIBS_PRIVATE -= -lgnustl_shared
   QMAKE_INCDIR -= $$ANDROID_SOURCES_CXX_STL_INCDIR
   QMAKE_LIBDIR -= $$ANDROID_SOURCES_CXX_STL_LIBDIR
 }
