@@ -208,7 +208,11 @@ void SHVFreeTDSTester::OnEvent(SHVEvent* event)
 				if (Transaction->PerformTransaction())
 					ParseResult(Transaction);
 				if (!Transaction->IsOK())
+				{
 					SHVConsole::Printf8("Transaction failed with code %d\n", Transaction->GetError());
+					for (size_t i=0; i<Transaction->GetQueryCount();i++)
+						SHVConsole::Printf8("  Query %02d: %s\n", int(i), Transaction->GetQuery(i).GetSafeBuffer());
+				}
 				ParseMessages(Transaction);
 				Transaction = NULL;
 			}

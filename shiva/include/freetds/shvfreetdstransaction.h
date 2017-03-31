@@ -33,7 +33,11 @@ public:
 	virtual SHVBool AddQuery(const SHVStringUTF8C query) = 0;
 	virtual SHVBool PerformTransaction() = 0;
 	
-	
+	// Iterate through added queries
+	virtual SHVStringUTF8C GetQuery(size_t index) = 0;
+	virtual size_t GetQueryCount() = 0;
+
+
 	// From SHVFreeTDSResultset
 	
 	// Iteration methods

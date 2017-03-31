@@ -189,6 +189,24 @@ size_t queryCount = Queries.CalculateCount();
 }
 
 /*************************************
+ * GetQuery
+ *************************************/
+SHVStringUTF8C SHVFreeTDSTransactionImpl::GetQuery(size_t index)
+{
+	if (index >= GetQueryCount())
+		return SHVStringUTF8C(NULL);
+	return SHVStringUTF8C(Queries[index]->GetBufferConst());
+}
+
+/*************************************
+ * GetQueryCount
+ *************************************/
+size_t SHVFreeTDSTransactionImpl::GetQueryCount()
+{
+	return Queries.CalculateCount();
+}
+
+/*************************************
  * NextResult
  *************************************/
 SHVBool SHVFreeTDSTransactionImpl::NextResult()

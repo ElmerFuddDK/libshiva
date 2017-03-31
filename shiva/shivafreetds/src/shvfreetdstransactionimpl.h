@@ -30,6 +30,10 @@ public:
 	virtual SHVBool AddQuery(const SHVStringUTF8C query);
 	virtual SHVBool PerformTransaction();
 	
+	// Iterate through added queries
+	virtual SHVStringUTF8C GetQuery(size_t index);
+	virtual size_t GetQueryCount();
+	
 	
 	// From SHVFreeTDSResultset
 	
