@@ -896,6 +896,10 @@ SHVBool retVal(SHVSocket::ErrInvalidOperation);
  *************************************/
 SHVBool SHVSocketImpl::Connect(SHVIPv4Addr ip, SHVIPv4Port port)
 {
+#ifndef __SHIVASOCKETS_IPV6DISABLED
+	if (SHVSocketServerImpl::IPv6SupportedInternal())
+		return Connect6(SocketServer->IPv4ToIPv6(ip),port);
+#endif
 SHVBool retVal(SHVSocket::ErrInvalidOperation);
 
 	SocketServer->SocketServerLock.Lock();
