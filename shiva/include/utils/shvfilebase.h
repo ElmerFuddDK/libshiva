@@ -39,6 +39,7 @@ public:
 	};
 	static const SHVStringC Wildcard();
 	static const SHVString8C LineSeparator8();
+	static const SHVStringUTF8C LineSeparatorUTF8();
 	static const SHVString16C LineSeparator16();
 	inline static const SHVStringC LineSeparator();
 

@@ -4,7 +4,6 @@
 #include "shvluascriptimpl.h"
 #include "shiva/include/threadutils/shvmutexlocker.h"
 #include "shiva/include/framework/shveventdata.h"
-#include "shiva/include/utils/shvstringutf8.h"
 #include "shvluafuncargsimpl.h"
 #include "shiva/include/utils/shvmath.h"
 #include "shiva/include/utils/shvstringstream.h"

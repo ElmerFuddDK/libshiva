@@ -2,7 +2,6 @@
 #define __SHIVA_SQLITE_SQLITESTATEMENT_H
 
 #include "../utils/shvstring.h"
-#include "../utils/shvstringutf8.h"
 #include "../utils/shvrefobject.h"
 #include "../threadutils/shvmutex.h"
 #include "shvstringsqlite.h"

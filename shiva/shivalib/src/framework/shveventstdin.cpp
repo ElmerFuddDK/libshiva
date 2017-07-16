@@ -43,7 +43,7 @@
 /*************************************
  * Constructor
  *************************************/
-SHVEventStdin::SHVEventStdin(SHVEventTarget* caller, SHVStringBuffer8 str)
+SHVEventStdin::SHVEventStdin(SHVEventTarget* caller, SHVStringBufferUTF8 str)
 	: SHVEventString(caller,__EVENT_GLOBAL_STDIN), StdinStr(str)
 {
 }
@@ -51,7 +51,20 @@ SHVEventStdin::SHVEventStdin(SHVEventTarget* caller, SHVStringBuffer8 str)
 /*************************************
  * StdinFromEvent
  *************************************/
-const SHVString8C SHVEventStdin::StdinFromEvent(const SHVEvent* event)
+SHVStringBuffer SHVEventStdin::StdinFromEvent(const SHVEvent* event)
+{
+	return ((SHVEventStdin*)event)->StdinStr.ToStrT();
+}
+SHVStringBuffer8 SHVEventStdin::StdinFromEvent8(const SHVEvent* event)
+{
+	return ((SHVEventStdin*)event)->StdinStr.ToStr8();
+}
+const SHVStringUTF8C SHVEventStdin::StdinFromEventUTF8(const SHVEvent* event)
 {
 	return ((SHVEventStdin*)event)->StdinStr;
+}
+
+SHVStringBuffer16 SHVEventStdin::StdinFromEvent16(const SHVEvent *event)
+{
+	return ((SHVEventStdin*)event)->StdinStr.ToStr16();
 }

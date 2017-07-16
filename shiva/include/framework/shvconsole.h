@@ -33,10 +33,20 @@ public:
 	static void ErrPrintf8(const SHVChar* str, ...);
 	static void ErrPrintfList8(const SHVChar* str, SHVVA_LIST args);
 	
+	static void PrintfUTF8(const SHVChar* str, ...);
+	static void PrintfListUTF8(const SHVChar* str, SHVVA_LIST args);
+	static void ErrPrintfUTF8(const SHVChar* str, ...);
+	static void ErrPrintfListUTF8(const SHVChar* str, SHVVA_LIST args);
+	
 	static void Printf16(const SHVWChar* str, ...);
 	static void PrintfList16(const SHVWChar* str, SHVVA_LIST args);
 	static void ErrPrintf16(const SHVWChar* str, ...);
 	static void ErrPrintfList16(const SHVWChar* str, SHVVA_LIST args);
+	
+	
+	// Detect if native console encoding is utf8
+	static bool NativeEncodingIsUTF8();
+	
 	
 #ifdef __SHIVA_WINCE
 private:

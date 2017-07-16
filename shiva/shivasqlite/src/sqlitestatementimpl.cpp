@@ -310,7 +310,7 @@ int pIdx;
 	SHVTHREADCHECK(OwnerThread);	
 	if (pIdx)
 	{
-		return SHVBool(sqlite3_bind_text(Statement, pIdx, val.GetSafeBuffer(), (int) SHVString8C::StrLen(val.GetSafeBuffer()), SQLITE_TRANSIENT));
+		return SHVBool(sqlite3_bind_text(Statement, pIdx, val.GetSafeBuffer(), (int) val.GetSizeInChars(), SQLITE_TRANSIENT));
 	}
 	else
 		return SHVBool(SHVSQLiteWrapper::SQLite_ERROR);

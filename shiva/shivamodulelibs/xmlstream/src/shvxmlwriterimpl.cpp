@@ -573,7 +573,7 @@ size_t len;
 		WriteText16(Streamout, text.ToStr16());
 		break;
 	case InternalUTF8:
-		len = SHVString8::StrLen(text.GetBufferConst());
+		len = text.GetSizeInChars();
 		for (size_t strpos = 0; strpos < len; strpos++)
 		{
 			switch(text.GetBufferConst()[strpos])
@@ -594,7 +594,7 @@ size_t len;
 				if ((unsigned const char)text.GetBufferConst()[strpos] < 32)
 				{
 					Streamout.WriteString8("&#");
-					Streamout.WriteString8(SHVStringUTF8::LongToString(text.GetBufferConst()[strpos]).GetBufferConst());
+					Streamout.WriteString8(SHVStringUTF8C::LongToString(text.GetBufferConst()[strpos]).GetBufferConst());
 					Streamout.WriteChar8(';');
 				}
 				else

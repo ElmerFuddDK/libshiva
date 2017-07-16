@@ -31,7 +31,6 @@
 #include "stdafx.h"
 
 #include "../../../include/platformspc.h"
-#include "../../../include/utils/shvstringutf8.h"
 #include "../../../include/threadutils/shvmutexlocker.h"
 #include "../include/shvdatasessionsqlite.h"
 #include "../include/shvdatarowlistsqlite.h"

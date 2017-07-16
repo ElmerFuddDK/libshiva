@@ -2,7 +2,6 @@
 #define __SHIVA_MYSQL_CONNECTION_H
 
 #include "../../include/utils/shvstring.h"
-#include "../../include/utils/shvstringutf8.h"
 #include "../../include/utils/shvrefobject.h"
 
 // forward declares

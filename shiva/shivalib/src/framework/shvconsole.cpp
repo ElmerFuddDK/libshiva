@@ -129,7 +129,7 @@ SHVVA_LIST args;
 }
 
 /*************************************
- * PrintfList
+ * PrintfList8
  *************************************/
 /// Prints to stdout if it is a console application
 void SHVConsole::PrintfList8(const SHVChar* str, SHVVA_LIST args)
@@ -141,7 +141,7 @@ SHVVA_LIST argList;
 }
 
 /*************************************
- * ErrPrintf
+ * ErrPrintf8
  *************************************/
 /// Prints to stderr if it is a console application
 void SHVConsole::ErrPrintf8(const SHVChar* str, ...)
@@ -153,10 +153,54 @@ SHVVA_LIST args;
 }
 
 /*************************************
- * ErrPrintfList
+ * ErrPrintfList8
  *************************************/
 /// Prints to stderr if it is a console application
 void SHVConsole::ErrPrintfList8(const SHVChar* str, SHVVA_LIST args)
+{
+SHVVA_LIST argList;
+	SHVVA_COPY( argList, args );
+	vfprintf(stderr,str,argList);
+	SHVVA_END( argList );
+}
+
+/*************************************
+ * PrintfUTF8
+ *************************************/
+void SHVConsole::PrintfUTF8(const SHVChar* str, ...)
+{
+SHVVA_LIST args;
+	SHVVA_START(args,str);
+	vprintf(str,args);
+	SHVVA_END(args);
+}
+
+/*************************************
+ * PrintfListUTF8
+ *************************************/
+void SHVConsole::PrintfListUTF8(const SHVChar* str, SHVVA_LIST args)
+{
+SHVVA_LIST argList;
+	SHVVA_COPY( argList, args );
+	vprintf(str,argList);
+	SHVVA_END( argList );
+}
+
+/*************************************
+ * ErrPrintfUTF8
+ *************************************/
+void SHVConsole::ErrPrintfUTF8(const SHVChar* str, ...)
+{
+SHVVA_LIST args;
+	SHVVA_START(args,str);
+	vfprintf(stderr,str,args);
+	SHVVA_END(args);
+}
+
+/*************************************
+ * ErrPrintfListUTF8
+ *************************************/
+void SHVConsole::ErrPrintfListUTF8(const SHVChar* str, SHVVA_LIST args)
 {
 SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
@@ -234,6 +278,39 @@ SHVVA_LIST argList;
 	vfwprintf(stderr,(const WCHAR*)str,args);
 #endif
 	SHVVA_END( argList );
+}
+
+/*************************************
+ * NativeEncodingIsUTF8
+ *************************************/
+/// Returns true if native encoding is UTF8
+bool SHVConsole::NativeEncodingIsUTF8()
+{
+#ifdef __SHIVA_POSIX
+static int NativeEncodingDetected;
+
+	if (NativeEncodingDetected == 0)
+	{
+	SHVString8C charset(getenv("LC_CTYPE"));
+		if (charset.IsEmpty())
+		{
+			charset = getenv("LANG");
+		}
+		if (charset.Right(5).CompareNoCase("UTF-8") == 0 
+		    || charset.Right(4).CompareNoCase("utf8") == 0)
+		{
+			NativeEncodingDetected = 2;
+		}
+		else
+		{
+			NativeEncodingDetected = 1;
+		}
+	}
+	
+	return NativeEncodingDetected == 2;
+#else
+	return false;
+#endif
 }
 
 #ifdef __SHIVA_WINCE

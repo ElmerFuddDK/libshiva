@@ -4,7 +4,6 @@
 
 #include "sqlitestatement.h"
 #include "../utils/shvstring.h"
-#include "../utils/shvstringutf8.h"
 #include "../utils/shvrefobject.h"
 #include "../threadutils/shvmutex.h"
 

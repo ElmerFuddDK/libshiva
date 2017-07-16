@@ -4,7 +4,6 @@
 #include "../../../include/utils/shvstreamout.h"
 #include "../../../include/utils/shvstring.h"
 #include "../../../include/utils/shvstring16.h"
-#include "../../../include/utils/shvstringutf8.h"
 #include "../../../include/utils/shvtime.h"
 
 class SHVJsonWriter

@@ -64,6 +64,8 @@ public:
 	void Reset();	
 	void Finalize();
 	
+	SHVStringBuffer8 ReleaseBuffer();
+	
 	
 private:
 	///\cond INTERNAL
@@ -117,6 +119,8 @@ public:
 	void Reset();	
 	void Finalize();
 	
+	SHVStringBufferUTF8 ReleaseBuffer();
+	
 	
 private:
 	///\cond INTERNAL
@@ -169,6 +173,8 @@ public:
 
 	void Reset();	
 	void Finalize();
+	
+	SHVStringBuffer16 ReleaseBuffer();
 	
 	
 private:

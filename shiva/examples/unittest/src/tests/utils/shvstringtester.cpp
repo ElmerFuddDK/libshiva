@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "shiva/include/platformspc.h"
 #include "shvstringtester.h"
-#include "shiva/include/utils/shvstringutf8.h"
 #include "shiva/include/utils/shvstringstream.h"
 
 

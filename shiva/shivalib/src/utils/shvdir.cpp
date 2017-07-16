@@ -32,7 +32,6 @@
 #include "../../../include/platformspc.h"
 
 #include "../../../include/utils/shvdir.h"
-#include "../../../include/utils/shvstringutf8.h"
 
 #ifdef __SHIVA_WIN32
 # define wremove _wremove

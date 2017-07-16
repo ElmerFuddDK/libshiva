@@ -52,7 +52,6 @@
 #ifdef __SHIVA_POSIX
 # include <wchar.h>
 # include <stdlib.h>
-# include "../../../include/utils/shvstringutf8.h" // for Format .. horrible hack
 #endif
 
 #include <math.h>
@@ -610,6 +609,10 @@ const SHVWChar* vCharL;
 SHVWChar* vCharR;
 
 	SHVVA_COPY( argList, args );
+	SHVUNUSED_PARAM(tChar);
+	SHVUNUSED_PARAM(tInt);
+	SHVUNUSED_PARAM(tPtr);
+	SHVUNUSED_PARAM(tDbl);
 
 	for (pos = str.Find(percentStr);pos>=0;pos=str.Find(percentStr,pos))
 	{
@@ -807,18 +810,18 @@ void SHVString16CRef::DestroyBuffer(SHVString16CRef::Header* buffer)
 
 #ifdef __SHVSTRING_HEAPPROTECT
 ///\cond INTERNAL
-void SHVStr16_DestroyBufferFunc(SHVWChar* chars) { delete [] chars; }
+void SHVStr16_DestroyBufferFunc(SHVWChar* chars) { ::free(chars); }
 ///\endcond
-# define BUFFER_ALLOC(buf,size) buf = (size > 0 ? new SHVWChar[size] : NULL);
+# define BUFFER_ALLOC(buf,size) buf = (size > 0 ? (SHVWChar*)::malloc((size)*sizeof(SHVWChar)) : NULL);
 # define BUFFER_MOVE(buf,funcPtr) Buffer = buf; DestroyFunc = funcPtr; buf=NULL; funcPtr=NULL;
 # define BUFFER_DESTROY(buf) if (buf) { (*DestroyFunc)(buf); buf = NULL; }
 # define BUFFER_DESTROY2(code,buf) SHVStr16_DestroyBuffer d = (buf ? DestroyFunc : NULL); code; if (d) { (*d)(buf); }
 # define BUFFER_SETDESTROYFUNC DestroyFunc = &SHVStr16_DestroyBufferFunc;
 #else
-# define BUFFER_ALLOC(buf,size) buf = (size > 0 ? new SHVWChar[size] : NULL);
+# define BUFFER_ALLOC(buf,size) buf = (size > 0 ? (SHVWChar*)::malloc((size)*sizeof(SHVWChar)) : NULL);
 # define BUFFER_MOVE(buf,funcPtr) Buffer = buf; buf=NULL;
-# define BUFFER_DESTROY(buf) if (buf) { delete [] buf; buf = NULL; }
-# define BUFFER_DESTROY2(code,buf) code; if (buf) { delete [] buf; buf = NULL; }
+# define BUFFER_DESTROY(buf) if (buf) { ::free(buf); buf = NULL; }
+# define BUFFER_DESTROY2(code,buf) code; if (buf) { ::free(buf); buf = NULL; }
 # define BUFFER_SETDESTROYFUNC
 #endif
 
@@ -871,7 +874,7 @@ size_t len = aPtr.Length();
 
 	if (len)
 	{
-		retVal.Buffer = new SHVWChar[len+1];
+		retVal.Buffer = (SHVWChar*)::malloc((len+1)*sizeof(SHVWChar));
 		if (retVal.Buffer)
 		{
 			memcpy(retVal.Buffer, aPtr.Ptr(), len*sizeof(SHVWChar));
@@ -1173,6 +1176,7 @@ long pos = 0;
 		bool isString = false;
 		bool running = true;
 		SHVWChar type;
+			SHVUNUSED_PARAM(type);
 			for (;running && s[newpos];newpos++)
 			{
 				switch (s[newpos]) {
@@ -1186,8 +1190,8 @@ long pos = 0;
 					break;
 					// panicky exit point ...
 				case '%': // Actually it would be ok to just scan for '%' chars, if it wasn't for 's'
-					SHVASSERT(false);
 					type = s[newpos];
+					SHVASSERT(false);
 					newpos--;
 					running = false;
 					break;

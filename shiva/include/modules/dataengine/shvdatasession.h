@@ -5,7 +5,6 @@
 #include "../../framework/shveventsubscriber.h"
 #include "../../framework/shveventdata.h"
 #include "../../threadutils/shvmutex.h"
-#include "../../utils/shvstringutf8c.h"
 
 // forward declare
 class SHVDataRowList;

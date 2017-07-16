@@ -30,7 +30,6 @@
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
 #include "../../../include/framework/shveventdata.h"
-#include "../../../include/utils/shvstringutf8.h"
 
 #include "shvcontrolimplementereditgtk.h"
 #include "utils/shvdrawgtk.h"

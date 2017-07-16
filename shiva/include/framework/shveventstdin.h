@@ -18,14 +18,17 @@ class SHVAPI SHVEventStdin : public SHVEventString
 public:
 
 
-	SHVEventStdin(SHVEventTarget* caller, SHVStringBuffer8 str);
+	SHVEventStdin(SHVEventTarget* caller, SHVStringBufferUTF8 str);
 
-	static const SHVString8C StdinFromEvent(const SHVEvent* event);
+	static SHVStringBuffer StdinFromEvent(const SHVEvent* event);
+	static SHVStringBuffer8 StdinFromEvent8(const SHVEvent* event);
+	static const SHVStringUTF8C StdinFromEventUTF8(const SHVEvent* event);
+	static SHVStringBuffer16 StdinFromEvent16(const SHVEvent* event);
 
 
 protected:
 	///\cond INTERNAL
-	SHVString8 StdinStr;
+	SHVStringUTF8 StdinStr;
 	///\endcond
 };
 typedef SHVRefObjectContainer<SHVEventStdin> SHVEventStdinRef;

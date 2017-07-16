@@ -29,7 +29,6 @@
  */
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
-#include "../../../include/utils/shvstringutf8.h"
 
 #include "shvcontrolimplementertabgtk.h"
 #include "shvcontrolimplementercontainerwindowgtk.h"

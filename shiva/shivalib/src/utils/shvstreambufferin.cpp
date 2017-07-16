@@ -80,16 +80,16 @@ size_t remainingBuffer = Buffer->GetSize() - Position;
 /*************************************
  * ReadString16
  *************************************/
-SHVBool SHVStreamBufferIn::ReadString16(SHVWChar* buffer, size_t maxlen)
+SHVBool SHVStreamBufferIn::ReadString16(SHVWChar* buffer, size_t maxsize)
 {
 SHVWChar ch;
 size_t pos = 0;
-	if (maxlen)
+	if (maxsize)
 	{
 		do 
 		{
 			ch = buffer[pos++] = ReadChar16();
-		} while (ch && pos < maxlen - 1);
+		} while (ch && pos < maxsize - 1);
 		buffer[pos] = 0;
 	}
 	return !Eof();
@@ -111,16 +111,16 @@ size_t aLen;
 /*************************************
  * ReadString8
  *************************************/
-SHVBool SHVStreamBufferIn::ReadString8(SHVChar* buffer, size_t maxlen)
+SHVBool SHVStreamBufferIn::ReadString8(SHVChar* buffer, size_t maxsize)
 {
 SHVChar ch;
 size_t pos = 0;
-	if (maxlen)
+	if (maxsize)
 	{
 		do 
 		{
 			ch = buffer[pos++] = ReadChar8();
-		} while (ch && pos < maxlen - 1);
+		} while (ch && pos < maxsize - 1);
 		buffer[pos] = 0;
 	}
 	return !Eof();
@@ -130,6 +130,37 @@ size_t pos = 0;
  * ReadChar8
  *************************************/
 SHVChar SHVStreamBufferIn::ReadChar8()
+{
+SHVChar ch = 0;
+size_t aLen;
+	ReadBuffer(&ch, sizeof(SHVChar), aLen);
+	if (aLen != sizeof(SHVChar))
+		ch = 0;
+	return ch;
+}
+
+/*************************************
+ * ReadStringUTF8
+ *************************************/
+SHVBool SHVStreamBufferIn::ReadStringUTF8(SHVChar* buffer, size_t maxsize)
+{
+SHVChar ch;
+size_t pos = 0;
+	if (maxsize)
+	{
+		do 
+		{
+			ch = buffer[pos++] = ReadCharUTF8();
+		} while (ch && pos < maxsize - 1);
+		buffer[pos] = 0;
+	}
+	return !Eof();
+}
+
+/*************************************
+ * ReadCharUTF8
+ *************************************/
+SHVChar SHVStreamBufferIn::ReadCharUTF8()
 {
 SHVChar ch = 0;
 size_t aLen;

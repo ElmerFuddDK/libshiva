@@ -59,13 +59,13 @@ void SHVSubProcessTester::OnEvent(SHVEvent* event)
 {
 	if (SHVEventString::Equals(event,__EVENT_GLOBAL_STDIN))
 	{
-	SHVString8 str(SHVEventStdin::StdinFromEvent(event));
+	SHVStringUTF8 str(SHVEventStdin::StdinFromEventUTF8(event));
 	
-		if (str == SHVString8C("/quit"))
+		if (str == SHVStringUTF8C("/quit"))
 		{
 			Modules.CloseApp();
 		}
-		else if (str == SHVString8C("/help"))
+		else if (str == SHVStringUTF8C("/help"))
 		{
 			SHVConsole::Printf8("Commands available:\n"
 								" /launch       Will launch a test application to interact with\n"
@@ -74,7 +74,7 @@ void SHVSubProcessTester::OnEvent(SHVEvent* event)
 								" /help         Displays this info\n"
 								"\n");
 		}
-		else if (str == SHVString8C("/thread"))
+		else if (str == SHVStringUTF8C("/thread"))
 		{
 			if (!Thread.IsRunning())
 			{
@@ -82,7 +82,7 @@ void SHVSubProcessTester::OnEvent(SHVEvent* event)
 				Thread.Start(this,&SHVSubProcessTester::ThreadProcess);
 			}
 		}
-		else if (str == SHVString8C("/launch"))
+		else if (str == SHVStringUTF8C("/launch"))
 		{
 		SHVFileList args;
 			if (!SubProcess.IsNull())
@@ -101,26 +101,26 @@ void SHVSubProcessTester::OnEvent(SHVEvent* event)
 		}
 		else
 		{
-			if (str.Left(1) == SHVString8("/"))
+			if (str.Left(1) == SHVStringUTF8("/"))
 			{
-				SHVConsole::Printf8("Unknown command - try /help\n");
+				SHVConsole::PrintfUTF8("Unknown command %s - try /help\n", str.GetSafeBuffer());
 			}
 			else
 			{
 			bool running = false;
 				if (!SubProcess.IsNull())
 				{
-					SubProcess->WriteLine8(str);
+					SubProcess->WriteLineUTF8(str);
 					running = true;
 				}
 				if (!ThreadSubProcess.IsNull())
 				{
-					ThreadSubProcess->WriteLine8(str);
+					ThreadSubProcess->WriteLineUTF8(str);
 					running = true;
 				}
 				if (!running)
 				{
-					SHVConsole::Printf8("Subprocesses not running\n");
+					SHVConsole::PrintfUTF8("Subprocesses not running\n");
 				}
 			}
 		}
@@ -140,12 +140,12 @@ SHVFileList args;
 	}
 	else
 	{
-	SHVString8 str;
-		while (ThreadSubProcess->ReadLine8(str))
+	SHVStringUTF8 str;
+		while (ThreadSubProcess->ReadLineUTF8(str))
 		{
-			SHVConsole::Printf8("Thread got : %s\n", str.GetSafeBuffer());
+			SHVConsole::PrintfUTF8("Thread got : %s\n", str.GetSafeBuffer());
 		}
-		SHVConsole::Printf8("ThreadProcess done\n");
+		SHVConsole::PrintfUTF8("ThreadProcess done\n");
 		ThreadSubProcess->Shutdown();
 	}
 }

@@ -32,7 +32,6 @@
 #include "../../../include/platformspc.h"
 
 #include "../../../include/utils/shvfilebase.h"
-#include "../../../include/utils/shvstringutf8.h"
 
 #include "../../../include/utils/shvdir.h"
 
@@ -73,6 +72,16 @@ const SHVStringC SHVFileBase::Wildcard()
  *************************************/
 /// Returns the system specific line seperator string
 const SHVString8C SHVFileBase::LineSeparator8()
+{
+#ifdef __SHIVA_WIN32
+	return "\r\n";
+#elif defined(__SHIVA_EPOC)
+	return "\r\n";
+#else
+	return "\n";
+#endif
+}
+const SHVStringUTF8C SHVFileBase::LineSeparatorUTF8()
 {
 #ifdef __SHIVA_WIN32
 	return "\r\n";

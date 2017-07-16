@@ -29,7 +29,6 @@
  */
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
-#include "../../../include/utils/shvstringutf8.h"
 
 #include "shvcontrolimplementerbuttongtk.h"
 #include "shvgtk.h"

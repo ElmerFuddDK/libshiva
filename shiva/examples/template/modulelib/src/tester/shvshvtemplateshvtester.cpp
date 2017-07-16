@@ -38,22 +38,22 @@ void SHVSHVTemplateSHVTester::OnEvent(SHVEvent* event)
 {
 	if (SHVEventString::Equals(event,__EVENT_GLOBAL_STDIN))
 	{
-	SHVString8 str(SHVEventStdin::StdinFromEvent(event));
+	SHVStringUTF8 str(SHVEventStdin::StdinFromEventUTF8(event));
 	
-		if (str == SHVString8C("/quit"))
+		if (str == SHVStringUTF8C("/quit"))
 		{
 			Modules.CloseApp();
 		}
-		else if (str == SHVString8C("/help"))
+		else if (str == SHVStringUTF8C("/help"))
 		{
-			SHVConsole::Printf8("Commands available:\n"
+			SHVConsole::PrintfUTF8("Commands available:\n"
 								" /quit         Will quit ...\n"
 								" /help         Displays this info\n"
 								"\n");
 		}
 		else
 		{
-			SHVConsole::Printf8("Unknown command - try /help\n");
+			SHVConsole::PrintfUTF8("Unknown command - try /help\n");
 		}
 	}
 }

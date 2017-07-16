@@ -37,7 +37,6 @@
 #include "../../../../include/frameworkimpl/shvmainthreadeventdispatchergeneric.h"
 #include "../../../../include/frameworkimpl/shvmainthreadeventqueue.h"
 
-#include "../../../../include/utils/shvstringutf8.h"
 
 #include "../../../../include/utils/shvdll.h"
 #include "../../../../include/framework/shvmodulefactory.h"

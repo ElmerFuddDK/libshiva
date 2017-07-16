@@ -30,7 +30,6 @@
 
 #include "../../../../include/platformspc.h"
 
-#include "../../../../include/utils/shvstringutf8.h"
 #include "shvfontgtk.h"
 #include "../shvgtk.h"
 

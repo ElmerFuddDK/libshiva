@@ -29,7 +29,6 @@
  */
 
 #include "../../../include/platformspc.h"
-#include "../../../include/utils/shvstringutf8.h"
 
 #include "shvmenugtkcontainer.h"
 #include "utils/shvfontgtk.h"

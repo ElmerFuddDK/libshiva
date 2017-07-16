@@ -75,14 +75,14 @@ SHVBool SHVStreamBufferOut::WriteBuffer(const void* buffer, size_t len)
 /*************************************
  * WriteString16
  *************************************/
-SHVBool SHVStreamBufferOut::WriteString16(const SHVWChar* buffer, size_t maxlen)
+SHVBool SHVStreamBufferOut::WriteString16(const SHVWChar* buffer, size_t maxsize)
 {
 SHVBool retVal = IsOk();
 	if (retVal)
 	{
-		if (maxlen == SIZE_T_MAX)
-			maxlen = SHVString16::StrLen(buffer);
-		retVal = WriteBuffer(buffer, maxlen * sizeof(SHVWChar));
+		if (maxsize == SIZE_T_MAX)
+			maxsize = SHVString16::StrSizeInBytes(buffer);
+		retVal = WriteBuffer(buffer, maxsize);
 	}
 	return retVal;
 }
@@ -98,14 +98,14 @@ SHVBool SHVStreamBufferOut::WriteChar16(SHVWChar ch)
 /*************************************
  * WriteString8
  *************************************/
-SHVBool SHVStreamBufferOut::WriteString8(const SHVChar* buffer, size_t maxlen)
+SHVBool SHVStreamBufferOut::WriteString8(const SHVChar* buffer, size_t maxsize)
 {
 SHVBool retVal = IsOk();
 	if (retVal)
 	{
-		if (maxlen == SIZE_T_MAX)
-			maxlen = SHVString8::StrLen(buffer);
-		retVal = WriteBuffer(buffer, maxlen);
+		if (maxsize == SIZE_T_MAX)
+			maxsize = SHVString8::StrSizeInBytes(buffer);
+		retVal = WriteBuffer(buffer, maxsize);
 	}
 	return retVal;
 }
@@ -114,6 +114,29 @@ SHVBool retVal = IsOk();
  * WriteChar8
  *************************************/
 SHVBool SHVStreamBufferOut::WriteChar8(const SHVChar ch)
+{
+	return WriteBuffer(&ch, sizeof(SHVChar));
+}
+
+/*************************************
+ * WriteStringUTF8
+ *************************************/
+SHVBool SHVStreamBufferOut::WriteStringUTF8(const SHVChar* buffer, size_t maxsize)
+{
+SHVBool retVal = IsOk();
+	if (retVal)
+	{
+		if (maxsize == SIZE_T_MAX)
+			maxsize = SHVStringUTF8::StrSizeInBytes(buffer);
+		retVal = WriteBuffer(buffer, maxsize);
+	}
+	return retVal;
+}
+
+/*************************************
+ * WriteCharUTF8
+ *************************************/
+SHVBool SHVStreamBufferOut::WriteCharUTF8(const SHVChar ch)
 {
 	return WriteBuffer(&ch, sizeof(SHVChar));
 }

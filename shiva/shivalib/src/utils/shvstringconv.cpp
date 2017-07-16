@@ -32,7 +32,6 @@
 #include "../../../include/platformspc.h"
 #include "../../../include/utils/shvstringconv.h"
 #include "../../../include/utils/shvstring.h"
-#include "../../../include/utils/shvstringutf8.h"
 
 #ifndef __SHVSTRING_EXCLUDE_UNICODE
 

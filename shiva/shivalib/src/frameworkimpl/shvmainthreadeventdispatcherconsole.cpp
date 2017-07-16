@@ -352,24 +352,49 @@ void SHVMainThreadEventDispatcherConsole::StopEventLoop(SHVBool errors)
 void SHVMainThreadEventDispatcherConsole::HandleStdin()
 {
 size_t newline;
-SHVString8 str, cmd, data;
-
-	while ( (newline = StdinStream.SeekByte('\n', StdinPos)) < StdinStream.GetSize())
+	if (SHVConsole::NativeEncodingIsUTF8())
 	{
-	size_t bufSize = newline - StdinPos;
-		str.SetBufferSize(bufSize);
-		StdinStream.ReadString8(str,newline - StdinPos,StdinPos);
-		StdinPos = newline + 1;
-		
+	SHVStringUTF8 str;
+
+		while ( (newline = StdinStream.SeekByte('\n', StdinPos)) < StdinStream.GetSize())
+		{
+		size_t bufSize = newline - StdinPos;
+			str.SetBufferSize(bufSize);
+			StdinStream.ReadStringUTF8(str,newline - StdinPos,StdinPos);
+			StdinPos = newline + 1;
+			
 #if defined(__SHIVA_WIN32) && !defined(__SHIVA_WINCE)
-		if (bufSize > 1 && str.GetBuffer()[bufSize-1] == '\r')
-			str.GetBuffer()[bufSize-1] = '\0';
-		this->selfSubs->EmitNow(*ModuleList,new SHVEvent(this,EventInternalSdin,SHVInt(),new SHVEventStdin(NULL,str.ReleaseBuffer())));
+			if (bufSize > 1 && str.GetBuffer()[bufSize-1] == '\r')
+				str.GetBuffer()[bufSize-1] = '\0';
+			this->selfSubs->EmitNow(*ModuleList,new SHVEvent(this,EventInternalSdin,SHVInt(),new SHVEventStdin(NULL,str.ReleaseBuffer())));
 #else
-		Queue->GetModuleList().EmitEvent(new SHVEventStdin(NULL,str.ReleaseBuffer()));
+			Queue->GetModuleList().EmitEvent(new SHVEventStdin(NULL,str.ReleaseBuffer()));
 #endif
-		
-		StdinStream.Truncate(StdinPos);
+			
+			StdinStream.Truncate(StdinPos);
+		}
+	}
+	else
+	{
+	SHVString8 str;
+
+		while ( (newline = StdinStream.SeekByte('\n', StdinPos)) < StdinStream.GetSize())
+		{
+		size_t bufSize = newline - StdinPos;
+			str.SetBufferSize(bufSize);
+			StdinStream.ReadString8(str,newline - StdinPos,StdinPos);
+			StdinPos = newline + 1;
+			
+#if defined(__SHIVA_WIN32) && !defined(__SHIVA_WINCE)
+			if (bufSize > 1 && str.GetBuffer()[bufSize-1] == '\r')
+				str.GetBuffer()[bufSize-1] = '\0';
+			this->selfSubs->EmitNow(*ModuleList,new SHVEvent(this,EventInternalSdin,SHVInt(),new SHVEventStdin(NULL,str.ToStrUTF8())));
+#else
+			Queue->GetModuleList().EmitEvent(new SHVEventStdin(NULL,str.ToStrUTF8()));
+#endif
+			
+			StdinStream.Truncate(StdinPos);
+		}
 	}
 }
 
@@ -752,7 +777,7 @@ LRESULT retVal = 0;
 		SHVString str;
 			str.SetBufferSize(::GetWindowTextLength(hWnd)+1);
 			::GetWindowText(hWnd,(TCHAR*)str.GetBuffer(),::GetWindowTextLength(hWnd)+1);
-			evDispatcherConsole->Queue->GetModuleList().EmitEvent(new SHVEventStdin(NULL,str.ToStr8()));
+			evDispatcherConsole->Queue->GetModuleList().EmitEvent(new SHVEventStdin(NULL,str.ToStrUTF8()));
 			::SetWindowText(hWnd,_T(""));
 			break;
 		}

@@ -30,9 +30,11 @@ public:
 	SHVBool WriteSHVDouble(const SHVDouble i, size_t& pos);
 	inline SHVBool WriteNullString(const SHVStringC str, size_t& pos);
 	SHVBool WriteNullString8(const SHVString8C str, size_t& pos);
+	SHVBool WriteNullStringUTF8(const SHVStringUTF8C str, size_t& pos);
 	SHVBool WriteNullString16(const SHVString16C str, size_t& pos);
 	inline SHVBool WriteString(const SHVStringC str, size_t& pos);
 	SHVBool WriteString8(const SHVString8C str, size_t& pos);
+	SHVBool WriteStringUTF8(const SHVStringUTF8C str, size_t& pos);
 	SHVBool WriteString16(const SHVString16C str, size_t& pos);
 	virtual SHVBool WriteBytes(const SHVByte* buf, size_t bufLen, size_t& pos);
 	
@@ -73,6 +75,7 @@ public:
 	inline SHVBool WriteSHVDouble(const SHVDouble i);
 	inline SHVBool WriteNullString(const SHVStringC str);
 	inline SHVBool WriteNullString8(const SHVString8C str);
+	inline SHVBool WriteNullStringUTF8(const SHVStringUTF8C str);
 	inline SHVBool WriteNullString16(const SHVString16C str);
 	inline SHVBool WriteString(const SHVStringC str);
 	inline SHVBool WriteString8(const SHVString8C str);
@@ -209,6 +212,8 @@ SHVBool SHVBufferIterator::WriteNullString(const SHVStringC str)
 { Field++; return (Error ? Error = Buf()->WriteNullString(str,Pos) : Error); }
 SHVBool SHVBufferIterator::WriteNullString8(const SHVString8C str)
 { Field++; return (Error ? Error = Buf()->WriteNullString8(str,Pos) : Error); }
+SHVBool SHVBufferIterator::WriteNullStringUTF8(const SHVStringUTF8C str)
+{ Field++; return (Error ? Error = Buf()->WriteNullStringUTF8(str,Pos) : Error); }
 SHVBool SHVBufferIterator::WriteNullString16(const SHVString16C str)
 { Field++; return (Error ? Error = Buf()->WriteNullString16(str,Pos) : Error); }
 SHVBool SHVBufferIterator::WriteString(const SHVStringC str)

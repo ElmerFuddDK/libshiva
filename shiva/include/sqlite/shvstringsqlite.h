@@ -2,7 +2,6 @@
 #define __SHIVA_STRING_SQLITE_H
 
 #include "../utils/shvstring.h"
-#include "../utils/shvstringutf8.h"
 
 //-=========================================================================================================
 /// SHVStringSQLite class - Constant sqlite string

@@ -686,7 +686,7 @@ SHVString retVal(s);
 
 	return retVal.ReleaseBuffer();
 #else
-SHVTChar* retVal = new SHVTChar[__SHVTIME_MAXDATESTR];
+SHVTChar* retVal = (SHVTChar*)::malloc(__SHVTIME_MAXDATESTR*sizeof(SHVTChar));
 
 	retVal[0] = 0;
 

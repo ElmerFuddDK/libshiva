@@ -83,7 +83,7 @@ bool retVal = (IsOpen() && (GetFlags()&FlagRead) && str.GetBufferLen()>1 );
  */
 bool SHVFile::WriteString8(const SHVString8C& str)
 {
-	return SHVFileBase::Write(str.GetBufferConst(),SHVFilePos(str.GetLength()*sizeof(SHVChar)));
+	return SHVFileBase::Write(str.GetBufferConst(),SHVFilePos(str.GetSizeInBytes()));
 }
 
 /*************************************
@@ -150,6 +150,105 @@ SHVString8C newLine(SHVFileBase::LineSeparator8());
 
 #ifndef __SHVSTRING_EXCLUDE_UNICODE
 /*************************************
+ * ReadUTF8
+ *************************************/
+/// Reads a UTF8 string into a pre-allocated string buffer
+/**
+ \param str String containing buffer
+ \return Success
+ \see ReadString
+ */
+bool SHVFile::ReadStringUTF8(SHVStringUTF8& str)
+{
+bool retVal = (IsOpen() && (GetFlags()&FlagRead) && str.GetBufferLen()>1 );
+
+	if (retVal)
+	{
+	SHVFilePos bytes = SHVFileBase::Read(str.GetBuffer(),SHVFilePos(str.GetBufferLen()-sizeof(SHVChar)));
+		str.GetBuffer()[bytes/sizeof(SHVChar)] = '\0';
+		retVal = (bytes ? true : false);
+	}
+
+	return retVal;
+}
+
+/*************************************
+ * WriteUTF8
+ *************************************/
+/// Writes the entire contents of a UTF8 string to the file
+/**
+ \param str String to write
+ \return Success
+ \see WriteString
+ */
+bool SHVFile::WriteStringUTF8(const SHVStringUTF8C& str)
+{
+	return SHVFileBase::Write(str.GetBufferConst(),SHVFilePos(str.GetSizeInBytes()));
+}
+
+/*************************************
+ * ReadLine8
+ *************************************/
+/// Reads a line from the file into a UTF8 string
+/**
+ \param str String to contain the line
+ \return Success
+ \see ReadLine
+ */
+bool SHVFile::ReadLineUTF8(SHVStringUTF8& str)
+{
+bool retVal = (IsOpen() && (GetFlags()&FlagRead));
+
+	if (retVal)
+	{
+	char* tmpBuffer;
+	SHVChar* buffer;
+	SHVFilePos chars = ReadLineReal(tmpBuffer,sizeof(SHVChar));
+
+		buffer = (SHVChar*)tmpBuffer;
+
+		if (buffer)
+		{
+		size_t len = chars/sizeof(SHVChar);
+
+			buffer[len] = '\0';
+
+			while (len)
+			{
+				if (buffer[len-1] == '\r' || buffer[len-1] == '\n')
+					buffer[--len] = '\0';
+				else
+					len = 0;
+			}
+
+			str = SHVStringBufferUTF8::Encapsulate(buffer);
+		}
+		else
+		{
+			str.SetToNull();
+			retVal = false;
+		}
+	}
+
+	return retVal;
+}
+
+/*************************************
+ * WriteLineUTF8
+ *************************************/
+/// Writes the entire contents of a UTF8 string to the file + newline
+/**
+ \param str String to write
+ \return Success
+ \see WriteLine
+ */
+bool SHVFile::WriteLineUTF8(const SHVStringUTF8C& str)
+{
+SHVStringUTF8C newLine(SHVFileBase::LineSeparatorUTF8());
+	return ((str.IsEmpty() ? true : WriteStringUTF8(str)) && WriteStringUTF8(newLine));
+}
+
+/*************************************
  * Read16
  *************************************/
 /// Reads a UCS2 string into a pre-allocated string buffer
@@ -183,7 +282,7 @@ bool retVal = (IsOpen() && (GetFlags()&FlagRead) && str.GetBufferLen()>1 );
  */
 bool SHVFile::WriteString16(const SHVString16C& str)
 {
-	return SHVFileBase::Write(str.GetBufferConst(),SHVFilePos(str.GetLength()*sizeof(SHVWChar)));
+	return SHVFileBase::Write(str.GetBufferConst(),SHVFilePos(str.GetSizeInBytes()));
 }
 
 /*************************************
@@ -262,7 +361,7 @@ SHVFilePos retVal;
 	if (IsOpen() && (GetFlags()&FlagRead))
 	{
 	size_t bufLen = READUNTIL_BUFLEN*charSize;
-	char* buffer = new char[bufLen];
+	char* buffer = (char*)::malloc(bufLen);
 	SHVFilePos oldPos, pos, count;
 	bool running = true;
 	bool found = false;
@@ -297,7 +396,7 @@ SHVFilePos retVal;
 		if (pos>oldPos)
 		{
 			bufLen = size_t(pos-oldPos);
-			result = new char[bufLen+charSize];
+			result = (char*)::malloc(bufLen+charSize);
 	
 			SetPosition(oldPos); // restore position
 			retVal = SHVFileBase::Read(result,(SHVFilePos)bufLen);
@@ -305,7 +404,7 @@ SHVFilePos retVal;
 		else
 			retVal = 0;
 
-		delete [] buffer;
+		::free(buffer);
 	}
 	else
 		retVal = -1;

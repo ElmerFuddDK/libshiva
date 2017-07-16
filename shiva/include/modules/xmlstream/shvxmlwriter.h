@@ -2,7 +2,6 @@
 #define __SHIVA_XMLSTREAM_WRITE_H
 
 #include "../../utils/shvstring.h"
-#include "../../utils/shvstringutf8.h"
 #include "../../utils/shvstreamout.h"
 #include "../../utils/shvptrcontainer.h"
 

@@ -130,7 +130,19 @@ SHVUUID::ID SHVUUID::CreateMd5FromNamespace8(const SHVUUID::ID& namespc, const S
 SHVUUID::ID retVal;
 shv_uuid_t n;
 	::memcpy(&n,&namespc,sizeof(shv_uuid_t));
-	uuid_create_md5_from_name(Globals,(shv_uuid_t*)&retVal,n, (void*)name.GetSafeBuffer(), (int)name.GetLength()*sizeof(SHVChar));
+	uuid_create_md5_from_name(Globals,(shv_uuid_t*)&retVal,n, (void*)name.GetSafeBuffer(), (int)name.GetSizeInBytes());
+	return retVal;
+}
+
+/*************************************
+ * CreateMd5FromNamespaceUTF8
+ *************************************/
+SHVUUID::ID SHVUUID::CreateMd5FromNamespaceUTF8(const SHVUUID::ID& namespc, const SHVStringUTF8C name)
+{
+SHVUUID::ID retVal;
+shv_uuid_t n;
+	::memcpy(&n,&namespc,sizeof(shv_uuid_t));
+	uuid_create_md5_from_name(Globals,(shv_uuid_t*)&retVal,n, (void*)name.GetSafeBuffer(), (int)name.GetSizeInBytes());
 	return retVal;
 }
 
@@ -142,7 +154,7 @@ SHVUUID::ID SHVUUID::CreateMd5FromNamespace16(const SHVUUID::ID& namespc, const 
 SHVUUID::ID retVal;
 shv_uuid_t n;
 	::memcpy(&n,&namespc,sizeof(shv_uuid_t));
-	uuid_create_md5_from_name(Globals,(shv_uuid_t*)&retVal,n, (void*)name.GetSafeBuffer(), (int)name.GetLength()*sizeof(SHVWChar));
+	uuid_create_md5_from_name(Globals,(shv_uuid_t*)&retVal,n, (void*)name.GetSafeBuffer(), (int)name.GetSizeInBytes());
 	return retVal;
 }
 
@@ -201,6 +213,14 @@ const SHVChar* str = uuid.GetSafeBuffer();
 }
 
 /*************************************
+ * FromStringUTF8
+ *************************************/
+SHVUUID::ID SHVUUID::FromStringUTF8(const SHVStringUTF8C uuid)
+{
+	return FromString8(SHVString8C(uuid.GetBufferConst())); // lazy mans solution
+}
+
+/*************************************
  * FromString16
  *************************************/
 SHVUUID::ID SHVUUID::FromString16(const SHVString16C uuid)
@@ -255,6 +275,26 @@ SHVStringBuffer8 SHVUUID::ID::ToString8()
 {
 shv_uuid_t* id = (shv_uuid_t*)&Bytes;
 	return SHVString8C::Format("%8.8x-%4.4x-%4.4x-%2.2x%2.2x-%2.2x%2.2x%2.2x%2.2x%2.2x%2.2x",
+								id->time_low,
+								id->time_mid,
+								id->time_hi_and_version,
+								id->clock_seq_hi_and_reserved,
+								id->clock_seq_low,
+								id->node[0],
+								id->node[1],
+								id->node[2],
+								id->node[3],
+								id->node[4],
+								id->node[5]);
+}
+
+/*************************************
+ * ToStringUTF8
+ *************************************/
+SHVStringBufferUTF8 SHVUUID::ID::ToStringUTF8()
+{
+shv_uuid_t* id = (shv_uuid_t*)&Bytes;
+	return SHVStringUTF8C::Format("%8.8x-%4.4x-%4.4x-%2.2x%2.2x-%2.2x%2.2x%2.2x%2.2x%2.2x%2.2x",
 								id->time_low,
 								id->time_mid,
 								id->time_hi_and_version,

@@ -221,7 +221,7 @@ SHVBool SHVStreamOutTest::WriteString16(const SHVWChar* buffer, size_t maxlen)
 {
 	if (Ok)
 	{
-	size_t writeLen = SHVString::StrLen(buffer);
+	size_t writeLen = SHVString::StrSize(buffer);
 		if (maxlen < writeLen)
 			writeLen = maxlen;
 		Ok = File.Write(buffer, (SHVFilePos) writeLen*2);
@@ -242,7 +242,7 @@ SHVBool SHVStreamOutTest::WriteString8(const SHVChar* buffer, size_t maxlen)
 {
 	if (Ok)
 	{
-	size_t writeLen = SHVString8::StrLen(buffer);
+	size_t writeLen = SHVString8::StrSize(buffer);
 		if (maxlen < writeLen)
 			writeLen = maxlen;
 		Ok = File.Write(buffer, (SHVFilePos) writeLen);

@@ -118,6 +118,8 @@ public:
 	inline bool IsNull() const;
 	inline bool IsEmpty() const;
 	size_t GetLength() const;
+	inline size_t GetSizeInChars() const;
+	inline size_t GetSizeInBytes() const;
 	operator SHVHashValue() const; ///< hashing function
 
 
@@ -136,6 +138,8 @@ public:
 	static SHVInt64Val StrToInt64(const SHVWChar* str, SHVWChar** ptr, int base = 10); ///< only works for base10 on some platforms for now
 	static double StrToDouble(const SHVWChar* str, SHVWChar** ptr);
 	static size_t StrLen(const SHVWChar* str);
+	inline static size_t StrSizeInChars(const SHVWChar* str);
+	inline static size_t StrSizeInBytes(const SHVWChar* str);
 	static int    StrCmp(const SHVWChar* str1,const SHVWChar* str2);
 	static int    StrCaseCmp(const SHVWChar* str1,const SHVWChar* str2);
 	static SHVWChar* StrCat(SHVWChar* dest, const SHVWChar* source);
@@ -246,6 +250,8 @@ SHVString16C::SHVString16C(const SHVWChar* buffer) { Buffer = (SHVWChar*)buffer;
 const SHVWChar* SHVString16C::GetBufferConst() const { return Buffer; }
 bool SHVString16C::IsNull() const { return Buffer == NULL; }
 bool SHVString16C::IsEmpty() const { return Buffer == NULL || *Buffer == 0; }
+size_t SHVString16C::GetSizeInChars() const { return GetLength(); }
+size_t SHVString16C::GetSizeInBytes() const { return GetLength()*sizeof(SHVWChar); }
 #ifdef __SHIVA_EPOC
 TPtrC16 SHVString16C::ToPtr() const { return TPtrC16((TUint16*)Buffer,GetLength()); }
 #endif
@@ -253,6 +259,8 @@ TPtrC16 SHVString16C::ToPtr() const { return TPtrC16((TUint16*)Buffer,GetLength(
 const wchar_t* SHVString16C::GetWcharConst() const { return (const wchar_t*)Buffer; }
 const wchar_t* SHVString16C::GetSafeWchar() const { return (const wchar_t*)GetSafeBuffer(); }
 #endif
+size_t SHVString16C::StrSizeInChars(const SHVWChar* str) { return StrLen(str); }
+size_t SHVString16C::StrSizeInBytes(const SHVWChar* str) { return StrLen(str)*sizeof(SHVWChar); }
 
 
 // ===================================== implementation - SHVStringCRef ===================================== //

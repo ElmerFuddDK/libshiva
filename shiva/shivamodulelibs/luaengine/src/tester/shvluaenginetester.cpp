@@ -87,7 +87,7 @@ void SHVLuaEngineTester::OnEvent(SHVEvent* event)
 {
 	if (SHVEventString::Equals(event,__EVENT_GLOBAL_STDIN))
 	{
-	SHVString8 str(SHVEventStdin::StdinFromEvent(event));
+	SHVString8 str(SHVEventStdin::StdinFromEvent8(event));
 	
 		if (str.Left(5) == SHVString8C("/run "))
 		{

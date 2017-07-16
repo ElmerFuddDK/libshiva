@@ -526,6 +526,10 @@ const SHVChar* vCharL;
 SHVChar* vCharR;
 
 	SHVVA_COPY( argList, args );
+	SHVUNUSED_PARAM(tChar);
+	SHVUNUSED_PARAM(tInt);
+	SHVUNUSED_PARAM(tPtr);
+	SHVUNUSED_PARAM(tDbl);
 
 	for (pos = str.Find(percentStr);pos>=0;pos=str.Find(percentStr,pos))
 	{
@@ -723,18 +727,18 @@ void SHVString8CRef::DestroyBuffer(SHVString8CRef::Header* buffer)
 
 #ifdef __SHVSTRING_HEAPPROTECT
 ///\cond INTERNAL
-void SHVStr8_DestroyBufferFunc(SHVChar* chars) { delete [] chars; }
+void SHVStr8_DestroyBufferFunc(SHVChar* chars) { ::free(chars); }
 ///\endcond
-# define BUFFER_ALLOC(buf,size) buf = (size > 0 ? new SHVChar[size] : NULL);
+# define BUFFER_ALLOC(buf,size) buf = (size > 0 ? (SHVChar*)::malloc((size)*sizeof(SHVChar)) : NULL);
 # define BUFFER_MOVE(buf,funcPtr) Buffer = buf; DestroyFunc = funcPtr; buf=NULL; funcPtr=NULL;
 # define BUFFER_DESTROY(buf) if (buf) { (*DestroyFunc)(buf); buf = NULL; }
 # define BUFFER_DESTROY2(code,buf) SHVStr8_DestroyBuffer d = (buf ? DestroyFunc : NULL); code; if (d) { (*d)(buf); }
 # define BUFFER_SETDESTROYFUNC DestroyFunc = &SHVStr8_DestroyBufferFunc;
 #else
-# define BUFFER_ALLOC(buf,size) buf = (size > 0 ? new SHVChar[size] : NULL);
+# define BUFFER_ALLOC(buf,size) buf = (size > 0 ? (SHVChar*)::malloc((size)*sizeof(SHVChar)) : NULL);
 # define BUFFER_MOVE(buf,funcPtr) Buffer = buf; buf=NULL;
-# define BUFFER_DESTROY(buf) if (buf) { delete [] buf; buf = NULL; }
-# define BUFFER_DESTROY2(code,buf) code; if (buf) { delete [] buf; buf = NULL; }
+# define BUFFER_DESTROY(buf) if (buf) { ::free(buf); buf = NULL; }
+# define BUFFER_DESTROY2(code,buf) code; if (buf) { ::free(buf); buf = NULL; }
 # define BUFFER_SETDESTROYFUNC
 #endif
 
@@ -787,7 +791,7 @@ size_t len = aPtr.Length();
 
 	if (len)
 	{
-		retVal.Buffer = new SHVChar[len+1];
+		retVal.Buffer = (SHVChar*)::malloc((len+1)*sizeof(SHVChar));
 		if (retVal.Buffer)
 		{
 			memcpy(retVal.Buffer, aPtr.Ptr(), len*sizeof(SHVChar));

@@ -17,11 +17,15 @@ public:
 	virtual SHVBool IsOk() const;
 	virtual SHVBool WriteBuffer(const void* buffer, size_t len);
 
-	virtual SHVBool WriteString16(const SHVWChar* buffer, size_t maxlen = SIZE_T_MAX);
+	virtual SHVBool WriteString16(const SHVWChar* buffer, size_t maxsize = SIZE_T_MAX);
 	virtual SHVBool WriteChar16(SHVWChar ch);
 
-	virtual SHVBool WriteString8(const SHVChar* buffer, size_t maxlen = SIZE_T_MAX);
+	virtual SHVBool WriteString8(const SHVChar* buffer, size_t maxsize = SIZE_T_MAX);
 	virtual SHVBool WriteChar8(const SHVChar ch);
+	
+	virtual SHVBool WriteStringUTF8(const SHVChar* buffer, size_t maxsize = SIZE_T_MAX);
+	virtual SHVBool WriteCharUTF8(const SHVChar ch);
+	
 	virtual void Close();
 	inline const SHVBufferC* GetBuffer();
 private:

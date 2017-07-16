@@ -26,6 +26,7 @@ public:
 		bool operator==(const ID& id) const;
 
 		SHVStringBuffer8 ToString8();
+		SHVStringBufferUTF8 ToStringUTF8();
 		SHVStringBuffer16 ToString16();
 		inline SHVStringBuffer ToString();
 	};
@@ -42,6 +43,7 @@ public:
 	void SetNodeDataAsMd5(void* data, size_t sz);
 	inline void SetNodeData(int data);
 	inline void SetNodeDataString8AsMd5(const SHVString8C data);
+	inline void SetNodeDataStringUTF8AsMd5(const SHVStringUTF8C data);
 	inline void SetNodeDataString16AsMd5(const SHVString16C data);
 	inline void SetNodeDataStringAsMd5(const SHVStringC data);
 
@@ -51,10 +53,12 @@ public:
 
 	ID Create();
 	ID CreateMd5FromNamespace8(const ID& namespc, const SHVString8C name);
+	ID CreateMd5FromNamespaceUTF8(const ID& namespc, const SHVStringUTF8C name);
 	ID CreateMd5FromNamespace16(const ID& namespc, const SHVString16C name);
 	inline ID CreateMd5FromNamespace(const ID& namespc, const SHVStringC name);
 
 	static ID FromString8(const SHVString8C uuid);
+	static ID FromStringUTF8(const SHVStringUTF8C uuid);
 	static ID FromString16(const SHVString16C uuid);
 	inline static ID FromString(const SHVStringC uuid);
 
@@ -116,15 +120,19 @@ void SHVUUID::SetNodeData(int data)
 }
 void SHVUUID::SetNodeDataString8AsMd5(const SHVString8C data)
 {
-	SetNodeDataAsMd5((void*)data.GetSafeBuffer(),data.GetLength()*sizeof(SHVChar));
+	SetNodeDataAsMd5((void*)data.GetSafeBuffer(),data.GetSizeInBytes());
+}
+void SHVUUID::SetNodeDataStringUTF8AsMd5(const SHVStringUTF8C data)
+{
+	SetNodeDataAsMd5((void*)data.GetSafeBuffer(),data.GetSizeInBytes());
 }
 void SHVUUID::SetNodeDataString16AsMd5(const SHVString16C data)
 {
-	SetNodeDataAsMd5((void*)data.GetSafeBuffer(),data.GetLength()*sizeof(SHVWChar));
+	SetNodeDataAsMd5((void*)data.GetSafeBuffer(),data.GetSizeInBytes());
 }
 void SHVUUID::SetNodeDataStringAsMd5(const SHVStringC data)
 {
-	SetNodeDataAsMd5((void*)data.GetSafeBuffer(),data.GetLength()*sizeof(SHVTChar));
+	SetNodeDataAsMd5((void*)data.GetSafeBuffer(),data.GetSizeInBytes());
 }
 
 #endif

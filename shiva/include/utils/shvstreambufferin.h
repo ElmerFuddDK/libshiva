@@ -17,11 +17,15 @@ public:
 	virtual SHVBool IsOk() const;
 	virtual SHVBool ReadBuffer(void* buffer, size_t bufferSize, size_t& actualLength);
 
-	virtual SHVBool ReadString16(SHVWChar* buffer, size_t maxlen);
+	virtual SHVBool ReadString16(SHVWChar* buffer, size_t size);
 	virtual SHVWChar ReadChar16();
 
-	virtual SHVBool ReadString8(SHVChar* buffer, size_t maxlen);
+	virtual SHVBool ReadString8(SHVChar* buffer, size_t size);
 	virtual SHVChar ReadChar8();
+
+	virtual SHVBool ReadStringUTF8(SHVChar* buffer, size_t size);
+	virtual SHVChar ReadCharUTF8();
+
 	virtual void Close();
 	inline void SetBuffer(SHVBufferC* buffer);
 private:

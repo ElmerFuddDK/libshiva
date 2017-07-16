@@ -484,6 +484,23 @@ SHVBool SHVSubProcessImpl::ReadLine8(SHVString8& line, Streams stream)
 }
 
 /*************************************
+ * ReadLineUTF8
+ *************************************/
+SHVBool SHVSubProcessImpl::ReadLineUTF8(SHVStringUTF8& line, Streams stream)
+{
+	switch (stream)
+	{
+	case StdOut:
+		return StreamStdOut->ReadLineUTF8(line);
+	case StdErr:
+		return StreamStdErr->ReadLineUTF8(line);
+	default:
+		return ErrInvalidOperation;
+	}
+	
+}
+
+/*************************************
  * ReadLine16
  *************************************/
 SHVBool SHVSubProcessImpl::ReadLine16(SHVString16& line, Streams stream)
@@ -504,7 +521,7 @@ SHVBool SHVSubProcessImpl::ReadLine16(SHVString16& line, Streams stream)
  *************************************/
 SHVBool SHVSubProcessImpl::WriteLine8(const SHVString8C line)
 {
-size_t strLen = line.GetLength();
+size_t strLen = line.GetSizeInChars();
 	if (strLen && line.GetBufferConst()[strLen-1] == '\n')
 		return StreamStdIn->WriteString8(line.GetSafeBuffer());
 	else
@@ -512,11 +529,23 @@ size_t strLen = line.GetLength();
 }
 
 /*************************************
+ * WriteLineUTF8
+ *************************************/
+SHVBool SHVSubProcessImpl::WriteLineUTF8(const SHVStringUTF8C line)
+{
+size_t strLen = line.GetSizeInChars();
+	if (strLen && line.GetBufferConst()[strLen-1] == '\n')
+		return StreamStdIn->WriteStringUTF8(line.GetSafeBuffer());
+	else
+		return StreamStdIn->WriteStringUTF8(SHVStringUTF8(line + "\n").GetSafeBuffer());
+}
+
+/*************************************
  * WriteLine16
  *************************************/
 SHVBool SHVSubProcessImpl::WriteLine16(const SHVString16C line)
 {
-size_t strLen = line.GetLength();
+size_t strLen = line.GetSizeInChars();
 static const SHVWChar newLine[] = { '\n', '\0' };
 
 	if (strLen && line.GetBufferConst()[strLen-1] == '\n')
@@ -818,6 +847,14 @@ SHVChar retVal[2];
 }
 
 /*************************************
+ * ReadStringUTF88
+ *************************************/
+SHVBool SHVSubProcessStreamIn::ReadStringUTF8(SHVChar* buffer, size_t maxlen)
+{
+	return ReadString8(buffer,maxlen);
+}
+
+/*************************************
  * Close
  *************************************/
 void SHVSubProcessStreamIn::Close()
@@ -854,6 +891,35 @@ size_t newlinePos = SIZE_T_MAX;
 		
 		SHVVERIFY(ExcessData.ReadBytes((SHVByte*)line.GetBuffer(), (newSize+1)*sizeof(SHVChar), ExcessDataPos));
 		line[newSize/sizeof(SHVChar)] = '\0';
+		line.TrimRight("\r");
+		ExcessData.Truncate(ExcessDataPos);
+		
+		EofFlag = EofFlag && !ExcessDataLeft();
+	}
+	
+	return retVal;
+}
+
+/*************************************
+ * ReadLineUTF8
+ *************************************/
+SHVBool SHVSubProcessStreamIn::ReadLineUTF8(SHVStringUTF8& line)
+{
+SHVBool retVal(SHVSubProcess::ErrNone);
+size_t newlinePos = SIZE_T_MAX;
+
+	while (retVal && (newlinePos = ExcessData.SeekByte('\n',ExcessDataPos)) >= ExcessData.GetSize())
+	{
+		retVal = ReadIntoBuffer();
+	}
+	
+	if (retVal && newlinePos < ExcessData.GetSize())
+	{
+	size_t newSize = newlinePos - ExcessDataPos;
+		line.SetBufferSize((newSize+2)*sizeof(SHVChar));
+		
+		SHVVERIFY(ExcessData.ReadBytes((SHVByte*)line.GetBuffer(), (newSize+1)*sizeof(SHVChar), ExcessDataPos));
+		line.GetBuffer()[newSize/sizeof(SHVChar)] = '\0';
 		line.TrimRight("\r");
 		ExcessData.Truncate(ExcessDataPos);
 		
@@ -1003,7 +1069,7 @@ SHVBool retVal(IsOk());
  *************************************/
 SHVBool SHVSubProcessStreamOut::WriteString16(const SHVWChar* buffer, size_t maxlen)
 {
-	return (WriteBuffer(buffer,(maxlen == SIZE_T_MAX ? SHVString16C::StrLen(buffer) : maxlen)*sizeof(SHVWChar)));
+	return (WriteBuffer(buffer,(maxlen == SIZE_T_MAX ? SHVString16C::StrSizeInChars(buffer) : maxlen)*sizeof(SHVWChar)));
 }
 
 /*************************************
@@ -1019,7 +1085,7 @@ SHVBool SHVSubProcessStreamOut::WriteChar16(SHVWChar ch)
  *************************************/
 SHVBool SHVSubProcessStreamOut::WriteString8(const SHVChar* buffer, size_t maxlen)
 {
-	return (WriteBuffer(buffer,(maxlen == SIZE_T_MAX ? SHVString8C::StrLen(buffer) : maxlen)*sizeof(SHVChar)));
+	return (WriteBuffer(buffer,(maxlen == SIZE_T_MAX ? SHVString8C::StrSizeInChars(buffer) : maxlen)*sizeof(SHVChar)));
 }
 
 /*************************************
@@ -1028,6 +1094,14 @@ SHVBool SHVSubProcessStreamOut::WriteString8(const SHVChar* buffer, size_t maxle
 SHVBool SHVSubProcessStreamOut::WriteChar8(const SHVChar ch)
 {
 	return (WriteBuffer(&ch,sizeof(SHVChar)));
+}
+
+/*************************************
+ * WriteStringUTF8
+ *************************************/
+SHVBool SHVSubProcessStreamOut::WriteStringUTF8(const SHVChar* buffer, size_t maxlen)
+{
+	return (WriteBuffer(buffer,(maxlen == SIZE_T_MAX ? SHVStringUTF8C::StrSizeInChars(buffer) : maxlen)*sizeof(SHVChar)));
 }
 
 /*************************************

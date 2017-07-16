@@ -57,22 +57,32 @@ SHVBool SHVBuffer::WriteSHVDouble(const SHVDouble i, size_t& pos)
 { return WriteBytes((SHVByte*)&i,sizeof(SHVDouble),pos); }
 SHVBool SHVBuffer::WriteNullString8(const SHVString8C str, size_t& pos)
 {
-size_t strLen = str.GetLength()+1;
+size_t strLen = str.GetSizeInChars()+1;
+	return WriteBytes((SHVByte*)str.GetBufferConst(),strLen,pos);
+}
+SHVBool SHVBuffer::WriteNullStringUTF8(const SHVStringUTF8C str, size_t &pos)
+{
+size_t strLen = str.GetSizeInChars()+1;
 	return WriteBytes((SHVByte*)str.GetBufferConst(),strLen,pos);
 }
 SHVBool SHVBuffer::WriteNullString16(const SHVString16C str, size_t& pos)
 {
-size_t strLen = str.GetLength()+1;
+size_t strLen = str.GetSizeInChars()+1;
 	return WriteBytes((SHVByte*)str.GetBufferConst(),strLen*2,pos);
 }
 SHVBool SHVBuffer::WriteString8(const SHVString8C str, size_t& pos)
 {
-size_t strLen = str.GetLength();
+size_t strLen = str.GetSizeInChars();
+	return WriteBytes((SHVByte*)str.GetBufferConst(),strLen,pos);
+}
+SHVBool SHVBuffer::WriteStringUTF8(const SHVStringUTF8C str, size_t &pos)
+{
+size_t strLen = str.GetSizeInChars();
 	return WriteBytes((SHVByte*)str.GetBufferConst(),strLen,pos);
 }
 SHVBool SHVBuffer::WriteString16(const SHVString16C str, size_t& pos)
 {
-size_t strLen = str.GetLength();
+size_t strLen = str.GetSizeInChars();
 	return WriteBytes((SHVByte*)str.GetBufferConst(),strLen*2,pos);
 }
 SHVBool SHVBuffer::WriteBytes(const SHVByte* buf, size_t bufLen, size_t& pos)

@@ -25,6 +25,10 @@ public:
 	bool ReadLine8(SHVString8& str);
 	bool WriteLine8(const SHVString8C& str);
 #ifndef __SHVSTRING_EXCLUDE_UNICODE
+	bool ReadStringUTF8(SHVStringUTF8& str);
+	bool WriteStringUTF8(const SHVStringUTF8C& str);
+	bool ReadLineUTF8(SHVStringUTF8& str);
+	bool WriteLineUTF8(const SHVStringUTF8C& str);
 	bool ReadString16(SHVString16& str);
 	bool WriteString16(const SHVString16C& str);
 	bool ReadLine16(SHVString16& str);

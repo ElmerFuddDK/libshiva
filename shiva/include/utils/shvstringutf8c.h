@@ -92,6 +92,8 @@ public:
 	inline bool IsNull() const;
 	inline bool IsEmpty() const;
 	size_t GetLength() const;
+	inline size_t GetSizeInChars() const;
+	inline size_t GetSizeInBytes() const;
 	operator SHVHashValue() const; ///< hashing function
 
 
@@ -109,6 +111,8 @@ public:
 	static SHVInt64Val StrToInt64(const SHVChar* str, SHVChar** ptr, int base = 10); ///< only works for base10 on some platforms for now
 	static double StrToDouble(const SHVChar* str, SHVChar** ptr);
 	static size_t StrLen(const SHVChar* str);
+	inline static size_t StrSizeInChars(const SHVChar* str);
+	inline static size_t StrSizeInBytes(const SHVChar* str);
 	static size_t SizeOfChars(const char* str, size_t chars = SIZE_T_MAX);
 	static size_t SizeOfCharsReverse(const char* strStart, size_t chars = SIZE_T_MAX);
 	static int    StrCmp(const SHVChar* str1,const SHVChar* str2);
@@ -228,9 +232,13 @@ SHVStringUTF8C::SHVStringUTF8C(const SHVChar* buffer) { Buffer = (SHVChar*)buffe
 const SHVChar* SHVStringUTF8C::GetBufferConst() const { return Buffer; }
 bool SHVStringUTF8C::IsNull() const { return Buffer == NULL; }
 bool SHVStringUTF8C::IsEmpty() const { return Buffer == NULL || *Buffer == 0; }
+size_t SHVStringUTF8C::GetSizeInChars() const { return SHVString8C::StrLen(Buffer); }
+size_t SHVStringUTF8C::GetSizeInBytes() const { return SHVString8C::StrLen(Buffer); }
 #ifdef __SHIVA_EPOC
 TPtrC8 SHVStringUTF8C::ToPtr() const { return TPtrC8((TUint8*)Buffer,GetLength()); }
 #endif
+size_t SHVStringUTF8C::StrSizeInChars(const SHVChar* str) { return SHVString8C::StrLen(str); }
+size_t SHVStringUTF8C::StrSizeInBytes(const SHVChar* str) { return SHVString8C::StrLen(str); }
 
 /*************************************
  * ToStrT

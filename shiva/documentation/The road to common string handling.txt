@@ -1,0 +1,90 @@
+SHIVA and the road to common string handling
+============================================
+
+
+Pretext:
+--------
+
+In SHIVA string handling is a bit off. The idea behind SHIVA is to be a
+common framework that makes development on all platforms the same, but
+when it comes to strings this is not the case.
+The decision to make SHIVA use native strings was wrong, since it means
+you cannot be sure the code compiles and behaves the same on all plat-
+forms when using SHVString.
+
+In order to fix this we will transition to use a common string class
+as the standard string on all platforms. Using native 8 bit is out of
+the question, and 16bit unicode is also problematic as it is not the
+native unicode character size on all platforms.
+So the only shared string type that can be handled natively is multi-
+byte strings, and in our case UTF8.
+
+
+Preparations:
+-------------
+
+Making UTF8 available:
+The UTF8 string will be included in the normal string header, so it
+will be available always.
+Every class that can handle string differentiation will need to support
+SHVStringUTF8 too. That means all the GetString16 etc functions will
+have to have a GetStringUTF8 equivalent as well.
+
+Buffer handling:
+All string classes will be expanded with 2 functions:
+ * GetSizeInChars
+ * GetSizeInBytes
+And 2 statics as well:
+ * StrSizeInChars
+ * StrSizeInBytes
+These will need to be used instead of GetLen/StrLen in all the places
+where it is relevant. The *Chars versions are used when searching for
+a char (Like \n), and the *Bytes versions are for interfacing with
+a buffer or external file etc.
+
+Console handling:
+This will break compatibility where used, but EventStdin will have to
+be converted to contain an SHVStringUTF8 instead of SHVString8.
+Conversion functions will be added to make it easier to fix compile
+errors without having to change too much.
+
+Index operator:
+Since SHVStringUTF8 doesn't have an index operator some alternative
+means for indexing should be made available.
+We will create an SHVStringIterator:
+SHVStringIterator itr(str);
+while (itr.MoveNext()) { if (itr.Get() == '\n'; break; }
+For UTF8 we will need to return a new char type as it is a 32 bit.
+So it should return an SHVUChar (Shiva Unicode Char).
+
+
+Defines:
+--------
+
+We will support 3 modes now:
+ * Native 2 byte unicode (For Windows)
+ * Native 1 byte charsets
+ * UTF8 mode
+
+Instead of being controlled by the Windows UNICODE define it will be
+changed to use the following:
+
+ SHVSTRNATIVE8:
+   Fallback define.
+ SHVSTRNATIVEUTF8:
+   Switches on the new unicode stuff.
+ SHVSTRNATIVE16:
+   Will be defined if UNICODE is defined, for now.
+ SHVSTRNATIVEPLATFORMSPC
+   If this is defined then old behavior will apply:
+   Native 8 bit, except if UNICODE is defined on Windows.
+
+They will be set at the top of platformspc, and if the define
+SHVSTRNATIVEPLATFORMSPC is set then the platform includes will
+define which string type to use as native.
+Default will now be SHVSTRNATIVEUTF8. If you want old behavior,
+change this when copying the source code.
+
+The entire source code will need to be searched for usage of the
+UNICODE define. These places will be split into 3 modes now, instead
+of 2.

@@ -33,7 +33,6 @@
 
 #include "../../../include/frameworkimpl/shvconfigimpl.h"
 #include "../../../include/utils/shvstring.h"
-#include "../../../include/utils/shvstringutf8.h"
 #include "../../../include/utils/shvfile.h"
 #include "../../../include/utils/shvdir.h"
 #include "../../../include/utils/shvmath.h"
@@ -632,19 +631,19 @@ SHVStringBuffer SHVConfigImpl::Unescape(const SHVStringC str)
 {
 SHVList<SHVString,SHVStringBuffer> bits;
 SHVString retVal;
-size_t len, pos, strLen;
+size_t len, pos, strSize;
 
 	if (str.IsNull())
 		return retVal.ReleaseBuffer();
 
 	len = pos = 0;
-	strLen = str.GetLength();
+	strSize = str.GetSizeInChars();
 	
-	while (pos < strLen)
+	while (pos < strSize)
 	{
 		bits.AddTail(str.Tokenize(_S("\\"),pos));
 		len += bits.GetLast().GetLength();
-		if (pos < strLen)
+		if (pos < strSize)
 		{
 			pos++;
 			len++;

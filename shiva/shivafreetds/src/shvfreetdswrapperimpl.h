@@ -3,7 +3,6 @@
 
 #include "shiva/include/freetds/shvfreetdswrapper.h"
 #include "shiva/include/utils/shvstring.h"
-#include "shiva/include/utils/shvstringutf8.h"
 #include "shiva/include/utils/shvvector.h"
 #include "shiva/include/utils/shvvectorref.h"
 #include "shiva/include/threadutils/shvmutex.h"

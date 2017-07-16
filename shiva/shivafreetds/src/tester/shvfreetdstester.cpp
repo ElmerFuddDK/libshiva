@@ -71,7 +71,7 @@ void SHVFreeTDSTester::OnEvent(SHVEvent* event)
 {
 	if (SHVEventString::Equals(event,__EVENT_GLOBAL_STDIN))
 	{
-	SHVString8 str(SHVEventStdin::StdinFromEvent(event));
+	SHVString8 str(SHVEventStdin::StdinFromEvent8(event));
 	SHVString8 cmd, val;
 	long space;
 	

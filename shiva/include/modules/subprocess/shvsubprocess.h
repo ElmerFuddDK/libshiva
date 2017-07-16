@@ -64,9 +64,11 @@ public:
 
 	// Convenience functions
 	virtual SHVBool ReadLine8(SHVString8& line, Streams stream = StdOut) = 0;
+	virtual SHVBool ReadLineUTF8(SHVStringUTF8& line, Streams stream = StdOut) = 0;
 	virtual SHVBool ReadLine16(SHVString16& line, Streams stream = StdOut) = 0;
 	inline SHVBool ReadLine(SHVString& line, Streams stream = StdOut);
 	virtual SHVBool WriteLine8(const SHVString8C line) = 0;
+	virtual SHVBool WriteLineUTF8(const SHVStringUTF8C line) = 0;
 	virtual SHVBool WriteLine16(const SHVString16C line) = 0;
 	inline SHVBool WriteLine(const SHVStringC line);
 

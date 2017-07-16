@@ -131,6 +131,29 @@ size_t newPos = SeekByte('\0', pos);
 	
 	return retVal;
 }
+/// Reads a null terminated UTF8 string
+/**
+ \param str Result
+ \param pos Buffer position
+ \return True on success
+ *
+ * For an example see \ref SHVBufferCPtr
+ */
+SHVBool SHVBufferC::ReadNullStringUTF8(SHVStringUTF8& str, size_t& pos) const
+{
+SHVBool retVal;
+size_t newPos = SeekByte('\0', pos);
+
+	if (newPos >= Size())
+		return SHVBufferC::ErrEof;
+	
+	retVal = ReadStringUTF8(str, newPos-pos, pos);
+	
+	if (retVal)
+		pos++;
+	
+	return retVal;
+}
 /// Reads a null terminated UCS2 string
 /**
  \param str Result
@@ -179,6 +202,35 @@ SHVBool retVal(SHVBool::True);
 	{
 		retVal = ReadBytes((SHVByte*)str.GetBuffer(),strLen,pos);
 		str[strLen] = '\0';
+	}
+	
+	return retVal;
+}
+/// Reads a utf8 string with a provided length
+/**
+ \param str Result
+ \param strSize Size of string in characters
+ \param pos Buffer position
+ \return True on success
+ *
+ * The string will be terminated after read.\n
+ * For an example see \ref SHVBufferCPtr
+ */
+SHVBool SHVBufferC::ReadStringUTF8(SHVStringUTF8& str, size_t strSize, size_t& pos) const
+{
+SHVBool retVal(SHVBool::True);
+
+	if (str.GetBufferLen() < strSize+1)
+		str.SetBufferSize(strSize+1);
+	
+	if (str.GetBufferLen() < strSize+1) // if it is still too small (allocation failed)
+	{
+		return SHVBufferC::ErrAlloc;
+	}
+	else
+	{
+		retVal = ReadBytes((SHVByte*)str.GetBuffer(),strSize,pos);
+		str.GetBuffer()[strSize] = '\0';
 	}
 	
 	return retVal;

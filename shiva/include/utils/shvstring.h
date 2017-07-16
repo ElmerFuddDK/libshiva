@@ -4,7 +4,7 @@
 #include "shvstringc.h"
 #ifndef __SHVSTRING_EXCLUDE_UNICODE
 # include "shvstring16.h"
-class SHVStringUTF8;
+# include "shvstringutf8.h"
 #endif
 
 

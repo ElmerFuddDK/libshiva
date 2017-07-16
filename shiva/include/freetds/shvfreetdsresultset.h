@@ -3,7 +3,6 @@
 
 #include "shiva/include/shvtypes.h"
 #include "shiva/include/utils/shvstring.h"
-#include "shiva/include/utils/shvstringutf8.h"
 #include "shiva/include/utils/shvtime.h"
 #include "shiva/include/utils/shvuuid.h"
 #include "shiva/include/utils/shvrefobject.h"

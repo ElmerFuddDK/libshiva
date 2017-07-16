@@ -57,6 +57,7 @@ public:
 	bool IsInitialized();
 	void Calculate(const SHVBufferC* buffer);
 	inline void CalculateString8(const SHVString8C str);
+	inline void CalculateStringUTF8(const SHVStringUTF8C str);
 	inline void CalculateString16(const SHVString16C str);
 	inline void CalculateString(const SHVStringC str);
 	SHVStringBuffer GetMd5();
@@ -85,7 +86,21 @@ private:
  */
 void SHVMd5Sum::CalculateString8(const SHVString8C str)
 {
-SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetLength());
+SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
+	Calculate(&buf);
+}
+
+/*************************************
+ * CalculateStringUTF8
+ *************************************/
+/**
+ \param str String to calculate md5 data for
+ *
+ * Adds to the md5 sum calculation. Finalize with either GetMd5 or GetMd5AsBinary.
+ */
+void SHVMd5Sum::CalculateStringUTF8(const SHVStringUTF8C str)
+{
+SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
 	Calculate(&buf);
 }
 
@@ -99,7 +114,7 @@ SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetLength());
  */
 void SHVMd5Sum::CalculateString16(const SHVString16C str)
 {
-SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetLength()*sizeof(SHVWChar));
+SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
 	Calculate(&buf);
 }
 
@@ -113,7 +128,7 @@ SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetLength()*sizeof(SHVWChar)
  */
 void SHVMd5Sum::CalculateString(const SHVStringC str)
 {
-SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetLength()*sizeof(SHVTChar));
+SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
 	Calculate(&buf);
 }
 

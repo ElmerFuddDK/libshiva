@@ -4,7 +4,6 @@
 #include "../../shvtypes.h"
 #include "../../utils/shvrefobject.h"
 #include "../../utils/shvstring.h"
-#include "../../utils/shvstringutf8.h"
 
 // forward declares
 class SHVDataSession;

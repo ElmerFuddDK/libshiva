@@ -133,7 +133,7 @@ int fd;
 		::write(fd,tStr.GetSafeBuffer(),tStr.GetLength());
 		::write(fd,"\n",1);
 		if (xtrainfo)
-			::write(fd,xtrainfo,SHVString8C::StrLen(xtrainfo));
+			::write(fd,xtrainfo,SHVString8C::StrSizeInBytes(xtrainfo));
 		size = ::backtrace(array, 10);
 		if (size > 1)
 		::backtrace_symbols_fd(array+1, size-1, fd);

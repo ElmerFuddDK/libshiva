@@ -212,6 +212,19 @@ void SHVStringStream8::Finalize()
 }
 
 /*************************************
+ * ReleaseBuffer
+ *************************************/
+SHVStringBuffer8 SHVStringStream8::ReleaseBuffer()
+{
+SHVChar* buf = Buffer;
+
+	Buffer = BufferPos = NULL;
+	BufferLeft = 0;
+
+	return SHVStringBuffer8::Encapsulate(buf);
+}
+
+/*************************************
  * EnsureBufferSpaceFree
  *************************************/
 void SHVStringStream8::EnsureBufferSpaceFree(size_t minChars)
@@ -411,6 +424,19 @@ void SHVStringStreamUTF8::Finalize()
 }
 
 /*************************************
+ * ReleaseBuffer
+ *************************************/
+SHVStringBufferUTF8 SHVStringStreamUTF8::ReleaseBuffer()
+{
+SHVChar* buf = Buffer;
+
+	Buffer = BufferPos = NULL;
+	BufferLeft = 0;
+
+	return SHVStringBufferUTF8::Encapsulate(buf);
+}
+
+/*************************************
  * EnsureBufferSpaceFree
  *************************************/
 void SHVStringStreamUTF8::EnsureBufferSpaceFree(size_t minChars)
@@ -607,6 +633,19 @@ void SHVStringStream16::Finalize()
 {
 	if (BufferPos)
 		*BufferPos = 0;
+}
+
+/*************************************
+ * ReleaseBuffer
+ *************************************/
+SHVStringBuffer16 SHVStringStream16::ReleaseBuffer()
+{
+SHVWChar* buf = Buffer;
+
+	Buffer = BufferPos = NULL;
+	BufferLeft = 0;
+
+	return SHVStringBuffer16::Encapsulate(buf);
 }
 
 /*************************************

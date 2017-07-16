@@ -132,7 +132,7 @@ void SHVUnitTestImpl::OnEvent(SHVEvent* event)
 {
 	if (SHVEventString::Equals(event,__EVENT_GLOBAL_STDIN))
 	{
-	SHVString8 str(SHVEventStdin::StdinFromEvent(event));
+	SHVString8 str(SHVEventStdin::StdinFromEvent8(event));
 		
 		if (str.Left(1) != SHVString8C("/"))
 		{

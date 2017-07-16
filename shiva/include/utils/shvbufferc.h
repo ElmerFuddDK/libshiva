@@ -58,9 +58,11 @@ public:
 	SHVBool ReadSHVDouble(SHVDouble& i, size_t& pos) const;
 	inline SHVBool ReadNullString(SHVString& str, size_t& pos) const;
 	SHVBool ReadNullString8(SHVString8& str, size_t& pos) const;
+	SHVBool ReadNullStringUTF8(SHVStringUTF8& str, size_t& pos) const;
 	SHVBool ReadNullString16(SHVString16& str, size_t& pos) const;
 	inline SHVBool ReadString(SHVString& str, size_t strLen, size_t& pos) const;
 	SHVBool ReadString8(SHVString8& str, size_t strLen, size_t& pos) const;
+	SHVBool ReadStringUTF8(SHVStringUTF8& str, size_t strSize, size_t& pos) const;
 	SHVBool ReadString16(SHVString16& str, size_t strLen, size_t& pos) const;
 	virtual SHVBool ReadBytes(SHVByte* buf, size_t bufLen, size_t& pos) const;
 	
@@ -149,9 +151,11 @@ public:
 	inline SHVBool ReadSHVDouble(SHVDouble& i);
 	inline SHVBool ReadNullString(SHVString& str);
 	inline SHVBool ReadNullString8(SHVString8& str);
+	inline SHVBool ReadNullStringUTF8(SHVStringUTF8& str);
 	inline SHVBool ReadNullString16(SHVString16& str);
 	inline SHVBool ReadString(SHVString& str, size_t strLen);
 	inline SHVBool ReadString8(SHVString8& str, size_t strLen);
+	inline SHVBool ReadStringUTF8(SHVStringUTF8& str, size_t strLen);
 	inline SHVBool ReadString16(SHVString16& str, size_t strLen);
 	inline SHVBool ReadBytes(SHVByte* buf, size_t bufLen);
 	
@@ -197,6 +201,7 @@ public:
 	// Convenience conversion functions
 	inline static SHVBufferCPtr VoidToBuffer(const void* str, size_t len);
 	inline static SHVBufferCPtr StringToBuffer8(const SHVString8C str, bool includeNull = false);
+	inline static SHVBufferCPtr StringToBufferUTF8(const SHVStringUTF8C str, bool includeNull = false);
 	inline static SHVBufferCPtr StringToBuffer16(const SHVString16C str, bool includeNull = false);
 	
 protected:
@@ -282,12 +287,17 @@ SHVBufferCPtr SHVBufferCPtr::VoidToBuffer(const void* str, size_t len)
 /// Creates a SHVBufferCPtr from a SHVString8C
 SHVBufferCPtr SHVBufferCPtr::StringToBuffer8(const SHVString8C str, bool includeNull)
 {
-	return SHVBufferCPtr((SHVByte*)str.GetBufferConst(),str.GetLength()+(includeNull ? 1 : 0));
+	return SHVBufferCPtr((SHVByte*)str.GetBufferConst(),str.GetSizeInBytes()+(includeNull ? 1 : 0));
+}
+/// Creates a SHVBufferCPtr from a SHVStringUTF8C
+SHVBufferCPtr SHVBufferCPtr::StringToBufferUTF8(const SHVStringUTF8C str, bool includeNull)
+{
+	return SHVBufferCPtr((SHVByte*)str.GetBufferConst(),str.GetSizeInBytes()+(includeNull ? 1 : 0));
 }
 /// Creates a SHVBufferCPtr from a SHVString16C
 SHVBufferCPtr SHVBufferCPtr::StringToBuffer16(const SHVString16C str, bool includeNull)
 {
-	return SHVBufferCPtr((SHVByte*)str.GetBufferConst(),(str.GetLength()*2)+(includeNull ? 2 : 0));
+	return SHVBufferCPtr((SHVByte*)str.GetBufferConst(),str.GetSizeInBytes()+(includeNull ? 2 : 0));
 }
 
 /*************************************
@@ -374,6 +384,12 @@ SHVBool SHVBufferCIterator::ReadNullString8(SHVString8& str)
 { Field++; return (Error ? Error = Buffer->ReadNullString8(str,Pos) : Error); }
 /// Reads a null terminated string and moves the position
 /**
+ * See \ref SHVBufferC::ReadNullStringUTF8
+ */
+SHVBool SHVBufferCIterator::ReadNullStringUTF8(SHVStringUTF8& str)
+{ Field++; return (Error ? Error = Buffer->ReadNullStringUTF8(str,Pos) : Error); }
+/// Reads a null terminated string and moves the position
+/**
  * See \ref SHVBufferC::ReadNullString16
  */
 SHVBool SHVBufferCIterator::ReadNullString16(SHVString16& str)
@@ -390,6 +406,12 @@ SHVBool SHVBufferCIterator::ReadString(SHVString& str, size_t strLen)
  */
 SHVBool SHVBufferCIterator::ReadString8(SHVString8& str, size_t strLen)
 { Field++; return (Error ? Error = Buffer->ReadString8(str,strLen,Pos) : Error); }
+/// Reads a string and moves the position
+/**
+ * See \ref SHVBufferC::ReadStringUTF8
+ */
+SHVBool SHVBufferCIterator::ReadStringUTF8(SHVStringUTF8& str, size_t strLen)
+{ Field++; return (Error ? Error = Buffer->ReadStringUTF8(str,strLen,Pos) : Error); }
 /// Reads a string and moves the position
 /**
  * See \ref SHVBufferC::ReadString16

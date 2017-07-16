@@ -30,7 +30,6 @@
 
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
-#include "../../../include/utils/shvstringutf8.h"
 #include "../include/shvdatastructcsqlite.h"
 #include "../include/shvdatarowkeyimpl.h"
 

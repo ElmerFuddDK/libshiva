@@ -220,15 +220,15 @@ void SHVMain::OnEvent(SHVEvent* event)
 {
 	if (SHVEventString::Equals(event,__EVENT_GLOBAL_STDIN))
 	{
-	SHVString8 str(SHVEventStdin::StdinFromEvent(event));
+	SHVString str(SHVEventStdin::StdinFromEvent(event));
 	
-		if (str == SHVString8C("/quit"))
+		if (str == _S("/quit"))
 		{
 			Modules.CloseApp();
 		}
 		else
 		{
-			SHVConsole::Printf8("Invalid input : %s\n", str.GetSafeBuffer());
+			SHVConsole::Printf(_S("Invalid input : %s\n"), str.GetSafeBuffer());
 		}
 	}
 }

@@ -35,7 +35,6 @@
 #include "../../../../include/gui/shvguimanager.h"
 #include "shvbitmapgtk.h"
 #include "../shvgtk.h"
-#include "../../../../include/utils/shvstringutf8.h"
 
 
 

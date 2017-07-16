@@ -45,8 +45,10 @@ public:
 
 	// Convenience functions
 	virtual SHVBool ReadLine8(SHVString8& line, Streams stream = StdOut);
+	virtual SHVBool ReadLineUTF8(SHVStringUTF8& line, Streams stream = StdOut);
 	virtual SHVBool ReadLine16(SHVString16& line, Streams stream = StdOut);
 	virtual SHVBool WriteLine8(const SHVString8C line);
+	virtual SHVBool WriteLineUTF8(const SHVStringUTF8C line);
 	virtual SHVBool WriteLine16(const SHVString16C line);
 
 
@@ -96,9 +98,13 @@ public:
 
 	virtual SHVBool ReadString8(SHVChar* buffer, size_t maxlen);
 	virtual SHVChar ReadChar8();
+	
+	virtual SHVBool ReadStringUTF8(SHVChar* buffer, size_t maxlen);
+	
 	virtual void Close();
 
 	SHVBool ReadLine8(SHVString8& line);
+	SHVBool ReadLineUTF8(SHVStringUTF8& line);
 	SHVBool ReadLine16(SHVString16& line);
 	
 private:
@@ -136,6 +142,9 @@ public:
 
 	virtual SHVBool WriteString8(const SHVChar* buffer, size_t maxlen = SIZE_T_MAX);
 	virtual SHVBool WriteChar8(const SHVChar ch);
+	
+	virtual SHVBool WriteStringUTF8(const SHVChar* buffer, size_t maxlen = SIZE_T_MAX);
+	
 	virtual void Close();
 
 private:
