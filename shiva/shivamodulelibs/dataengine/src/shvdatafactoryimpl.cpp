@@ -143,9 +143,9 @@ SHVDataStructRef newStruct = GetInternalStruct((SHVDataStructC*) dataStruct);
 	if (retVal && found == SIZE_T_MAX)
 	{
 		Schema.Add((SHVDataStructC*) dataStruct);
-		if (!dataStruct->GetIsMultiInstance())
-			Alias.AddTail(SHVDataStructReg(dataStruct->GetTableName(), -1, dataStruct));
 	}
+	if (!dataStruct->GetIsMultiInstance() && !InternalFindAlias(dataStruct->GetTableName()))
+		Alias.AddTail(SHVDataStructReg(dataStruct->GetTableName(), -1, dataStruct));
 	return retVal;
 }
 
@@ -267,8 +267,7 @@ SHVBool SHVDataFactoryImpl::UnregisterAlias(const SHVString8C& alias, SHVDataSes
 SHVDataFactoryExclusiveLocker lock(this);
 SHVDataStructReg* aliasfound;
 
-	aliasfound = InternalFindAlias(alias);	
-	SHVASSERT(!aliasfound || aliasfound->GetAliasID() != -1);
+	aliasfound = InternalFindAlias(alias);
 	if (aliasfound)
 		return InternalDropAlias(aliasfound->GetStruct().GetTableName(), alias, aliasfound, useSession);
 	else
@@ -824,28 +823,35 @@ SHVSQLiteWrapperRef SQLite = (useSession ? (SHVSQLiteWrapper*) useSession->GetPr
 		id = aliasfound->GetAliasID();
 	else
 		id = GetAliasID(SQLite, alias, false);
-	SHVASSERT(id != -1);
 	InternalBeginTransaction(SQLite);
 	if (aliasfound)
 		aliasfound->SetDeleted(true);
-	SQLite->ExecuteUTF8(retVal, SHVStringUTF8C::Format("drop view %s", alias.GetSafeBuffer()), rest);
-	if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+
+	if (id == -1) // Table mode
 	{
-		SQLite->ExecuteUTF8(retVal, 
-			SHVStringUTF8C::Format("delete from %s where shv_alias=%d", 
-				table.GetSafeBuffer(), 
-				id
-			), 
-			rest);
+		SQLite->ExecuteUTF8(retVal, SHVStringUTF8C::Format("delete from %s", alias.GetSafeBuffer()), rest);
+	}
+	else // View mode
+	{
+		SQLite->ExecuteUTF8(retVal, SHVStringUTF8C::Format("drop view %s", alias.GetSafeBuffer()), rest);
 		if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
 		{
-			SQLite->ExecuteUTF8(retVal, 
-				SHVStringUTF8C::Format("delete from shv_alias where id=%d",
+			SQLite->ExecuteUTF8(retVal,
+				SHVStringUTF8C::Format("delete from %s where shv_alias=%d",
+					table.GetSafeBuffer(),
 					id
-				), 
+				),
 				rest);
+			if (retVal.GetError() == SHVSQLiteWrapper::SQLite_DONE)
+			{
+				SQLite->ExecuteUTF8(retVal,
+					SHVStringUTF8C::Format("delete from shv_alias where id=%d",
+						id
+					),
+					rest);
+			}
+			retVal = (retVal == SHVSQLiteWrapper::SQLite_DONE ? SHVBool::True : retVal);
 		}
-		retVal = (retVal == SHVSQLiteWrapper::SQLite_DONE ? SHVBool::True : retVal);
 	}
 	if (retVal)
 	{
