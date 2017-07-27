@@ -2,7 +2,7 @@
 #define __SHIVA_LUAENGINE_LUACLASS_H
 
 #include "shvluascript.h"
-#include "shiva/include/framework/shveventdata.h"
+#include "../../framework/shveventdata.h"
 
 
 //-=========================================================================================================
