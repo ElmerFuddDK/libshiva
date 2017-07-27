@@ -103,6 +103,7 @@ friend class SHVLuaClassImpl;
 	SHVEventSubscriberBaseRef Subscriber, ErrorSubscriber;
 	
 	bool Started, HandlingErrors;
+	int Executing;
 	void* LuaState;
 	void* LuaErrorFunc;
 	SHVVector<SHVLuaFuncBase> Funcs;
