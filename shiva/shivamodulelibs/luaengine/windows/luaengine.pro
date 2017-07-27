@@ -90,6 +90,8 @@ HEADERS += \
     ../../../include/modules/luaengine/shvluaclassbase.h \
     ../src/modules/shvluaclassimpl.h
 
+DEFINES += LUA_COMPAT_UNPACK LUA_COMPAT_LOADSTRING
+
 INCLUDEPATH += ../../../..
 
 DEF_FILE = luaengine.def
