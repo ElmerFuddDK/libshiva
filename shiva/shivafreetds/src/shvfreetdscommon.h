@@ -14,6 +14,7 @@
 # include <sybdb.h>
 # ifndef SYBUNIQUE
 #  define SYBUNIQUE 36 // Missing uuid support
+#  define SYBSHVFAKEUNIQUE
 # endif
 #endif
 

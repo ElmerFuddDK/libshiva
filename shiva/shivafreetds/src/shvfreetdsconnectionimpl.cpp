@@ -126,6 +126,39 @@ RETCODE rowCode;
 	{
 		return false;
 	}
+#ifdef SYBSHVFAKEUNIQUE
+	else
+	{
+		// Run through cols and update UUIDs
+		for (int col=0;col<ColCount;col++)
+		{
+			if (Columns[col].InternalType == TDSColumn::TypeUUID && Columns[col].Status == 0 && SHVString8C::StrLen(Columns[col].Data.String) == 32)
+			{
+			char* from;
+			char* to;
+				from = Columns[col].Data.String + 31;
+				to = Columns[col].Data.String + 35;
+				for (int i=0; from != to; i++, to--)
+				{
+					switch(i)
+					{
+					case 12:
+					case 17:
+					case 22:
+					case 27:
+						*to = '-';
+						break;
+					default:
+						*to = *from;
+						from--;
+						break;
+					}
+				}
+				Columns[col].Data.String[36] = 0;
+			}
+		}
+	}
+#endif
 	
 	switch (rowCode)
 	{
@@ -619,6 +652,17 @@ RETCODE ret;
 		col->Data.String = (char*)malloc(41);
 		ret = dbbind(DbProc, i, NTBSTRINGBIND, 41, (BYTE*)col->Data.String);
 		break;
+#ifdef SYBSHVFAKEUNIQUE
+	case SYBBINARY:
+		if (col->Size == 16) // Assume it is UUID
+		{
+			col->InternalType = TDSColumn::TypeUUID;
+			col->Data.String = (char*)malloc(41);
+			ret = dbbind(DbProc, i, NTBSTRINGBIND, 41, (BYTE*)col->Data.String);
+			break;
+		}
+		// Else continue
+#endif
 	// Text binds
 	default:
 		SHVASSERT(false); // Unknown type
