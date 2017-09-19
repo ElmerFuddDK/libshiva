@@ -60,9 +60,11 @@ public:
 	SHVBool AddCharsUTF8(const SHVChar* chars, size_t len);
 	inline SHVBool AddChars(const SHVTChar* chars, size_t len);
 	
-	
-	void Reset();	
+	void Reset();
 	void Finalize();
+	
+	inline size_t GetSizeInChars() const;
+	inline size_t GetSizeInBytes() const;
 	
 	SHVStringBuffer8 ReleaseBuffer();
 	
@@ -116,8 +118,11 @@ public:
 	SHVBool AddCharsUTF8(const SHVChar* chars, size_t len);
 	inline SHVBool AddChars(const SHVTChar* chars, size_t len);
 	
-	void Reset();	
+	void Reset();
 	void Finalize();
+	
+	inline size_t GetSizeInChars() const;
+	inline size_t GetSizeInBytes() const;
 	
 	SHVStringBufferUTF8 ReleaseBuffer();
 	
@@ -170,9 +175,12 @@ public:
 	SHVBool AddChars16(const SHVWChar* chars, size_t len);
 	SHVBool AddCharsUTF8(const SHVChar* chars, size_t len);
 	inline SHVBool AddChars(const SHVTChar* chars, size_t len);
-
-	void Reset();	
+	
+	void Reset();
 	void Finalize();
+	
+	inline size_t GetSizeInChars() const;
+	inline size_t GetSizeInBytes() const;
 	
 	SHVStringBuffer16 ReleaseBuffer();
 	
@@ -216,6 +224,11 @@ SHVBool SHVStringStream8::AddChars(const SHVTChar* chars, size_t len) { return A
 SHVBool SHVStringStreamUTF8::AddChars(const SHVTChar* chars, size_t len) { return AddChars8(chars,len); }
 SHVBool SHVStringStream16::AddChars(const SHVTChar* chars, size_t len) { return AddChars8(chars,len); }
 # endif
-
+size_t SHVStringStream8::GetSizeInChars() const { return BufferPos-Buffer; }
+size_t SHVStringStreamUTF8::GetSizeInChars() const { return BufferPos-Buffer; }
+size_t SHVStringStream16::GetSizeInChars() const { return BufferPos-Buffer; }
+size_t SHVStringStream8::GetSizeInBytes() const { return BufferPos-Buffer; }
+size_t SHVStringStreamUTF8::GetSizeInBytes() const { return BufferPos-Buffer; }
+size_t SHVStringStream16::GetSizeInBytes() const { return (BufferPos-Buffer)*sizeof(SHVWChar); }
 
 #endif
