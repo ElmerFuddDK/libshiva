@@ -889,7 +889,7 @@ SHVString retVal(param);
 	}
 	retVal = SHVStringC::Format(_S("\"%s\""),retVal.GetSafeBuffer());
 #else
-	if (param.Find(_S(" ")) >= 0 || param.Find(_S("\\")) >= 0)
+	if (param.Find(_S(" ")) >= 0 || param.Find(_S("\\")) >= 0 || param.Find(_S("(")) >= 0 || param.Find(_S(")")) >= 0)
 	{
 		retVal.Replace(_S("\\"),_S("\\\\"));
 		retVal.Replace(_S("\""),_S("\\\""));
