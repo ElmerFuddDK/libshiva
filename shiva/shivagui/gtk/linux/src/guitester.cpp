@@ -165,6 +165,7 @@ class SHVTest : public SHVModule
 public:
 	
 	SHVGUIManager* GUIManager;
+	SHVControlCheckboxRef Checkbox;
 	SHVControlLabelRef Label;
 	SHVControlButtonRef Button;
 	SHVControlComboBoxRef ComboBox;
@@ -194,6 +195,7 @@ public:
 				Label->SetFlag(SHVControl::FlagVisible);
 				Label->SetText(SHVStringC::Format(_S("Label text : %d and counting"), Counter));
 			}
+			rgn->Move(Checkbox)->Bottom()->Left()->ClipBottom();
 			rgn->Move(ComboBox)->CtrlWidth(20)->RightOf(Button)->And(Button)->Bottom(5)->AlignHorizontal(NULL,NULL,SHVRegion::AlignHCenter,5)->ClipBottom();
 			rgn->Move(Label)
 				->FillHorizontal(NULL,NULL,SHVRegion::AlignHCenter)
@@ -310,6 +312,8 @@ public:
 		//Label = GUIManager->NewLabel()->SetParent(GUIManager->GetMainWindow(),0);
 		Label = GUIManager->NewLabelCustomDraw(new SHVEventSubscriberFunc<SHVTest>(this,&SHVTest::OnCustomDraw))->SetParent(GUIManager->GetMainWindow(),0);
 		Label->SetFont(GUIManager->GetMainWindow()->GetFont(),true);
+
+		Checkbox = GUIManager->NewCheckbox()->SetParent(GUIManager->GetMainWindow())->SetText(_S("Check me out"))->SetChecked(SHVInt());
 		
 		SHVFontRef tstFont = GUIManager->CreateFont("Times",27,SHVFont::StyleItalic|SHVFont::StyleBold);
 		if (!tstFont.IsNull())

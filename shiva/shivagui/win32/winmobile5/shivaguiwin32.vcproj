@@ -261,7 +261,15 @@
 					>
 				</File>
 				<File
+					RelativePath="..\gui\shvcontrolimplementercheckboxwin32.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\gui\shvcontrolimplementermainwindowwin32.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\gui\shvcontrolimplementerprogressbarwin32.cpp"
 					>
 				</File>
 				<File
@@ -369,6 +377,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\gui\shvcontrolcheckbox.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\gui\shvcontrolprogressbar.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\gui\shvcontroltab.cpp"
 					>
 				</File>
@@ -418,6 +434,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\..\include\gui\shvcontrolprogressbar.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\..\include\gui\shvcontrolcontainer.h"
 						>
 					</File>
@@ -455,6 +475,10 @@
 					</File>
 					<File
 						RelativePath="..\..\..\include\gui\shvcontrollistview.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\gui\shvcontrolcheckbox.h"
 						>
 					</File>
 					<File
@@ -574,6 +598,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\gui\shvcontrolimplementerprogressbarwin32.h"
+						>
+					</File>
+					<File
 						RelativePath="..\gui\shvcontrolimplementercontainerwindowwin32.h"
 						>
 					</File>
@@ -595,6 +623,10 @@
 					</File>
 					<File
 						RelativePath="..\gui\shvcontrolimplementerlistviewwin32.h"
+						>
+					</File>
+					<File
+						RelativePath="..\gui\shvcontrolimplementercheckboxwin32.h"
 						>
 					</File>
 					<File

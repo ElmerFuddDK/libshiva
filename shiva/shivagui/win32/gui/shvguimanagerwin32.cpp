@@ -46,9 +46,11 @@
 #include "shvcontrolimplementereditwin32.h"
 #include "shvcontrolimplementerbuttonwin32.h"
 #include "shvcontrolimplementertabwin32.h"
+#include "shvcontrolimplementerprogressbarwin32.h"
 #include "shvcontrolimplementerdatetimewin32.h"
 #include "shvcontrolimplementercomboboxwin32.h"
 #include "shvcontrolimplementerlistviewwin32.h"
+#include "shvcontrolimplementercheckboxwin32.h"
 #include "../../../include/gui/shvcontrolcreator.h"
 #include "../../../include/gui/shvcontrolcreatorsubtype.h"
 #include "../../utilsimpl/shvregionimpl.h"
@@ -102,6 +104,9 @@ HINSTANCE hInstance = (HINSTANCE)GetConfig().FindPtr(CfgInstanceHandle)->ToPtr()
 	RegisterFactory(SHVControl::TypeButton,SHVControlButton::SubTypeDefault,
 		new SHVControlCreator<SHVControlButton,SHVControlImplementerButtonWin32>());
 
+	RegisterFactory(SHVControl::TypeProgressBar,SHVControlTab::SubTypeDefault,
+		new SHVControlCreator<SHVControlProgressBar,SHVControlImplementerProgressBarWin32>());
+
 	RegisterFactory(SHVControl::TypeTab,SHVControlTab::SubTypeDefault,
 		new SHVControlCreator<SHVControlTab,SHVControlImplementerTabWin32>());
 
@@ -121,6 +126,11 @@ HINSTANCE hInstance = (HINSTANCE)GetConfig().FindPtr(CfgInstanceHandle)->ToPtr()
 		new SHVControlCreatorSubType<SHVControlListView,SHVControlImplementerListViewWin32,SHVControlListView::SubTypeNormal>());
 	RegisterFactory(SHVControl::TypeListView,SHVControlListView::SubTypeCustomDraw,
 		new SHVControlCreatorSubType<SHVControlListView,SHVControlImplementerListViewWin32,SHVControlListView::SubTypeCustomDraw>());
+
+	RegisterFactory(SHVControl::TypeCheckbox,SHVControlCheckbox::SubTypeNormal,
+		new SHVControlCreatorSubType<SHVControlCheckbox,SHVControlImplementerCheckboxWin32,SHVControlCheckbox::SubTypeNormal>());
+	RegisterFactory(SHVControl::TypeCheckbox,SHVControlCheckbox::SubTypeTristate,
+		new SHVControlCreatorSubType<SHVControlCheckbox,SHVControlImplementerCheckboxWin32,SHVControlCheckbox::SubTypeTristate>());
 
 
 	// Register fonts

@@ -46,7 +46,9 @@
 #include "shvcontrolimplementerbuttongtk.h"
 #include "shvcontrolimplementercomboboxgtk.h"
 #include "shvcontrolimplementerlistviewgtk.h"
+#include "shvcontrolimplementercheckboxgtk.h"
 #include "shvcontrolimplementertabgtk.h"
+#include "shvcontrolimplementerprogressbargtk.h"
 #include "shvmenugtkpopup.h"
 #include "../../../include/gui/shvcontrolcreator.h"
 #include "../../../include/gui/shvcontrolcreatorsubtype.h"
@@ -99,8 +101,16 @@ SHVGUIManagerGtk::SHVGUIManagerGtk(SHVModuleList& modules) : SHVGUIManagerImpl(m
 	RegisterFactory(SHVControl::TypeListView,SHVControlListView::SubTypeCustomDraw,
 		new SHVControlCreatorSubType<SHVControlListView,SHVControlImplementerListViewGtk,SHVControlListView::SubTypeCustomDraw>());
 
+	RegisterFactory(SHVControl::TypeCheckbox,SHVControlCheckbox::SubTypeNormal,
+		new SHVControlCreatorSubType<SHVControlCheckbox,SHVControlImplementerCheckboxGtk,SHVControlCheckbox::SubTypeNormal>());
+	RegisterFactory(SHVControl::TypeCheckbox,SHVControlCheckbox::SubTypeTristate,
+		new SHVControlCreatorSubType<SHVControlCheckbox,SHVControlImplementerCheckboxGtk,SHVControlCheckbox::SubTypeTristate>());
+
 	RegisterFactory(SHVControl::TypeTab,SHVControl::SubTypeDefault,
 		new SHVControlCreator<SHVControlTab,SHVControlImplementerTabGtk>());
+
+	RegisterFactory(SHVControl::TypeProgressBar,SHVControl::SubTypeDefault,
+		new SHVControlCreator<SHVControlProgressBar,SHVControlImplementerProgressBarGtk>());
 
 
 

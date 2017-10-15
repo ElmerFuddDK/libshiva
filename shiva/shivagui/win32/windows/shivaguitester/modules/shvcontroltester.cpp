@@ -103,6 +103,9 @@ SHVFontRef ownerDrawFont = GUIManager->GetFont(SHVGUIManager::CfgFontNormal)->Cr
 	ComboBox = GUIManager->NewComboBox(SHVControlComboBox::SubTypeList)->SetParent(Container)->SetDropdownHeight(4);
 	ComboBox->AddItem(_S("Test1"))->AddItem(_S("Test2"))->AddItem(_S("Test3"))->AddItem(_S("Test4"))->AddItem(_S("Test5"))->SetSelected(0);
 
+	Checkbox = GUIManager->NewCheckbox(SHVControlCheckbox::SubTypeTristate)->SetParent(Container)->SetText(_S("Check me out"))->SetChecked(1);
+	Checkbox->SubscribeChanged(new SHVEventSubscriber(this,&Modules));
+
 
 	LabelCustomDraw->SetFont(ownerDrawFont,true);
 	EditBox->SetHeight(4);
@@ -209,6 +212,15 @@ void SHVControlTester::OnEvent(SHVEvent* event)
 				GUIManager->ShowMessageBox(SHVStringC(_S("Selected item ")) + SHVStringC::LongToString(ComboBox->GetSelected()) + SHVStringC(_S(", ")) + ComboBox->GetItemText(ComboBox->GetSelected()));
 			}
 		}
+		else if (event->GetObject() == Checkbox)
+		{
+		SHVInt checked1 = event->GetSubID();
+		SHVInt checked2 = Checkbox->GetChecked();
+
+			SHVASSERT(checked1 == checked2);
+
+			GUIManager->ShowMessageBox(SHVStringC(_S("Checked box ")) + SHVStringC::LongToString(checked1.IfNull(-1)));
+		}
 	}
 	else if (event->GetCaller() == GUIManager)
 	{
@@ -239,6 +251,7 @@ void SHVControlTester::OnResizeControls(SHVControlContainer* container, SHVContr
 SHVRegionRef rgn = GUIManager->CreateRegion(container);
 
 	rgn->Move(Label)->Top()->Left(100)->ClipTop();
+	rgn->Move(Checkbox)->Bottom()->Right(100)->ClipBottom();
 	rgn->Move(EditBox)->FillHorizontal(Label,NULL)->RightOf(Label)->ClipTop();
 
 	rgn->Move(Button)->Bottom()->AlignHorizontal(NULL,NULL,SHVRegion::AlignHCenter)->ClipBottom(4);

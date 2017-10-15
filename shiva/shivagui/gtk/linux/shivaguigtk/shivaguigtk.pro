@@ -37,6 +37,8 @@ HEADERS += ../../../gui/shvformimpl.h \
  ../../../../include/gui/shvcontrollabel.h \
  ../../../../include/gui/shvcontrollayout.h \
  ../../../../include/gui/shvcontrollistview.h \
+ ../../../../include/gui/shvcontrolcheckbox.h \
+ ../../../../include/gui/shvcontrolprogressbar.h \
  ../../../../include/gui/shvcontroltab.h \
  ../../../../include/gui/shvformbase.h \
  ../../../../include/gui/shvform.h \
@@ -68,12 +70,14 @@ HEADERS += ../../../gui/shvformimpl.h \
  ../../gui/shvcontrolimplementereditgtk.h \
  ../../gui/shvcontrolimplementereditmultigtk.h \
  ../../gui/shvcontrolimplementercontainerwindowgtk.h \
+ ../../gui/shvcontrolimplementerprogressbargtk.h \
  ../../gui/shvmenugtkcontainer.h \
  ../../gui/shvmenugtksub.h \
  ../../gui/shvmenugtkroot.h \
  ../../gui/shvmenugtkpopup.h \
     ../../gui/shvcontrolimplementercomboboxgtk.h \
     ../../gui/shvcontrolimplementerlistviewgtk.h \
+    ../../gui/shvcontrolimplementercheckboxgtk.h \
     ../../gui/shvcontrolimplementertabgtk.h
 SOURCES += ../../../gui/shvcontrolbutton.cpp \
            ../../../gui/shvcontrolcontainer.cpp \
@@ -81,6 +85,7 @@ SOURCES += ../../../gui/shvcontrolbutton.cpp \
            ../../../gui/shvcontroledit.cpp \
            ../../../gui/shvcontrollabel.cpp \
            ../../../gui/shvformimpl.cpp \
+           ../../../gui/shvcontrolprogressbar.cpp \
            ../../../gui/shvguimanagerimpl.cpp \
            ../../../gui/shvmessagebox.cpp \
            shvguigtk.cpp \
@@ -102,6 +107,7 @@ SOURCES += ../../../gui/shvcontrolbutton.cpp \
  ../../gui/shvcontrolimplementereditgtk.cpp \
  ../../gui/shvcontrolimplementereditmultigtk.cpp \
  ../../gui/shvcontrolimplementercontainerwindowgtk.cpp \
+ ../../gui/shvcontrolimplementerprogressbargtk.cpp \
  ../../gui/shvmenugtkcontainer.cpp \
  ../../gui/shvmenugtksub.cpp \
  ../../gui/shvmenugtkpopup.cpp \
@@ -109,6 +115,8 @@ SOURCES += ../../../gui/shvcontrolbutton.cpp \
     ../../../gui/shvcontrolcombobox.cpp \
     ../../gui/shvcontrolimplementerlistviewgtk.cpp \
     ../../../gui/shvcontrollistview.cpp \
+    ../../gui/shvcontrolimplementercheckboxgtk.cpp \
+    ../../../gui/shvcontrolcheckbox.cpp \
     ../../gui/shvcontrolimplementertabgtk.cpp \
     ../../../gui/shvcontroltab.cpp
 INCLUDEPATH += /usr/lib64/gtk-2.0/include \

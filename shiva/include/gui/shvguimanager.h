@@ -8,9 +8,11 @@
 #include "shvcontrollabel.h"
 #include "shvcontrolbutton.h"
 #include "shvcontroldatetime.h"
+#include "shvcontrolprogressbar.h"
 #include "shvcontrolcombobox.h"
 #include "shvcontroltab.h"
 #include "shvcontrollistview.h"
+#include "shvcontrolcheckbox.h"
 #include "shvformimplementer.h"
 #include "shvformbase.h"
 #include "utils/shvfont.h"
@@ -87,9 +89,11 @@ public:
 	inline SHVControlButton* NewButton(int subType = SHVControlButton::SubTypeDefault);
 	inline SHVControlTab* NewTab(int subType = SHVControlTab::SubTypeDefault);
 	inline SHVControlDateTime* NewDateTime(int subType = SHVControlDateTime::SubTypeDefault);
-	inline SHVControlComboBox* NewComboBox(int subType = SHVControlDateTime::SubTypeDefault);
+	inline SHVControlComboBox* NewComboBox(int subType = SHVControlComboBox::SubTypeDefault);
+	inline SHVControlProgressBar* NewProgressBar(int subType = SHVControlProgressBar::SubTypeDefault);
 	inline SHVControlListView* NewListView(int subType = SHVControlListView::SubTypeDefault);
 	inline SHVControlListView* NewListViewCustomDraw(SHVEventSubscriberBase* subscriber);
+	inline SHVControlCheckbox* NewCheckbox(int subType = SHVControlCheckbox::SubTypeDefault);
 
 	// Font functions
 	inline SHVFont* GetFont(int cfgID);
@@ -251,6 +255,14 @@ SHVControlComboBox* SHVGUIManager::NewComboBox(int subType)
 }
 
 /*************************************
+ * NewProgressBar
+ *************************************/
+SHVControlProgressBar* SHVGUIManager::NewProgressBar(int subType)
+{
+	return (SHVControlProgressBar*)NewControl(SHVControl::TypeProgressBar,subType);
+}
+
+/*************************************
  * NewListView
  *************************************/
 SHVControlListView* SHVGUIManager::NewListView(int subType)
@@ -271,6 +283,14 @@ SHVControlListView* retVal = (SHVControlListView*)NewControl(SHVControl::TypeLis
 		subscriber->ValidateRefCount();
 
 	return retVal;
+}
+
+/*************************************
+ * NewCheckbox
+ *************************************/
+SHVControlCheckbox* SHVGUIManager::NewCheckbox(int subType)
+{
+	return (SHVControlCheckbox*)NewControl(SHVControl::TypeCheckbox,subType);
 }
 
 /*************************************

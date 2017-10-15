@@ -39,6 +39,7 @@ private:
 	SHVControlEditRef EditBox;
 	SHVControlButtonRef Button;
 	SHVControlComboBoxRef ComboBox;
+	SHVControlCheckboxRef Checkbox;
 	SHVBitmapRef Bitmap;
 
 	SHVFormBaseRef TestDialog;

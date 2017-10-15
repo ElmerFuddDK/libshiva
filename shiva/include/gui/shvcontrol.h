@@ -36,7 +36,9 @@ public:
 		TypeTab,
 		TypeDateTime,
 		TypeComboBox,
+		TypeProgressBar,
 		TypeListView,
+		TypeCheckbox,
 		TypeCustom = 0xFE,
 		TypeContainer = 0xFF
 	};

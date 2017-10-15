@@ -24,6 +24,8 @@ SOURCES +=  ./shivaguiwin32.cpp \
     ../../gui/shvcontroledit.cpp \
     ../../gui/shvcontrollabel.cpp \
     ../../gui/shvcontrollistview.cpp \
+    ../../gui/shvcontrolcheckbox.cpp \
+    ../../gui/shvcontrolprogressbar.cpp \
     ../../gui/shvcontroltab.cpp \
     ../../gui/shvformimpl.cpp \
     ../../gui/shvguimanagerimpl.cpp \
@@ -37,7 +39,9 @@ SOURCES +=  ./shivaguiwin32.cpp \
     ../gui/shvcontrolimplementereditwin32.cpp \
     ../gui/shvcontrolimplementerlabelwin32.cpp \
     ../gui/shvcontrolimplementerlistviewwin32.cpp \
+    ../gui/shvcontrolimplementercheckboxwin32.cpp \
     ../gui/shvcontrolimplementermainwindowwin32.cpp \
+    ../gui/shvcontrolimplementerprogressbarwin32.cpp \
     ../gui/shvcontrolimplementertabwin32.cpp \
     ../gui/shvcontrolimplementerwin32base.cpp \
     ../gui/shvcontrolwrapperwin32.cpp \
