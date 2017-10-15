@@ -55,7 +55,7 @@ public:
 	// Store and load string config values
 	virtual void Clear();
 	virtual SHVBool Load(const SHVStringC fileName);
-	virtual SHVBool Save(const SHVStringC newFileName = NULL);
+	virtual SHVBool Save(const SHVStringC newFileName = NULL, bool includeUtf8Header = true);
 
 
 	// enumerator config values

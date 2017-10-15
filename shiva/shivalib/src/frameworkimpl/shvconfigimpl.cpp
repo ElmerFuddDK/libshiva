@@ -384,7 +384,7 @@ SHVFile file;
 /*************************************
  * Save
  *************************************/
-SHVBool SHVConfigImpl::Save(const SHVStringC newFileName)
+SHVBool SHVConfigImpl::Save(const SHVStringC newFileName, bool includeUtf8Header)
 {
 SHVBool retVal(SHVBool::True);
 SHVString backupFileName;
@@ -409,7 +409,10 @@ SHVFile file;
 	SHVString line;
 	const SHVChar utf8Header[] = { (const char)0xEF, (const char)0xBB, (const char)0xBF, (const char)0 };
 
-		file.Write(utf8Header,3);
+		if (includeUtf8Header)
+		{
+			file.Write(utf8Header,3);
+		}
 
 		while (itr.MoveNext() && retVal)
 		{
