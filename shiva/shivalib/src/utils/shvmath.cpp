@@ -111,6 +111,15 @@ double SHVMath::Pow(double x, double y)
 }
 
 /*************************************
+ * Mod
+ *************************************/
+/// Returns x%y
+double SHVMath::Mod(double x, double y)
+{
+	return ::fmod(x,y);
+}
+
+/*************************************
  * Rand
  *************************************/
 /// Returns a random number based on seed
@@ -304,6 +313,7 @@ double shvmath_calculate(SHVTChar op, double a, double b, SHVString& err)
 		case '*':	return a*b;
 		case '/':	return a/b;
 		case '^':	return SHVMath::Pow(a,b);
+		case '%':	return SHVMath::Mod(a,b);
 		case '>':	return (a>b ? 1.0 : 0.0);
 		case 'G':	return (a>=b ? 1.0 : 0.0);
 		case '<':	return (a<b ? 1.0 : 0.0);
@@ -360,6 +370,7 @@ SHVTChar retVal;
 	case '/':
 	case '*':
 	case '^':
+	case '%':
 		retVal = *str;
 		break;
 	default:
@@ -387,6 +398,7 @@ SHVTChar retVal;
 		targetLevel = 3;
 		break;
 	case '^':
+	case '%':
 		targetLevel = 4;
 		break;
 	}
@@ -468,7 +480,7 @@ double shvmath_performfunc(const SHVStringC token, double val, SHVString& err)
 // level : 1 == <>=!
 // level : 2 == +-
 // level : 3 == */
-// level : 4 == ^
+// level : 4 == ^%
 double shvmath_getnumber(const SHVTChar*& str, char level, SHVString& err, SHVMathTokenMap* map)
 {
 SHVTChar* endp;
@@ -561,7 +573,7 @@ double retVal;
 // level : 1 == <>=!
 // level : 2 == +-
 // level : 3 == */
-// level : 4 == ^
+// level : 4 == ^%
 double shvmath_doeval(const SHVTChar*& str, char level, SHVString& err, SHVMathTokenMap* map, bool gotNumber, double retVal)
 {
 double temp;

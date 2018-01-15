@@ -29,6 +29,9 @@ public:
 	// Power of
 	static double SHVAPI Pow(double x, double y);
 
+	// Modulus
+	static double SHVAPI Mod(double x, double y);
+
 	// Random
 	static int SHVAPI Rand(SHVInt& seed);
 
