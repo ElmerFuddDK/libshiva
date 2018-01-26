@@ -130,7 +130,7 @@ SHVSocketImpl::SHVSocketImpl(SHVEventSubscriberBase* subs, SHVSocketServerImpl* 
 #ifdef __SHIVASOCKETS_IPV6DISABLED
 int ipAddrFamily = PF_INET;
 #else
-int ipAddrFamily = (SHVSocketServerImpl::IPv6SupportedInternal() ? PF_INET6 : PF_INET);
+int ipAddrFamily = (socketServer->IPv6Supported() ? PF_INET6 : PF_INET);
 #endif
 	SocketServer = socketServer;
 	RecvPending = false;
@@ -241,7 +241,7 @@ SHVBool retVal;
 	{
 	int status;
 #ifndef __SHIVASOCKETS_IPV6DISABLED
-		if (!SHVSocketServerImpl::IPv6SupportedInternal())
+		if (!SocketServer->IPv6Supported())
 #endif
 		{
 #ifdef __SHIVA_WIN32
@@ -511,7 +511,7 @@ SHVBool retVal(SHVSocket::ErrInvalidOperation);
 	SHVUNUSED_PARAM(port);
 #else
 	SocketServer->SocketServerLock.Lock();
-	if (Type == TypeUDP && (State == SHVSocket::StateConnected || State == SHVSocket::StateNone) && SHVSocketServerImpl::IPv6SupportedInternal())
+	if (Type == TypeUDP && (State == SHVSocket::StateConnected || State == SHVSocket::StateNone) && SocketServer->IPv6Supported())
 	{
 	sockaddr_in6 host;
 
@@ -881,7 +881,7 @@ SHVBool retVal(SHVSocket::ErrInvalidOperation);
 	if (Type == SHVSocket::TypeUDP)
 	{
 #ifndef __SHIVASOCKETS_IPV6DISABLED
-		if (SHVSocketServerImpl::IPv6SupportedInternal())
+		if (SocketServer->IPv6Supported())
 			retVal = Connect6(*(SHVIPv6Addr*)&in6addr_any,port);
 		else
 #endif
@@ -897,7 +897,7 @@ SHVBool retVal(SHVSocket::ErrInvalidOperation);
 SHVBool SHVSocketImpl::Connect(SHVIPv4Addr ip, SHVIPv4Port port)
 {
 #ifndef __SHIVASOCKETS_IPV6DISABLED
-	if (SHVSocketServerImpl::IPv6SupportedInternal())
+	if (SocketServer->IPv6Supported())
 		return Connect6(SocketServer->IPv4ToIPv6(ip),port);
 #endif
 SHVBool retVal(SHVSocket::ErrInvalidOperation);
@@ -952,7 +952,7 @@ SHVBool retVal(SHVSocket::ErrInvalidOperation);
 	SHVUNUSED_PARAM(port);
 #else
 	SocketServer->SocketServerLock.Lock();
-	if (State == SHVSocket::StateNone && Type != SHVSocket::TypeUnix && SHVSocketServerImpl::IPv6SupportedInternal())
+	if (State == SHVSocket::StateNone && Type != SHVSocket::TypeUnix && SocketServer->IPv6Supported())
 	{
 	sockaddr_in6 host;
 	int result;
@@ -998,7 +998,7 @@ SHVBool SHVSocketImpl::Connect(const SHVStringC ipAddr, SHVIPv4Port port)
 #ifdef __SHIVASOCKETS_IPV6DISABLED
 	return Connect(SocketServer->Inetv4Addr(ipAddr),port);
 #else
-	return (SHVSocketServerImpl::IPv6SupportedInternal() ? Connect6(SocketServer->Inetv6Addr(ipAddr),port) : Connect(SocketServer->Inetv4Addr(ipAddr),port));
+	return (SocketServer->IPv6Supported() ? Connect6(SocketServer->Inetv6Addr(ipAddr),port) : Connect(SocketServer->Inetv4Addr(ipAddr),port));
 #endif
 }
 
@@ -1116,7 +1116,7 @@ SHVIPv4Addr fromip4 = InvalidIPv4;
 SHVIPv4Port fromport = 0;
 #ifndef __SHIVASOCKETS_IPV6DISABLED
 SHVIPv6Addr fromip6 = *(SHVIPv6Addr*)&in6addr_any;
-bool ipv6Mode = SHVSocketServerImpl::IPv6SupportedInternal();
+bool ipv6Mode = SocketServer->IPv6Supported();
 #endif
 int state = (SSLState != SHVSocketImpl::SSLStateNone ? (int) SSLState : (int) State);
 bool retry;

@@ -52,7 +52,6 @@ friend class SHVSocketImpl;
 	///\cond INTERNAL
 	void AddToList(SHVSocketImpl* sock);
 	void RemoveFromList(SHVSocketImpl* sock);
-	static bool IPv6SupportedInternal();
 	SHVIPv6Addr IPv4ToIPv6(SHVIPv4Addr ipAddr);
 	inline SHVModuleList& GetModules() { return Modules; }
 	
@@ -62,6 +61,7 @@ friend class SHVSocketImpl;
 #ifdef __SHIVASOCKETS_NOSELECTMODE
 	SHVMutexBase ThreadSignal; // for signalling the socket thread
 #endif
+	bool Ipv6Enabled;
 	SHVMutex SocketServerLock; // hit and run lock
 	SHVList<SHVSocketImplRef,SHVSocketImpl*> SocketList;
 

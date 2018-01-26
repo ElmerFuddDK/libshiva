@@ -68,6 +68,8 @@ public:
 		UdpIP = 0;
 		UdpPort = 0;
 
+		SHVConsole::Printf(_S("Ipv6 supported : %s\n"), SocketServer->IPv6Supported() ? _S("yes") : _S("no"));
+
 		return SHVModule::Register();
 	}
 	

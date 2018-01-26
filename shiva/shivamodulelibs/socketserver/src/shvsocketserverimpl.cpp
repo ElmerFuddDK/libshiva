@@ -40,6 +40,9 @@
 
 #if defined(__SHIVA_WIN32) && !defined(__SHIVASOCKETS_IPV6DISABLED)
 # include <ws2tcpip.h>
+# if !defined(IPV6_V6ONLY)
+#  define IPV6_V6ONLY 27
+# endif
 #endif
 
 
@@ -53,9 +56,30 @@
  *************************************/
 SHVSocketServerImpl::SHVSocketServerImpl(SHVModuleList& modules) : SHVSocketServer(modules), SocketServerThread(this)
 {
-#ifdef __SHIVA_WIN32
+#if defined(__SHIVASOCKETS_IPV6DISABLED)
+	Ipv6Enabled = false;
+#elif defined(__SHIVA_WIN32)
 WSADATA wsaData;
+int osVerMajor = (DWORD)(LOBYTE(LOWORD(GetVersion())));
 	WSAInitialized =(WSAStartup(MAKEWORD( 2, 2 ), &wsaData) == 0);
+	Ipv6Enabled = osVerMajor > 5; // Newer than xp/2k3
+#else
+	Ipv6Enabled = true;
+#endif
+#ifndef __SHIVASOCKETS_IPV6DISABLED
+	if (Ipv6Enabled)
+	{
+	SHVSOCKTYPE testSocket = ::socket( PF_INET6, SOCK_STREAM, 0 );
+	int ipv6only = 0;
+
+		// If it fails to enable ipv4 mixed mode then the OS doesn't support ipv6 after all
+		Ipv6Enabled = (setsockopt( testSocket, IPPROTO_IPV6, IPV6_V6ONLY, (char*)&ipv6only, sizeof(ipv6only) ) ? false : true);
+# ifdef __SHIVA_WIN32
+		::closesocket(testSocket);
+# else
+		::close(testSocket);
+# endif
+	}
 #endif
 }
 
@@ -367,7 +391,7 @@ bool SHVSocketServerImpl::SocketTypeSupported(SHVSocket::Types type)
  *************************************/
 bool SHVSocketServerImpl::IPv6Supported()
 {
-	return IPv6SupportedInternal();
+	return Ipv6Enabled;
 }
 
 
@@ -404,21 +428,6 @@ bool running = true;
 		}
 	}
 	SocketServerLock.Unlock();
-}
-
-/*************************************
- * IPv6SupportedInternal
- *************************************/
-bool SHVSocketServerImpl::IPv6SupportedInternal()
-{
-#ifdef __SHIVASOCKETS_IPV6DISABLED
-	return false;
-#elif defined(__SHIVA_WIN32)
-int osVerMajor = (DWORD)(LOBYTE(LOWORD(GetVersion())));
-	return osVerMajor > 5; // Newer than xp/2k3
-#else
-	return true;
-#endif
 }
 
 /*************************************
