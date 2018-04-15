@@ -1,11 +1,11 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-#define PACKAGE_VERSION 	"3.7.14" 
-#define PACKAGE_STRING  	"sqlite 3.7.14" 
+#define PACKAGE_VERSION 	"3.23.1" 
+#define PACKAGE_STRING  	"sqlite 3.23.1" 
 #define PACKAGE_BUGREPORT  	"http://www.sqlite.org"
 #define PACKAGE 		"sqlite"  
-#define VERSION 		"3.7.14" 
+#define VERSION 		"3.23.1" 
 #define STDC_HEADERS 		1
 #define HAVE_SYS_TYPES_H 	1 
 #define HAVE_SYS_STAT_H 	1 
