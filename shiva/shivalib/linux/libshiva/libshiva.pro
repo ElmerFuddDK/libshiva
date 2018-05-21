@@ -52,6 +52,8 @@ HEADERS += ../../../include/platformspc.h \
            ../../../include/utils/shvrefobject.h \
            ../../../include/utils/shvstring16c.h \
            ../../../include/utils/shvstring16.h \
+           ../../../include/utils/shvstring8c.h \
+           ../../../include/utils/shvstring8.h \
            ../../../include/utils/shvstringc.h \
            ../../../include/utils/shvstring.h \
            ../../../include/utils/shvstringconv.h \

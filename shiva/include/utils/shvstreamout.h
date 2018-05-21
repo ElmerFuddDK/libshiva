@@ -20,6 +20,10 @@ public:
 
 	virtual SHVBool WriteString8(const SHVChar* buffer, size_t maxlen = SIZE_T_MAX) = 0;
 	virtual SHVBool WriteChar8(const SHVChar ch) = 0;
+
+	virtual SHVBool WriteStringUTF8(const SHVChar* buffer, size_t maxsize = SIZE_T_MAX) = 0;
+	virtual SHVBool WriteCharUTF8(const SHVChar ch) = 0;
+
 	virtual void Close() = 0;
 
 	inline SHVBool WriteString(const SHVTChar* buffer, size_t maxlen = SIZE_T_MAX);
@@ -33,10 +37,12 @@ typedef SHVPtrContainer<SHVStreamOut> SHVStreamOutPtr;
  *************************************/
 SHVBool SHVStreamOut::WriteString(const SHVTChar* buffer, size_t maxlen)
 {
-#ifdef UNICODE
-	return WriteString16(buffer, maxlen);
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return WriteString8(buffer, maxlen);
+#elif __SHVSTRINGDEFAULT == 16
+	return WriteString16(buffer, maxlen);
+#elif __SHVSTRINGDEFAULT == utf8
+	return WriteStringUTF8(buffer, maxlen);
 #endif
 }
 
@@ -45,10 +51,12 @@ SHVBool SHVStreamOut::WriteString(const SHVTChar* buffer, size_t maxlen)
  *************************************/
 SHVBool SHVStreamOut::WriteChar(SHVTChar ch)
 {
-#ifdef UNICODE
-	return WriteChar16(ch);
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return WriteChar8(ch);
+#elif __SHVSTRINGDEFAULT == 16
+	return WriteChar16(ch);
+#elif __SHVSTRINGDEFAULT == utf8
+	return WriteCharUTF8(ch);
 #endif
 }
 

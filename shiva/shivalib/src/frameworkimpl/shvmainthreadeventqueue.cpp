@@ -109,8 +109,8 @@ bool resolvedAppPathAndName = false;
 			
 			moduleFileName.GetBuffer()[i] = '\0';
 			
-			appPath = SHVDir::ExtractPath(moduleFileName).ToStrT();
-			appName = SHVDir::ExtractName(moduleFileName).ToStrT();
+			appPath = SHVDir::ExtractPath(moduleFileName.ToStrT()).ToStrT();
+			appName = SHVDir::ExtractName(moduleFileName.ToStrT()).ToStrT();
 
 			Modules.GetConfig().Set(SHVModuleList::DefaultCfgAppPath,appPath);
 			Modules.GetConfig().Set(SHVModuleList::DefaultCfgAppName,appName);

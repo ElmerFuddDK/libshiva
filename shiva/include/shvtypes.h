@@ -11,7 +11,7 @@ typedef unsigned short SHVWChar;
 #else
  typedef long long SHVInt64Val;
 #endif
-#if defined(UNICODE)
+#if __SHVSTRINGDEFAULT == 16
 # define SHVTChar SHVWChar
 # define SHVForeignChar SHVChar
 #else

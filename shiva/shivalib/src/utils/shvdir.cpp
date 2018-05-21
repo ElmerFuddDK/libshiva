@@ -237,7 +237,7 @@ DIR *dp;
 struct dirent *ep;
 struct stat fStat;
 #ifdef FSUTF8MODE
-SHVString8 dirName;
+SHVString dirName;
 SHVStringUTF8 wcn(wc.ToStrUTF8());
 
 	dirName.Format("%s%s",

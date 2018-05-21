@@ -303,16 +303,21 @@ SHVBufferCPtr SHVBufferCPtr::StringToBuffer16(const SHVString16C str, bool inclu
 /*************************************
  * string encoding specific variants of readstring
  *************************************/
-#ifdef UNICODE
-SHVBool SHVBufferC::ReadNullString(SHVString& str, size_t& pos) const
-{ return ReadNullString16(str,pos); }
-SHVBool SHVBufferC::ReadString(SHVString& str, size_t strLen, size_t& pos) const
-{ return ReadString16(str,strLen,pos); }
-#else
+#if __SHVSTRINGDEFAULT == 8
 SHVBool SHVBufferC::ReadNullString(SHVString& str, size_t& pos) const
 { return ReadNullString8(str,pos); }
 SHVBool SHVBufferC::ReadString(SHVString& str, size_t strLen, size_t& pos) const
 { return ReadString8(str,strLen,pos); }
+#elif __SHVSTRINGDEFAULT == 16
+SHVBool SHVBufferC::ReadNullString(SHVString& str, size_t& pos) const
+{ return ReadNullString16(str,pos); }
+SHVBool SHVBufferC::ReadString(SHVString& str, size_t strLen, size_t& pos) const
+{ return ReadString16(str,strLen,pos); }
+#elif __SHVSTRINGDEFAULT == utf8
+SHVBool SHVBufferC::ReadNullString(SHVString& str, size_t& pos) const
+{ return ReadNullStringUTF8(str,pos); }
+SHVBool SHVBufferC::ReadString(SHVString& str, size_t strLen, size_t& pos) const
+{ return ReadStringUTF8(str,strLen,pos); }
 #endif
 
 /// \class SHVBufferCIterator shvbufferc.h "shiva/include/utils/shvbufferc.h"

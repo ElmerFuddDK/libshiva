@@ -25,6 +25,10 @@
 # include <shlwapi.h>
 #endif
 
+#if !defined(__SHVSTRINGDEFAULT) && defined(UNICODE)
+# define __SHVSTRINGDEFAULT 16
+#endif
+
 #ifndef SHVVA_COPY
 # define SHVVA_COPY(x,y) x = y
 #endif

@@ -118,10 +118,12 @@ int SHVFileBase::GetFlags()
 	return Flags;
 }
 
-#ifdef UNICODE
-const SHVStringC SHVFileBase::LineSeparator() { return LineSeparator16(); }
-#else
+#if __SHVSTRINGDEFAULT == 8
 const SHVStringC SHVFileBase::LineSeparator() { return LineSeparator8(); }
+#elif __SHVSTRINGDEFAULT == 16
+const SHVStringC SHVFileBase::LineSeparator() { return LineSeparator16(); }
+#elif __SHVSTRINGDEFAULT == utf8
+const SHVStringC SHVFileBase::LineSeparator() { return LineSeparatorUTF8(); }
 #endif
 
 #endif

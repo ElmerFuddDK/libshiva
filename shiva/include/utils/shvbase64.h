@@ -184,10 +184,12 @@ SHVBool SHVBase64Decoder::CalculateString16(const SHVString16C str)
  *************************************/
 SHVBool SHVBase64Decoder::CalculateString(const SHVStringC str)
 {
-#ifdef UNICODE
-	return CalculateString8(str.ToStr8());
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return CalculateString8(str);
+#elif __SHVSTRINGDEFAULT == 16
+	return CalculateString8(str.ToStr8());
+#elif __SHVSTRINGDEFAULT == utf8
+	return CalculateStringUTF8(str);
 #endif
 }
 

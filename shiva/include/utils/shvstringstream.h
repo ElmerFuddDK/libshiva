@@ -8,10 +8,12 @@ class SHVStringStream8;
 class SHVStringStreamUTF8;
 class SHVStringStream16;
 
-#ifdef UNICODE
-typedef SHVStringStream16  SHVStringStream;
-#else
+#if __SHVSTRINGDEFAULT == 8
 typedef SHVStringStream8  SHVStringStream;
+#elif __SHVSTRINGDEFAULT == 16
+typedef SHVStringStream16  SHVStringStream;
+#elif __SHVSTRINGDEFAULT == utf8
+typedef SHVStringStreamUTF8  SHVStringStream;
 #endif
 
 
@@ -209,20 +211,27 @@ typedef SHVPtrContainer<SHVStringStream16> SHVStringStream16Ptr;
 
 // ============================================= implementation ============================================= //
 
-# ifdef UNICODE
-SHVBool SHVStringStream8::WriteString(const SHVStringC str) { return WriteString16(str); }
-SHVBool SHVStringStreamUTF8::WriteString(const SHVStringC str) { return WriteString16(str); }
-SHVBool SHVStringStream16::WriteString(const SHVStringC str) { return WriteString16(str); }
-SHVBool SHVStringStream8::AddChars(const SHVTChar* chars, size_t len) { return AddChars16(chars,len); }
-SHVBool SHVStringStreamUTF8::AddChars(const SHVTChar* chars, size_t len) { return AddChars16(chars,len); }
-SHVBool SHVStringStream16::AddChars(const SHVTChar* chars, size_t len) { return AddChars16(chars,len); }
-# else
+# if __SHVSTRINGDEFAULT == 8
 SHVBool SHVStringStream8::WriteString(const SHVStringC str) { return WriteString8(str); }
 SHVBool SHVStringStreamUTF8::WriteString(const SHVStringC str) { return WriteString8(str); }
 SHVBool SHVStringStream16::WriteString(const SHVStringC str) { return WriteString8(str); }
 SHVBool SHVStringStream8::AddChars(const SHVTChar* chars, size_t len) { return AddChars8(chars,len); }
 SHVBool SHVStringStreamUTF8::AddChars(const SHVTChar* chars, size_t len) { return AddChars8(chars,len); }
 SHVBool SHVStringStream16::AddChars(const SHVTChar* chars, size_t len) { return AddChars8(chars,len); }
+# elif __SHVSTRINGDEFAULT == 16
+SHVBool SHVStringStream8::WriteString(const SHVStringC str) { return WriteString16(str); }
+SHVBool SHVStringStreamUTF8::WriteString(const SHVStringC str) { return WriteString16(str); }
+SHVBool SHVStringStream16::WriteString(const SHVStringC str) { return WriteString16(str); }
+SHVBool SHVStringStream8::AddChars(const SHVTChar* chars, size_t len) { return AddChars16(chars,len); }
+SHVBool SHVStringStreamUTF8::AddChars(const SHVTChar* chars, size_t len) { return AddChars16(chars,len); }
+SHVBool SHVStringStream16::AddChars(const SHVTChar* chars, size_t len) { return AddChars16(chars,len); }
+# elif __SHVSTRINGDEFAULT == utf8
+SHVBool SHVStringStream8::WriteString(const SHVStringC str) { return WriteStringUTF8(str); }
+SHVBool SHVStringStreamUTF8::WriteString(const SHVStringC str) { return WriteStringUTF8(str); }
+SHVBool SHVStringStream16::WriteString(const SHVStringC str) { return WriteStringUTF8(str); }
+SHVBool SHVStringStream8::AddChars(const SHVTChar* chars, size_t len) { return AddCharsUTF8(chars,len); }
+SHVBool SHVStringStreamUTF8::AddChars(const SHVTChar* chars, size_t len) { return AddCharsUTF8(chars,len); }
+SHVBool SHVStringStream16::AddChars(const SHVTChar* chars, size_t len) { return AddCharsUTF8(chars,len); }
 # endif
 size_t SHVStringStream8::GetSizeInChars() const { return BufferPos-Buffer; }
 size_t SHVStringStreamUTF8::GetSizeInChars() const { return BufferPos-Buffer; }

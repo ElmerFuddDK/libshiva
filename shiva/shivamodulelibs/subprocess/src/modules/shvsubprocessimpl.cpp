@@ -855,6 +855,17 @@ SHVBool SHVSubProcessStreamIn::ReadStringUTF8(SHVChar* buffer, size_t maxlen)
 }
 
 /*************************************
+ * ReadCharUTF8
+ *************************************/
+SHVChar SHVSubProcessStreamIn::ReadCharUTF8()
+{
+SHVChar retVal[2];
+	retVal[0] = '\0';
+	ReadString8(retVal,2);
+	return retVal[0];
+}
+
+/*************************************
  * Close
  *************************************/
 void SHVSubProcessStreamIn::Close()
@@ -1102,6 +1113,14 @@ SHVBool SHVSubProcessStreamOut::WriteChar8(const SHVChar ch)
 SHVBool SHVSubProcessStreamOut::WriteStringUTF8(const SHVChar* buffer, size_t maxlen)
 {
 	return (WriteBuffer(buffer,(maxlen == SIZE_T_MAX ? SHVStringUTF8C::StrSizeInChars(buffer) : maxlen)*sizeof(SHVChar)));
+}
+
+/*************************************
+ * WriteCharUTF8
+ *************************************/
+SHVBool SHVSubProcessStreamOut::WriteCharUTF8(const SHVChar ch)
+{
+	return (WriteBuffer(&ch,sizeof(SHVChar)));
 }
 
 /*************************************

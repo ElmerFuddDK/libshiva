@@ -54,6 +54,11 @@
 # include "platforms/posix/platformspc.h"
 #endif
 
+// Check for string default
+#if !defined(__SHVSTRINGDEFAULT)
+# define __SHVSTRINGDEFAULT 8
+#endif
+
 #ifndef SHVVA_LIST
 # define SHVVA_LIST  va_list
 #endif

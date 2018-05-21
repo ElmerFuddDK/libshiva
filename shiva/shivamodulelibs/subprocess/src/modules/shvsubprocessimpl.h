@@ -100,6 +100,7 @@ public:
 	virtual SHVChar ReadChar8();
 	
 	virtual SHVBool ReadStringUTF8(SHVChar* buffer, size_t maxlen);
+	virtual SHVChar ReadCharUTF8();
 	
 	virtual void Close();
 
@@ -144,6 +145,7 @@ public:
 	virtual SHVBool WriteChar8(const SHVChar ch);
 	
 	virtual SHVBool WriteStringUTF8(const SHVChar* buffer, size_t maxlen = SIZE_T_MAX);
+	virtual SHVBool WriteCharUTF8(const SHVChar ch);
 	
 	virtual void Close();
 

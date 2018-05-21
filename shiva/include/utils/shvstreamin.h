@@ -21,6 +21,10 @@ public:
 
 	virtual SHVBool ReadString8(SHVChar* buffer, size_t maxlen) = 0;
 	virtual SHVChar ReadChar8() = 0;
+
+	virtual SHVBool ReadStringUTF8(SHVChar* buffer, size_t size) = 0;
+	virtual SHVChar ReadCharUTF8() = 0;
+
 	virtual void Close() = 0;
 
 	inline SHVBool ReadString(SHVTChar* buffer, size_t maxlen);
@@ -34,10 +38,12 @@ typedef SHVPtrContainer<SHVStreamIn> SHVStreamInPtr;
  *************************************/
 SHVBool SHVStreamIn::ReadString(SHVTChar* buffer, size_t maxlen)
 {
-#ifdef UNICODE
-	return ReadString16(buffer, maxlen);
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return ReadString8(buffer, maxlen);
+#elif __SHVSTRINGDEFAULT == 16
+	return ReadString16(buffer, maxlen);
+#elif __SHVSTRINGDEFAULT == utf8
+	return ReadStringUTF8(buffer, maxlen);
 #endif
 }
 
@@ -46,10 +52,12 @@ SHVBool SHVStreamIn::ReadString(SHVTChar* buffer, size_t maxlen)
  *************************************/
 SHVTChar SHVStreamIn::ReadChar()
 {
-#ifdef UNICODE
-	return ReadChar16();
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return ReadChar8();
+#elif __SHVSTRINGDEFAULT == 16
+	return ReadChar16();
+#elif __SHVSTRINGDEFAULT == utf8
+	return ReadCharUTF8();
 #endif
 }
 

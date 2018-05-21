@@ -1,15 +1,7 @@
-#ifndef __SHIVA_UTILS_STRING16C_H
+#ifndef __SHIVA_UTILS_STRINGC_H
+# include "shvstringc.h"
+#elif !defined(__SHIVA_UTILS_STRING16C_H)
 #define __SHIVA_UTILS_STRING16C_H
-
-#ifdef __SHIVA_EPOC
-# include <e32std.h>
-# include <e32des16.h>
-#endif
-
-#include "shvhashvalue.h"
-#include "shvrefobject.h"
-
-
 
 // forward declares
 class SHVString16C;
@@ -18,16 +10,11 @@ class SHVString16CRef;
 class SHVStringBuffer8;
 class SHVStringBufferUTF8;
 class SHVStringBuffer16;
-#ifndef __SHIVA_UTILS_STRINGC_H
-class SHVString8C;
-class SHVString8;
-class SHVString8CRef;
-#endif
 
 
 
 // defines
-#if defined(UNICODE)
+#if __SHVSTRINGDEFAULT == 16
 typedef SHVString16C SHVStringC;
 typedef SHVString16  SHVString;
 typedef SHVString16CRef SHVStringCRef;
@@ -242,8 +229,6 @@ private:
 	///\endcond
 };
 
-
-
 // ====================================== implementation - SHVStringC ======================================= //
 
 SHVString16C::SHVString16C(const SHVWChar* buffer) { Buffer = (SHVWChar*)buffer; }
@@ -285,6 +270,3 @@ SHVStringBuffer16::SHVStringBuffer16() { Buffer = NULL; }
 ///\endcond
 
 #endif
-
-#include "shvstringc.h"
-

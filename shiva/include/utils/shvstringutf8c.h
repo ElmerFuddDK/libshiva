@@ -1,21 +1,35 @@
-#ifndef __SHIVA_UTILS_STRINGUTF8C_H
+#ifndef __SHIVA_UTILS_STRINGC_H
+# include "shvstringc.h"
+#elif !defined(__SHIVA_UTILS_STRINGUTF8C_H)
 #define __SHIVA_UTILS_STRINGUTF8C_H
-
-#ifdef __SHIVA_EPOC
-# include <e32std.h>
-# include <e32des16.h>
-#endif
-
 
 
 // forward declares
 class SHVStringUTF8C;
+class SHVString8C;
 class SHVStringUTF8;
 class SHVStringUTF8CRef;
 class SHVStringBufferUTF8;
-#include "shvstringc.h"
-#include "shvstring16c.h"
+class SHVStringBuffer8;
+class SHVStringBuffer16;
 
+#if __SHVSTRINGDEFAULT == utf8
+typedef SHVStringUTF8C  SHVStringC;
+typedef SHVStringUTF8   SHVString;
+typedef SHVStringUTF8CRef SHVStringCRef;
+typedef SHVStringBufferUTF8 SHVStringBuffer;
+# define _SHVS8(x)  SHVStringC(x)
+# define _SHVS16(x) SHVStringC(x).ToStr16()
+///\cond INTERNAL
+# ifdef _T
+#  undef _T
+# endif
+# define _S(x)  x
+# define _SD(x) x
+# define _T(x)  x
+# define _TD(x) x
+///\endcond
+#endif
 
 
 #ifdef __SHVSTRING_HEAPPROTECT
@@ -79,6 +93,7 @@ public:
 
 	SHVStringBuffer8 ToStr8() const;
 	SHVStringBuffer16 ToStr16() const;
+	SHVStringBufferUTF8 ToStrUTF8() const;
 	inline SHVStringBuffer ToStrT() const;
 	bool ConvertBufferToChar(SHVChar* buffer, size_t len) const;
 	bool ConvertBufferToWChar(SHVWChar* buffer, size_t len) const;
@@ -101,6 +116,7 @@ public:
 	SHVStringBufferUTF8 Right(size_t len) const;
 	SHVStringBufferUTF8 Left(size_t len) const;
 	SHVStringBufferUTF8 Mid(size_t first,size_t length = SIZE_T_MAX) const;
+	long LocateChar(SHVChar ch) const;
 	long Find(const SHVStringUTF8C& str,long offset=0) const;
 	long ReverseFind(const SHVStringUTF8C& str) const;
 	SHVStringBufferUTF8 Tokenize(const SHVString8C& tokens, size_t& pos) const;
@@ -135,7 +151,6 @@ friend class SHVStringBufferUTF8;
 	SHVChar* Buffer;
 	///\endcond
 };
-
 
 
 //-=========================================================================================================
@@ -223,55 +238,5 @@ private:
 	inline SHVStringBufferUTF8();
 	///\endcond
 };
-
-
-
-// ====================================== implementation - SHVStringC ======================================= //
-
-SHVStringUTF8C::SHVStringUTF8C(const SHVChar* buffer) { Buffer = (SHVChar*)buffer; }
-const SHVChar* SHVStringUTF8C::GetBufferConst() const { return Buffer; }
-bool SHVStringUTF8C::IsNull() const { return Buffer == NULL; }
-bool SHVStringUTF8C::IsEmpty() const { return Buffer == NULL || *Buffer == 0; }
-size_t SHVStringUTF8C::GetSizeInChars() const { return SHVString8C::StrLen(Buffer); }
-size_t SHVStringUTF8C::GetSizeInBytes() const { return SHVString8C::StrLen(Buffer); }
-#ifdef __SHIVA_EPOC
-TPtrC8 SHVStringUTF8C::ToPtr() const { return TPtrC8((TUint8*)Buffer,GetLength()); }
-#endif
-size_t SHVStringUTF8C::StrSizeInChars(const SHVChar* str) { return SHVString8C::StrLen(str); }
-size_t SHVStringUTF8C::StrSizeInBytes(const SHVChar* str) { return SHVString8C::StrLen(str); }
-
-/*************************************
- * ToStrT
- *************************************/
-SHVStringBuffer SHVStringUTF8C::ToStrT() const
-{
-#ifdef UNICODE
-	return ToStr16();
-#else
-	return ToStr8();
-#endif
-}
-
-
-// ===================================== implementation - SHVStringCRef ===================================== //
-SHVStringUTF8CRef::SHVStringUTF8CRef() { Buffer = NULL; }
-bool SHVStringUTF8CRef::operator==(const SHVChar* str) const { return SHVStringUTF8C::operator==(str); }
-bool SHVStringUTF8CRef::operator!=(const SHVChar* str) const { return SHVStringUTF8C::operator!=(str); }
-bool SHVStringUTF8CRef::operator<(const SHVChar* str) const  { return SHVStringUTF8C::operator<(str); }
-bool SHVStringUTF8CRef::operator<=(const SHVChar* str) const { return SHVStringUTF8C::operator<=(str); }
-bool SHVStringUTF8CRef::operator>(const SHVChar* str) const  { return SHVStringUTF8C::operator>(str); }
-bool SHVStringUTF8CRef::operator>=(const SHVChar* str) const { return SHVStringUTF8C::operator>=(str); }
-bool SHVStringUTF8CRef::operator==(const SHVStringUTF8C str) const { return SHVStringUTF8C::operator==(str); }
-bool SHVStringUTF8CRef::operator!=(const SHVStringUTF8C str) const { return SHVStringUTF8C::operator!=(str); }
-bool SHVStringUTF8CRef::operator<(const SHVStringUTF8C str) const  { return SHVStringUTF8C::operator<(str); }
-bool SHVStringUTF8CRef::operator<=(const SHVStringUTF8C str) const { return SHVStringUTF8C::operator<=(str); }
-bool SHVStringUTF8CRef::operator>(const SHVStringUTF8C str) const  { return SHVStringUTF8C::operator>(str); }
-bool SHVStringUTF8CRef::operator>=(const SHVStringUTF8C str) const { return SHVStringUTF8C::operator>=(str); }
-
-
-// ==================================== implementation - SHVStringBuffer ==================================== //
-///\cond INTERNAL
-SHVStringBufferUTF8::SHVStringBufferUTF8() { Buffer = NULL; }
-///\endcond
 
 #endif

@@ -666,7 +666,7 @@ size_t len, pos, strSize;
 	}
 	
 	retVal.SetBufferSize(len+1);
-	retVal[0] = '\0';
+	retVal.GetBuffer()[0] = '\0';
 	while (bits.GetCount())
 	{
 		retVal.AddChars(bits.GetFirst().GetBufferConst(),bits.GetFirst().GetLength());

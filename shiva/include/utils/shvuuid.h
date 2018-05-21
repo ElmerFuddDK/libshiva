@@ -80,10 +80,12 @@ private:
  *************************************/
 SHVStringBuffer SHVUUID::ID::ToString()
 {
-#ifdef UNICODE
-	return ToString16();
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return ToString8();
+#elif __SHVSTRINGDEFAULT == 16
+	return ToString16();
+#elif __SHVSTRINGDEFAULT == utf8
+	return ToStringUTF8();
 #endif
 }
 
@@ -92,10 +94,12 @@ SHVStringBuffer SHVUUID::ID::ToString()
  *************************************/
 SHVUUID::ID SHVUUID::CreateMd5FromNamespace(const ID& namespc, const SHVStringC name)
 {
-#ifdef UNICODE
-	return CreateMd5FromNamespace16(namespc,name);
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return CreateMd5FromNamespace8(namespc,name);
+#elif __SHVSTRINGDEFAULT == 16
+	return CreateMd5FromNamespace16(namespc,name);
+#elif __SHVSTRINGDEFAULT == utf8
+	return CreateMd5FromNamespaceUTF8(namespc,name);
 #endif
 }
 
@@ -104,10 +108,12 @@ SHVUUID::ID SHVUUID::CreateMd5FromNamespace(const ID& namespc, const SHVStringC 
  *************************************/
 SHVUUID::ID SHVUUID::FromString(const SHVStringC uuid)
 {
-#ifdef UNICODE
-	return FromString16(uuid);
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return FromString8(uuid);
+#elif __SHVSTRINGDEFAULT == 16
+	return FromString16(uuid);
+#elif __SHVSTRINGDEFAULT == utf8
+	return FromStringUTF8(uuid);
 #endif
 }
 

@@ -326,6 +326,15 @@ SHVStringUTF8 str;
 }
 
 /*************************************
+ * ToStr8
+ *************************************/
+SHVStringBufferUTF8 SHVStringUTF8C::ToStrUTF8() const
+{
+SHVStringUTF8 str(*this);
+	return str.ReleaseBuffer();
+}
+
+/*************************************
  * GetLength
  *************************************/
 size_t SHVStringUTF8C::GetLength() const
@@ -431,6 +440,20 @@ size_t strLen = SHVString8C::StrLen(Buffer);
 		retVal.Buffer[len] = '\0';
 	}
 	return retVal.ReleaseBuffer();
+}
+
+/*************************************
+ * LocateChar
+ *************************************/
+long SHVStringUTF8C::LocateChar(SHVChar ch) const
+{
+long retVal;
+
+	if (IsNull())
+		return -1;	
+
+	for (retVal = 0; Buffer[retVal] != '\0' && Buffer[retVal] != ch; retVal++) ;
+	return (Buffer[retVal] != '\0' ? retVal : -1);
 }
 
 /*************************************

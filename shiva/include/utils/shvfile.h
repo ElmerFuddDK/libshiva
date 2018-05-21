@@ -50,16 +50,21 @@ private:
 
 // ============================================= implementation ============================================= //
 
-#ifdef UNICODE
-bool SHVFile::ReadString(SHVString& str) { return ReadString16(str); }
-bool SHVFile::WriteString(const SHVStringC& str) { return WriteString16(str); }
-bool SHVFile::ReadLine(SHVString& str) { return ReadLine16(str); }
-bool SHVFile::WriteLine(const SHVStringC& str) { return WriteLine16(str); }
-#else
+#if __SHVSTRINGDEFAULT == 8
 bool SHVFile::ReadString(SHVString& str) { return ReadString8(str); }
 bool SHVFile::WriteString(const SHVStringC& str) { return WriteString8(str); }
 bool SHVFile::ReadLine(SHVString& str) { return ReadLine8(str); }
 bool SHVFile::WriteLine(const SHVStringC& str) { return WriteLine8(str); }
+#elif __SHVSTRINGDEFAULT == 16
+bool SHVFile::ReadString(SHVString& str) { return ReadString16(str); }
+bool SHVFile::WriteString(const SHVStringC& str) { return WriteString16(str); }
+bool SHVFile::ReadLine(SHVString& str) { return ReadLine16(str); }
+bool SHVFile::WriteLine(const SHVStringC& str) { return WriteLine16(str); }
+#elif __SHVSTRINGDEFAULT == utf8
+bool SHVFile::ReadString(SHVString& str) { return ReadStringUTF8(str); }
+bool SHVFile::WriteString(const SHVStringC& str) { return WriteStringUTF8(str); }
+bool SHVFile::ReadLine(SHVString& str) { return ReadLineUTF8(str); }
+bool SHVFile::WriteLine(const SHVStringC& str) { return WriteLineUTF8(str); }
 #endif
 
 #endif

@@ -720,7 +720,7 @@ DBDATEREC di;
 	if (dbdatecrack(DbProc,&di,(DBDATETIME*)dateTime) != FAIL)
 	{
 #ifdef MSDBLIB
-		retVal.SetYear(di.year)..SetMonth(di.month).SetDay(di.day).SetHour(di.hour).SetMinute(di.minute).SetSecond(di.second).SetMillisecond(di.millisecond);
+		retVal.SetYear(di.year).SetMonth(di.month).SetDay(di.day).SetHour(di.hour).SetMinute(di.minute).SetSecond(di.second).SetMillisecond(di.millisecond);
 #else
 		retVal.SetYear(di.dateyear).SetMonth(di.datemonth+1).SetDay(di.datedmonth).SetHour(di.datehour).SetMinute(di.dateminute).SetSecond(di.datesecond).SetMillisecond(di.datemsecond);
 #endif

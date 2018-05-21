@@ -128,10 +128,10 @@ SHVString retVal;
 		md5Ptr = md5;
 		for (i=j=0; i<16; i++, md5Ptr++)
 		{
-			retVal[j++] = hexCiphers[(md5[i]&0xF0) >> 4];
-			retVal[j++] = hexCiphers[md5[i]&0x0F];
+			retVal.GetBuffer()[j++] = hexCiphers[(md5[i]&0xF0) >> 4];
+			retVal.GetBuffer()[j++] = hexCiphers[md5[i]&0x0F];
 		}
-		retVal[j] = 0;
+		retVal.GetBuffer()[j] = 0;
 	}
 
 	return retVal.ReleaseBuffer();

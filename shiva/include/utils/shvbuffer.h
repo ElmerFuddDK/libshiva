@@ -172,7 +172,16 @@ void* SHVBuffer::GetBufferAsVoid()
 /*************************************
  * Write*
  *************************************/
-#ifdef UNICODE
+#if __SHVSTRINGDEFAULT == 8
+SHVBool SHVBuffer::WriteNullString(const SHVStringC str, size_t& pos)
+{
+	return WriteNullString8(str,pos);
+}
+SHVBool SHVBuffer::WriteString(const SHVStringC str, size_t& pos)
+{
+	return WriteString8(str,pos);
+}
+#elif __SHVSTRINGDEFAULT == 16
 SHVBool SHVBuffer::WriteNullString(const SHVStringC str, size_t& pos)
 {
 	return WriteNullString16(str,pos);
@@ -181,14 +190,14 @@ SHVBool SHVBuffer::WriteString(const SHVStringC str, size_t& pos)
 {
 	return WriteString16(str,pos);
 }
-#else
+#elif __SHVSTRINGDEFAULT == utf8
 SHVBool SHVBuffer::WriteNullString(const SHVStringC str, size_t& pos)
 {
-	return WriteNullString8(str,pos);
+	return WriteNullStringUTF8(str,pos);
 }
 SHVBool SHVBuffer::WriteString(const SHVStringC str, size_t& pos)
 {
-	return WriteString8(str,pos);
+	return WriteStringUTF8(str,pos);
 }
 #endif
 
