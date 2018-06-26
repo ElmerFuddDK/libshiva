@@ -51,6 +51,24 @@
 # include <fnmatch.h>
 # include <stdlib.h>
 # define FSUTF8MODE
+# if defined(__SHIVA_POSIX_IPHONEOS) || (defined(__SHIVA_POSIX_LINUX) && !defined(ANDROID))
+#  define FSUSEPOSIXSPAWN
+# endif
+# ifdef FSUSEPOSIXSPAWN
+#  include <spawn.h>
+#  include <sys/wait.h>
+extern char **environ;
+int SHVDir_system(const char* cmd)
+{
+pid_t pid;
+int retVal;
+const char* argv[] = { "sh", "-c", NULL, NULL }; argv[2] = cmd;
+	posix_spawnp(&pid,argv[0],NULL,NULL,(char*const*)argv,environ);
+	return waitpid(pid,&retVal,0);
+}
+# else
+int SHVDir_system(const char* cmd) { return ::system(cmd); }
+# endif
 #endif
 
 
@@ -658,6 +676,17 @@ SHVString path = SHVDir::ExtractPath(fileName);
 	info.nShow = SW_SHOWNORMAL;
 	ShellExecuteEx(&info);
 
+#elif defined(FSUSEPOSIXSPAWN)
+pid_t pid;
+const char* argv[] = { "xdg-open", NULL, NULL };
+# ifdef FSUTF8MODE
+SHVStringUTF8 fileNameUTF8(fileName.ToStrUTF8());
+	argv[1] = fileNameUTF8.GetSafeBuffer();
+	::posix_spawnp(&pid, "xdg-open", NULL, NULL, (char*const*)argv, environ);
+# else
+	argv[1] = fileName.GetSafeBuffer();
+	::posix_spawnp(&pid, "xdg-open", NULL, NULL, (char*const*)argv, environ);
+# endif
 #elif defined(__SHIVA_POSIX)
 SHVString execstr;
 	execstr.Format(_S("xdg-open \"%s\" &"), fileName.GetSafeBuffer());
@@ -740,9 +769,9 @@ SHELLEXECUTEINFO info;
 SHVString execstr;
 	execstr.Format(_S("%s %s &"), EscapeParameter(program).GetSafeBuffer(), args.GetSafeBuffer());
 # ifdef FSUTF8MODE
-	::system(execstr.ToStrUTF8().GetSafeBuffer());
+	::SHVDir_system(execstr.ToStrUTF8().GetSafeBuffer());
 # else
-	::system(execstr.GetSafeBuffer());
+	::SHVDir_system(execstr.GetSafeBuffer());
 # endif
 #endif
 }
@@ -774,6 +803,31 @@ SHVFileListIterator itr(args);
 	ShellExecuteEx(&info);
 #elif defined(__SHIVA_EPOC)
 	///\todo Implement SHVDir::Execute for symbian
+#elif defined(FSUSEPOSIXSPAWN)
+const char** argv = (const char**)malloc(sizeof(const char*)*args.GetCount()+2);
+int i=0;
+SHVListPos pos=NULL;
+pid_t pid;
+
+# ifdef FSUTF8MODE
+SHVStringUTF8 programUTF8(EscapeParameter(program).ToStrUTF8());
+SHVList<SHVStringUTF8,SHVStringBufferUTF8> argsUTF8;
+	while (args.MoveNext(pos))
+		argsUTF8.AddTail(args.GetAt(pos).ToStrUTF8());
+
+	argv[i++] = programUTF8.GetSafeBuffer();
+	while (argsUTF8.MoveNext(pos))
+		argv[i++] = argsUTF8.GetAt(pos).GetSafeBuffer();
+# else
+	argv[i++] = program.GetSafeBuffer();
+	while (args.MoveNext(pos))
+		argv[i++] = args.GetAt(pos).GetSafeBuffer();
+# endif
+
+	argv[i] = NULL;
+
+	posix_spawnp(&pid,argv[0],NULL,NULL,(char*const*)argv,environ);
+	free(argv);
 #else
 SHVString execstr;
 SHVString arg;
@@ -816,9 +870,9 @@ SHVString execstr;
 SHVString execstr;
 	execstr.Format(_S("%s %s"), EscapeParameter(program).GetSafeBuffer(), args.GetSafeBuffer());
 # ifdef FSUTF8MODE
-	retVal = ::system(execstr.ToStrUTF8().GetSafeBuffer());
+	retVal = ::SHVDir_system(execstr.ToStrUTF8().GetSafeBuffer());
 # else
-	retVal = ::system(execstr.GetSafeBuffer());
+	retVal = ::SHVDir_system(execstr.GetSafeBuffer());
 # endif
 #endif
 	return retVal;
@@ -850,6 +904,33 @@ SHVString tmpArg;
 	retVal = ::system(execstr.ToStr8().GetSafeBuffer());
 #elif defined(__SHIVA_EPOC)
 	///\todo Implement SHVDir::Execute for symbian
+#elif defined(FSUSEPOSIXSPAWN)
+const char** argv = (const char**)malloc(sizeof(const char*)*args.GetCount()+2);
+int i=0;
+SHVListPos pos=NULL;
+pid_t pid;
+
+# ifdef FSUTF8MODE
+SHVStringUTF8 programUTF8(EscapeParameter(program).ToStrUTF8());
+SHVList<SHVStringUTF8,SHVStringBufferUTF8> argsUTF8;
+	while (args.MoveNext(pos))
+		argsUTF8.AddTail(args.GetAt(pos).ToStrUTF8());
+
+	argv[i++] = programUTF8.GetSafeBuffer();
+	while (argsUTF8.MoveNext(pos))
+		argv[i++] = argsUTF8.GetAt(pos).GetSafeBuffer();
+# else
+	argv[i++] = program.GetSafeBuffer();
+	while (args.MoveNext(pos))
+		argv[i++] = args.GetAt(pos).GetSafeBuffer();
+# endif
+
+	argv[i] = NULL;
+
+	posix_spawnp(&pid,argv[0],NULL,NULL,(char*const*)argv,environ);
+	free(argv);
+	waitpid(pid,&i,0);
+	retVal = i;
 #else
 SHVString execstr;
 SHVString arg;
