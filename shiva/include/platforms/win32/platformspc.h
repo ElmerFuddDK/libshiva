@@ -1,20 +1,24 @@
 #if !defined(__SHIVA_MFC) // include this if you have an MFC project
+# define WIN32_LEAN_AND_MEAN
 # if defined(DEBUG) && !defined(__SHIVA_WINCE)
 #  if !defined(__MINGW32__) && !defined(WINELIB)
 #    define _CRTDBG_MAP_ALLOC
-#    include <crtdbg.h>
 #    define SHVBREAKPOINT (_CrtDbgBreak(), 0)
 #  else
 #    define SHVBREAKPOINT false
 #  endif
 # endif
-# define WIN32_LEAN_AND_MEAN
 # include <windows.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
 # include <winnls.h>
   typedef wchar_t WCHAR;
+# if defined(DEBUG) && !defined(__SHIVA_WINCE)
+#  if !defined(__MINGW32__) && !defined(WINELIB)
+#    include <crtdbg.h>
+#  endif
+# endif
 #else
 # if defined(DEBUG) && !defined(__SHIVA_WINCE)
 #  include <crtdbg.h>
