@@ -123,7 +123,7 @@ private:
 
 	SHVTimerThread TimerThread;
 
-	void RecalculateTimer(SHVTimerInstanceImpl* timer);
+	void RecalculateTimer(SHVTimerInstanceImpl* timer, SHVTimerInstance::Modes newMode, int newInterval, const SHVTime* newAbsTime = NULL);
 	///\endcond
 };
 

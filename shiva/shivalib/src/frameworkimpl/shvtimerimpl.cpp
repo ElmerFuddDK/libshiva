@@ -126,9 +126,21 @@ SHVListPos pos = NULL;
 /*************************************
  * RecalculateTimer
  *************************************/
-void SHVTimerImpl::RecalculateTimer(SHVTimerInstanceImpl* timer)
+void SHVTimerImpl::RecalculateTimer(SHVTimerInstanceImpl* timer, SHVTimerInstance::Modes newMode, int newInterval, const SHVTime* newAbsTime)
 {
 SHVBool gotLock(TimerThread.LockEvent()); // lock if the event system is running
+
+	timer->Mode = newMode;
+	if (newAbsTime)
+	{
+		timer->AbsoluteTime = *newAbsTime;
+		if (timer->AbsoluteTime.IsLocalTime())
+			timer->AbsoluteTime.SetLocalTime(false);
+	}
+	else
+	{
+		timer->Interval = newInterval;
+	}
 
 	// calculate and stuff
 
@@ -183,10 +195,7 @@ SHVTimerInstanceImpl::SHVTimerInstanceImpl(SHVTimerImpl* timer, SHVEventSubscrib
  *************************************/
 void SHVTimerInstanceImpl::Set(SHVTimerInstance::Modes mode, int interval)
 {
-	Mode = mode;
-	Interval = interval;
-
-	Timer->RecalculateTimer(this);
+	Timer->RecalculateTimer(this, mode, interval);
 }
 
 /*************************************
@@ -194,11 +203,7 @@ void SHVTimerInstanceImpl::Set(SHVTimerInstance::Modes mode, int interval)
  *************************************/
 void SHVTimerInstanceImpl::SetAbsolute(const SHVTime& time)
 {
-	AbsoluteTime = time;
-	if (AbsoluteTime.IsLocalTime())
-		AbsoluteTime.SetLocalTime(false);
-	Mode = SHVTimerInstance::ModeAbsolute;
-	Timer->RecalculateTimer(this);
+	Timer->RecalculateTimer(this,SHVTimerInstance::ModeAbsolute,-1,&time);
 }
 
 /*************************************
@@ -271,6 +276,7 @@ SHVTime timeNow;
 				else
 				{
 					TickHit += Interval;
+					WrapAround = (TickHit < now);
 				}
 			}
 			break;
