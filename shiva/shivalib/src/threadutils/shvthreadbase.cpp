@@ -49,6 +49,9 @@
 # include <pthread.h>
 # include <sched.h>
 # include <sys/time.h>
+# if !defined(CLOCK_MONOTONIC_RAW)
+#  define CLOCK_MONOTONIC_RAW CLOCK_MONOTONIC
+# endif
 #endif
 
 
@@ -455,15 +458,15 @@ mach_timespec_t n;
 	}
 	mach_port_deallocate(mach_task_self(), cclock);
 	
-	return long(n.tv_sec*1000000L + n.tv_nsec/1000L);
+	return long(n.tv_sec*1000000L) + long(n.tv_nsec/1000L);
 #elif _POSIX_TIMERS > 0
 struct timespec n;
-	if (clock_gettime(CLOCK_MONOTONIC, &n))
+	if (clock_gettime(CLOCK_MONOTONIC_RAW, &n))
 	{
 		fprintf(stderr,"GETTICKCOUNT ERROR\n");
 		abort();
 	}
-	return long(n.tv_sec*1000000L + n.tv_nsec/1000L);
+	return long(n.tv_sec*1000000L) + long(n.tv_nsec/1000L);
 #else
 timeval val;
 	gettimeofday(&val,NULL);
@@ -504,15 +507,15 @@ mach_timespec_t n;
 	}
 	mach_port_deallocate(mach_task_self(), cclock);
 	
-	return long(n.tv_sec*1000L + n.tv_nsec/1000000L);
+	return long(n.tv_sec*1000L) + long(n.tv_nsec/1000000L);
 #elif _POSIX_TIMERS > 0
 struct timespec n;
-	if (clock_gettime(CLOCK_MONOTONIC, &n))
+	if (clock_gettime(CLOCK_MONOTONIC_RAW, &n))
 	{
 		fprintf(stderr,"GETTICKCOUNT ERROR\n");
 		abort();
 	}
-	return long(n.tv_sec*1000L + n.tv_nsec/1000000L);
+	return long(n.tv_sec*1000L) + long(n.tv_nsec/1000000L);
 #else
 # warning GetTicksInMilliSecs is not relative to system time
 timeval val;
