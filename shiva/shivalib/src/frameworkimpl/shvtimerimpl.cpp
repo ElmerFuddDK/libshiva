@@ -275,8 +275,9 @@ SHVTime timeNow;
 					Mode = SHVTimerInstance::ModeStopped;
 				else
 				{
+				long oldTickHit = TickHit;
 					TickHit += Interval;
-					WrapAround = (TickHit < now);
+					WrapAround = (TickHit < oldTickHit);
 				}
 			}
 			break;
