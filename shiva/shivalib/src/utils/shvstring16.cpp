@@ -73,7 +73,7 @@ SHVWChar* dummyPtr;
 	if (firstVal == '-' || firstVal == '+')
 		str++;
 
-	for(*ptr = (SHVWChar*)str; str && *ptr != '\0'; (*ptr)++)
+	for(*ptr = (SHVWChar*)str; str && **ptr != '\0'; (*ptr)++)
 	{
 		if (**ptr < '0' || **ptr > '9') // only base10 for now
 			break;
@@ -107,7 +107,7 @@ SHVWChar* dummyPtr;
 	if (firstVal == '-' || firstVal == '+')
 		str++;
 
-	for(*ptr = (SHVWChar*)str; str && *ptr != '\0'; (*ptr)++)
+	for(*ptr = (SHVWChar*)str; str && **ptr != '\0'; (*ptr)++)
 	{
 		if (**ptr < '0' || **ptr > '9') // only base10 for now
 			break;
