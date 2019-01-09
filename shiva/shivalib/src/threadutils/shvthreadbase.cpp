@@ -485,12 +485,34 @@ timeval val;
  * time. If the system is suspended then the tick counter
  * gets suspended as well. For ticks relative to the system
  * clock, use SHVTime::GetRelativeTimeInMilliSecs().
- \bug Ticks relative to the clock and not CPU in windows.
+ \bug Ticks relative to the clock and not CPU in windows XP/2k3.
  */
 long SHVThreadBase::GetTicksInMilliSecs()
 {
-#ifdef __SHIVA_WIN32
+#ifdef __SHIVA_WINCE
 	return ::GetTickCount();
+#elif defined(__SHIVA_WIN32)
+typedef BOOL (FAR WINAPI *QueryUnbiasedInterruptTimeFunc)(PULONGLONG biasTick);
+static int functionResolved;
+static QueryUnbiasedInterruptTimeFunc QueryUnbiasedInterruptTimePtr;
+
+	if (!functionResolved)
+	{
+	HINSTANCE hDll = LoadLibraryA("kernel32.dll");
+		QueryUnbiasedInterruptTimePtr = (QueryUnbiasedInterruptTimeFunc)GetProcAddress(hDll, "QueryUnbiasedInterruptTime");
+		functionResolved = 1;
+	}
+
+	if (QueryUnbiasedInterruptTimePtr)
+	{
+	ULONGLONG ticks;
+		SHVVERIFY((*QueryUnbiasedInterruptTimePtr)(&ticks));
+		return (long)(ticks/10000ll);
+	}
+	else
+	{
+		return ::GetTickCount();
+	}
 #elif defined(__SHIVA_EPOC)
 TTimeIntervalMicroSeconds32 t = 1;
 	UserHal::TickPeriod(t);
