@@ -5,10 +5,15 @@
 include(../../../../../shiva/include/shiva.pri)
 
 INCLUDEPATH += ../../ 
-CONFIG = $$QMAKE_PLATFORM \
-	debug \
+ios {
+  CONFIG -= qt
+  CONFIG += dll staticlib
+} else {
+  CONFIG = $$QMAKE_PLATFORM \
+         debug \
          warn_on \
-         dll 
+         dll
+}
 TEMPLATE = lib 
 HEADERS += ../../../../include/modules/dataengine/shvdataengine.h \
  ../../../../include/modules/dataengine/shvdatafactory.h \
@@ -76,6 +81,5 @@ DESTDIR = ../bin
 }
 
 ios {
-	CONFIG += staticlib
 	LIBS -= -lshiva
 }

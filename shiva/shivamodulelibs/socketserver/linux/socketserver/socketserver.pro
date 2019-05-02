@@ -2,9 +2,15 @@ include(../../../../../shiva/include/shiva.pri)
 
 TEMPLATE = lib
 
-CONFIG = dll \
-debug \
- warn_on
+ios {
+  CONFIG -= qt
+  CONFIG += dll staticlib
+} else {
+  CONFIG = $$QMAKE_PLATFORM \
+         debug \
+         warn_on \
+         dll
+}
 LIBS += $$QMAKE_LIBS_DYNLOAD \
 -lshiva \
  -L../../../../shivalib/linux/libshiva
@@ -33,6 +39,5 @@ HEADERS += ../../include/shvsocketimpl.h \
 }
 
 ios {
-	CONFIG += staticlib
 	LIBS -= -lshiva
 }

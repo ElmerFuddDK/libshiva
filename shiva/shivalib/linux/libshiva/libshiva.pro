@@ -150,9 +150,15 @@ SOURCES += ../../src/framework/shvconsole.cpp \
  ../../src/threadutils/shvthreadpoolbase.cpp \
     ../../src/utils/shvbase64.cpp
 TARGET = shiva 
-CONFIG = $$QMAKE_PLATFORM debug \
+ios {
+  CONFIG -= qt
+  CONFIG += dll staticlib
+} else {
+  CONFIG = $$QMAKE_PLATFORM \
+         debug \
          warn_on \
-         dll 
+         dll
+}
 TEMPLATE = lib 
 LIBS += -lm \
   -lrt \
@@ -176,10 +182,6 @@ mac {
 			../../src/libunicode/utf8.c \
 			../../src/libunicode/utf8conv.c
 	 DEFINES += __SHIVA_LIBUNICODESTATIC
-}
-
-ios {
-	CONFIG += staticlib
 }
 
 !isEmpty(ANDROID_PLATFORM){
