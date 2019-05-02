@@ -231,10 +231,6 @@ size_t SHVString16C::GetLengthInBytes() const { return GetLength()*sizeof(SHVWCh
 #ifdef __SHIVA_EPOC
 TPtrC16 SHVString16C::ToPtr() const { return TPtrC16((TUint16*)Buffer,GetLength()); }
 #endif
-#ifdef __SHIVASTR_WCHAR_T
-const wchar_t* SHVString16C::GetWcharConst() const { return (const wchar_t*)Buffer; }
-const wchar_t* SHVString16C::GetSafeWchar() const { return (const wchar_t*)GetSafeBuffer(); }
-#endif
 size_t SHVString16C::StrLenInChars(const SHVWChar* str) { return StrLen(str); }
 size_t SHVString16C::StrLenInBytes(const SHVWChar* str) { return StrLen(str)*sizeof(SHVWChar); }
 
