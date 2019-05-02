@@ -107,7 +107,7 @@ size_t charLen;
 
 	while (*offset && chars)
 	{
-		charLen = GetUTF8CharLen(*str);
+		charLen = GetUTF8CharLen(*offset);
 		while (charLen && *offset) { charLen--; offset++; if ((*offset&0xC0) != 0x80) { break; } }
 		chars--;
 	}
