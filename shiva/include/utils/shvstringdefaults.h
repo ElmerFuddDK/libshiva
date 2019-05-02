@@ -3,6 +3,10 @@
 
 #include "shvrefobject.h"
 
+#if defined(__SHIVA_WIN32)
+# define __SHVSTRING_HEAPPROTECT
+#endif
+
 // Typedefs and forward declares
 class SHVString8C;
 class SHVString8;
