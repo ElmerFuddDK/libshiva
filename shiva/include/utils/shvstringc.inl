@@ -17,6 +17,7 @@ const SHVStringBuffer16 SHVStringUTF8C::AsStr16C() const   { return ToStr16(); }
 const SHVStringUTF8C SHVStringUTF8C::AsStrUTF8C() const    { return *this; }
 
 SHVStringUTF8C::SHVStringUTF8C(const SHVChar* buffer) { Buffer = (SHVChar*)buffer; }
+SHVStringUTF8C::SHVStringUTF8C(const SHVStringUTF8C& str) { Buffer = str.Buffer; }
 const SHVChar* SHVStringUTF8C::GetBufferConst() const { return Buffer; }
 bool SHVStringUTF8C::IsNull() const { return Buffer == NULL; }
 bool SHVStringUTF8C::IsEmpty() const { return Buffer == NULL || *Buffer == 0; }

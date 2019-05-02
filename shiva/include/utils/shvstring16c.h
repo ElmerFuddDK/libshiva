@@ -34,6 +34,7 @@ public:
 
 	// constructor
 	inline SHVString16C(const SHVWChar* buffer);
+	inline SHVString16C(const SHVString16C& str);
 #ifdef __SHIVA_WIN32
 	inline static const SHVString16C FromWin32(const WCHAR* buffer);
 #endif
@@ -216,6 +217,7 @@ private:
 // ====================================== implementation - SHVStringC ======================================= //
 
 SHVString16C::SHVString16C(const SHVWChar* buffer) { Buffer = (SHVWChar*)buffer; }
+SHVString16C::SHVString16C(const SHVString16C& str) { Buffer = str.Buffer; }
 const SHVWChar* SHVString16C::GetBufferConst() const { return Buffer; }
 #if defined(__SHIVA_WIN32)
 const SHVString16C SHVString16C::FromWin32(const WCHAR* buffer) { return SHVString16C((SHVWChar*)buffer); }

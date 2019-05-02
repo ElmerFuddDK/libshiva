@@ -34,6 +34,7 @@ public:
 
 	// constructor
 	inline SHVStringUTF8C(const SHVChar* buffer);
+	inline SHVStringUTF8C(const SHVStringUTF8C& str);
 
 
 	// Comparison

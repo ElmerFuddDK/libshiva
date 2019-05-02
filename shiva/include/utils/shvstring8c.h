@@ -35,6 +35,7 @@ public:
 
 	// constructor
 	inline SHVString8C(const SHVChar* buffer);
+	inline SHVString8C(const SHVString8C& str);
 
 
 	// Comparison
@@ -217,6 +218,7 @@ private:
 // ====================================== implementation - SHVStringC ======================================= //
 
 SHVString8C::SHVString8C(const SHVChar* buffer) { Buffer = (SHVChar*)buffer; }
+SHVString8C::SHVString8C(const SHVString8C& str) { Buffer = str.Buffer; }
 const SHVChar* SHVString8C::GetBufferConst() const { return Buffer; }
 #ifdef __SHIVA_WIN32
 const char* SHVString8C::GetBufferConstWin32() const { return Buffer; }
