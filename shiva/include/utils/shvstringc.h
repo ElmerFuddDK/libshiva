@@ -13,26 +13,11 @@
 # define __SHVSTRING_HEAPPROTECT
 #endif
 
-#if __SHVSTRINGDEFAULT == 8
-# include "shvstring8c.h"
-#elif __SHVSTRINGDEFAULT == 16
-# include "shvstring16c.h"
-#elif __SHVSTRINGDEFAULT == utf8
-# include "shvstringutf8c.h"
-#else
-# error "Invalid string default define"
-#endif
+#include "shvstring8c.h"
 
 #ifndef __SHVSTRING_EXCLUDE_UNICODE
-# ifndef __SHIVA_UTILS_STRING8C_H
-#  include "shvstring8c.h"
-# endif
-# ifndef __SHIVA_UTILS_STRING16C_H
-#   include "shvstring16c.h"
-# endif
-# ifndef __SHIVA_UTILS_STRINGUTF8C_H
-#  include "shvstringutf8c.h"
-# endif
+# include "shvstring16c.h"
+# include "shvstringutf8c.h"
 #endif
 
 #include "shvstringc.inl"

@@ -183,7 +183,11 @@ SHVStringUTF8 retVal;
 		retVal = SHVStringBufferUTF8::Encapsulate(gtk_text_buffer_get_text(buffer,&start,&end,TRUE));
 	}
 
+#if __SHVSTRINGDEFAULT == utf8
+	return retVal.ReleaseBuffer();
+#else
 	return retVal.ToStrT();
+#endif
 }
 
 /*************************************
@@ -198,7 +202,7 @@ void SHVControlImplementerEditMultiGtk::SetText(const SHVStringC& text)
 	GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW (TextView));
 		
 		SuppressChangeEvent = true;
-		gtk_text_buffer_set_text(buffer,text.ToStrUTF8().GetSafeBuffer(),-1);
+		gtk_text_buffer_set_text(buffer,text.AsStrUTF8C().GetSafeBuffer(),-1);
 	}
 }
 

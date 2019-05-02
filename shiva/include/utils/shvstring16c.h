@@ -1,44 +1,11 @@
-#ifndef __SHIVA_UTILS_STRINGC_H
-# include "shvstringc.h"
-#elif !defined(__SHIVA_UTILS_STRING16C_H)
+#ifndef __SHIVA_UTILS_STRING16C_H
 #define __SHIVA_UTILS_STRING16C_H
 
-// forward declares
-class SHVString16C;
-class SHVString16;
-class SHVString16CRef;
-class SHVStringBuffer8;
-class SHVStringBufferUTF8;
-class SHVStringBuffer16;
-
-
-
-// defines
-#if __SHVSTRINGDEFAULT == 16
-typedef SHVString16C SHVStringC;
-typedef SHVString16  SHVString;
-typedef SHVString16CRef SHVStringCRef;
-typedef SHVStringBuffer16 SHVStringBuffer;
-# define _SHVS8(x)  SHVStringC(_S(x)).ToStr8()
-# define _SHVS16(x) SHVString16C(_S(x))
-///\cond INTERNAL
-# ifdef __SHIVA_POSIX_LINUX
-#  error "Linux is currently UCS4 only - doesn't work with shiva in unicode"
-# endif
-# ifdef _T
-#  undef _T
-# endif
-# define _S(x)  (const SHVWChar*)L##x
-# define _SD(x) _S(x)
-# define _T(x)  L##x
-# define _TD(x) _T(x)
-///\endcond
-#endif
+#include "shvstringdefaults.h"
 
 #ifdef __SHVSTRING_HEAPPROTECT
 typedef void (*SHVStr16_DestroyBuffer)(SHVWChar*);
 #endif
-
 
 
 //-=========================================================================================================
@@ -67,6 +34,9 @@ public:
 
 	// constructor
 	inline SHVString16C(const SHVWChar* buffer);
+#ifdef __SHIVA_WIN32
+	inline static const SHVString16C FromWin32(const WCHAR* buffer);
+#endif
 
 
 	// Comparison
@@ -84,6 +54,10 @@ public:
 	// Access/Conversion functions
 	inline const SHVWChar* GetBufferConst() const;
 	const SHVWChar* GetSafeBuffer() const; ///< will return the real buffer, or "" if the string is null
+#if defined(__SHIVA_WIN32)
+	inline const WCHAR* GetBufferConstWin32() const;
+	inline const WCHAR* GetSafeBufferWin32() const;
+#endif
 	long ToLong(SHVWChar** endChar = NULL) const;
 	SHVInt64Val ToInt64(SHVWChar** endChar = NULL) const;
 	double ToDouble(SHVWChar** endChar = NULL) const;
@@ -96,6 +70,9 @@ public:
 	inline SHVStringBuffer ToStrT() const;
 	bool ConvertBufferToChar(SHVChar* buffer, size_t len) const;
 	bool ConvertBufferToUTF8(SHVChar* buffer, size_t& len) const;
+	inline const SHVStringBuffer8 AsStr8C() const;
+	inline const SHVString16C AsStr16C() const;
+	inline const SHVStringBufferUTF8 AsStrUTF8C() const;
 #ifdef __SHIVA_EPOC
 	inline TPtrC16 ToPtr() const;
 #endif
@@ -105,8 +82,8 @@ public:
 	inline bool IsNull() const;
 	inline bool IsEmpty() const;
 	size_t GetLength() const;
-	inline size_t GetSizeInChars() const;
-	inline size_t GetSizeInBytes() const;
+	inline size_t GetLengthInChars() const;
+	inline size_t GetLengthInBytes() const;
 	operator SHVHashValue() const; ///< hashing function
 
 
@@ -119,14 +96,21 @@ public:
 	long ReverseFind(const SHVString16C& str) const;
 	SHVStringBuffer16 Tokenize(const SHVString16C& tokens, size_t& pos) const;
 
+	// compat functions with utf8
+	inline SHVStringBuffer16 RightInChars(size_t len) const;
+	inline SHVStringBuffer16 LeftInChars(size_t len) const;
+	inline SHVStringBuffer16 MidInChars(size_t first,size_t length = SIZE_T_MAX) const;
+	inline long FindInChars(const SHVString16C& str,long offset=0) const;
+	inline long ReverseFindInChars(const SHVString16C& str) const;
+
 
 	// convenience functions for easy portability
 	static long   StrToL(const SHVWChar* str, SHVWChar** ptr, int base = 10); ///< only works for base10 on some platforms for now
 	static SHVInt64Val StrToInt64(const SHVWChar* str, SHVWChar** ptr, int base = 10); ///< only works for base10 on some platforms for now
 	static double StrToDouble(const SHVWChar* str, SHVWChar** ptr);
 	static size_t StrLen(const SHVWChar* str);
-	inline static size_t StrSizeInChars(const SHVWChar* str);
-	inline static size_t StrSizeInBytes(const SHVWChar* str);
+	inline static size_t StrLenInChars(const SHVWChar* str);
+	inline static size_t StrLenInBytes(const SHVWChar* str);
 	static int    StrCmp(const SHVWChar* str1,const SHVWChar* str2);
 	static int    StrCaseCmp(const SHVWChar* str1,const SHVWChar* str2);
 	static SHVWChar* StrCat(SHVWChar* dest, const SHVWChar* source);
@@ -233,10 +217,15 @@ private:
 
 SHVString16C::SHVString16C(const SHVWChar* buffer) { Buffer = (SHVWChar*)buffer; }
 const SHVWChar* SHVString16C::GetBufferConst() const { return Buffer; }
+#if defined(__SHIVA_WIN32)
+const SHVString16C SHVString16C::FromWin32(const WCHAR* buffer) { return SHVString16C((SHVWChar*)buffer); }
+const WCHAR* SHVString16C::GetBufferConstWin32() const { return (const WCHAR*)Buffer; }
+const WCHAR* SHVString16C::GetSafeBufferWin32() const { return (const WCHAR*)GetSafeBuffer(); }
+#endif
 bool SHVString16C::IsNull() const { return Buffer == NULL; }
 bool SHVString16C::IsEmpty() const { return Buffer == NULL || *Buffer == 0; }
-size_t SHVString16C::GetSizeInChars() const { return GetLength(); }
-size_t SHVString16C::GetSizeInBytes() const { return GetLength()*sizeof(SHVWChar); }
+size_t SHVString16C::GetLengthInChars() const { return GetLength(); }
+size_t SHVString16C::GetLengthInBytes() const { return GetLength()*sizeof(SHVWChar); }
 #ifdef __SHIVA_EPOC
 TPtrC16 SHVString16C::ToPtr() const { return TPtrC16((TUint16*)Buffer,GetLength()); }
 #endif
@@ -244,8 +233,14 @@ TPtrC16 SHVString16C::ToPtr() const { return TPtrC16((TUint16*)Buffer,GetLength(
 const wchar_t* SHVString16C::GetWcharConst() const { return (const wchar_t*)Buffer; }
 const wchar_t* SHVString16C::GetSafeWchar() const { return (const wchar_t*)GetSafeBuffer(); }
 #endif
-size_t SHVString16C::StrSizeInChars(const SHVWChar* str) { return StrLen(str); }
-size_t SHVString16C::StrSizeInBytes(const SHVWChar* str) { return StrLen(str)*sizeof(SHVWChar); }
+size_t SHVString16C::StrLenInChars(const SHVWChar* str) { return StrLen(str); }
+size_t SHVString16C::StrLenInBytes(const SHVWChar* str) { return StrLen(str)*sizeof(SHVWChar); }
+
+SHVStringBuffer16 SHVString16C::RightInChars(size_t len) const { return Right(len); }
+SHVStringBuffer16 SHVString16C::LeftInChars(size_t len) const { return Left(len); }
+SHVStringBuffer16 SHVString16C::MidInChars(size_t first,size_t length) const { return Mid(first,length); }
+long SHVString16C::FindInChars(const SHVString16C& str,long offset) const { return Find(str,offset); }
+long SHVString16C::ReverseFindInChars(const SHVString16C& str) const { return ReverseFind(str); }
 
 
 // ===================================== implementation - SHVStringCRef ===================================== //
@@ -269,4 +264,7 @@ bool SHVString16CRef::operator>=(const SHVString16C str) const { return SHVStrin
 SHVStringBuffer16::SHVStringBuffer16() { Buffer = NULL; }
 ///\endcond
 
+#endif
+#ifndef __SHIVA_UTILS_STRING_H
+# include "shvstring.h"
 #endif

@@ -55,7 +55,7 @@ SHVBool SHVControlImplementerCheckboxWin32::Create(SHVControl* owner, SHVControl
 	if (!IsCreated() && parent && parent->IsCreated())
 	{
 	int btnStyle = (SubType == SHVControlCheckbox::SubTypeTristate ? BS_AUTO3STATE : BS_AUTOCHECKBOX);
-		SetHandle(CreateWindow(_T("BUTTON"), _T(""), WS_CHILD|WS_TABSTOP|Win32::MapFlags(flags)|btnStyle,
+		SetHandle(CreateWindowW(L"BUTTON", L"", WS_CHILD|WS_TABSTOP|Win32::MapFlags(flags)|btnStyle,
 			0, 0, 0, 0, Win32::GetHandle(parent), NULL, Win32::GetInstance(owner), NULL));
 
 		if (IsCreated())
@@ -86,14 +86,8 @@ int SHVControlImplementerCheckboxWin32::GetSubType(SHVControl* owner)
  *************************************/
 SHVStringBuffer SHVControlImplementerCheckboxWin32::GetText()
 {
-SHVString retVal;
-
 	SHVASSERT(IsCreated());
-
-	retVal.SetBufferSize( GetWindowTextLength(GetHandle())+1 );
-	GetWindowText(GetHandle(),(TCHAR*)retVal.GetBuffer(), (int)retVal.GetBufferLen());
-
-	return retVal.ReleaseBuffer();
+	return GetWindowTextBase();
 }
 
 /*************************************
@@ -103,7 +97,7 @@ void SHVControlImplementerCheckboxWin32::SetText(SHVControlCheckbox* owner, cons
 {
 	SHVASSERT(IsCreated());
 
-	SetWindowText(GetHandle(),(const TCHAR*)text.GetSafeBuffer());
+	SetWindowTextBase(text);
 
 	if (autoSize)
 	{

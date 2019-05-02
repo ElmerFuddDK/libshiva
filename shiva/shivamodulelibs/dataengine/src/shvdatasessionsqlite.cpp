@@ -186,17 +186,17 @@ SHVStringStreamUTF8 sql;
 		{
 		case SHVDataRowList::ChangeFunctionAdd:
 			InsertRowSQL(rowList, sql, rowList->GetReplaceIfDuplicate());
-			retVal = PrepareFunction(sql);
+			retVal = PrepareFunctionUTF8(sql);
 			rowList->SetDataChangeFunction(retVal, SHVDataRowList::ChangeFunctionAdd);
 			break;
 		case SHVDataRowList::ChangeFunctionUpdate:
 			UpdateRowSQL(rowList, sql);
-			retVal = PrepareFunction(sql);
+			retVal = PrepareFunctionUTF8(sql);
 			rowList->SetDataChangeFunction(retVal, SHVDataRowList::ChangeFunctionUpdate);
 			break;
 		case SHVDataRowList::ChangeFunctionDelete:
 			DeleteRowSQL(rowList, sql);
-			retVal = PrepareFunction(sql);
+			retVal = PrepareFunctionUTF8(sql);
 			rowList->SetDataChangeFunction(retVal, SHVDataRowList::ChangeFunctionDelete);
 			break;
 		}
@@ -789,9 +789,9 @@ SHVBool retVal = SHVBool::True;
 }
 
 /*************************************
- * PrepareFunction
+ * PrepareFunctionUTF8
  *************************************/
-SHVDataFunction* SHVDataSessionSQLite::PrepareFunction(const SHVStringUTF8C& query, const SHVDataRowKey* sortKey)
+SHVDataFunction* SHVDataSessionSQLite::PrepareFunctionUTF8(const SHVStringUTF8C& query, const SHVDataRowKey* sortKey)
 {
 SHVDataFunction* retVal = NULL;
 	SHVASSERT(SessionValid());

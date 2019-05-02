@@ -58,7 +58,7 @@ LuaRefObject* data = (LuaRefObject*)luaL_testudata((lua_State*)state, idx, SHVLU
 bool SHVLuaRefObjectType::IsRefByType(void* state, int idx, const char* typeID)
 {
 LuaRefObject* data = (LuaRefObject*)luaL_testudata((lua_State*)state, idx, SHVLUA_UDATANAME);
-	return data && SHVString8C(data->Type) == SHVString8C(typeID);
+	return data && SHVStringUTF8C(data->Type) == SHVStringUTF8C(typeID);
 }
 
 /*************************************
@@ -82,7 +82,7 @@ LuaRefObject* data = (LuaRefObject*)luaL_testudata((lua_State*)state, idx, SHVLU
 SHVRefObject* SHVLuaRefObjectType::ToRefByType(void* state, int idx, const char* typeID)
 {
 LuaRefObject* data = (LuaRefObject*)luaL_testudata((lua_State*)state, idx, SHVLUA_UDATANAME);
-	return (data && SHVString8C(data->Type) == SHVString8C(typeID) ? data->Obj : NULL);
+	return (data && SHVStringUTF8C(data->Type) == SHVStringUTF8C(typeID) ? data->Obj : NULL);
 }
 
 /*************************************

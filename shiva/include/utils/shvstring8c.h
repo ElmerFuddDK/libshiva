@@ -1,35 +1,8 @@
-#ifndef __SHIVA_UTILS_STRINGC_H
-# include "shvstringc.h"
-#elif !defined(__SHIVA_UTILS_STRING8C_H)
+#ifndef __SHIVA_UTILS_STRING8C_H
 #define __SHIVA_UTILS_STRING8C_H
 
-// Typedefs and forward declares
-class SHVString8C;
-class SHVString8;
-class SHVString8CRef;
-class SHVStringBuffer8;
-class SHVStringBufferUTF8;
-class SHVStringBuffer16;
 
-#if __SHVSTRINGDEFAULT == 8
-typedef SHVString8C  SHVStringC;
-typedef SHVString8   SHVString;
-typedef SHVString8CRef SHVStringCRef;
-typedef SHVStringBuffer8 SHVStringBuffer;
-# define _SHVS8(x)  SHVStringC(x)
-# ifndef __SHVSTRING_EXCLUDE_UNICODE
-#  define _SHVS16(x) SHVStringC(x).ToStr16()
-# endif
-///\cond INTERNAL
-# ifdef _T
-#  undef _T
-# endif
-# define _S(x)  x
-# define _SD(x) x
-# define _T(x)  x
-# define _TD(x) x
-///\endcond
-#endif
+#include "shvstringdefaults.h"
 
 #ifdef __SHVSTRING_HEAPPROTECT
 typedef void (*SHVStr8_DestroyBuffer)(SHVChar*);
@@ -79,6 +52,10 @@ public:
 	// Access/Conversion functions
 	inline const SHVChar* GetBufferConst() const;
 	const SHVChar* GetSafeBuffer() const; ///< will return the real buffer, or "" if the string is null
+#if defined(__SHIVA_WIN32)
+	inline const char* GetBufferConstWin32() const;
+	inline const char* GetSafeBufferWin32() const;
+#endif
 	long ToLong(SHVChar** endChar = NULL) const;
 	SHVInt64Val ToInt64(SHVChar** endChar = NULL) const;
 	double ToDouble(SHVChar** endChar = NULL) const;
@@ -90,6 +67,9 @@ public:
 	SHVStringBufferUTF8 ToStrUTF8() const;
 	bool ConvertBufferToWChar(SHVWChar* buffer, size_t len) const;
 	bool ConvertBufferToUTF8(SHVChar* buffer, size_t& len) const;
+	inline const SHVString8C AsStr8C() const;
+	inline const SHVStringBuffer16 AsStr16C() const;
+	inline const SHVStringBufferUTF8 AsStrUTF8C() const;
 #endif
 	SHVStringBuffer8 ToStr8() const;
 	inline SHVStringBuffer ToStrT() const;
@@ -102,8 +82,8 @@ public:
 	inline bool IsNull() const;
 	inline bool IsEmpty() const;
 	size_t GetLength() const;
-	inline size_t GetSizeInChars() const;
-	inline size_t GetSizeInBytes() const;
+	inline size_t GetLengthInChars() const;
+	inline size_t GetLengthInBytes() const;
 	operator SHVHashValue() const; ///< hashing function
 
 
@@ -116,14 +96,21 @@ public:
 	long ReverseFind(const SHVString8C& str) const;
 	SHVStringBuffer8 Tokenize(const SHVString8C& tokens, size_t& pos) const;
 
+	// compat functions with utf8
+	inline SHVStringBuffer8 RightInChars(size_t len) const;
+	inline SHVStringBuffer8 LeftInChars(size_t len) const;
+	inline SHVStringBuffer8 MidInChars(size_t first,size_t length = SIZE_T_MAX) const;
+	inline long FindInChars(const SHVString8C& str,long offset=0) const;
+	inline long ReverseFindInChars(const SHVString8C& str) const;
+
 
 	// convenience functions for easy portability
 	static long   StrToL(const SHVChar* str, SHVChar** ptr, int base = 10); ///< only works for base10 on some platforms for now
 	static SHVInt64Val StrToInt64(const SHVChar* str, SHVChar** ptr, int base = 10); ///< only works for base10 on some platforms for now
 	static double StrToDouble(const SHVChar* str, SHVChar** ptr);
 	static size_t StrLen(const SHVChar* str);
-	inline static size_t StrSizeInChars(const SHVChar* str);
-	inline static size_t StrSizeInBytes(const SHVChar* str);
+	inline static size_t StrLenInChars(const SHVChar* str);
+	inline static size_t StrLenInBytes(const SHVChar* str);
 	static int    StrCmp(const SHVChar* str1,const SHVChar* str2);
 	static int    StrCaseCmp(const SHVChar* str1,const SHVChar* str2);
 	static SHVChar* StrCat(SHVChar* dest, const SHVChar* source);
@@ -227,37 +214,29 @@ private:
 	///\endcond
 };
 
-#ifndef __SHIVA_UTILS_STRINGC_INL
-#define __SHIVA_UTILS_STRINGC_INL
-
-
 // ====================================== implementation - SHVStringC ======================================= //
 
 SHVString8C::SHVString8C(const SHVChar* buffer) { Buffer = (SHVChar*)buffer; }
 const SHVChar* SHVString8C::GetBufferConst() const { return Buffer; }
+#ifdef __SHIVA_WIN32
+const char* SHVString8C::GetBufferConstWin32() const { return Buffer; }
+const char* SHVString8C::GetSafeBufferWin32() const  { return GetSafeBuffer(); }
+#endif
 bool SHVString8C::IsNull() const { return Buffer == NULL; }
 bool SHVString8C::IsEmpty() const { return Buffer == NULL || *Buffer == 0; }
-size_t SHVString8C::GetSizeInChars() const { return GetLength(); }
-size_t SHVString8C::GetSizeInBytes() const { return GetLength(); }
+size_t SHVString8C::GetLengthInChars() const { return GetLength(); }
+size_t SHVString8C::GetLengthInBytes() const { return GetLength(); }
 #ifdef __SHIVA_EPOC
 TPtrC8 SHVString8C::ToPtr() const { return TPtrC8((TUint8*)Buffer,GetLength()); }
 #endif
-size_t SHVString8C::StrSizeInChars(const SHVChar* str) { return StrLen(str); }
-size_t SHVString8C::StrSizeInBytes(const SHVChar* str) { return StrLen(str); }
+size_t SHVString8C::StrLenInChars(const SHVChar* str) { return StrLen(str); }
+size_t SHVString8C::StrLenInBytes(const SHVChar* str) { return StrLen(str); }
 
-/*************************************
- * ToStrT
- *************************************/
-SHVStringBuffer SHVString8C::ToStrT() const
-{
-#if __SHVSTRINGDEFAULT == 8
-	return ToStr8();
-#elif __SHVSTRINGDEFAULT == 16
-	return ToStr16();
-#elif __SHVSTRINGDEFAULT == utf8
-	return ToStrUTF8();
-#endif
-}
+SHVStringBuffer8 SHVString8C::RightInChars(size_t len) const { return Right(len); }
+SHVStringBuffer8 SHVString8C::LeftInChars(size_t len) const { return Left(len); }
+SHVStringBuffer8 SHVString8C::MidInChars(size_t first,size_t length) const { return Mid(first,length); }
+long SHVString8C::FindInChars(const SHVString8C& str,long offset) const { return Find(str,offset); }
+long SHVString8C::ReverseFindInChars(const SHVString8C& str) const { return ReverseFind(str); }
 
 
 // ===================================== implementation - SHVStringCRef ===================================== //
@@ -281,10 +260,7 @@ bool SHVString8CRef::operator>=(const SHVString8C str) const { return SHVString8
 SHVStringBuffer8::SHVStringBuffer8() { Buffer = NULL; }
 ///\endcond
 
-#ifndef __SHVSTRING_EXCLUDE_UNICODE
-# include "shvstring16c.h"
-# include "shvstringutf8c.h"
 #endif
-
-#endif
+#ifndef __SHIVA_UTILS_STRING_H
+# include "shvstringc.h"
 #endif

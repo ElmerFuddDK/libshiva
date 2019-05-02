@@ -51,10 +51,12 @@ public:
 #ifdef __SHIVA_WINCE
 private:
 	///\cond INTERNAL
-	static void vwprintf(const SHVWChar* str, SHVVA_LIST args);
+	static void vwprintf(const WCHAR* str, SHVVA_LIST args);
 	static void vprintf(const SHVChar* str, SHVVA_LIST args);
-	static void vfwprintf(FILE* f, const SHVWChar* str, SHVVA_LIST args);
+	static void vfwprintf(FILE* f, const WCHAR* str, SHVVA_LIST args);
 	static void vfprintf(FILE* f, const SHVChar* str, SHVVA_LIST args);
+	static void wprintf(const WCHAR* str, ...);
+	static void fwprintf(FILE* f, const WCHAR* str, ...);
 	///\endcond
 #endif
 };

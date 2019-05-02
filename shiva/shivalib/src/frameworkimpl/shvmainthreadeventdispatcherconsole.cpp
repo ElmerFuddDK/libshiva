@@ -421,19 +421,19 @@ void SHVMainThreadEventDispatcherConsole::OnEvent(SHVEvent* event)
 /***************************
  * Print
  ***************************/
-void SHVMainThreadEventDispatcherConsole::Print(const SHVStringC str)
+void SHVMainThreadEventDispatcherConsole::Print(const SHVString16C str)
 {
 	if (evDispatcherConsole && evDispatcherConsole->boundaries.cx > 0 && evDispatcherConsole->boundaries.cy > 0)
 	{
 		evDispatcherConsole->PrintInternal(str);
 	}
 }
-void SHVMainThreadEventDispatcherConsole::PrintInternal(const SHVStringC str)
+void SHVMainThreadEventDispatcherConsole::PrintInternal(const SHVString16C str)
 {
 SHVMutexLocker l(Lock);
 long pos = 0, oldPos = 0;
-SHVString empty;
-SHVString tmp;
+SHVString16 empty;
+SHVString16 tmp;
 size_t tmpLen;
 
 	if (StringBuffers.GetCount() == 0)
@@ -441,7 +441,7 @@ size_t tmpLen;
 		StringBuffers.AddTail(empty.ReleaseBuffer());
 	}
 
-	for(pos=str.Find(_S("\n")); pos >= 0 && pos < (long)str.GetLength(); oldPos = pos+1, pos=str.Find(_S("\n"),oldPos) )
+	for(pos=str.Find((const SHVWChar*)L"\n"); pos >= 0 && pos < (long)str.GetLength(); oldPos = pos+1, pos=str.Find((const SHVWChar*)L"\n",oldPos) )
 	{
 		tmp = str.Mid((size_t)oldPos,(size_t)(pos-oldPos));
 		while (StringBuffers.GetLast().GetLength() + tmp.GetLength() > (size_t)boundaries.cx)
@@ -468,7 +468,7 @@ size_t tmpLen;
  ***************************/
 SHVBool SHVMainThreadEventDispatcherConsole::CreateDlg()
 {
-SHVString title(_S("SHIVA Console"));
+SHVString16C title(SHVString16C::FromWin32(L"SHIVA Console"));
 int titleLength = title.GetLength();
 HLOCAL templateHandle;
 void* dlgTemplate;
@@ -477,7 +477,7 @@ int len = AlignDWord( sizeof(DLGTEMPLATE) + sizeof(WORD) * 4
 	+ ((titleLength) ? ((titleLength+1)*2 + sizeof(WORD)) : 0)
 	);
 
-	HWND oldWindow = FindWindow(NULL,(const TCHAR*)title.GetSafeBuffer());
+	HWND oldWindow = FindWindowW(NULL,title.GetSafeBufferWin32());
 	///\todo add code to make sure the window is created with the same application as us
 	if (oldWindow) 
 	{
@@ -520,12 +520,7 @@ int len = AlignDWord( sizeof(DLGTEMPLATE) + sizeof(WORD) * 4
 	{
 	WCHAR* titleWChar = (WCHAR*)buffer;
 
-	#ifdef UNICODE
-		wcscpy(titleWChar,(const TCHAR*)title.GetSafeBuffer());
-	#else
-		::mbstowcs(titleWChar,title,titleLength);
-		titleWChar[TitleLength] = 0;
-	#endif
+		wcscpy(titleWChar,title.GetSafeBufferWin32());
 	}
 	else
 	{
@@ -538,7 +533,7 @@ int len = AlignDWord( sizeof(DLGTEMPLATE) + sizeof(WORD) * 4
 	s_sai.cbSize = sizeof(s_sai);
 #endif
 
-	wndConsole = CreateDialogIndirect(GetModuleHandle(NULL), (LPDLGTEMPLATE)dlgTemplate, NULL, &SHVMainThreadEventDispatcherConsole::WinceDlgProc);
+	wndConsole = CreateDialogIndirectW(GetModuleHandle(NULL), (LPDLGTEMPLATE)dlgTemplate, NULL, &SHVMainThreadEventDispatcherConsole::WinceDlgProc);
 
 	LocalUnlock(templateHandle);
 	LocalFree(templateHandle);
@@ -576,7 +571,7 @@ int len = AlignDWord( sizeof(DLGTEMPLATE) + sizeof(WORD) * 4
 	HDC dc = ::GetDC(NULL);
 	int dcBackup = ::SaveDC(dc);
 	SIZE sz;
-	LOGFONT lf;
+	LOGFONTW lf;
 
 #if defined(__SHIVA_WINCE) && (_WIN32_WCE < 500)
 		///\todo Implement a way to get the real message font from the system on windows CE
@@ -592,13 +587,13 @@ int len = AlignDWord( sizeof(DLGTEMPLATE) + sizeof(WORD) * 4
 		SHVVERIFY(::GDIGetObject(stockFont, sizeof(LOGFONT), &lf));
 #endif
 		lf.lfPitchAndFamily = FIXED_PITCH|FF_MODERN;
-		_tcscpy(lf.lfFaceName, _T("MS Shell Dlg"));
+		wcscpy(lf.lfFaceName, L"MS Shell Dlg");
 		Font = ::CreateFontIndirect(&lf);
 		::SendMessage(wndConsole,WM_SETFONT,(WPARAM)Font,0);
 
 		::SelectObject(dc,Font);
 		
-		SHVVERIFY(::GetTextExtentPoint(dc,_T(" "),1,&sz));
+		SHVVERIFY(::GetTextExtentPointW(dc,L" ",1,&sz));
 		fontHeight = sz.cy + 2;
 		fontWidth = sz.cx;
 
@@ -608,7 +603,7 @@ int len = AlignDWord( sizeof(DLGTEMPLATE) + sizeof(WORD) * 4
 	}
 
 	// edit box
-	edtConsole = ::CreateWindowEx(0,_T("EDIT"), _T(""), ES_LEFT|ES_AUTOHSCROLL|WS_TABSTOP|WS_CHILD|WS_VISIBLE,
+	edtConsole = ::CreateWindowExW(0,L"EDIT", L"", ES_LEFT|ES_AUTOHSCROLL|WS_TABSTOP|WS_CHILD|WS_VISIBLE,
 			0, 0, 0, fontHeight, wndConsole, NULL, GetModuleHandle(NULL), NULL);
 	edtProc = (WNDPROC)GetWindowLongPtr(edtConsole,GWLP_WNDPROC);
 	SetWindowLongPtr(edtConsole,GWLP_WNDPROC,(LONG_PTR)&SHVMainThreadEventDispatcherConsole::WinceEditProc);
@@ -703,7 +698,7 @@ INT_PTR retVal = 0;
 			if (evDispatcherConsole)
 			{
 			RECT rect;
-			SHVListIterator<SHVString,SHVStringBuffer> itr(evDispatcherConsole->StringBuffers);
+			SHVListIterator<SHVString16,SHVStringBuffer16> itr(evDispatcherConsole->StringBuffers);
 			bool first = true;
 			int dcBackup = ::SaveDC(hdc);
 
@@ -728,7 +723,7 @@ INT_PTR retVal = 0;
 						if (!evDispatcherConsole->StringBuffers.MovePrev(itr.Pos()))
 							break;
 					}
-					::DrawText(hdc,(const TCHAR*)itr.Get().GetSafeBuffer(),(int)itr.Get().GetLength(),&rect,DT_TOP|DT_SINGLELINE);
+					::DrawTextW(hdc,itr.Get().GetSafeBufferWin32(),(int)itr.Get().GetLength(),&rect,DT_TOP|DT_SINGLELINE);
 					first = false;
 				}
 
@@ -774,11 +769,11 @@ LRESULT retVal = 0;
 	case WM_CHAR:
 		if (wParam == VK_RETURN)
 		{
-		SHVString str;
+		SHVString16 str;
 			str.SetBufferSize(::GetWindowTextLength(hWnd)+1);
-			::GetWindowText(hWnd,(TCHAR*)str.GetBuffer(),::GetWindowTextLength(hWnd)+1);
+			::GetWindowTextW(hWnd,str.GetBufferWin32(),::GetWindowTextLength(hWnd)+1);
 			evDispatcherConsole->Queue->GetModuleList().EmitEvent(new SHVEventStdin(NULL,str.ToStrUTF8()));
-			::SetWindowText(hWnd,_T(""));
+			::SetWindowTextW(hWnd,L"");
 			break;
 		}
 	default:

@@ -21,7 +21,9 @@ class SHVDataRowListCSQLite: public SHVDataRowListC
 {
 public:
 	SHVDataRowListCSQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias);
+#if __SHVSTRINGDEFAULT != utf8
 	SHVDataRowListCSQLite(SHVDataSession* session, const SHVStringC& sql, const SHVDataRowKey* sortKey);
+#endif
 	SHVDataRowListCSQLite(SHVDataSession* session, const SHVStringUTF8C& sql, const SHVDataRowKey* sortKey);
 	SHVDataRowListCSQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias, const SHVStringC& condition, size_t index);
 

@@ -95,10 +95,16 @@ SHVBool SHVSQLiteStatement::GetString(SHVString& text, int& len, int columnIdx) 
  *************************************/
 SHVBool SHVSQLiteStatement::GetColumnName(SHVString& name, int columnIdx) const
 {
-#ifdef UNICODE
-	return GetColumnName16(name, columnIdx);
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return GetColumnName8(name, columnIdx);
+#elif __SHVSTRINGDEFAULT == 16
+	return GetColumnName16(name, columnIdx);
+#elif __SHVSTRINGDEFAULT == utf8
+SHVStringSQLite str(NULL);
+SHVBool retVal = GetColumnNameUTF8(str, columnIdx);
+	if (retVal)
+		name = str;
+	return retVal;
 #endif
 }
 
@@ -107,10 +113,16 @@ SHVBool SHVSQLiteStatement::GetColumnName(SHVString& name, int columnIdx) const
  *************************************/
 SHVBool SHVSQLiteStatement::GetColumnType(SHVString& colType, int columnIdx) const
 {
-#ifdef UNICODE
-	return GetColumnType16(colType, columnIdx);
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return GetColumnType8(colType, columnIdx);
+#elif __SHVSTRINGDEFAULT == 16
+	return GetColumnType16(colType, columnIdx);
+#elif __SHVSTRINGDEFAULT == utf8
+SHVStringSQLite str(NULL);
+SHVBool retVal = GetColumnTypeUTF8(str, columnIdx);
+	if (retVal)
+		colType = str;
+	return retVal;
 #endif
 }
 

@@ -451,7 +451,7 @@ SHVStringBuffer SHVTime::Format(const SHVStringC s) const
 	///\todo Optimize SHVTime::Format for CE, and use that optimized code on all platforms to avoid the output string size limit
 #if defined(__SHIVA_WINCE)
 SYSTEMTIME sysTime;
-TCHAR buffer[__SHVTIME_MAXDATESTR];
+SHVTChar buffer[__SHVTIME_MAXDATESTR];
 SHVString retVal(s);
 
 	sysTime.wYear      = GetYear();
@@ -474,7 +474,7 @@ SHVString retVal(s);
 	// abbreviated weekday name
 	if (s.Find(_S("%a")) >= 0)
 	{
-		if (::GetDateFormat(LOCALE_USER_DEFAULT,0,&sysTime,_T("ddd"),buffer,__SHVTIME_MAXDATESTR))
+		if (GetDateFormatS(LOCALE_USER_DEFAULT,0,&sysTime,_S("ddd"),buffer,__SHVTIME_MAXDATESTR))
 		{
 			retVal.Replace(_S("%a"),(const SHVTChar*)buffer);
 		}
@@ -483,7 +483,7 @@ SHVString retVal(s);
 	// full weekday name
 	if (s.Find(_S("%A")) >= 0)
 	{
-		if (::GetDateFormat(LOCALE_USER_DEFAULT,0,&sysTime,_T("dddd"),buffer,__SHVTIME_MAXDATESTR))
+		if (GetDateFormatS(LOCALE_USER_DEFAULT,0,&sysTime,_S("dddd"),buffer,__SHVTIME_MAXDATESTR))
 		{
 			retVal.Replace(_S("%A"),(const SHVTChar*)buffer);
 		}
@@ -492,7 +492,7 @@ SHVString retVal(s);
 	// abbreviated month name
 	if (s.Find(_S("%b")) >= 0 || s.Find(_S("%h")) >= 0)
 	{
-		if (::GetDateFormat(LOCALE_USER_DEFAULT,0,&sysTime,_T("MMM"),buffer,__SHVTIME_MAXDATESTR))
+		if (GetDateFormatS(LOCALE_USER_DEFAULT,0,&sysTime,_S("MMM"),buffer,__SHVTIME_MAXDATESTR))
 		{
 			retVal.Replace(_S("%b"),(const SHVTChar*)buffer);
 			retVal.Replace(_S("%h"),(const SHVTChar*)buffer);
@@ -502,7 +502,7 @@ SHVString retVal(s);
 	// full month name
 	if (s.Find(_S("%B")) >= 0)
 	{
-		if (::GetDateFormat(LOCALE_USER_DEFAULT,0,&sysTime,_T("MMMM"),buffer,__SHVTIME_MAXDATESTR))
+		if (GetDateFormatS(LOCALE_USER_DEFAULT,0,&sysTime,_S("MMMM"),buffer,__SHVTIME_MAXDATESTR))
 		{
 			retVal.Replace(_S("%B"),(const SHVTChar*)buffer);
 		}
@@ -511,13 +511,15 @@ SHVString retVal(s);
 	// preferred date and time representation
 	if (s.Find(_S("%c")) >= 0)
 	{
-	int len = ::GetDateFormat(LOCALE_USER_DEFAULT,DATE_SHORTDATE,&sysTime,NULL,buffer,__SHVTIME_MAXDATESTR);
+	int len = GetDateFormatS(LOCALE_USER_DEFAULT,DATE_SHORTDATE,&sysTime,NULL,buffer,__SHVTIME_MAXDATESTR);
 
 		if (len)
 		{
 			buffer[len-1] = ' ';
-			if (::GetTimeFormat(LOCALE_USER_DEFAULT,TIME_NOSECONDS,&sysTime,NULL,buffer+len,__SHVTIME_MAXDATESTR-len))
+			if (GetTimeFormatS(LOCALE_USER_DEFAULT,TIME_NOSECONDS,&sysTime,NULL,buffer+len,__SHVTIME_MAXDATESTR-len))
+			{
 				retVal.Replace(_S("%c"),(const SHVTChar*)buffer);
+			}
 		}
 	}
 
@@ -536,7 +538,7 @@ SHVString retVal(s);
 	// mm/dd/yy or similar, according to locale
 	if (s.Find(_S("%D")) >= 0)
 	{
-		if (::GetDateFormat(LOCALE_USER_DEFAULT,DATE_SHORTDATE,&sysTime,NULL,buffer,__SHVTIME_MAXDATESTR))
+		if (GetDateFormatS(LOCALE_USER_DEFAULT,DATE_SHORTDATE,&sysTime,NULL,buffer,__SHVTIME_MAXDATESTR))
 		{
 			retVal.Replace(_S("%D"),(const SHVTChar*)buffer);
 		}
@@ -655,7 +657,7 @@ SHVString retVal(s);
 	// preferred date representation
 	if (s.Find(_S("%x")) >= 0)
 	{
-		if (::GetDateFormat(LOCALE_USER_DEFAULT,DATE_SHORTDATE,&sysTime,NULL,buffer,__SHVTIME_MAXDATESTR))
+		if (GetDateFormatS(LOCALE_USER_DEFAULT,DATE_SHORTDATE,&sysTime,NULL,buffer,__SHVTIME_MAXDATESTR))
 		{
 			retVal.Replace(_S("%x"),(const SHVTChar*)buffer);
 		}
@@ -664,7 +666,7 @@ SHVString retVal(s);
 	// preferred time representation
 	if (s.Find(_S("%X")) >= 0)
 	{
-		if (::GetTimeFormat(LOCALE_USER_DEFAULT,TIME_NOSECONDS,&sysTime,NULL,buffer,__SHVTIME_MAXDATESTR))
+		if (GetTimeFormatS(LOCALE_USER_DEFAULT,TIME_NOSECONDS,&sysTime,NULL,buffer,__SHVTIME_MAXDATESTR))
 		{
 			retVal.Replace(_S("%X"),(const SHVTChar*)buffer);
 		}
@@ -690,8 +692,8 @@ SHVTChar* retVal = (SHVTChar*)::malloc(__SHVTIME_MAXDATESTR*sizeof(SHVTChar));
 
 	retVal[0] = 0;
 
-# if defined(UNICODE)
-	wcsftime((TCHAR*)retVal,__SHVTIME_MAXDATESTR,(TCHAR*)s.GetSafeBuffer(),&Time);
+# if __SHVSTRINGDEFAULT == 16
+	wcsftime((WCHAR*)retVal,__SHVTIME_MAXDATESTR,s.GetSafeBufferWin32(),&Time);
 # else
 	strftime(retVal,__SHVTIME_MAXDATESTR,s.GetSafeBuffer(),&Time);
 # endif
@@ -1447,6 +1449,50 @@ int daysInMonth = DaysInMonth(t->tm_mon,t->tm_year);
 	}
 
 	return true;
+}
+#endif
+#ifdef __SHIVA_WIN32
+int SHVTime::GetTimeFormatS(LCID Locale, DWORD dwFlags, CONST SYSTEMTIME *lpTime, const SHVTChar* lpFormat, SHVTChar* lpTimeStr, int cchTime)
+{
+int retVal;
+#if defined(__SHIVA_WINCE) && __SHVSTRINGDEFAULT != 16
+SHVWChar buffer[__SHVTIME_MAXDATESTR];
+SHVString16 format(SHVStringC(lpFormat).ToStr16());
+	SHVASSERT(__SHVTIME_MAXDATESTR >= cchTime);
+	if ((retVal = ::GetTimeFormatW(Locale,dwFlags,lpTime,(const WCHAR*)format.GetBufferConst(),(WCHAR*)buffer,cchTime)))
+	{
+		for (SHVWChar* bufIn=buffer;*bufIn;bufIn++,lpTimeStr++)
+		{
+			*lpTimeStr = (SHVChar)*bufIn;
+		}
+	}
+#elif __SHVSTRINGDEFAULT == 16
+	retVal = ::GetTimeFormatW(Locale,dwFlags,lpTime,(const WCHAR*)lpFormat,(WCHAR*)lpTimeStr,cchTime);
+#else
+	retVal = ::GetTimeFormatA(Locale,dwFlags,lpTime,lpFormat,lpTimeStr,cchTime);
+#endif
+	return retVal;
+}
+int SHVTime::GetDateFormatS(LCID Locale, DWORD dwFlags, CONST SYSTEMTIME *lpDate, const SHVTChar* lpFormat, SHVTChar* lpDateStr, int cchDate)
+{
+int retVal;
+#if defined(__SHIVA_WINCE) && __SHVSTRINGDEFAULT != 16
+SHVWChar buffer[__SHVTIME_MAXDATESTR];
+SHVString16 format(SHVStringC(lpFormat).ToStr16());
+	SHVASSERT(__SHVTIME_MAXDATESTR >= cchDate);
+	if ((retVal = ::GetDateFormatW(Locale,dwFlags,lpDate,(const WCHAR*)format.GetBufferConst(),(WCHAR*)buffer,cchDate)))
+	{
+		for (SHVWChar* bufIn=buffer;*bufIn;bufIn++,lpDateStr++)
+		{
+			*lpDateStr = (SHVChar)*bufIn;
+		}
+	}
+#elif __SHVSTRINGDEFAULT == 16
+	retVal = ::GetDateFormatW(Locale,dwFlags,lpDate,(const WCHAR*)lpFormat,(WCHAR*)lpDateStr,cchDate);
+#else
+	retVal = ::GetDateFormatA(Locale,dwFlags,lpDate,lpFormat,lpDateStr,cchDate);
+#endif
+	return retVal;
 }
 #endif
 ///\endcond

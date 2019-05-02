@@ -39,6 +39,9 @@
 # include <shellapi.h>
 # if !defined(__SHIVA_WINCE)
 #  include <direct.h>
+# elif !defined(SHELLEXECUTEINFOW)
+#  define SHELLEXECUTEINFOW SHELLEXECUTEINFO
+#  define ShellExecuteExW ShellExecuteEx
 # endif
 # ifndef INVALID_FILE_ATTRIBUTES
 #  define INVALID_FILE_ATTRIBUTES ((DWORD)-1)
@@ -69,6 +72,11 @@ const char* argv[] = { "sh", "-c", NULL, NULL }; argv[2] = cmd;
 # else
 int SHVDir_system(const char* cmd) { return ::system(cmd); }
 # endif
+#endif
+
+// It is assumed that the file system is utf8 when running posix - so not possible to run utf8 native string and 8bit FS
+#if !defined(FSUTF8MODE) && defined(__SHIVA_POSIX) && __SHVSTRINGDEFAULT == utf8
+# error Invalid string configuration for shvdir
 #endif
 
 
@@ -195,9 +203,9 @@ SHVStringC wc(wildcard.GetBufferConst());
 		wc.GetSafeBuffer());
 
 #if defined(__SHIVA_WIN32)
-WIN32_FIND_DATA lpData;
+WIN32_FIND_DATAW lpData;
 int num;
-HANDLE handle = ::FindFirstFile((const TCHAR*)fileName.GetSafeBuffer(), &lpData);
+HANDLE handle = ::FindFirstFileW(fileName.AsStr16C().GetSafeBufferWin32(), &lpData);
 
 	num = lpData.dwFileAttributes;	// what we're doing here is isolating the bit
 	num >>= 4;						// that tells us if the handle points to a 
@@ -206,23 +214,47 @@ HANDLE handle = ::FindFirstFile((const TCHAR*)fileName.GetSafeBuffer(), &lpData)
 	if(handle != INVALID_HANDLE_VALUE)
 	{
 		if(num != 1)
-			files.AddTail((SHVTChar*)lpData.cFileName);
+		{
+# if __SHVSTRINGDEFAULT == 16
+			files.AddTail((SHVWChar*)lpData.cFileName);
+# else
+			files.AddTail(SHVString16C((SHVWChar*)lpData.cFileName).ToStrT());
+# endif
+		}
 		else if (SHVStringC(_S(".")).Compare((SHVTChar*)lpData.cFileName))
-			dirs.AddTail((SHVTChar*)lpData.cFileName);
+		{
+# if __SHVSTRINGDEFAULT == 16
+			dirs.AddTail((SHVWChar*)lpData.cFileName);
+# else
+			dirs.AddTail(SHVString16C((SHVWChar*)lpData.cFileName).ToStrT());
+# endif
+		}
 	}
 
 	while(handle != INVALID_HANDLE_VALUE)
 	{
-		if(::FindNextFile(handle, &lpData) )
+		if(::FindNextFileW(handle, &lpData) )
 		{
 			num = lpData.dwFileAttributes;	// what we're doing here is isolating the bit
 			num >>= 4;						// that tells us if the handle points to a 
 			num &= 0x00000001;				// directory
 
 			if(num != 1)
-				files.AddTail((SHVTChar*)lpData.cFileName);
+			{
+# if __SHVSTRINGDEFAULT == 16
+				files.AddTail((SHVWChar*)lpData.cFileName);
+# else
+				files.AddTail(SHVString16C((SHVWChar*)lpData.cFileName).ToStrT());
+# endif
+			}
 			else if (SHVStringC(_S("..")).Compare((SHVTChar*)lpData.cFileName))
-				dirs.AddTail((SHVTChar*)lpData.cFileName);
+			{
+# if __SHVSTRINGDEFAULT == 16
+				dirs.AddTail((SHVWChar*)lpData.cFileName);
+# else
+				dirs.AddTail(SHVString16C((SHVWChar*)lpData.cFileName).ToStrT());
+# endif
+			}
 		}
 		else
 			break;
@@ -254,7 +286,7 @@ CDir* dirList;
 DIR *dp;
 struct dirent *ep;
 struct stat fStat;
-#ifdef FSUTF8MODE
+#if defined(FSUTF8MODE) && __SHVSTRINGDEFAULT != utf8
 SHVString dirName;
 SHVStringUTF8 wcn(wc.ToStrUTF8());
 
@@ -345,17 +377,17 @@ SHVBool retVal;
 	else
 	{
 #ifdef __SHIVA_WIN32
-		retVal = (::MoveFile((const TCHAR*)from.GetSafeBuffer(),(const TCHAR*)to.GetSafeBuffer()) ? SHVBool::True : SHVBool::False);
+		retVal = (::MoveFileW(from.AsStr16C().GetSafeBufferWin32(),to.AsStr16C().GetSafeBufferWin32()) ? SHVBool::True : SHVBool::False);
 
 #elif defined __SHIVA_EPOC
 	RFs fs;
 		fs.Connect();
 	
-		retVal = ( fs.Rename(from.ToPtr(),to.ToPtr()) ? SHVBool::False : SHVBool::True );
+		retVal = ( fs.Rename(from.ToStr16().ToPtr(),to.ToStr16().ToPtr()) ? SHVBool::False : SHVBool::True );
 #elif defined FSUTF8MODE
-		retVal = ( rename(from.ToStrUTF8().GetSafeBuffer(),to.ToStrUTF8().GetSafeBuffer()) ? SHVBool::False : SHVBool::True );
+		retVal = ( rename(from.AsStrUTF8C().GetSafeBuffer(),to.AsStrUTF8C().GetSafeBuffer()) ? SHVBool::False : SHVBool::True );
 #else
-		retVal = ( rename(from.GetSafeBuffer(),to.GetSafeBuffer()) ? SHVBool::False : SHVBool::True );
+		retVal = ( rename(from.AsStr8C().GetSafeBuffer(),to.AsStr8C().GetSafeBuffer()) ? SHVBool::False : SHVBool::True );
 #endif
 	}
 
@@ -386,7 +418,7 @@ SHVBool retVal;
 	else
 	{
 #ifdef __SHIVA_WIN32
-		retVal = (::CopyFile((const TCHAR*)from.GetSafeBuffer(),(const TCHAR*)to.GetSafeBuffer(),TRUE) ? SHVBool::True : SHVBool::False);
+		retVal = (::CopyFileW(from.AsStr16C().GetSafeBufferWin32(),to.AsStr16C().GetSafeBufferWin32(),TRUE) ? SHVBool::True : SHVBool::False);
 #else
 	SHVFileBase filefrom,fileto;
 	bool ok = true;
@@ -427,17 +459,13 @@ SHVBool retVal;
 		if (dirName.Right(1) == Delimiter())
 			retVal = SHVDir::CreateDir(dirName.Left(dirName.GetLength()-1));
 		else
-			retVal = (::CreateDirectory((const TCHAR*)dirName.GetSafeBuffer(),NULL) ? SHVBool::True :  SHVBool::False);
+			retVal = (::CreateDirectoryW(dirName.AsStr16C().GetSafeBufferWin32(),NULL) ? SHVBool::True :  SHVBool::False);
 #elif defined __SHIVA_EPOC
-# ifdef UNICODE
-		retVal = (wmkdir((wchar_t*)(WCHAR*)dirName.GetSafeBuffer(),0777) == 0);
-# else
-		retVal = (mkdir(dirName.GetSafeBuffer(),0777) == 0);
-# endif
+		retVal = (wmkdir((wchar_t*)dirName.AsStr16C().GetSafeBuffer(),0777) == 0);
 #elif defined(FSUTF8MODE)
-		retVal = (mkdir(dirName.ToStrUTF8().GetSafeBuffer(),0777) == 0);
+		retVal = (mkdir(dirName.AsStrUTF8C().GetSafeBuffer(),0777) == 0);
 #else
-		retVal = (mkdir(dirName.GetSafeBuffer(),0777) == 0);
+		retVal = (mkdir(dirName.AsStr8C().GetSafeBuffer(),0777) == 0);
 #endif
 	}
 
@@ -459,13 +487,13 @@ SHVBool retVal;
 	else
 	{
 #ifdef __SHIVA_WIN32
-		retVal = (::RemoveDirectory((const TCHAR*)dirName.GetSafeBuffer()) ? SHVBool::True : SHVBool::False);
-#elif defined(UNICODE)
-		retVal = (wremove((const TCHAR*)dirName.GetSafeBuffer()) ? SHVBool::False : SHVBool::True);
+		retVal = (::RemoveDirectoryW(dirName.AsStr16C().GetSafeBufferWin32()) ? SHVBool::True : SHVBool::False);
+#elif defined(__SHIVA_EPOC)
+		retVal = (wremove(dirName.AsStr16C().GetSafeBufferWin32()) ? SHVBool::False : SHVBool::True);
 #elif defined(FSUTF8MODE)
-		retVal = (remove(dirName.ToStrUTF8().GetSafeBuffer()) ? SHVBool::False : SHVBool::True);
+		retVal = (remove(dirName.AsStrUTF8C().GetSafeBuffer()) ? SHVBool::False : SHVBool::True);
 #else
-		retVal = (remove(dirName.GetSafeBuffer()) ? SHVBool::False : SHVBool::True);
+		retVal = (remove(dirName.AsStr8C().GetSafeBuffer()) ? SHVBool::False : SHVBool::True);
 #endif
 	}
 
@@ -481,13 +509,11 @@ SHVBool SHVDir::ChangeDir(const SHVStringC dirName)
 SHVBool retVal(SHVBool::False);
 #if defined(__SHIVA_WINCE)
 #elif defined(__SHIVA_WIN32)
-# ifdef UNICODE
-	retVal = _wchdir((WCHAR*)dirName.GetBufferConst()) == 0;
-# else
-	retVal = _chdir(dirName.GetBufferConst()) == 0;
-# endif
+	retVal = _wchdir(dirName.ToStr16().GetBufferConstWin32()) == 0;
+#elif defined(FSUTF8MODE)
+retVal = chdir(dirName.AsStrUTF8C().GetBufferConst()) == 0;
 #else
-	retVal = chdir(dirName.GetBufferConst()) == 0;
+	retVal = chdir(dirName.AsStr8C().GetBufferConst()) == 0;
 #endif
 	return retVal;
 }
@@ -523,7 +549,7 @@ SHVBool SHVDir::GetModifyTime(const SHVStringC fileName, SHVTime& stamp)
 SHVBool retVal(SHVBool::False);
 #ifdef __SHIVA_WIN32
 HANDLE f;
-	if ((f = CreateFile((const TCHAR*)fileName.GetSafeBuffer(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL)))
+	if ((f = CreateFileW(fileName.AsStr16C().GetSafeBufferWin32(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL)))
 	{
 	FILETIME mTime;
 
@@ -544,16 +570,16 @@ HANDLE f;
 
 		CloseHandle(f);
 	}
-#elif defined(UNICODE)
+#elif defined(__SHIVA_EPOC)
 struct stat fileStat;
 	stamp.SetNull();
-	if (!wstat( fileName.GetSafeBuffer(), &fileStat ))
+	if (!wstat( fileName.ToStr16().GetSafeBuffer(), &fileStat ))
 	{
 		retVal.SetError(SHVBool::True);
 		stamp = SHVTime::FromUnixTime(fileStat.st_mtime);
 	}
 #else
-# ifdef FSUTF8MODE
+# if defined(FSUTF8MODE) && __SHVSTRINGDEFAULT != utf8
 SHVStringUTF8 fName(fileName.ToStrUTF8());
 # else
 const SHVStringC fName(fileName);
@@ -589,13 +615,15 @@ SHVBool retVal;
 	else
 	{
 #ifdef __SHIVA_WINCE
-		retVal = (::DeleteFile((const TCHAR*)fileName.GetSafeBuffer()) ? SHVBool::True : SHVBool::False);
-#elif defined(UNICODE)
-		retVal = (wremove((const TCHAR*)fileName.GetSafeBuffer()) ? SHVBool::False : SHVBool::True);
+		retVal = (::DeleteFileW(fileName.AsStr16C().GetSafeBufferWin32()) ? SHVBool::True : SHVBool::False);
+#elif defined(__SHIVA_WIN32)
+		retVal = (wremove(fileName.AsStr16C().GetSafeBufferWin32()) ? SHVBool::False : SHVBool::True);
+#elif defined(__SHIVA_EPOC)
+		retVal = (wremove((const WCHAR*)fileName.AsStr16C().GetSafeBuffer()) ? SHVBool::False : SHVBool::True);
 #elif defined(FSUTF8MODE)
-		retVal = (remove(fileName.ToStrUTF8().GetSafeBuffer()) ? SHVBool::False : SHVBool::True);
+		retVal = (remove(fileName.AsStrUTF8C().GetSafeBuffer()) ? SHVBool::False : SHVBool::True);
 #else
-		retVal = (remove(fileName.GetSafeBuffer()) ? SHVBool::False : SHVBool::True);
+		retVal = (remove(fileName.AsStr8C().GetSafeBuffer()) ? SHVBool::False : SHVBool::True);
 #endif
 	}
 
@@ -613,17 +641,17 @@ SHVBool retVal;
 bool SHVDir::FileExist(const SHVStringC fileName)
 {
 #ifdef __SHIVA_WIN32
-DWORD attrib = ::GetFileAttributes( (const TCHAR*)fileName.GetSafeBuffer()); // returns 0xFFFFFFFF on failure
+DWORD attrib = ::GetFileAttributesW( fileName.AsStr16C().GetSafeBufferWin32()); // returns 0xFFFFFFFF on failure
 	return ( !(attrib&FILE_ATTRIBUTE_DIRECTORY) );
-#elif defined(UNICODE)
+#elif defined(__SHIVA_EPOC)
 struct stat fileStat;
-	return ( !wstat( fileName.GetSafeBuffer(), &fileStat ) && fileStat.st_mode&S_IFREG );
+	return ( !wstat( fileName.AsStr16C().GetSafeBuffer(), &fileStat ) && fileStat.st_mode&S_IFREG );
 #elif defined(FSUTF8MODE)
 struct stat fileStat;
-	return ( !stat( fileName.ToStrUTF8().GetSafeBuffer(), &fileStat ) && fileStat.st_mode&S_IFREG );
+	return ( !stat( fileName.AsStrUTF8C().GetSafeBuffer(), &fileStat ) && fileStat.st_mode&S_IFREG );
 #else
 struct stat fileStat;
-	return ( !stat( fileName.GetSafeBuffer(), &fileStat ) && fileStat.st_mode&S_IFREG );
+	return ( !stat( fileName.AsStr8C().GetSafeBuffer(), &fileStat ) && fileStat.st_mode&S_IFREG );
 #endif
 }
 
@@ -638,17 +666,17 @@ struct stat fileStat;
 bool SHVDir::DirExist(const SHVStringC fileName)
 {
 #ifdef __SHIVA_WIN32
-DWORD attrib = ::GetFileAttributes( (const TCHAR*)fileName.GetSafeBuffer()); // returns 0xFFFFFFFF on failure
+DWORD attrib = ::GetFileAttributesW( fileName.AsStr16C().GetSafeBufferWin32()); // returns 0xFFFFFFFF on failure
 	return ( attrib != INVALID_FILE_ATTRIBUTES && (attrib&FILE_ATTRIBUTE_DIRECTORY) );
-#elif defined(UNICODE)
+#elif defined(__SHIVA_EPOC)
 struct stat fileStat;
-	return ( !wstat( fileName.GetSafeBuffer(), &fileStat ) && fileStat.st_mode&S_IFDIR );
+	return ( !wstat( fileName.AsStr16C().GetSafeBufferWin32(), &fileStat ) && fileStat.st_mode&S_IFDIR );
 #elif defined(FSUTF8MODE)
 struct stat fileStat;
-	return ( !stat( fileName.ToStrUTF8().GetSafeBuffer(), &fileStat ) && fileStat.st_mode&S_IFDIR );
+	return ( !stat( fileName.AsStrUTF8C().GetSafeBuffer(), &fileStat ) && fileStat.st_mode&S_IFDIR );
 #else
 struct stat fileStat;
-	return ( !stat( fileName.GetSafeBuffer(), &fileStat ) && fileStat.st_mode&S_IFDIR );
+	return ( !stat( fileName.AsStr8C().GetSafeBuffer(), &fileStat ) && fileStat.st_mode&S_IFDIR );
 #endif
 }
 
@@ -664,17 +692,18 @@ struct stat fileStat;
 void SHVDir::ExecuteFile(const SHVStringC fileName)
 {
 #if defined(__SHIVA_WIN32)
-SHELLEXECUTEINFO info;
-SHVString path = SHVDir::ExtractPath(fileName);
+SHELLEXECUTEINFOW info;
+SHVString16 fileNameW = fileName.ToStr16();
+SHVString16 pathW = SHVDir::ExtractPath(fileName).ToStr16();
 
-	memset(&info, 0, sizeof(SHELLEXECUTEINFO));
-	info.cbSize = sizeof(SHELLEXECUTEINFO);
+	memset(&info, 0, sizeof(SHELLEXECUTEINFOW));
+	info.cbSize = sizeof(SHELLEXECUTEINFOW);
 	info.fMask  = SEE_MASK_NOCLOSEPROCESS;
-	info.lpVerb = _T("open");
-	info.lpFile = (const TCHAR*)fileName.GetSafeBuffer();
-	info.lpDirectory = (const TCHAR*)path.GetSafeBuffer();
+	info.lpVerb = L"open";
+	info.lpFile = fileNameW.GetSafeBufferWin32();
+	info.lpDirectory = pathW.GetSafeBufferWin32();
 	info.nShow = SW_SHOWNORMAL;
-	ShellExecuteEx(&info);
+	ShellExecuteExW(&info);
 
 #elif defined(FSUSEPOSIXSPAWN)
 pid_t pid;
@@ -755,21 +784,23 @@ long pos = fileName.ReverseFind(SHVDir::Delimiter());
 void SHVDir::Execute(const SHVStringC program, const SHVStringC args)
 {
 #if defined(__SHIVA_WIN32)
-SHELLEXECUTEINFO info;
+SHELLEXECUTEINFOW info;
+SHVString16 programW = program.ToStr16();
+SHVString16 argsW = args.ToStr16();
 	
-	memset(&info, 0, sizeof(SHELLEXECUTEINFO));
-	info.cbSize = sizeof(SHELLEXECUTEINFO);
-	info.lpFile = (const TCHAR*)program.GetSafeBuffer();
-	info.lpParameters = (const TCHAR*)args.GetSafeBuffer();
+	memset(&info, 0, sizeof(SHELLEXECUTEINFOW));
+	info.cbSize = sizeof(SHELLEXECUTEINFOW);
+	info.lpFile = programW.GetSafeBufferWin32();
+	info.lpParameters = argsW.GetSafeBufferWin32();
 	info.nShow = SW_SHOWNORMAL;
-	ShellExecuteEx(&info);
+	ShellExecuteExW(&info);
 #elif defined(__SHIVA_EPOC)
 	///\todo Implement SHVDir::Execute for symbian
 #else
 SHVString execstr;
 	execstr.Format(_S("%s %s &"), EscapeParameter(program).GetSafeBuffer(), args.GetSafeBuffer());
 # ifdef FSUTF8MODE
-	::SHVDir_system(execstr.ToStrUTF8().GetSafeBuffer());
+	::SHVDir_system(execstr.AsStrUTF8C().GetSafeBuffer());
 # else
 	::SHVDir_system(execstr.GetSafeBuffer());
 # endif
@@ -783,24 +814,25 @@ SHVString execstr;
 void SHVDir::Execute(const SHVStringC program, SHVFileList& args)
 {
 #if defined(__SHIVA_WIN32)
-SHELLEXECUTEINFO info;
-SHVString arg;
+SHELLEXECUTEINFOW info;
+SHVString16 programW = program.ToStr16();
+SHVString16 argW;
 SHVFileListIterator itr(args);
 
 	while (itr.MoveNext())
 	{
-		if (arg.IsNull())
-			arg = itr.Get();
+		if (argW.IsNull())
+			argW = itr.Get().ToStr16();
 		else
-			arg += _S(" ") + itr.Get();
+			argW += (const SHVWChar*)L" " + itr.Get().ToStr16();
 	}
 
-	memset(&info, 0, sizeof(SHELLEXECUTEINFO));
-	info.cbSize = sizeof(SHELLEXECUTEINFO);
-	info.lpFile = (const TCHAR*)program.GetSafeBuffer();
-	info.lpParameters = (const TCHAR*)arg.GetSafeBuffer();
+	memset(&info, 0, sizeof(SHELLEXECUTEINFOW));
+	info.cbSize = sizeof(SHELLEXECUTEINFOW);
+	info.lpFile = programW.GetSafeBufferWin32();
+	info.lpParameters = argW.GetSafeBufferWin32();
 	info.nShow = SW_SHOWNORMAL;
-	ShellExecuteEx(&info);
+	ShellExecuteExW(&info);
 #elif defined(__SHIVA_EPOC)
 	///\todo Implement SHVDir::Execute for symbian
 #elif defined(FSUSEPOSIXSPAWN)
@@ -870,9 +902,9 @@ SHVString execstr;
 SHVString execstr;
 	execstr.Format(_S("%s %s"), EscapeParameter(program).GetSafeBuffer(), args.GetSafeBuffer());
 # ifdef FSUTF8MODE
-	retVal = ::SHVDir_system(execstr.ToStrUTF8().GetSafeBuffer());
+	retVal = ::SHVDir_system(execstr.AsStrUTF8C().GetSafeBuffer());
 # else
-	retVal = ::SHVDir_system(execstr.GetSafeBuffer());
+	retVal = ::SHVDir_system(execstr.AsStr8C().GetSafeBuffer());
 # endif
 #endif
 	return retVal;

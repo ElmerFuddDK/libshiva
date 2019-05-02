@@ -83,14 +83,14 @@ int SHVControlImplementerCheckboxGtk::GetSubType(SHVControl* owner)
  *************************************/
 SHVStringBuffer SHVControlImplementerCheckboxGtk::GetText()
 {
-SHVStringUTF8 retVal;
+SHVString retVal;
 
 	if (IsCreated())
 	{
-		retVal = gtk_button_get_label(GTK_BUTTON (GetHandle()));
+		retVal = SHVStringUTF8C(gtk_button_get_label(GTK_BUTTON (GetHandle()))).ToStrT();
 	}
 
-	return retVal.ToStrT();
+	return retVal.ReleaseBuffer();
 }
 
 /*************************************
@@ -104,7 +104,7 @@ void SHVControlImplementerCheckboxGtk::SetText(SHVControlCheckbox* owner, const 
 
 	if (IsCreated())
 	{
-		gtk_button_set_label(GTK_BUTTON (GetHandle()), text.ToStrUTF8().GetSafeBuffer());
+		gtk_button_set_label(GTK_BUTTON (GetHandle()), text.AsStrUTF8C().GetSafeBuffer());
 		
 		if (autoSize)
 		{

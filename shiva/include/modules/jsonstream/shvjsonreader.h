@@ -126,10 +126,12 @@ bool SHVJsonReaderCallback<T>::PerformCallback(SHVJsonReader& reader)
  *************************************/
 SHVStringBuffer SHVJsonKeyValuePair::GetName() const
 {
-#ifdef UNICODE
-	return GetName16();
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return GetName8();
+#elif __SHVSTRINGDEFAULT == 16
+	return GetName16();
+#elif __SHVSTRINGDEFAULT == utf8
+	return GetNameUTF8();
 #endif
 }
 /*************************************
@@ -137,10 +139,12 @@ SHVStringBuffer SHVJsonKeyValuePair::GetName() const
  *************************************/
 SHVStringBuffer SHVJsonKeyValuePair::AsString() const
 {
-#ifdef UNICODE
-	return AsString16();
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return AsString8();
+#elif __SHVSTRINGDEFAULT == 16
+	return AsString16();
+#elif __SHVSTRINGDEFAULT == utf8
+	return AsStringUTF8();
 #endif
 }
 

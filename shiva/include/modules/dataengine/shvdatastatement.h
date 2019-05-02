@@ -115,10 +115,12 @@ SHVStringUTF8C res(NULL);
  *************************************/
 SHVBool SHVDataStatement::GetColumnName(SHVString& name, int columnIdx) const
 {
-#ifdef UNICODE
-	return GetColumnName16(name, columnIdx);
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return GetColumnName8(name, columnIdx);
+#elif __SHVSTRINGDEFAULT == 16
+	return GetColumnName16(name, columnIdx);
+#elif __SHVSTRINGDEFAULT == utf8
+	return GetColumnNameUTF8(name, columnIdx);
 #endif
 }
 
@@ -127,10 +129,16 @@ SHVBool SHVDataStatement::GetColumnName(SHVString& name, int columnIdx) const
  *************************************/
 SHVBool SHVDataStatement::GetColumnType(SHVString& colType, int columnIdx) const
 {
-#ifdef UNICODE
-	return GetColumnType16(colType, columnIdx);
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return GetColumnType8(colType, columnIdx);
+#elif __SHVSTRINGDEFAULT == 16
+	return GetColumnType16(colType, columnIdx);
+#elif __SHVSTRINGDEFAULT == utf8
+SHVStringUTF8C str(NULL);
+SHVBool retVal = GetColumnTypeUTF8(str, columnIdx);
+	if (retVal)
+		colType = str;
+	return retVal;
 #endif
 }
 

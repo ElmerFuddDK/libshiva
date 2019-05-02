@@ -163,7 +163,11 @@ SHVBool retVal(SHVBool::False);
 	Unload();
 
 #if defined(__SHIVA_WIN32)
-	hDll = ::LoadLibrary((const TCHAR*)libFile.GetBufferConst());
+# ifdef UNICODE
+	hDll = ::LoadLibrary(libFile.AsStr16C().GetBufferConstWin32());
+# else
+	hDll = ::LoadLibrary(libFile.AsStr8C().GetBufferConstWin32());
+# endif
 	retVal = IsLoaded();
 #elif defined(__SHIVA_POSIX)
 	dlerror(); // reset error
@@ -173,9 +177,10 @@ SHVBool retVal(SHVBool::False);
 #elif defined(__SHIVA_EPOC)
 TInt errNum;
 TParse parse;
+SHVString16 libFile16 = libFile.ToStr16();
 
 	hDll = new RLibrary();
-	parse.Set(libFile.ToPtr(),NULL,NULL);
+	parse.Set(libFile16.ToPtr(),NULL,NULL);
 
 	retVal = ( (errNum = hDll->Load(parse.FullName())) == KErrNone);
 #endif
@@ -217,12 +222,19 @@ SHVBool retVal(SHVBool::False);
 
 	if (IsLoaded())
 	{
-#if defined(__SHIVA_WIN32)
-# if defined(UNICODE) && !defined(__SHIVA_WINCE)
+#if defined(__SHIVA_WINCE)
+# if __SHVSTRINGDEFAULT == 16
+		*symbol = (void*)GetProcAddress(hDll,name.GetBufferConstWin32());
+# else
+	SHVString16 name16(name.ToStr16());
+		*symbol = (void*)GetProcAddress(hDll,name16.GetBufferConstWin32());
+# endif
+#elif defined(__SHIVA_WIN32)
+# if __SHVSTRINGDEFAULT != 8
 	SHVString8 name8(name.ToStr8());
 		*symbol = (void*)GetProcAddress(hDll,name8.GetBufferConst());
 # else
-		*symbol = (void*)GetProcAddress(hDll,(const TCHAR*)name.GetBufferConst());
+		*symbol = (void*)GetProcAddress(hDll,name.GetBufferConst());
 # endif
 #elif defined(__SHIVA_POSIX)
 		*symbol = dlsym(hDll, name.GetBufferConst());

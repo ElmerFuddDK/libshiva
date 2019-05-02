@@ -71,7 +71,7 @@ SHVBool SHVControlImplementerComboBoxWin32::Create(SHVControl* owner, SHVControl
 			break;
 		}
 
-		SetHandle(CreateWindow(_T("COMBOBOX"), _T(""), styles,
+		SetHandle(CreateWindowW(L"COMBOBOX", L"", styles,
 			0, 0, 0, 0, Win32::GetHandle(parent), NULL, Win32::GetInstance(owner), NULL));
 
 		if (IsCreated())
@@ -102,14 +102,8 @@ int SHVControlImplementerComboBoxWin32::GetSubType(SHVControl* owner)
  *************************************/
 SHVStringBuffer SHVControlImplementerComboBoxWin32::GetText(SHVControlComboBox* owner)
 {
-SHVString retVal;
-
 	SHVASSERT(IsCreated());
-
-	retVal.SetBufferSize( GetWindowTextLength(GetHandle())+1 );
-	GetWindowText(GetHandle(),(TCHAR*)retVal.GetBuffer(), (int)retVal.GetBufferLen());
-
-	return retVal.ReleaseBuffer();
+	return GetWindowTextBase();
 }
 
 /*************************************
@@ -118,8 +112,7 @@ SHVString retVal;
 void SHVControlImplementerComboBoxWin32::SetText(SHVControlComboBox* owner, const SHVStringC& text)
 {
 	SHVASSERT(IsCreated());
-
-	SetWindowText(GetHandle(),(const TCHAR*)text.GetSafeBuffer());
+	SetWindowTextBase(text);
 }
 
 /*************************************
@@ -185,8 +178,23 @@ SHVString retVal;
 
 	if (index < GetItemCount(owner))
 	{
+#if defined(UNICODE) && __SHVSTRINGDEFAULT == 16
 		retVal.SetBufferSize(::SendMessage(GetHandle(),CB_GETLBTEXTLEN,(WPARAM)index,0)+1);
 		::SendMessage(GetHandle(),CB_GETLBTEXT,(WPARAM)index,(LPARAM)retVal.GetBuffer());
+#elif !defined(UNICODE) && __SHVSTRINGDEFAULT == 8
+		retVal.SetBufferSize(::SendMessage(GetHandle(),CB_GETLBTEXTLEN,(WPARAM)index,0)+1);
+		::SendMessage(GetHandle(),CB_GETLBTEXT,(WPARAM)index,(LPARAM)retVal.GetBuffer());
+#elif defined(UNICODE)
+	SHVString16 retValW;
+		retValW.SetBufferSize(::SendMessage(GetHandle(),CB_GETLBTEXTLEN,(WPARAM)index,0)+1);
+		::SendMessage(GetHandle(),CB_GETLBTEXT,(WPARAM)index,(LPARAM)retValW.GetBuffer());
+		retVal = retValW.ToStrT();
+#else
+	SHVString8 retValA;
+		retValA.SetBufferSize(::SendMessage(GetHandle(),CB_GETLBTEXTLEN,(WPARAM)index,0)+1);
+		::SendMessage(GetHandle(),CB_GETLBTEXT,(WPARAM)index,(LPARAM)retValA.GetBuffer());
+		retVal = retValA.ToStrT();
+#endif
 	}
 
 	return retVal.ReleaseBuffer();
@@ -213,7 +221,18 @@ SHVRefObject* retVal = NULL;
  *************************************/
 void SHVControlImplementerComboBoxWin32::AddItem(SHVControlComboBox* owner, const SHVStringC str, SHVRefObject* data)
 {
-int idx = (int)::SendMessage(GetHandle(),CB_INSERTSTRING,(WPARAM)-1,(LPARAM)str.GetSafeBuffer());
+int idx;
+#if defined(UNICODE) && __SHVSTRINGDEFAULT == 16
+const SHVString16C strT(str);
+#elif !defined(UNICODE) && __SHVSTRINGDEFAULT == 8
+const SHVString8C strT(str);
+#elif defined(UNICODE)
+SHVString16 strT(str.ToStr16());
+#else
+SHVString8 strT(str.ToStr8());
+#endif
+
+	idx = (int)::SendMessage(GetHandle(),CB_INSERTSTRING,(WPARAM)-1,(LPARAM)strT.GetSafeBuffer());
 
 	if (idx != CB_ERR)
 		::SendMessage(GetHandle(),CB_SETITEMDATA,(WPARAM)idx,(LPARAM)(data ? data->CreateRef() : NULL));

@@ -153,7 +153,7 @@ PangoLayout* layout = pango_layout_new(Context);
 	{
 	int height;
 		pango_layout_set_font_description(layout,Font);
-		pango_layout_set_text(layout,text.ToStrUTF8().GetSafeBuffer(),-1);
+		pango_layout_set_text(layout,text.AsStrUTF8C().GetSafeBuffer(),-1);
 		pango_layout_get_pixel_size(layout,&retVal,&height);
 		g_object_unref(layout);
 	}

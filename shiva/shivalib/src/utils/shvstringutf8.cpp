@@ -30,10 +30,11 @@
 
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
-#include "../../../include/utils/shvstringutf8.h"
+#define __SHIVA_UTILS_STRING_CPP
 #include "../../../include/utils/shvstring.h"
 #include "../../../include/utils/shvlist.h"
-#include "../../../include/utils/shvrefobject.h"
+#undef __SHIVA_UTILS_STRING_CPP
+#include "../../../include/utils/shvstringc.inl"
 
 #include <string.h>
 #include <stdio.h>
@@ -77,6 +78,10 @@ double SHVStringUTF8C::StrToDouble(const SHVChar* str, SHVChar** ptr)
 }
 size_t SHVStringUTF8C::StrLen(const SHVChar* str)
 {
+	return SHVString8C::StrLen(str);
+}
+size_t SHVStringUTF8C::StrLenInChars(const SHVChar* str)
+{
 size_t retVal = 0;
 size_t charLen;
 
@@ -97,6 +102,9 @@ size_t SHVStringUTF8C::SizeOfChars(const char* str, size_t chars)
 const char* offset = str;
 size_t charLen;
 
+	if (!str)
+		return 0;
+
 	while (*offset && chars)
 	{
 		charLen = GetUTF8CharLen(*str);
@@ -112,6 +120,9 @@ const char* end = str + SHVString8C::StrLen(str);
 const char* offset = end;
 size_t utf8Chars;
 size_t charLen;
+
+	if (!str)
+		return 0;
 
 	for(;offset > str && chars;)
 	{
@@ -214,6 +225,50 @@ size_t tlen;
 		{
 			str++;
 		}
+	}
+
+	return retVal;
+}
+size_t SHVStringUTF8C::UTF8CharLenToBytes(const SHVChar* str, size_t len)
+{
+size_t retVal = 0;
+size_t charLen = 0;
+
+	if (!str || len == 0)
+		return retVal;
+
+	while (*str && (len || charLen))
+	{
+		if (charLen == 0 && len)
+		{
+			charLen = GetUTF8CharLen(*str);
+			len--;
+		}
+		else if (charLen > 1 && (*str&0xC0) != 0x80) // Safety measure, in case the utf8 encoding is b0rked
+		{
+			charLen = 1;
+		}
+		
+		str++;
+		charLen--;
+		retVal++;
+	}
+
+	return retVal;
+}
+size_t SHVStringUTF8C::UTF8BytesToCharLen(const SHVChar* str, size_t len)
+{
+size_t retVal = 0;
+size_t charLen;
+
+	if (!str)
+		return 0;
+
+	while (*str && len)
+	{
+		charLen = GetUTF8CharLen(*str);
+		while (charLen && len && *str) { charLen--; str++; len--; if ((*str&0xC0) != 0x80) { break; } }
+		retVal++;
 	}
 
 	return retVal;
@@ -343,6 +398,12 @@ size_t SHVStringUTF8C::GetLength() const
 		return 0;
 	return StrLen(Buffer);
 }
+size_t SHVStringUTF8C::GetLengthInChars() const
+{
+	if (IsNull())
+		return 0;
+	return StrLenInChars(Buffer);
+}
 
 /*************************************
  * hashing function
@@ -390,6 +451,20 @@ SHVStringUTF8 retVal;
 	{
 	size_t strLen = SHVString8C::StrLen(Buffer);
 
+		retVal.SetBufferSize(len+1);
+		if (len > 0) memcpy(retVal.Buffer,Buffer+(strLen-len),len*sizeof(SHVChar));
+		retVal.Buffer[len] = '\0';
+	}
+	return retVal.ReleaseBuffer();
+}
+SHVStringBufferUTF8 SHVStringUTF8C::RightInChars(size_t len) const
+{
+SHVStringUTF8 retVal;
+
+	if (!IsNull())
+	{
+	size_t strLen = SHVString8C::StrLen(Buffer);
+
 		len = SizeOfCharsReverse(Buffer,len);
 
 		retVal.SetBufferSize(len+1);
@@ -408,6 +483,18 @@ SHVStringUTF8 retVal;
 
 	if (!IsNull())
 	{
+		retVal.SetBufferSize(len+1);
+		if (len>0) memcpy(retVal.Buffer,Buffer,len*sizeof(SHVChar));
+		retVal.Buffer[len] = '\0';
+	}
+	return retVal.ReleaseBuffer();
+}
+SHVStringBufferUTF8 SHVStringUTF8C::LeftInChars(size_t len) const
+{
+SHVStringUTF8 retVal;
+
+	if (!IsNull())
+	{
 		len = SizeOfChars(Buffer,len);
 
 		retVal.SetBufferSize(len+1);
@@ -421,6 +508,25 @@ SHVStringUTF8 retVal;
  * Mid
  *************************************/
 SHVStringBufferUTF8 SHVStringUTF8C::Mid(size_t first, size_t len) const
+{
+SHVStringUTF8 retVal;
+size_t strLen = SHVString8C::StrLen(Buffer);
+	
+	if (first>strLen)
+		; // return null string
+	else if (len>=strLen)
+		retVal = Buffer+first;
+	else
+	{
+		if ( (first+len) >= strLen) len = strLen - first;
+
+		retVal.SetBufferSize(len+1);
+		if (len>0) ::memcpy(retVal.Buffer,Buffer+first,len*sizeof(SHVChar));
+		retVal.GetBuffer()[len] = '\0';
+	}
+	return retVal.ReleaseBuffer();
+}
+SHVStringBufferUTF8 SHVStringUTF8C::MidInChars(size_t first, size_t len) const
 {
 SHVStringUTF8 retVal;
 size_t strLen = SHVString8C::StrLen(Buffer);
@@ -461,21 +567,26 @@ long retVal;
  *************************************/
 long SHVStringUTF8C::Find(const SHVStringUTF8C& str,long offset) const
 {
+	return SHVString8C(Buffer).Find(str.GetBufferConst(), offset);
+}
+long SHVStringUTF8C::FindInChars(const SHVStringUTF8C& str,long offset) const
+{
 const SHVChar* self = Buffer;
+long retVal = -1;
 
 	if (Buffer)
 	{
-		while (offset && *self)
+		if (offset > 0)
 		{
-			if (((*self)&0xC0) != 0xC0)
-			{
-				offset--;
-			}
-			self++;
+			self += UTF8CharLenToBytes(Buffer,(size_t)offset);
 		}
+		
+		retVal = SHVString8C(self).Find(str.GetBufferConst());
+		if (retVal > 0)
+			retVal = (long)UTF8BytesToCharLen(self,(size_t)retVal) + offset;
 	}
 
-	return SHVString8C(self).Find(str.GetBufferConst());
+	return retVal;
 }
 
 /*************************************
@@ -485,11 +596,18 @@ long SHVStringUTF8C::ReverseFind(const SHVStringUTF8C& str) const
 {
 	return SHVString8C(Buffer).ReverseFind(str.Buffer);
 }
+long SHVStringUTF8C::ReverseFindInChars(const SHVStringUTF8C& str) const
+{
+long retVal = SHVString8C(Buffer).ReverseFind(str.Buffer);
+	if (retVal > 0)
+		retVal = UTF8BytesToCharLen(Buffer,retVal);
+	return retVal;
+}
 
 /*************************************
  * Tokenize
  *************************************/
-SHVStringBufferUTF8 SHVStringUTF8C::Tokenize(const SHVString8C& tokens, size_t& pos) const
+SHVStringBufferUTF8 SHVStringUTF8C::Tokenize(const SHVStringUTF8C& tokens, size_t& pos) const
 {
 size_t start = pos;
 size_t len   = SHVString8C::StrLen(Buffer);
@@ -773,7 +891,7 @@ void SHVStringUTF8::SetToNull()
 
 
 /*************************************
- * AddChars
+ * AddChars*
  *************************************/
 void SHVStringUTF8::AddChars(const SHVChar* chars, size_t len)
 {
@@ -804,7 +922,10 @@ size_t oldlen = SHVString8C::StrLen(Buffer);
 		memcpy(Buffer+oldlen, chars, len*sizeof(SHVChar));
 		Buffer[oldlen+len] = '\0';
 	}
-
+}
+void SHVStringUTF8::AddCharsInChars(const SHVChar* chars, size_t len)
+{
+	AddChars(chars,UTF8CharLenToBytes(chars,len));
 }
 
 /*************************************

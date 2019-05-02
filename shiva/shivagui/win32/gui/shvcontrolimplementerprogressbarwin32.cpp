@@ -58,7 +58,7 @@ SHVBool SHVControlImplementerProgressBarWin32::Create(SHVControl* owner, SHVCont
 	if (!IsCreated() && parent && parent->IsCreated())
 	{
 		
-		SetHandle(CreateWindow(_T("msctls_progress32"), _T(""), WS_CHILD|Win32::MapFlags(flags),
+		SetHandle(CreateWindowW(L"msctls_progress32", L"", WS_CHILD|Win32::MapFlags(flags),
 			0, 0, 0, GetSystemMetrics(SM_CYVSCROLL), Win32::GetHandle(parent), NULL, Win32::GetInstance(owner), NULL));
 	
 		if (IsCreated())

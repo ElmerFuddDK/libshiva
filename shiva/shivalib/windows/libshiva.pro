@@ -154,3 +154,7 @@ SOURCES += ../src/framework/shvevent.cpp \
            ../src/utils/shvbase64.cpp
 
 LIBS += -lWs2_32
+
+win32 {
+	system("echo n | copy /-Y ..\\..\\include\\shvconfig.h.template ..\\..\\include\\shvconfig.h")
+}

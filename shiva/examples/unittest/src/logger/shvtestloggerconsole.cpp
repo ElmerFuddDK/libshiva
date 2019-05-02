@@ -97,5 +97,5 @@ const SHVStringC SHVTestLoggerConsole::False()
  *************************************/
 const SHVStringC SHVTestLoggerConsole::Success(bool success)
 {
-	return (success ? _SD(COLOR_GREEN) _T("Succeeded") _TD(COLOR_NEUTRAL) : _SD(COLOR_RED) _T("FAILED") _TD(COLOR_NEUTRAL));
+	return (success ? _SD(COLOR_GREEN) _SC("Succeeded") _SCD(COLOR_NEUTRAL) : _SD(COLOR_RED) _SC("FAILED") _SCD(COLOR_NEUTRAL));
 }

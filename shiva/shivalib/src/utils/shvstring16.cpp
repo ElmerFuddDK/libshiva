@@ -30,10 +30,11 @@
 
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
-#include "../../../include/utils/shvstring16.h"
+#define __SHIVA_UTILS_STRING_CPP
 #include "../../../include/utils/shvstring.h"
 #include "../../../include/utils/shvlist.h"
-#include "../../../include/utils/shvrefobject.h"
+#undef __SHIVA_UTILS_STRING_CPP
+#include "../../../include/utils/shvstringc.inl"
 
 #ifndef va_list
 # include <stdarg.h>

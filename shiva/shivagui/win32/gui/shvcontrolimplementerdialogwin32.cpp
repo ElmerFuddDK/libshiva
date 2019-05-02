@@ -45,7 +45,7 @@
 #endif
 
 
-#define SHVWIN32CLASS_DIALOG _T("SHV_Dialog")
+#define SHVWIN32CLASS_DIALOG L"SHV_Dialog"
 #define SHVWIN32ATOM_DIALOG _S("shv_dialogatom")
 
 //=========================================================================================================
@@ -86,13 +86,13 @@ SHVBool SHVControlImplementerDialogWin32::Create(SHVControl* owner, SHVControlIm
 		memset (&s_sai, 0, sizeof(s_sai));
 		s_sai.cbSize = sizeof(s_sai);
 
-		SetHandle(::CreateWindowEx(WS_EX_CONTROLPARENT, SHVWIN32CLASS_DIALOG, _T(" "), styles,
+		SetHandle(::CreateWindowExW(WS_EX_CONTROLPARENT, SHVWIN32CLASS_DIALOG, L" ", styles,
 			CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, Win32::GetInstance(owner), NULL));
 
 #else
 	DWORD styles = WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU|Win32::MapFlags(flags);
 
-		SetHandle(::CreateWindowEx(WS_EX_CONTROLPARENT, SHVWIN32CLASS_DIALOG, _T(" "), styles,
+		SetHandle(::CreateWindowExW(WS_EX_CONTROLPARENT, SHVWIN32CLASS_DIALOG, L" ", styles,
 			CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, Win32::GetMainWndHandle(owner), NULL, Win32::GetInstance(owner), NULL));
 #endif
 
@@ -240,14 +240,8 @@ SHVMenuContainerPocketPC* retVal = NULL;
  *************************************/
 SHVStringBuffer SHVControlImplementerDialogWin32::GetTitle(SHVControlContainer* owner)
 {
-SHVString retVal;
-
 	SHVASSERT(IsCreated());
-
-	retVal.SetBufferSize( GetWindowTextLength(GetHandle())+1 );
-	::GetWindowText(GetHandle(),(TCHAR*)retVal.GetBuffer(), (int)retVal.GetBufferLen());
-
-	return retVal.ReleaseBuffer();
+	return GetWindowTextBase();
 }
 
 /*************************************
@@ -256,8 +250,7 @@ SHVString retVal;
 void SHVControlImplementerDialogWin32::SetTitle(SHVControlContainer* owner, const SHVStringC& title)
 {
 	SHVASSERT(IsCreated());
-
-	SetWindowText(GetHandle(),(const TCHAR*)title.GetSafeBuffer());
+	SetWindowTextBase(title);
 }
 
 /*************************************
@@ -303,10 +296,10 @@ void SHVControlImplementerDialogWin32::RegisterClass(SHVGUIManager* manager, HIN
 {
 ATOM clss;
 #ifdef __SHIVA_WINCE
-WNDCLASS wc;
+WNDCLASSW wc;
 #else
-WNDCLASSEX wc;
-	wc.cbSize = sizeof(WNDCLASSEX);
+WNDCLASSEXW wc;
+	wc.cbSize = sizeof(WNDCLASSEXW);
 	wc.hIconSm			= 0;
 #endif
 
@@ -322,9 +315,9 @@ WNDCLASSEX wc;
 	wc.lpszClassName	= SHVWIN32CLASS_DIALOG;
 
 #ifdef __SHIVA_WINCE
-	clss = ::RegisterClass(&wc);
+	clss = ::RegisterClassW(&wc);
 #else
-	clss = ::RegisterClassEx(&wc);
+	clss = ::RegisterClassExW(&wc);
 #endif
 	manager->GetConfig().Set(SHVWIN32ATOM_DIALOG, clss);
 }

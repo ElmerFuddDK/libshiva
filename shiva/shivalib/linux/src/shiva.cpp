@@ -123,7 +123,7 @@ CONSOLEMAIN()
 		SHVConsole::Printf8("Testing assertions - should fail in debug mode\n");
 		SHVASSERT(false);
 	
-		testStr.Format(_S("This is a test %s %d.%d.%d\n"), _T("of SHIVA version"), __SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE);
+		testStr.Format(_S("This is a test %s %d.%d.%d\n"), _S("of SHIVA version"), __SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE);
 	
 		SHVConsole::Printf(_S("%s"), testStr.GetSafeBuffer());
 		

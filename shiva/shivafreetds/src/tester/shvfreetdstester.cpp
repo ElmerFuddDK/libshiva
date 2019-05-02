@@ -71,8 +71,8 @@ void SHVFreeTDSTester::OnEvent(SHVEvent* event)
 {
 	if (SHVEventString::Equals(event,__EVENT_GLOBAL_STDIN))
 	{
-	SHVString8 str(SHVEventStdin::StdinFromEvent8(event));
-	SHVString8 cmd, val;
+	SHVStringUTF8 str(SHVEventStdin::StdinFromEventUTF8(event));
+	SHVStringUTF8 cmd, val;
 	long space;
 	
 		space = str.Find(" ");
@@ -82,11 +82,11 @@ void SHVFreeTDSTester::OnEvent(SHVEvent* event)
 			val = str.Mid(size_t(space)+1);
 		}
 	
-		if (str == "/quit")
+		if (str == SHVStringUTF8C("/quit"))
 		{
 			Modules.CloseApp();
 		}
-		else if (str == "/help")
+		else if (str == SHVStringUTF8C("/help"))
 		{
 			SHVConsole::Printf8("Commands available:\n"
 								" /quit            Will quit ...\n"
@@ -100,9 +100,9 @@ void SHVFreeTDSTester::OnEvent(SHVEvent* event)
 								" execfile <name>  Opens a file and runs it"
 								"\n");
 		}
-		else if (cmd == "/set")
+		else if (cmd == SHVStringUTF8C("/set"))
 		{
-		SHVString8 prop, value;
+		SHVStringUTF8 prop, value;
 		
 			space = val.Find(" ");
 			
@@ -119,15 +119,15 @@ void SHVFreeTDSTester::OnEvent(SHVEvent* event)
 			
 			FreeTDS->SetProperty(prop.ToStrT(),value.ToStrT());
 		}
-		else if (str == "/show")
+		else if (str == SHVStringUTF8C("/show"))
 		{
 			SHVConsole::Printf( _S("Settings OK: %s\n")
-								_T(" Hostname : %s\n")
-								_T(" Hostport : %s\n")
-								_T(" Username : %s\n")
-								_T(" Password : %s\n")
-								_T(" Database : %s\n")
-								_T("\n")
+								_SC(" Hostname : %s\n")
+								_SC(" Hostport : %s\n")
+								_SC(" Username : %s\n")
+								_SC(" Password : %s\n")
+								_SC(" Database : %s\n")
+								_SC("\n")
 								, FreeTDS->PropertiesValid() ? _S("Yes") : _S("No")
 								, FreeTDS->GetProperty(SHVFreeTDSWrapper::PropHostname).GetSafeBuffer()
 								, FreeTDS->GetProperty(SHVFreeTDSWrapper::PropHostport).GetSafeBuffer()
@@ -136,7 +136,7 @@ void SHVFreeTDSTester::OnEvent(SHVEvent* event)
 								, FreeTDS->GetProperty(SHVFreeTDSWrapper::PropDatabase).GetSafeBuffer()
 								);
 		}
-		else if (str == "/connect")
+		else if (str == SHVStringUTF8C("/connect"))
 		{
 			if (!Connection.IsNull())
 				Connection->Disconnect();
@@ -146,7 +146,7 @@ void SHVFreeTDSTester::OnEvent(SHVEvent* event)
 			else
 				SHVConsole::Printf8("Connected\n");
 		}
-		else if (str == "/disconnect")
+		else if (str == SHVStringUTF8C("/disconnect"))
 		{
 			if (!Connection.IsNull() && Connection->IsConnected())
 			{
@@ -155,27 +155,29 @@ void SHVFreeTDSTester::OnEvent(SHVEvent* event)
 			}
 			Connection = NULL;
 		}
-		else if (str.Left(1) == "/")
+		else if (str.Left(1) == SHVStringUTF8C("/"))
 		{
 			SHVConsole::Printf8("Unknown command - try /help\n");
 		}
-		else if (cmd == "execfile")
+		else if (cmd == SHVStringUTF8C("execfile"))
 		{
 		SHVFile f;
 		SHVStringUTF8 sql;
 			if (f.Open(val.ToStrT(),SHVFile::FlagOpen|SHVFile::FlagRead))
 			{
-			SHVString8 str;
-			SHVBufferCRef buf;
+			SHVStringUTF8 str;
 
 				str.SetBufferSize(f.GetSize()+1);
-				f.ReadString8(str);
-
-				buf = new SHVBufferCPtr(str.GetBufferConst(),f.GetSize());
+				f.ReadStringUTF8(str);
 
 				f.Close();
 
-				sql = str.ToStrUTF8();
+				// Remove BOM
+				sql = ( str.GetSafeBuffer()[0] == (SHVChar)0xEF &&
+						str.GetSafeBuffer()[1] == (SHVChar)0xBB &&
+						str.GetSafeBuffer()[2] == (SHVChar)0xBF
+						? str.GetSafeBuffer()+3
+						: str.GetSafeBuffer());
 				if (sql.IsEmpty())
 				{
 					SHVConsole::Printf8("Sql file empty\n");
@@ -190,14 +192,14 @@ void SHVFreeTDSTester::OnEvent(SHVEvent* event)
 				SHVConsole::Printf8("No such file\n");
 			}
 		}
-		else if (str == "begintrans")
+		else if (str == SHVStringUTF8C("begintrans"))
 		{
 			if (!Transaction.IsNull())
 				SHVConsole::Printf8("Already in transaction\n");
 			else
 				Transaction = FreeTDS->CreateTransaction(Connection,SHVFreeTDSWrapper::IsolationLevelRepeatableRead,3);
 		}
-		else if (str == "committrans")
+		else if (str == SHVStringUTF8C("committrans"))
 		{
 			if (Transaction.IsNull())
 				SHVConsole::Printf8("Not in a transaction\n");
@@ -219,7 +221,7 @@ void SHVFreeTDSTester::OnEvent(SHVEvent* event)
 		}
 		else
 		{
-			ExecQuery(str.ToStrUTF8());
+			ExecQuery(str);
 		}
 	}
 }
@@ -261,7 +263,7 @@ void SHVFreeTDSTester::ExecQuery(SHVStringUTF8C sql)
  *************************************/
 void SHVFreeTDSTester::ParseResult(SHVFreeTDSResultset* result)
 {
-SHVStringStream8 stream;
+SHVStringStreamUTF8 stream;
 SHVString value;
 SHVString8 colType;
 SHVVector<int> colLengths;
@@ -299,7 +301,7 @@ int i, len, valLen;
 			}
 		}
 		stream.Finalize();
-		SHVConsole::Printf8("%s\n", stream.ToStr8().GetSafeBuffer());
+		SHVConsole::PrintfUTF8("%s\n", stream.GetSafeBuffer());
 
 		while (result->NextRow())
 		{
@@ -323,11 +325,7 @@ int i, len, valLen;
 				}
 			}
 			stream.Finalize();
-#ifdef __SHIVA_WIN32
-			SHVConsole::Printf16(_S("%s\n"), stream.ToStr16().GetSafeBuffer());
-#else
-			SHVConsole::Printf8("%s\n", stream.ToStrUTF8().GetSafeBuffer());
-#endif
+			SHVConsole::PrintfUTF8("%s\n", stream.GetSafeBuffer());
 		}
 	}
 }

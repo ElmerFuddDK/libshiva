@@ -28,29 +28,37 @@
 // include main platform headers
 
 #ifdef _WIN32_WCE
+# define __SHIVA_WIN32
 # define __SHIVA_WINCE
+# include "shvconfig.h"
 # include "platforms/wince/platformspc.h"
 #elif defined(_WIN32) && !defined(__EPOC32__) && !defined(__SYMBIAN32__)
 # define __SHIVA_WIN32
+# include "shvconfig.h"
 # include "platforms/win32/platformspc.h"
 #elif defined(__EPOC32__) || defined(__SYMBIAN32__)
 # define __SHIVA_EPOC
+# include "shvconfig.h"
 # include "platforms/symbian/platformspc.h"
 #elif defined(__FreeBSD__)
 # define __SHIVA_POSIX
 # define __SHIVA_POSIX_FREEBSD
+# include "shvconfig.h"
 # include "platforms/freebsd/platformspc.h"
 #elif defined(__APPLE__)
 # define __SHIVA_POSIX
 # define __SHIVA_POSIX_OSX
+# include "shvconfig.h"
 # include "platforms/osx/platformspc.h"
 #elif defined(linux) || defined(__linux)
 # define __SHIVA_LINUX // for historic reasons
 # define __SHIVA_POSIX
 # define __SHIVA_POSIX_LINUX
+# include "shvconfig.h"
 # include "platforms/linux/platformspc.h"
 #else
 # define __SHIVA_POSIX
+# include "shvconfig.h"
 # include "platforms/posix/platformspc.h"
 #endif
 

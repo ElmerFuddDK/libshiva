@@ -51,7 +51,7 @@ SHVBool SHVControlImplementerLabelWin32::Create(SHVControl* owner, SHVControlImp
 {
 	if (!IsCreated() && parent && parent->IsCreated())
 	{
-		SetHandle(CreateWindow(_T("STATIC"), _T(""), WS_CHILD|Win32::MapFlags(flags),
+		SetHandle(CreateWindowW(L"STATIC", L"", WS_CHILD|Win32::MapFlags(flags),
 			0, 0, 0, 0, Win32::GetHandle(parent), NULL, Win32::GetInstance(owner), NULL));
 	
 		if (IsCreated())
@@ -82,14 +82,8 @@ int SHVControlImplementerLabelWin32::GetSubType(SHVControl* owner)
  *************************************/
 SHVStringBuffer SHVControlImplementerLabelWin32::GetText()
 {
-SHVString retVal;
-
 	SHVASSERT(IsCreated());
-
-	retVal.SetBufferSize( GetWindowTextLength(GetHandle())+1 );
-	GetWindowText(GetHandle(),(TCHAR*)retVal.GetBuffer(), (int)retVal.GetBufferLen());
-
-	return retVal.ReleaseBuffer();
+	return GetWindowTextBase();
 }
 
 /*************************************
@@ -99,7 +93,7 @@ void SHVControlImplementerLabelWin32::SetText(SHVControlLabel* owner, const SHVS
 {
 	SHVASSERT(IsCreated());
 
-	SetWindowText(GetHandle(),(const TCHAR*)text.GetSafeBuffer());
+	SetWindowTextBase(text);
 
 	if (autoSize)
 	{

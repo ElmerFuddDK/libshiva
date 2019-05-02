@@ -87,28 +87,28 @@ void SHVLuaEngineTester::OnEvent(SHVEvent* event)
 {
 	if (SHVEventString::Equals(event,__EVENT_GLOBAL_STDIN))
 	{
-	SHVString8 str(SHVEventStdin::StdinFromEvent8(event));
+	SHVStringUTF8 str(SHVEventStdin::StdinFromEventUTF8(event));
 	
-		if (str.Left(5) == SHVString8C("/run "))
+		if (str.Left(5) == SHVStringUTF8C("/run "))
 		{
-#ifdef UNICODE
-			LuaScript->Execute(SHVString8C(str.GetSafeBuffer()+5).ToStrT());
-#else
+#if __SHVSTRINGDEFAULT == utf8
 			LuaScript->Execute(str.GetSafeBuffer()+5);
+#else
+			LuaScript->Execute(SHVStringUTF8C(str.GetSafeBuffer()+5).ToStrT());
 #endif
 		}
-		else if (str == SHVString8C("/gc"))
+		else if (str == SHVStringUTF8C("/gc"))
 		{
-			SHVConsole::Printf8("Running gc\n");
+			SHVConsole::PrintfUTF8("Running gc\n");
 			LuaScript->GarbageCollect();
 		}
-		else if (str == SHVString8C("/quit"))
+		else if (str == SHVStringUTF8C("/quit"))
 		{
 			Modules.CloseApp();
 		}
-		else if (str == SHVString8C("/help"))
+		else if (str == SHVStringUTF8C("/help"))
 		{
-			SHVConsole::Printf8("Commands available:\n"
+			SHVConsole::PrintfUTF8("Commands available:\n"
 								" /quit         Will quit ...\n"
 								" /help         Displays this info\n"
 								" /run <lua>    Runs Lua code\n"
@@ -117,7 +117,7 @@ void SHVLuaEngineTester::OnEvent(SHVEvent* event)
 		}
 		else
 		{
-			SHVConsole::Printf8("Unknown command - try /help\n");
+			SHVConsole::PrintfUTF8("Unknown command - try /help\n");
 		}
 	}
 	else if (event->GetCaller() == LuaEngine)

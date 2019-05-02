@@ -55,7 +55,7 @@ protected:
 	virtual SHVBool IsValid() const;
 	virtual void SchemaChanged();
 	virtual SHVBool CheckConnection();
-	SHVDataFunction* PrepareFunction(const SHVStringUTF8C& query, const SHVDataRowKey* sortKey = NULL);
+	SHVDataFunction* PrepareFunctionUTF8(const SHVStringUTF8C& query, const SHVDataRowKey* sortKey = NULL);
 
 private:
 	SHVBool SessionReset();

@@ -51,7 +51,7 @@ SHVStringBuffer SHVLuaFuncArgsImpl::ArgAsString(int idx)
 {
 	if (lua_type((lua_State*)State,idx+ArgOffset) == LUA_TNIL)
 		return SHVString().ReleaseBuffer();
-	return SHVString8C(lua_tostring((lua_State*)State,idx+ArgOffset)).ToStrT();
+	return SHVStringUTF8C(lua_tostring((lua_State*)State,idx+ArgOffset)).ToStrT();
 }
 
 /*************************************
@@ -108,7 +108,7 @@ void SHVLuaFuncArgsImpl::PushInt(SHVInt val)
 void SHVLuaFuncArgsImpl::PushString(const SHVStringC val)
 {
 	ReturnVals++;
-	lua_pushstring((lua_State*)State,val.ToStr8().GetSafeBuffer());
+	lua_pushstring((lua_State*)State,val.AsStrUTF8C().GetSafeBuffer());
 }
 
 /*************************************
@@ -159,7 +159,7 @@ SHVLuaValue* SHVLuaFuncArgsImpl::ToValue(void *state, int idx, int argOffset)
 	case LUA_TBOOLEAN:
 		return SHVLuaValueImpl::NewBool(lua_toboolean((lua_State*)state,idx) ? true : false);
 	case LUA_TSTRING:
-		return SHVLuaValueImpl::NewString(SHVString8C(lua_tostring((lua_State*)state,idx)).ToStrT());
+		return SHVLuaValueImpl::NewString(SHVStringUTF8C(lua_tostring((lua_State*)state,idx)).ToStrT());
 	case LUA_TUSERDATA:
 		{
 		const char* typeID;

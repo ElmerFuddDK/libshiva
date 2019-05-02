@@ -151,7 +151,7 @@ SHVRefObject* SHVLuaValueImpl::AsRef(const char* typeID) const
 	switch (Type)
 	{
 	case TypeRefOject:
-		return (SHVString8C(RefTypeID) == SHVString8C(typeID) ? Data.ObjVal : NULL);
+		return (SHVStringUTF8C(RefTypeID) == SHVStringUTF8C(typeID) ? Data.ObjVal : NULL);
 	default:
 	case TypeNull:
 		break;

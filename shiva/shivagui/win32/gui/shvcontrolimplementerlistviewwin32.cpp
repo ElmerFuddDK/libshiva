@@ -63,7 +63,7 @@ SHVBool SHVControlImplementerListViewWin32::Create(SHVControl* owner, SHVControl
 		if (SubType == SHVControlListView::SubTypeCustomDraw)
 			win32flags |= LVS_OWNERDRAWFIXED;
 
-		SetHandle(CreateWindowEx(WS_EX_CLIENTEDGE, WC_LISTVIEW, _T(""), win32flags,
+		SetHandle(CreateWindowExW(WS_EX_CLIENTEDGE, WC_LISTVIEW, L"", win32flags,
 				0, 0, 0, 0, Win32::GetHandle(parent), NULL, Win32::GetInstance(owner), NULL));
 	
 		if (IsCreated())
@@ -113,7 +113,11 @@ void SHVControlImplementerListViewWin32::ClearItems(SHVControlListView* owner)
  *************************************/
 SHVStringBuffer SHVControlImplementerListViewWin32::GetItemText(SHVControlListView* owner, size_t index, size_t col)
 {
-SHVString retVal;
+#if defined(UNICODE)
+SHVString16 retVal;
+#else
+SHVString8 retVal;
+#endif
 LVITEM item;
 size_t len;
 size_t result = 0;
@@ -130,13 +134,19 @@ size_t result = 0;
 		retVal.SetBufferSize(len);
 
 		item.cchTextMax = (int)len;
-		item.pszText = (TCHAR*)retVal.GetBuffer();
+		item.pszText = retVal.GetBufferWin32();
 		result  = (size_t)::SendMessage(GetHandle(), LVM_GETITEMTEXT, index, (LPARAM)&item);
 
 	}
 	while (result >= len-1);
 
+#if defined(UNICODE) && __SHVSTRINGDEFAULT == 16
 	return retVal.ReleaseBuffer();
+#elif !defined(UNICODE) && __SHVSTRINGDEFAULT == 8
+	return retVal.ReleaseBuffer();
+#else
+	return retVal.ToStrT();
+#endif
 }
 
 /*************************************
@@ -162,11 +172,20 @@ LVITEM item;
 void SHVControlImplementerListViewWin32::AddItem(SHVControlListView* owner, const SHVStringC str, SHVRefObject* data)
 {
 LVITEM item;
+#if defined(UNICODE) && __SHVSTRINGDEFAULT == 16
+const SHVStringC strT(str);
+#elif !defined(UNICODE) && __SHVSTRINGDEFAULT == 8
+const SHVStringC strT(str);
+#elif defined(UNICODE)
+SHVString16 strT(str.ToStr16());
+#else
+SHVString8 strT(str.ToStr8());
+#endif
 
 	item.mask = LVIF_TEXT|LVIF_PARAM;
 	item.iItem = ListView_GetItemCount(GetHandle());
 	item.iSubItem = 0;
-	item.pszText = (LPTSTR)str.GetSafeBuffer();
+	item.pszText = (LPTSTR)strT.GetSafeBuffer();
 	item.state = 0;
 	item.stateMask = 0;
 	item.iImage = 0;
@@ -180,7 +199,16 @@ LVITEM item;
  *************************************/
 void SHVControlImplementerListViewWin32::SetItemText(SHVControlListView* owner, const SHVStringC text, size_t index, size_t col)
 {
-	ListView_SetItemText(GetHandle(),(int)index,(int)col,(LPTSTR)text.GetSafeBuffer());
+#if defined(UNICODE) && __SHVSTRINGDEFAULT == 16
+const SHVStringC textT(text);
+#elif !defined(UNICODE) && __SHVSTRINGDEFAULT == 8
+const SHVStringC textT(text);
+#elif defined(UNICODE)
+SHVString16 textT(text.ToStr16());
+#else
+SHVString8 textT(text.ToStr8());
+#endif
+	ListView_SetItemText(GetHandle(),(int)index,(int)col,(LPTSTR)textT.GetSafeBuffer());
 }
 
 /*************************************
@@ -198,9 +226,18 @@ void SHVControlImplementerListViewWin32::ClearColumns(SHVControlListView* owner)
 void SHVControlImplementerListViewWin32::AddColumn(SHVControlListView* owner, const SHVStringC colName, SHVInt width)
 {
 LVCOLUMN column;
+#if defined(UNICODE) && __SHVSTRINGDEFAULT == 16
+const SHVStringC colNameT(colName);
+#elif !defined(UNICODE) && __SHVSTRINGDEFAULT == 8
+const SHVStringC colNameT(colName);
+#elif defined(UNICODE)
+SHVString16 colNameT(colName.ToStr16());
+#else
+SHVString8 colNameT(colName.ToStr8());
+#endif
 
 	column.mask = LVCF_TEXT|LVCF_FMT;
-	column.pszText = (LPTSTR)colName.GetSafeBuffer();
+	column.pszText = (LPTSTR)colNameT.GetSafeBuffer();
 	column.fmt = LVCFMT_LEFT;
 
 	if (!width.IsNull())

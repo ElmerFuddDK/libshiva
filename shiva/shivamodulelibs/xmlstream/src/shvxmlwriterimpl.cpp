@@ -39,26 +39,31 @@ SHVXmlWriterImpl::SHVXmlWriterImpl(SHVXmlWriter::WriterEncoding enc)
 {
 	switch (enc)
 	{
-#ifdef UNICODE
+#if __SHVSTRINGDEFAULT == 16
 	case SHVXmlWriter::WriterEncodingNative:
 #endif
 	case SHVXmlWriter::WriterEncodingUTF16:
 		InternalEncoding = Internal16;
 		break;
-#ifndef UNICODE
+#if __SHVSTRINGDEFAULT == 8
 	case SHVXmlWriter::WriterEncodingNative:
 #endif
 	case SHVXmlWriter::WriterEncoding8859_1:
 		InternalEncoding = Internal8;
 		break;
+#if __SHVSTRINGDEFAULT == utf8
+	case SHVXmlWriter::WriterEncodingNative:
+#endif
 	case SHVXmlWriter::WriterEncodingUTF8:
 		InternalEncoding  = InternalUTF8;
 		break;
 	default:
-#ifdef UNICODE
+#if __SHVSTRINGDEFAULT == 16
 		InternalEncoding = Internal16;
-#else
+#elif __SHVSTRINGDEFAULT == 8
 		InternalEncoding = Internal8;
+#elif __SHVSTRINGDEFAULT == utf8
+		InternalEncoding = InternalUTF8;
 #endif
 		break;
 	}
@@ -446,7 +451,7 @@ SHVListPos tail = TagStack.GetTailPosition();
 /*************************************
  * CurrentShortClose
  *************************************/
-const bool SHVXmlWriterImpl::CurrentShortClose() const
+bool SHVXmlWriterImpl::CurrentShortClose() const
 {
 SHVListPos tail = ((SHVList<TagStackElem>*) &TagStack)->GetTailPosition();
 	if (tail)
@@ -573,7 +578,7 @@ size_t len;
 		WriteText16(Streamout, text.ToStr16());
 		break;
 	case InternalUTF8:
-		len = text.GetSizeInChars();
+		len = text.GetLength();
 		for (size_t strpos = 0; strpos < len; strpos++)
 		{
 			switch(text.GetBufferConst()[strpos])

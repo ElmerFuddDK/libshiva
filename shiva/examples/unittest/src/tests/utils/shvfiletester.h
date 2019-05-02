@@ -14,6 +14,7 @@ public:
 		ActionCreation = 0x01,
 		ActionStorage = 0x02,
 		ActionTextHandling = 0x04,
+		ActionUnicodeFilenames = 0x08,
 	};
 
 	virtual const SHVString8C GetGroup() const;
@@ -26,6 +27,7 @@ private:
 	static bool TestCreation(SHVModuleList& modules, SHVTestBase* self, int flag);
 	static bool TestStorage(SHVModuleList& modules, SHVTestBase* self, int flag);
 	static bool TestTextHandling(SHVModuleList& modules, SHVTestBase* self, int flag);
+	static bool TestUnicodeFilenames(SHVModuleList& modules, SHVTestBase* self, int flag);
 
 	// helpers
 private:

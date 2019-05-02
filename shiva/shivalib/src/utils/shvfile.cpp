@@ -83,7 +83,7 @@ bool retVal = (IsOpen() && (GetFlags()&FlagRead) && str.GetBufferLen()>1 );
  */
 bool SHVFile::WriteString8(const SHVString8C& str)
 {
-	return SHVFileBase::Write(str.GetBufferConst(),SHVFilePos(str.GetSizeInBytes()));
+	return SHVFileBase::Write(str.GetBufferConst(),SHVFilePos(str.GetLengthInBytes()));
 }
 
 /*************************************
@@ -183,7 +183,7 @@ bool retVal = (IsOpen() && (GetFlags()&FlagRead) && str.GetBufferLen()>1 );
  */
 bool SHVFile::WriteStringUTF8(const SHVStringUTF8C& str)
 {
-	return SHVFileBase::Write(str.GetBufferConst(),SHVFilePos(str.GetSizeInBytes()));
+	return SHVFileBase::Write(str.GetBufferConst(),SHVFilePos(str.GetLengthInBytes()));
 }
 
 /*************************************
@@ -282,7 +282,7 @@ bool retVal = (IsOpen() && (GetFlags()&FlagRead) && str.GetBufferLen()>1 );
  */
 bool SHVFile::WriteString16(const SHVString16C& str)
 {
-	return SHVFileBase::Write(str.GetBufferConst(),SHVFilePos(str.GetSizeInBytes()));
+	return SHVFileBase::Write(str.GetBufferConst(),SHVFilePos(str.GetLengthInBytes()));
 }
 
 /*************************************

@@ -53,7 +53,7 @@ SHVBool SHVControlImplementerTabWin32::Create(SHVControl* owner, SHVControlImple
 {
 	if (!IsCreated() && parent && parent->IsCreated())
 	{
-		SetHandle(CreateWindowEx(WS_EX_NOPARENTNOTIFY|WS_EX_CONTROLPARENT,WC_TABCONTROL, _T(""), WS_CHILD|WS_TABSTOP|Win32::MapFlags(flags)|TCS_TABS|TCS_SINGLELINE,
+		SetHandle(CreateWindowExW(WS_EX_NOPARENTNOTIFY|WS_EX_CONTROLPARENT,WC_TABCONTROL, L"", WS_CHILD|WS_TABSTOP|Win32::MapFlags(flags)|TCS_TABS|TCS_SINGLELINE,
 			0, 0, 0, 0, Win32::GetHandle(parent), NULL, Win32::GetInstance(owner), NULL));
 
 		if (IsCreated())
@@ -88,6 +88,15 @@ PageItem* item = new PageItem(name);
 SHVControlImplementerContainerWindowWin32* impl;
 TCITEM win32item;
 bool firstTab = ( GetPageCount(owner) == 0 );
+#if defined(UNICODE) && __SHVSTRINGDEFAULT == 16
+const SHVStringC nameT(name);
+#elif !defined(UNICODE) && __SHVSTRINGDEFAULT == 8
+const SHVStringC nameT(name);
+#elif defined(UNICODE)
+SHVString16 nameT(name.ToStr16());
+#else
+SHVString8 nameT(name.ToStr8());
+#endif
 
 	item->Container = new SHVControlContainer(owner->GetManager(),impl = new SHVControlImplementerContainerWindowWin32(SHVControlContainer::SubTypeTabPage));
 	Pages.Add(item);
@@ -95,8 +104,8 @@ bool firstTab = ( GetPageCount(owner) == 0 );
 	item->Container->SetColor(new SHVColorWin32(::GetSysColor(COLOR_MENU)));
 
 	::memset(&win32item,0,sizeof(TCITEM));
-	win32item.pszText = (LPTSTR)name.GetSafeBuffer();
-	win32item.cchTextMax = (int)name.GetLength();
+	win32item.pszText = (LPTSTR)nameT.GetSafeBuffer();
+	win32item.cchTextMax = (int)nameT.GetLength();
 	win32item.mask = TCIF_TEXT;
 
 	TabCtrl_InsertItem(GetHandle(),TabCtrl_GetItemCount(GetHandle()),&win32item);
@@ -293,12 +302,21 @@ size_t pagecount = Pages.CalculateCount();
 		if (Pages[i]->Container == cont)
 		{
 		TCITEM item;
+#if defined(UNICODE) && __SHVSTRINGDEFAULT == 16
+		const SHVStringC nameT(name);
+#elif !defined(UNICODE) && __SHVSTRINGDEFAULT == 8
+		const SHVStringC nameT(name);
+#elif defined(UNICODE)
+		SHVString16 nameT(name.ToStr16());
+#else
+		SHVString8 nameT(name.ToStr8());
+#endif
 
 			Pages[i]->Name = name;
 
 			::memset(&item,0,sizeof(TCITEM));
-			item.pszText = (LPTSTR)name.GetSafeBuffer();
-			item.cchTextMax = (int)name.GetLength();
+			item.pszText = (LPTSTR)nameT.GetSafeBuffer();
+			item.cchTextMax = (int)nameT.GetLength();
 			item.mask = TCIF_TEXT;
 
 			TabCtrl_SetItem(GetHandle(),i,&item);

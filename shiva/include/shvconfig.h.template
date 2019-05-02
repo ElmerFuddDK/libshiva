@@ -1,0 +1,32 @@
+// Put overrides to the standard defines in here
+
+// String defines:
+//----------------
+
+// Uncomment to ensure any predefined default is nullified
+#ifdef __SHVSTRINGDEFAULT
+# undef __SHVSTRINGDEFAULT
+#endif
+// Leave all uncommented to revert to auto mode (Eg. 16 bit with UNICODE on windows)
+// Uncomment the desired default string you want to use
+//#define __SHVSTRINGDEFAULT 8
+#define __SHVSTRINGDEFAULT utf8
+//#define __SHVSTRINGDEFAULT 16
+
+// The following can re-enable the _T define for SHIVA - it will give issues on
+// windows where _T can now be different than for SHIVA
+//#ifdef _T
+//# undef _T
+//#endif
+//#if __SHVSTRINGDEFAULT == 16
+//# define _T(x) L##x
+//# define _TD(x) _T(x)
+//#else
+//# define _T(x) x
+//# define _TD(x) _T(x)
+//#endif
+
+// Enable the TEXT windows define on non-windows platforms:
+//#ifndef __SHIVA_WIN32
+//# define TEXT(x) x
+//#endif

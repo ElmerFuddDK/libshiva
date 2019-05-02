@@ -220,8 +220,7 @@ SHVString retVal;
 
 	SHVASSERT(IsCreated());
 
-	retVal.SetBufferSize( GetWindowTextLength(GetHandle())+1 );
-	GetWindowText(GetHandle(),(TCHAR*)retVal.GetBuffer(), (int)retVal.GetBufferLen());
+	retVal = GetWindowTextBase();
 
 	if (Win32::CheckForNewlines(retVal))
 		Win32::ConvertNewlinesBack(retVal);
@@ -237,9 +236,9 @@ void SHVControlImplementerWin32Base::SetText(const SHVStringC& text)
 	SHVASSERT(IsCreated());
 
 	if (Win32::CheckForNewlines(text))
-		SetWindowText(GetHandle(),(const TCHAR*)Win32::ConvertNewlinesC(text.GetSafeBuffer()).GetSafeBuffer());
+		SetWindowTextBase(Win32::ConvertNewlinesC(text));
 	else
-		SetWindowText(GetHandle(),(const TCHAR*)text.GetSafeBuffer());
+		SetWindowTextBase(text);
 }
 
 /*************************************
@@ -328,4 +327,46 @@ DWORD oldStyle = style;
 
 	if (style != oldStyle)
 		::SetWindowLong(GetHandle(), GWL_EXSTYLE, style);
+}
+
+/*************************************
+ * GetWindowTextBase
+ *************************************/
+SHVStringBuffer SHVControlImplementerWin32Base::GetWindowTextBase()
+{
+
+#if defined(UNICODE) && __SHVSTRINGDEFAULT == 16
+SHVString retVal;
+	retVal.SetBufferSize( GetWindowTextLength(GetHandle())+1 );
+	GetWindowText(GetHandle(),retVal.GetBufferWin32(), (int)retVal.GetBufferLen());
+	return retVal.ReleaseBuffer();
+#elif !defined(UNICODE) && __SHVSTRINGDEFAULT == 8
+SHVString retVal;
+	retVal.SetBufferSize( GetWindowTextLength(GetHandle())+1 );
+	GetWindowText(GetHandle(),retVal.GetBuffer(), (int)retVal.GetBufferLen());
+	return retVal.ReleaseBuffer();
+#else
+SHVString16 retVal;
+	retVal.SetBufferSize( GetWindowTextLength(GetHandle())+1 );
+	GetWindowTextW(GetHandle(),retVal.GetBufferWin32(), (int)retVal.GetBufferLen());
+# if __SHVSTRINGDEFAULT == 16
+	return retVal.ReleaseBuffer();
+# else
+	return retVal.ToStrT();
+# endif
+#endif
+}
+
+/*************************************
+ * SetWindowTextBase
+ *************************************/
+void SHVControlImplementerWin32Base::SetWindowTextBase(const SHVStringC text)
+{
+#if defined(UNICODE) && __SHVSTRINGDEFAULT == 16
+	::SetWindowText(GetHandle(),text.GetSafeBufferWin32());
+#elif !defined(UNICODE) && __SHVSTRINGDEFAULT == 8
+	::SetWindowText(GetHandle(),text.GetSafeBuffer());
+#else
+	::SetWindowTextW(GetHandle(),text.AsStr16C().GetSafeBufferWin32());
+#endif
 }

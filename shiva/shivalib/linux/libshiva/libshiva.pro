@@ -55,9 +55,11 @@ HEADERS += ../../../include/platformspc.h \
            ../../../include/utils/shvstring8c.h \
            ../../../include/utils/shvstring8.h \
            ../../../include/utils/shvstringc.h \
+           ../../../include/utils/shvstringc.inl \
            ../../../include/utils/shvstring.h \
            ../../../include/utils/shvstringconv.h \
-           ../../../include/utils/shvstringstream.h \
+           ../../../include/utils/shvstringdefaults.h \
+           ../../../include/utils/shvstringconv.h \
            ../../../include/utils/shvstringutf8c.h \
            ../../../include/utils/shvstringutf8.h \
            ../../../include/utils/shvtime.h \
@@ -221,4 +223,11 @@ ios {
 	  DEFINES += __SHIVA_LIBUNICODESTATIC
 	}
   }
+}
+
+win32 {
+	system("echo n | copy /-Y ..\\..\\include\\shvconfig.h.template ..\\..\\include\\shvconfig.h")
+}
+else {
+	system("test -e ../../../include/shvconfig.h || cp ../../../include/shvconfig.h.template ../../../include/shvconfig.h")
 }

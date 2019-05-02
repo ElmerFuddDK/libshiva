@@ -120,7 +120,6 @@ void SHVControlTester::Unregister()
 
 void SHVControlTester::OnEvent(SHVEvent* event)
 {
-	//::MessageBox(NULL,_T("Noget"),_T("Knap"),MB_OK);
 	GUIManager->ShowMessageBox(_S("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"),_S("Knap"));
 	GUIManager->ShowMessageBox(_S("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"));
 	GUIManager->ShowMessageBox(_S("Noget\nEller\nNoget\nAndet\nEller\nNoget\nTredje\nNoget"),_S("Knap"));

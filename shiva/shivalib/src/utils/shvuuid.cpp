@@ -130,7 +130,7 @@ SHVUUID::ID SHVUUID::CreateMd5FromNamespace8(const SHVUUID::ID& namespc, const S
 SHVUUID::ID retVal;
 shv_uuid_t n;
 	::memcpy(&n,&namespc,sizeof(shv_uuid_t));
-	uuid_create_md5_from_name(Globals,(shv_uuid_t*)&retVal,n, (void*)name.GetSafeBuffer(), (int)name.GetSizeInBytes());
+	uuid_create_md5_from_name(Globals,(shv_uuid_t*)&retVal,n, (void*)name.GetSafeBuffer(), (int)name.GetLengthInBytes());
 	return retVal;
 }
 
@@ -142,7 +142,7 @@ SHVUUID::ID SHVUUID::CreateMd5FromNamespaceUTF8(const SHVUUID::ID& namespc, cons
 SHVUUID::ID retVal;
 shv_uuid_t n;
 	::memcpy(&n,&namespc,sizeof(shv_uuid_t));
-	uuid_create_md5_from_name(Globals,(shv_uuid_t*)&retVal,n, (void*)name.GetSafeBuffer(), (int)name.GetSizeInBytes());
+	uuid_create_md5_from_name(Globals,(shv_uuid_t*)&retVal,n, (void*)name.GetSafeBuffer(), (int)name.GetLengthInBytes());
 	return retVal;
 }
 
@@ -154,7 +154,7 @@ SHVUUID::ID SHVUUID::CreateMd5FromNamespace16(const SHVUUID::ID& namespc, const 
 SHVUUID::ID retVal;
 shv_uuid_t n;
 	::memcpy(&n,&namespc,sizeof(shv_uuid_t));
-	uuid_create_md5_from_name(Globals,(shv_uuid_t*)&retVal,n, (void*)name.GetSafeBuffer(), (int)name.GetSizeInBytes());
+	uuid_create_md5_from_name(Globals,(shv_uuid_t*)&retVal,n, (void*)name.GetSafeBuffer(), (int)name.GetLengthInBytes());
 	return retVal;
 }
 

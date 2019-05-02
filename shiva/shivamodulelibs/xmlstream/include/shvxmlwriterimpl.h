@@ -39,7 +39,7 @@ private:
 	SHVStringBuffer8 Pop8(bool& shortClose);
 	SHVStringBufferUTF8 PopUTF8(bool& shortClose);
 	void ClearCurrentShortClose();
-	const bool CurrentShortClose() const;
+	bool CurrentShortClose() const;
 	void InternalWriteText16(SHVStreamOut& Streamout, const SHVString16C& text);
 	void InternalWriteText8(SHVStreamOut& Streamout, const SHVString8C& text);
 	void InternalWriteTextUTF8(SHVStreamOut& Streamout, const SHVStringUTF8C& text);

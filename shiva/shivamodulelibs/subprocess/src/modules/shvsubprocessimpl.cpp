@@ -322,11 +322,11 @@ SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
 #elif defined(__SHIVA_WIN32)
 	SHVString cmdLine(program);
 	SHVFileListIterator itr(args);
-	STARTUPINFO si;
+	STARTUPINFOW si;
 	SECURITY_ATTRIBUTES sa;
 
-		::memset(&si,0,sizeof(STARTUPINFO));
-		si.cb = sizeof(STARTUPINFO);
+		::memset(&si,0,sizeof(STARTUPINFOW));
+		si.cb = sizeof(STARTUPINFOW);
 
 		sa.nLength= sizeof(SECURITY_ATTRIBUTES);
 		sa.lpSecurityDescriptor = NULL;
@@ -382,7 +382,12 @@ SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
 			}
 		}
 
-		if (::CreateProcess(NULL,(TCHAR*)cmdLine.GetSafeBuffer(),NULL,NULL,streams ? TRUE : FALSE,0,NULL,NULL,&si,&Process))
+# if __SHVSTRINGDEFAULT == 16
+		if (::CreateProcessW(NULL,cmdLine.GetBufferWin32(),NULL,NULL,streams ? TRUE : FALSE,0,NULL,NULL,&si,&Process))
+# else
+	SHVString16 cmdLineW(cmdLine.ToStr16());
+		if (::CreateProcessW(NULL,cmdLineW.GetBufferWin32(),NULL,NULL,streams ? TRUE : FALSE,0,NULL,NULL,&si,&Process))
+# endif
 		{
 			LastError.SetError(ErrNone);
 		}
@@ -521,7 +526,7 @@ SHVBool SHVSubProcessImpl::ReadLine16(SHVString16& line, Streams stream)
  *************************************/
 SHVBool SHVSubProcessImpl::WriteLine8(const SHVString8C line)
 {
-size_t strLen = line.GetSizeInChars();
+size_t strLen = line.GetLength();
 	if (strLen && line.GetBufferConst()[strLen-1] == '\n')
 		return StreamStdIn->WriteString8(line.GetSafeBuffer());
 	else
@@ -533,7 +538,7 @@ size_t strLen = line.GetSizeInChars();
  *************************************/
 SHVBool SHVSubProcessImpl::WriteLineUTF8(const SHVStringUTF8C line)
 {
-size_t strLen = line.GetSizeInChars();
+size_t strLen = line.GetLength();
 	if (strLen && line.GetBufferConst()[strLen-1] == '\n')
 		return StreamStdIn->WriteStringUTF8(line.GetSafeBuffer());
 	else
@@ -545,7 +550,7 @@ size_t strLen = line.GetSizeInChars();
  *************************************/
 SHVBool SHVSubProcessImpl::WriteLine16(const SHVString16C line)
 {
-size_t strLen = line.GetSizeInChars();
+size_t strLen = line.GetLength();
 static const SHVWChar newLine[] = { '\n', '\0' };
 
 	if (strLen && line.GetBufferConst()[strLen-1] == '\n')
@@ -1080,7 +1085,7 @@ SHVBool retVal(IsOk());
  *************************************/
 SHVBool SHVSubProcessStreamOut::WriteString16(const SHVWChar* buffer, size_t maxlen)
 {
-	return (WriteBuffer(buffer,(maxlen == SIZE_T_MAX ? SHVString16C::StrSizeInChars(buffer) : maxlen)*sizeof(SHVWChar)));
+	return (WriteBuffer(buffer,(maxlen == SIZE_T_MAX ? SHVString16C::StrLen(buffer) : maxlen)*sizeof(SHVWChar)));
 }
 
 /*************************************
@@ -1096,7 +1101,7 @@ SHVBool SHVSubProcessStreamOut::WriteChar16(SHVWChar ch)
  *************************************/
 SHVBool SHVSubProcessStreamOut::WriteString8(const SHVChar* buffer, size_t maxlen)
 {
-	return (WriteBuffer(buffer,(maxlen == SIZE_T_MAX ? SHVString8C::StrSizeInChars(buffer) : maxlen)*sizeof(SHVChar)));
+	return (WriteBuffer(buffer,(maxlen == SIZE_T_MAX ? SHVString8C::StrLen(buffer) : maxlen)*sizeof(SHVChar)));
 }
 
 /*************************************
@@ -1112,7 +1117,7 @@ SHVBool SHVSubProcessStreamOut::WriteChar8(const SHVChar ch)
  *************************************/
 SHVBool SHVSubProcessStreamOut::WriteStringUTF8(const SHVChar* buffer, size_t maxlen)
 {
-	return (WriteBuffer(buffer,(maxlen == SIZE_T_MAX ? SHVStringUTF8C::StrSizeInChars(buffer) : maxlen)*sizeof(SHVChar)));
+	return (WriteBuffer(buffer,(maxlen == SIZE_T_MAX ? SHVStringUTF8C::StrLen(buffer) : maxlen)*sizeof(SHVChar)));
 }
 
 /*************************************

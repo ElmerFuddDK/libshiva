@@ -353,7 +353,7 @@ SHVString retVal;
 
 	if (IsCreated())
 	{
-		retVal = SHVStringC(gtk_window_get_title(GTK_WINDOW (MainWindow)));
+		retVal = SHVStringUTF8C(gtk_window_get_title(GTK_WINDOW (MainWindow))).ToStrT();
 	}
 
 	return retVal.ReleaseBuffer();
@@ -368,7 +368,7 @@ void SHVControlImplementerDialogGtk::SetTitle(SHVControlContainer* control, cons
 	
 	if (IsCreated())
 	{
-		gtk_window_set_title (GTK_WINDOW (MainWindow), title.GetSafeBuffer());
+		gtk_window_set_title (GTK_WINDOW (MainWindow), title.AsStrUTF8C().GetSafeBuffer());
 	}
 }
 

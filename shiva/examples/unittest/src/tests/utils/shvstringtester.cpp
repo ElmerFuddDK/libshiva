@@ -222,8 +222,8 @@ bool ok = true;
 		// log.AddLine(_S("Result for SHVString16: %s"), log.Success(ok));
 	}
 	{
-	static const char utf8str[] = { 'h', 'e', 'j', 0xC3, 0xA5, ' ', 'n', 'o', 'g', 'e', 't', '\0' };
-	static const char iso8859str[] = { 'h', 'e', 'j', 0xE5, ' ', 'n', 'o', 'g', 'e', 't', '\0' };
+	static const char utf8str[] = { 'h', 'e', 'j', (char)0xC3, (char)0xA5, ' ', 'n', 'o', 'g', 'e', 't', '\0' };
+	static const char iso8859str[] = { 'h', 'e', 'j', (char)0xE5, ' ', 'n', 'o', 'g', 'e', 't', '\0' };
 	SHVString8 str(SHVStringUTF8C(utf8str).ToStr8());
 	SHVString8 testStr(iso8859str);
 
@@ -232,8 +232,8 @@ bool ok = true;
 		// log.AddLine(_S("Result for SHVString8(UTF8): %s"), log.Success(ok));
 	}
 	{
-	static const char utf8str[] = { 'h', 'e', 'j', 0xC3, 0xA5, ' ', 'n', 'o', 'g', 'e', 't', '\0' };
-	static const char iso8859str[] = { 'h', 'e', 'j', 0xE5, ' ', 'n', 'o', 'g', 'e', 't', '\0' };
+	static const char utf8str[] = { 'h', 'e', 'j', (char)0xC3, (char)0xA5, ' ', 'n', 'o', 'g', 'e', 't', '\0' };
+	static const char iso8859str[] = { 'h', 'e', 'j', (char)0xE5, ' ', 'n', 'o', 'g', 'e', 't', '\0' };
 	SHVString16 str(SHVStringUTF8C(utf8str).ToStr16());
 	SHVString16 testStr(SHVString8C(iso8859str).ToStr16());
 
@@ -504,35 +504,73 @@ bool ok = true;
 
 #ifndef __SHVSTRING_EXCLUDE_UNICODE
 	{
-	static const char iso8859str[] = { 0xE6, 0xE8, 0xA2, 0xE5, 'q', 'a', 0 };
-	static const char utf8str[] = { 0xC3, 0xA6, 0xC3, 0xA8, 0xC2, 0xA2, 0xC3, 0xA5, 'q', 'a', 0 };
+	static const char iso8859str[] = { (char)0xE6, (char)0xE8, (char)0xA2, (char)0xE5, 'q', 'a', 0 };
+	static const char utf8str[] = { (char)0xC3, (char)0xA6, (char)0xC3, (char)0xA8, (char)0xC2, (char)0xA2, (char)0xC3, (char)0xA5, 'q', 'a', 0 };
+	static const char utf8find[] = { (char)0xC2, (char)0xA2, 0 };
 
 		ok = (ok && (SHVString8C::StrLen(iso8859str) == 6));
-		ok = (ok && (SHVStringUTF8C::StrLen(iso8859str) == 5));
+		ok = (ok && (SHVStringUTF8C::StrLenInChars(iso8859str) == 5));
 		ok = (ok && (SHVStringUTF8C(iso8859str).ToStr8().GetLength() == 5));
-		ok = (ok && (SHVStringUTF8C::StrLen(utf8str) == 6));
+		ok = (ok && (SHVStringUTF8C::StrLen(utf8str) == 10));
+		ok = (ok && (SHVStringUTF8C::StrLenInChars(utf8str) == 6));
 		ok = (ok && (SHVString8C(iso8859str).ToStrUTF8() == SHVStringUTF8C(utf8str)));
-		ok = (ok && (SHVString8C(iso8859str).Left(3).ToStrUTF8() == SHVStringUTF8C(utf8str).Left(3)));
-		ok = (ok && (SHVString8C(iso8859str).Right(5).ToStrUTF8() == SHVStringUTF8C(utf8str).Right(5)));
+		ok = (ok && (SHVString8C(iso8859str).LeftInChars(3).ToStrUTF8() == SHVStringUTF8C(utf8str).LeftInChars(3)));
+		ok = (ok && (SHVString8C(iso8859str).RightInChars(5).ToStrUTF8() == SHVStringUTF8C(utf8str).RightInChars(5)));
 		ok = (ok && (SHVString8C(iso8859str).ToStrUTF8() == SHVStringUTF8C(utf8str).Right(10))); // tests char count
+		ok = (ok && (SHVString8C(iso8859str).ToStrUTF8() == SHVStringUTF8C(utf8str).Left(10)));  // tests char count function
 		ok = (ok && (SHVString8C(iso8859str).ToStrUTF8() == SHVStringUTF8C(utf8str).Left(10)));  // tests char count function
 		ok = (ok && (SHVStringUTF8C::SizeOfCharsReverse(iso8859str,3) == 3));
 		ok = (ok && (SHVStringUTF8C::SizeOfCharsReverse(iso8859str,4) == 5));
 		ok = (ok && (SHVStringUTF8C::SizeOfCharsReverse(utf8str,3) == 4));
 		ok = (ok && !SHVStringUTF8C::IsValidUTF8(iso8859str));
 		ok = (ok && SHVStringUTF8C::IsValidUTF8(utf8str));
+		ok = (ok && (SHVStringUTF8C(utf8str).Mid(2) == SHVStringUTF8C(utf8str+2)));
+		ok = (ok && (SHVStringUTF8C(utf8str).MidInChars(1) == SHVStringUTF8C(utf8str+2)));
+		ok = (ok && (SHVStringUTF8C(utf8str).MidInChars(2,1) == SHVStringUTF8C(utf8find)));
+		ok = (ok && (SHVStringUTF8C(utf8str).LeftInChars(1).GetLength() == 2));
+		ok = (ok && (SHVStringUTF8C(utf8str).LeftInChars(2).GetLengthInChars() == 2));
+		ok = (ok && (SHVStringUTF8C(utf8str).RightInChars(3).GetLength() == 4));
 
+		ok = (ok && (SHVStringUTF8C(utf8find).GetLengthInChars() == 1));
+		ok = (ok && (SHVStringUTF8C(utf8str).Find(utf8find) == 4));
+		ok = (ok && (SHVStringUTF8C(utf8str).Find(utf8find,3) == 4));
+		ok = (ok && (SHVStringUTF8C(utf8str).Find(utf8find,5) == -1));
+		ok = (ok && (SHVStringUTF8C(utf8str).FindInChars(utf8find) == 2));
+		ok = (ok && (SHVStringUTF8C(utf8str).FindInChars(utf8find,1) == 2));
+		ok = (ok && (SHVStringUTF8C(utf8str).FindInChars(utf8find,3) == -1));
+		ok = (ok && (SHVStringUTF8C(utf8str).ReverseFind(utf8find) == 4));
+		ok = (ok && (SHVStringUTF8C(utf8str).ReverseFindInChars(utf8find) == 2));
+	
+		if (ok)
+		{
+		SHVStringUTF8 addCharTest;
+		const char* addCharTestCh;
+		char addCharTestStr[2];
+			for (addCharTestCh = utf8str; *addCharTestCh; addCharTestCh++)
+			{
+				addCharTest.AddChars(addCharTestCh,1);
+			}
+			ok = (ok && (SHVStringUTF8C(utf8str) == addCharTest));
+			addCharTest = "";
+			addCharTestStr[1] = 0;
+			for (addCharTestCh = utf8str; *addCharTestCh; addCharTestCh++)
+			{
+				addCharTestStr[0] = *addCharTestCh;
+				addCharTest += SHVStringUTF8C(addCharTestStr);
+			}
+			ok = (ok && (SHVStringUTF8C(utf8str) == addCharTest));
+		}
 		// log.AddLine(_S("Result for SHVString8:  %s"), log.Success(ok));
 	}
 	{
 	static const SHVWChar ucs2str[] = { 0xE6, 0xE8, 0xA2, 0xE5, 'q', 'a', 0 };
-	static const char utf8str[] = { 0xC3, 0xA6, 0xC3, 0xA8, 0xC2, 0xA2, 0xC3, 0xA5, 'q', 'a', 0 };
+	static const char utf8str[] = { (char)0xC3, (char)0xA6, (char)0xC3, (char)0xA8, (char)0xC2, (char)0xA2, (char)0xC3, (char)0xA5, 'q', 'a', 0 };
 
 		ok = (ok && (SHVString16C::StrLen(ucs2str) == 6));
-		ok = (ok && (SHVStringUTF8C::StrLen(utf8str) == 6));
+		ok = (ok && (SHVStringUTF8C::StrLenInChars(utf8str) == 6));
 		ok = (ok && (SHVString16C(ucs2str).ToStrUTF8() == SHVStringUTF8C(utf8str)));
-		ok = (ok && (SHVString16C(ucs2str).Left(3).ToStrUTF8() == SHVStringUTF8C(utf8str).Left(3)));
-		ok = (ok && (SHVString16C(ucs2str).Right(5).ToStrUTF8() == SHVStringUTF8C(utf8str).Right(5)));
+		ok = (ok && (SHVString16C(ucs2str).LeftInChars(3).ToStrUTF8() == SHVStringUTF8C(utf8str).LeftInChars(3)));
+		ok = (ok && (SHVString16C(ucs2str).RightInChars(5).ToStrUTF8() == SHVStringUTF8C(utf8str).RightInChars(5)));
 		ok = (ok && (SHVString16C(ucs2str).ToStrUTF8() == SHVStringUTF8C(utf8str).Right(10))); // tests char count
 		ok = (ok && (SHVString16C(ucs2str).ToStrUTF8() == SHVStringUTF8C(utf8str).Left(10)));  // tests char count function
 
@@ -562,8 +600,8 @@ bool ok = true;
 
 #ifndef __SHVSTRING_EXCLUDE_UNICODE
 	{
-	static const char utf8str[] = { 0xC3, 0xA6, 0xC3, 0xA8, 0xC2, 0xA2, 0xC3, 0xA5, 'q', 'a', 0 };
-	static const char iso8859str[] = { 0xE6, 0xE8, 0xA2, 0xE5, 'q', 'a', 0 };
+	static const char utf8str[] = { (char)0xC3, (char)0xA6, (char)0xC3, (char)0xA8, (char)0xC2, (char)0xA2, (char)0xC3, (char)0xA5, 'q', 'a', 0 };
+	static const char iso8859str[] = { (char)0xE6, (char)0xE8, (char)0xA2, (char)0xE5, 'q', 'a', 0 };
 	SHVStringStream8 stream(16);
 		ok = (ok && stream.WriteString16(_SHVS16("This is a stream string of more than 16 bytes.")));
 		ok = (ok && stream.WriteStringUTF8(utf8str));
@@ -572,7 +610,7 @@ bool ok = true;
 		ok = (ok && stream == SHVString8C("This is a stream string of more than 16 bytes.") + iso8859str);
 	}
 	{
-	static const char utf8str[] = { 0xC3, 0xA6, 0xC3, 0xA8, 0xC2, 0xA2, 0xC3, 0xA5, 'q', 'a', 0 };
+	static const char utf8str[] = { (char)0xC3, (char)0xA6, (char)0xC3, (char)0xA8, (char)0xC2, (char)0xA2, (char)0xC3, (char)0xA5, 'q', 'a', 0 };
 	SHVStringStream16 stream(16);
 		ok = (ok && stream.WriteString16(_SHVS16("This is a stream string of more than 16 bytes.")));
 		ok = (ok && stream.WriteString8("With some more stream data coming along."));

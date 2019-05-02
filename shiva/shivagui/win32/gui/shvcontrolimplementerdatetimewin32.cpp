@@ -89,7 +89,7 @@ SHVBool SHVControlImplementerDateTimeWin32::Create(SHVControl* owner, SHVControl
 
 		styles |= WS_TABSTOP|WS_CHILD|Win32::MapFlags(flags);
 
-		SetHandle(CreateWindowEx(0, DATETIMEPICK_CLASS, _T("DateTime"), styles,
+		SetHandle(CreateWindowExW(0, DATETIMEPICK_CLASS, L"DateTime", styles,
 			0, 0, 0, 0, Win32::GetHandle(parent), NULL, Win32::GetInstance(owner), NULL));
 	
 		if (IsCreated())

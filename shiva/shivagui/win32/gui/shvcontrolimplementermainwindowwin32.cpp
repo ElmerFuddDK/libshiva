@@ -44,7 +44,7 @@
 #endif
 
 
-#define SHVWIN32CLASS_MAINWND _T("SHV_MainWnd")
+#define SHVWIN32CLASS_MAINWND L"SHV_MainWnd"
 
 //=========================================================================================================
 // SHVControlImplementerMainWindowWin32 - Main window implementation
@@ -85,7 +85,7 @@ SHVBool retVal(parent == NULL && !IsCreated());
 	if (retVal)
 	{
 #ifdef __SHIVA_WINCE
-	HWND hWnd = FindWindow(SHVWIN32CLASS_MAINWND,NULL);
+	HWND hWnd = FindWindowW(SHVWIN32CLASS_MAINWND,NULL);
 		///\todo add code to make sure the window is created with the same application as us
 		if (hWnd) 
 		{
@@ -99,14 +99,14 @@ SHVBool retVal(parent == NULL && !IsCreated());
 
 #ifdef __SHIVA_WINCE
 	DWORD styles = WS_VISIBLE|Win32::MapFlags(flags);
-	TCHAR* title = _T("SHIVA Application");
+	WCHAR* title = L"SHIVA Application";
 		memset (&s_sai, 0, sizeof(s_sai));
 		s_sai.cbSize = sizeof(s_sai);
 #else
 	DWORD styles = WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU|WS_MINIMIZEBOX|WS_MAXIMIZEBOX|Win32::MapFlags(flags);
-	TCHAR* title = _T("");
+	WCHAR* title = L"";
 #endif
-		SetHandle(::CreateWindowEx(WS_EX_CONTROLPARENT,SHVWIN32CLASS_MAINWND, title, styles,
+		SetHandle(::CreateWindowExW(WS_EX_CONTROLPARENT,SHVWIN32CLASS_MAINWND, title, styles,
 			CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL));
 
 		retVal = IsCreated();
@@ -220,14 +220,8 @@ SHVMenuContainerPocketPC* retVal = NULL;
  *************************************/
 SHVStringBuffer SHVControlImplementerMainWindowWin32::GetTitle(SHVControlContainer* owner)
 {
-SHVString retVal;
-
 	SHVASSERT(IsCreated());
-
-	retVal.SetBufferSize( GetWindowTextLength(GetHandle())+1 );
-	::GetWindowText(GetHandle(),(TCHAR*)retVal.GetBuffer(), (int)retVal.GetBufferLen());
-
-	return retVal.ReleaseBuffer();
+	return GetWindowTextBase();
 }
 
 /*************************************
@@ -236,8 +230,7 @@ SHVString retVal;
 void SHVControlImplementerMainWindowWin32::SetTitle(SHVControlContainer* owner, const SHVStringC& title)
 {
 	SHVASSERT(IsCreated());
-
-	SetWindowText(GetHandle(),(const TCHAR*)title.GetSafeBuffer());
+	SetWindowTextBase(title);
 }
 
 /*************************************
@@ -283,10 +276,10 @@ void SHVControlImplementerMainWindowWin32::RegisterClass(HINSTANCE hInstance)
 {
 INITCOMMONCONTROLSEX cctrlex;
 #ifdef __SHIVA_WINCE
-WNDCLASS wc;
+WNDCLASSW wc;
 #else
-WNDCLASSEX wc;
-	wc.cbSize = sizeof(WNDCLASSEX);
+WNDCLASSEXW wc;
+	wc.cbSize = sizeof(WNDCLASSEXW);
 	wc.hIconSm			= 0;
 #endif
 
@@ -307,9 +300,9 @@ WNDCLASSEX wc;
 	wc.lpszClassName	= SHVWIN32CLASS_MAINWND;
 
 #ifdef __SHIVA_WINCE
-	::RegisterClass(&wc);
+	::RegisterClassW(&wc);
 #else
-	::RegisterClassEx(&wc);
+	::RegisterClassExW(&wc);
 #endif
 }
 

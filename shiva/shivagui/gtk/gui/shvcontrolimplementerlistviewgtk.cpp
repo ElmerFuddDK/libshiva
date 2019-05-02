@@ -153,7 +153,11 @@ SHVUNUSED_PARAM(owner);
 		if (gtk_tree_model_get_iter_from_string(store, &iter, SHVStringC::LongToString((long)index).GetSafeBuffer()))
 		{
 			gtk_tree_model_get_value(store, &iter, col, &val);
+#if __SHVSTRINGDEFAULT == utf8
+			retVal = SHVStringBufferUTF8::Encapsulate(g_strdup_value_contents(&val));
+#else
 			retVal = SHVStringBufferUTF8::Encapsulate(g_strdup_value_contents(&val)).ToStrT();
+#endif
 			g_value_unset(&val);
 			retVal = retVal.Mid(1,retVal.GetLength()-2);
 		}
@@ -181,7 +185,7 @@ void SHVControlImplementerListViewGtk::AddItem(SHVControlListView* owner, const 
 	GtkTreeModel* store = gtk_tree_view_get_model(GTK_TREE_VIEW (TreeView));
 	GtkTreeIter iter;
 		gtk_list_store_append(GTK_LIST_STORE (store), &iter);
-		gtk_list_store_set(GTK_LIST_STORE (store), &iter, 0, str.ToStrUTF8().GetSafeBuffer(), -1);
+		gtk_list_store_set(GTK_LIST_STORE (store), &iter, 0, str.AsStrUTF8C().GetSafeBuffer(), -1);
 		ItemObjects.Add(data);
 	}
 	else if (data)
@@ -201,7 +205,7 @@ void SHVControlImplementerListViewGtk::SetItemText(SHVControlListView* owner, co
 	GtkTreeIter iter;
 		if (gtk_tree_model_get_iter_from_string(store, &iter, SHVStringC::LongToString((long)index).GetSafeBuffer()))
 		{
-			gtk_list_store_set(GTK_LIST_STORE (store), &iter, col, text.ToStrUTF8().GetSafeBuffer(), -1);
+			gtk_list_store_set(GTK_LIST_STORE (store), &iter, col, text.AsStrUTF8C().GetSafeBuffer(), -1);
 		}
 	}
 }
@@ -228,7 +232,7 @@ void SHVControlImplementerListViewGtk::AddColumn(SHVControlListView* owner, cons
 	GtkTreeViewColumn* col;
 
 		renderer = gtk_cell_renderer_text_new();
-		col = gtk_tree_view_column_new_with_attributes(colName.ToStrUTF8().GetSafeBuffer(),renderer,"text", CachedCols.CalculateCount(), NULL);
+		col = gtk_tree_view_column_new_with_attributes(colName.AsStrUTF8C().GetSafeBuffer(),renderer,"text", CachedCols.CalculateCount(), NULL);
 		gtk_tree_view_column_set_resizable(col,TRUE);
 		if (!width.IsNull())
 		{

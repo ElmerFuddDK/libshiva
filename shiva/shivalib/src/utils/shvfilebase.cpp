@@ -319,14 +319,16 @@ SHVBool retVal( (flags&FlagRead) || (flags&FlagWrite) ? (int)SHVBool::True : (in
 		else
 			mode += _S("b");
 
-#if defined(UNICODE)
+#if defined(__SHIVA_WIN32) || defined(__SHIVA_EPOC)
+# if __SHVSTRINGDEFAULT == 16
 		File = wfopen((const wchar_t*)fileName.GetSafeBuffer(),(const wchar_t*)mode.GetSafeBuffer());
-#elif defined(__SHIVA_WIN32) && defined(UNICODE)
-		File = _tfopen(fileName.GetSafeBuffer(),mode.GetSafeBuffer());
+# else
+		File = wfopen((const wchar_t*)fileName.ToStr16().GetSafeBuffer(),(const wchar_t*)mode.ToStr16().GetSafeBuffer());
+# endif
 #elif defined(FSUTF8MODE)
-		File = fopen(fileName.ToStrUTF8().GetSafeBuffer(),mode.GetSafeBuffer());
-#else
-		File = fopen(fileName.GetSafeBuffer(),mode.GetSafeBuffer());
+		File = fopen(fileName.AsStrUTF8C().GetSafeBuffer(),mode.GetSafeBuffer());
+#elif __SHVSTRINGDEFAULT == 8
+		File = fopen(fileName.AsStr8C().GetSafeBuffer(),mode.GetSafeBuffer());
 #endif
 
 		if (!File)

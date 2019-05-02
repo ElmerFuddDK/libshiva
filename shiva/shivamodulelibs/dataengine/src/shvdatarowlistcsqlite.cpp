@@ -47,6 +47,7 @@ SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVD
 	AliasID = dataStruct->GetIsMultiInstance() ? SHVDataRowListC::GetAliasID(alias) : -1;
 }
 
+#if __SHVSTRINGDEFAULT != utf8
 SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVStringC& sql, const SHVDataRowKey* sortKey): DataSession(session), RowCount(-1), Alias(""), HasShareLock(false)
 {
 SHVString rest;
@@ -61,6 +62,7 @@ SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
 	Eof = !Ok;
 	Bof = true;
 }
+#endif
 
 SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVStringUTF8C& sql, const SHVDataRowKey* sortKey): DataSession(session), RowCount(-1), Alias(""), HasShareLock(false)
 {
@@ -76,7 +78,6 @@ SHVSQLiteWrapperRef SQLite = (SHVSQLiteWrapper*) session->GetProvider();
 	Eof = !Ok;
 	Bof = true;
 }
-
 
 SHVDataRowListCSQLite::SHVDataRowListCSQLite(SHVDataSession* session, const SHVDataStructC* dataStruct, const SHVString8C& alias, const SHVStringC& condition, size_t index): StructCache((SHVDataStructC*)dataStruct), DataSession(session), RowCount(-1), Alias(alias), HasShareLock(false)
 {

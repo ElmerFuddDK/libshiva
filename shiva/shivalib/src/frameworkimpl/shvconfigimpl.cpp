@@ -632,46 +632,41 @@ void SHVConfigImpl::Remove(const SHVInt& enumerator)
  *************************************/
 SHVStringBuffer SHVConfigImpl::Unescape(const SHVStringC str)
 {
-SHVList<SHVString,SHVStringBuffer> bits;
 SHVString retVal;
-size_t len, pos, strSize;
+SHVTChar* retValPos;
+const SHVTChar* strPos;
 
 	if (str.IsNull())
 		return retVal.ReleaseBuffer();
 
-	len = pos = 0;
-	strSize = str.GetSizeInChars();
+	retVal.SetBufferSize(str.GetLength()+1);
+	strPos = str.GetBufferConst();
+	retValPos = retVal.GetBuffer();
 	
-	while (pos < strSize)
+	for (;*strPos;strPos++,retValPos++)
 	{
-		bits.AddTail(str.Tokenize(_S("\\"),pos));
-		len += bits.GetLast().GetLength();
-		if (pos < strSize)
+		if (*strPos == '\\')
 		{
-			pos++;
-			len++;
-			switch (str.GetBufferConst()[pos-1])
+			strPos++;
+			switch (*strPos)
 			{
 			case 'n':
-				bits.AddTail(SHVString(_S("\n")).ReleaseBuffer());
+				*retValPos = '\n';
 				break;
 			case '\\':
-				bits.AddTail(SHVString(_S("\\")).ReleaseBuffer());
+				*retValPos = '\\';
 				break;
 			default:
 				SHVASSERT(false); // Unknown escape char - fallback to no escape mode
 				return SHVString(str).ReleaseBuffer();
 			}
 		}
+		else
+		{
+			*retValPos = *strPos;
+		}
 	}
-	
-	retVal.SetBufferSize(len+1);
-	retVal.GetBuffer()[0] = '\0';
-	while (bits.GetCount())
-	{
-		retVal.AddChars(bits.GetFirst().GetBufferConst(),bits.GetFirst().GetLength());
-		bits.RemoveHead();
-	}
+	*retValPos = '\0';
 	
 	return retVal.ReleaseBuffer();
 }

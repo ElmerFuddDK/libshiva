@@ -129,14 +129,14 @@ int SHVControlImplementerEditGtk::GetSubType(SHVControl* owner)
  *************************************/
 SHVStringBuffer SHVControlImplementerEditGtk::GetText()
 {
-SHVStringUTF8 retVal;
+SHVString retVal;
 
 	if (IsCreated())
 	{
-		retVal = gtk_entry_get_text(GTK_ENTRY (GetHandle()));
+		retVal = SHVStringUTF8C(gtk_entry_get_text(GTK_ENTRY (GetHandle()))).ToStrT();
 	}
 
-	return retVal.ToStrT();
+	return retVal.ReleaseBuffer();
 }
 
 /*************************************
@@ -149,7 +149,7 @@ void SHVControlImplementerEditGtk::SetText(const SHVStringC& text)
 	if (IsCreated())
 	{
 		SuppressChangeEvent = true;
-		gtk_entry_set_text(GTK_ENTRY (GetHandle()), text.ToStrUTF8().GetSafeBuffer());
+		gtk_entry_set_text(GTK_ENTRY (GetHandle()), text.AsStrUTF8C().GetSafeBuffer());
 	}
 }
 

@@ -59,11 +59,11 @@ int retVal = -1;
 
 	if (!SHVModuleList::CheckVersion(__SHIVA_VERSION_MAJOR,__SHIVA_VERSION_MINOR,__SHIVA_VERSION_RELEASE))
 	{
-		::MessageBox(NULL,_T("Invalid version of libshiva.dll"),_T("Error"),MB_ICONERROR);
+		::MessageBoxW(NULL,L"Invalid version of libshiva.dll",L"Error",MB_ICONERROR);
 	}
 	else if (!guilib.Load(guilib.CreateLibFileName(_S("shivaguiwin32"))))
 	{
-		::MessageBox(NULL,_T("Failed loading GUI module"),_T("GUI Tester"),MB_ICONERROR);
+		::MessageBoxW(NULL,L"Failed loading GUI module",L"GUI Tester",MB_ICONERROR);
 	}
 	else
 	{

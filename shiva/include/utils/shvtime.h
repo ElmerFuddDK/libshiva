@@ -134,6 +134,10 @@ private:
 	static void SetWeekdayAndYearday(struct tm* t); // gets called from the above function
 	static bool IsLastDOW(struct tm* t, SYSTEMTIME& DOW);
 	#endif
+	#ifdef __SHIVA_WIN32
+	static int GetTimeFormatS(LCID Locale, DWORD dwFlags, CONST SYSTEMTIME *lpTime, const SHVTChar* lpFormat, SHVTChar* lpTimeStr, int cchTime);
+	static int GetDateFormatS(LCID Locale, DWORD dwFlags, CONST SYSTEMTIME *lpDate, const SHVTChar* lpFormat, SHVTChar* lpDateStr, int cchDate);
+	#endif
 	///\endcond
 };
 

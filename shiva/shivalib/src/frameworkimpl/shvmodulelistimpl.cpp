@@ -230,9 +230,7 @@ SHVBool retVal(SHVBool::True);
 SHVStringUTF8 param, val;
 bool utf8mode = false;
 
-#ifdef __SHIVA_POSIX
 	utf8mode = SHVConsole::NativeEncodingIsUTF8();
-#endif
 
 	for (int i=1; i<argc && retVal; i++)
 	{

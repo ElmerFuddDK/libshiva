@@ -31,7 +31,6 @@
 // C RunTime Header Files
 #include <stdlib.h>
 #include <memory.h>
-#include <tchar.h>
 
 
 // TODO: reference additional headers your program requires here

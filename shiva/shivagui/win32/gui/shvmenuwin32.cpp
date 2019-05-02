@@ -130,7 +130,7 @@ void SHVMenuWin32::AddStringItem(SHVInt id, const SHVStringC name, int flags)
 	{
 	int disabledflag = ( (flags&FlagDisabled) ? MF_DISABLED|MF_GRAYED : 0);
 	int cmdID = Manager->CreateCommandID(hMenuTopLevel,id);
-		::AppendMenu(hMenu,MF_STRING|disabledflag,cmdID,(const TCHAR*)name.GetSafeBuffer());
+		::AppendMenuW(hMenu,MF_STRING|disabledflag,cmdID,name.AsStr16C().GetSafeBufferWin32());
 	}
 }
 
@@ -141,7 +141,7 @@ void SHVMenuWin32::AddSeparator()
 {
 	EnsureMenuCreated();
 	if (hMenu)
-		::AppendMenu(hMenu,MF_SEPARATOR,0,_T(""));
+		::AppendMenu(hMenu,MF_SEPARATOR,0,TEXT(""));
 }
 
 /*************************************
@@ -155,7 +155,7 @@ SHVMenu* SHVMenuWin32::AddSubMenu(const SHVStringC name)
 	SHVMenuWin32* retVal = new SHVMenuWin32(Manager,SHVMenu::TypeSub, NULL, Parent);
 		retVal->hMenu = ::CreatePopupMenu();
 		retVal->hMenuTopLevel = hMenuTopLevel;
-		::AppendMenu(hMenu,MF_POPUP,(UINT_PTR)retVal->hMenu,(const TCHAR*)name.GetSafeBuffer());
+		::AppendMenuW(hMenu,MF_POPUP,(UINT_PTR)retVal->hMenu,name.AsStr16C().GetSafeBufferWin32());
 		return retVal;
 	}
 	else
@@ -527,6 +527,19 @@ void SHVMenuCommandBarPocketPC::SetMenu(HWND parent, SHVMenuContainerPocketPC* m
 	if (!Menu.IsNull())
 	{
 	TBBUTTON tbButton;
+#if defined(UNICODE) && __SHVSTRINGDEFAULT == 16
+	const SHVStringC btn1NameT(Menu->Button1MenuName);
+	const SHVStringC btn2NameT(Menu->Button2MenuName);
+#elif !defined(UNICODE) && __SHVSTRINGDEFAULT == 8
+	const SHVStringC btn1NameT(Menu->Button1MenuName);
+	const SHVStringC btn2NameT(Menu->Button2MenuName);
+#elif defined(UNICODE)
+	SHVString16 btn1NameT(Menu->Button1MenuName.ToStr16());
+	SHVString16 btn2NameT(Menu->Button2MenuName.ToStr16());
+#else
+	SHVString8 btn1NameT(Menu->Button1MenuName.ToStr8());
+	SHVString8 btn2NameT(Menu->Button2MenuName.ToStr8());
+#endif
 
 		///\todo figure out why the buttons don't get shown on older pocket pc's
 
@@ -536,7 +549,7 @@ void SHVMenuCommandBarPocketPC::SetMenu(HWND parent, SHVMenuContainerPocketPC* m
 		tbButton.fsStyle   = TBSTYLE_BUTTON|TBSTYLE_AUTOSIZE;
 		tbButton.dwData    = 0;
 		tbButton.idCommand = 0;
-		tbButton.iString   = ::SendMessage(hCmdWnd, TB_ADDSTRING,NULL,(LPARAM)(Menu->Button1MenuName.IsEmpty() ? _T(" ") : (const TCHAR*)Menu->Button1MenuName.GetSafeBuffer()));
+		tbButton.iString   = ::SendMessage(hCmdWnd, TB_ADDSTRING,NULL,(LPARAM)(Menu->Button1MenuName.IsEmpty() ? TEXT(" ") : btn1NameT.GetSafeBufferWin32()));
 		::SendMessage(hCmdWnd,TB_INSERTBUTTON,::SendMessage(hCmdWnd,TB_BUTTONCOUNT,0,0),(LPARAM)&tbButton);
 
 		memset(&tbButton, 0, sizeof(TBBUTTON));
@@ -545,7 +558,7 @@ void SHVMenuCommandBarPocketPC::SetMenu(HWND parent, SHVMenuContainerPocketPC* m
 		tbButton.fsStyle   = TBSTYLE_BUTTON|TBSTYLE_AUTOSIZE;
 		tbButton.dwData    = 0;
 		tbButton.idCommand = 1;
-		tbButton.iString   = ::SendMessage(hCmdWnd, TB_ADDSTRING,NULL,(LPARAM)(Menu->Button2MenuName.IsEmpty() ? _T(" ") : (const TCHAR*)Menu->Button2MenuName.GetSafeBuffer()));
+		tbButton.iString   = ::SendMessage(hCmdWnd, TB_ADDSTRING,NULL,(LPARAM)(Menu->Button2MenuName.IsEmpty() ? TEXT(" ") : btn2NameT.GetSafeBufferWin32()));
 		::SendMessage(hCmdWnd,TB_INSERTBUTTON,::SendMessage(hCmdWnd,TB_BUTTONCOUNT,0,0),(LPARAM)&tbButton);
 
 	}

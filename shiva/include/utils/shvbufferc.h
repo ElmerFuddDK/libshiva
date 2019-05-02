@@ -287,17 +287,17 @@ SHVBufferCPtr SHVBufferCPtr::VoidToBuffer(const void* str, size_t len)
 /// Creates a SHVBufferCPtr from a SHVString8C
 SHVBufferCPtr SHVBufferCPtr::StringToBuffer8(const SHVString8C str, bool includeNull)
 {
-	return SHVBufferCPtr((SHVByte*)str.GetBufferConst(),str.GetSizeInBytes()+(includeNull ? 1 : 0));
+	return SHVBufferCPtr((SHVByte*)str.GetBufferConst(),str.GetLengthInBytes()+(includeNull ? 1 : 0));
 }
 /// Creates a SHVBufferCPtr from a SHVStringUTF8C
 SHVBufferCPtr SHVBufferCPtr::StringToBufferUTF8(const SHVStringUTF8C str, bool includeNull)
 {
-	return SHVBufferCPtr((SHVByte*)str.GetBufferConst(),str.GetSizeInBytes()+(includeNull ? 1 : 0));
+	return SHVBufferCPtr((SHVByte*)str.GetBufferConst(),str.GetLengthInBytes()+(includeNull ? 1 : 0));
 }
 /// Creates a SHVBufferCPtr from a SHVString16C
 SHVBufferCPtr SHVBufferCPtr::StringToBuffer16(const SHVString16C str, bool includeNull)
 {
-	return SHVBufferCPtr((SHVByte*)str.GetBufferConst(),str.GetSizeInBytes()+(includeNull ? 2 : 0));
+	return SHVBufferCPtr((SHVByte*)str.GetBufferConst(),str.GetLengthInBytes()+(includeNull ? 2 : 0));
 }
 
 /*************************************

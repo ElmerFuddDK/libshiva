@@ -377,11 +377,11 @@ int retVal = -1;
 
 	if (!SHVModuleList::CheckVersion(__SHIVA_VERSION_MAJOR,__SHIVA_VERSION_MINOR,__SHIVA_VERSION_RELEASE))
 	{
-		::fprintf(stderr,_T("Invalid version of libshiva.dll\n"));
+		::fprintf(stderr,"Invalid version of libshiva.dll\n");
 	}
-	else if (!guilib.Load(guilib.CreateLibFileName(_T("shivaguigtk"))))
+	else if (!guilib.Load(guilib.CreateLibFileName(_S("shivaguigtk"))))
 	{
-		::fprintf(stderr,_T("Could not load GUI module library shivaguigtk\n"));
+		::fprintf(stderr,"Could not load GUI module library shivaguigtk\n");
 	}
 	else
 	{

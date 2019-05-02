@@ -434,7 +434,7 @@ void SHVDrawGtk::DrawText(const SHVStringC txt, SHVRect rect, SHVColor* color, i
 void SHVDrawGtk::DrawText(SHVFont* font, const SHVStringC txt, SHVRect rect, SHVColor* color, int options)
 {
 GdkGCValues values;
-SHVStringUTF8 str(txt.ToStrUTF8());
+SHVStringUTF8 str(txt.AsStrUTF8C());
 PangoLayout* layout;
 gint x,y;
 	

@@ -39,6 +39,7 @@
 
 
 #include "../../../../include/utils/shvdll.h"
+#include "../../../../include/framework/shvconsole.h"
 #include "../../../../include/framework/shvmodulefactory.h"
 #include "../../../../include/framework/shvmodule.h"
 #include "../../../../include/modules/dataengine/shvdataengine.h"
@@ -86,11 +87,11 @@ public:
 
 SHVString GetAppPath()
 {
-SHVTChar szBuffer[_MAX_PATH];
-SHVString apppath(szBuffer);
+WCHAR szBuffer[_MAX_PATH];
+SHVString apppath(NULL);
 SHVString path;
-	::GetModuleFileName(NULL, (TCHAR*)szBuffer, _MAX_PATH);
-	apppath = szBuffer;
+	::GetModuleFileNameW(NULL, szBuffer, _MAX_PATH);
+	apppath = SHVString16C::FromWin32(szBuffer).ToStrT();
 	path = apppath.Left(apppath.ReverseFind(_S("\\")));
 	path += _S("\\");
 	return path;
@@ -103,10 +104,10 @@ class SHVTestLoggerConsole : public SHVLogger
 	SHVStringC sFailure;
 public:
 	SHVTestLoggerConsole() : sTrue(_S("true")), sFalse(_S("false")), sSuccess(_S("\033[32msucceeded\033[0m")), sFailure(_S("\033[31mFAILED\033[0m")) {}
-	virtual void AddTitle(const SHVStringC& str)   { _tprintf(_T("\n\n%s:\n------------------------------------------\n"), str.GetSafeBuffer()); }
-	virtual void AddHeader(const SHVStringC& str)  { _tprintf(_T("\n%s\n"), str.GetSafeBuffer()); }
+	virtual void AddTitle(const SHVStringC& str)   { SHVConsole::Printf(_S("\n\n%s:\n------------------------------------------\n"), str.GetSafeBuffer()); }
+	virtual void AddHeader(const SHVStringC& str)  { SHVConsole::Printf(_S("\n%s\n"), str.GetSafeBuffer()); }
 	virtual void AddHeader(const SHVTChar* s, ...) { SHVString str; SHVVA_LIST args; SHVVA_START(args, s); str.FormatList(s,args); AddHeader(str); SHVVA_END(args); }
-	virtual void AddLine(const SHVStringC& str)    { _tprintf(_T("  %s\n"), str.GetSafeBuffer()); }
+	virtual void AddLine(const SHVStringC& str)    { SHVConsole::Printf(_S("  %s\n"), str.GetSafeBuffer()); }
 	virtual void AddLine(const SHVTChar* s, ...)   { SHVString str; SHVVA_LIST args; SHVVA_START(args, s); str.FormatList(s,args); AddLine(str); SHVVA_END(args); }
 	
 	virtual const SHVStringC& True()  { return sTrue;  }
@@ -141,7 +142,7 @@ SHVBool retVal;
 
 	if (!dll.Load(dll.CreateLibFileName(_S("DataEngine"))))
 	{
-		_putts(_T("Could not load dataengine"));
+		SHVConsole::Printf(_S("Could not load dataengine\n"));
 		return 1;
 	}
 	SHVModuleFactoryPtr engine = (SHVModuleFactory*) dll.CreateObjectInt(&mainqueue.GetModuleList(), SHVDll::ClassTypeModuleFactory);

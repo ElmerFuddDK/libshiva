@@ -5,6 +5,10 @@
 #include "../../../include/gui/shvcontrolimplementer.h"
 #include "../../../include/gui/utils/shvpoint.h"
 #include "utils/shvfontwin32.h"
+#ifdef _T
+# undef _T
+#endif
+#include <tchar.h>
 
 #ifndef __SHIVA_WIN32
 # error This code only works for win32
@@ -68,6 +72,9 @@ protected:
 
 	virtual void ModifyStyle(int set, int remove);
 	virtual void ModifyStyleEx(int set, int remove);
+
+	virtual SHVStringBuffer GetWindowTextBase();
+	virtual void SetWindowTextBase(const SHVStringC text);
 
 private:
 friend class SHVControlWrapperWin32;

@@ -81,7 +81,7 @@ SHVBool retVal = IsOk();
 	if (retVal)
 	{
 		if (maxsize == SIZE_T_MAX)
-			maxsize = SHVString16::StrSizeInBytes(buffer);
+			maxsize = SHVString16::StrLenInBytes(buffer);
 		retVal = WriteBuffer(buffer, maxsize);
 	}
 	return retVal;
@@ -104,7 +104,7 @@ SHVBool retVal = IsOk();
 	if (retVal)
 	{
 		if (maxsize == SIZE_T_MAX)
-			maxsize = SHVString8::StrSizeInBytes(buffer);
+			maxsize = SHVString8::StrLenInBytes(buffer);
 		retVal = WriteBuffer(buffer, maxsize);
 	}
 	return retVal;
@@ -127,7 +127,7 @@ SHVBool retVal = IsOk();
 	if (retVal)
 	{
 		if (maxsize == SIZE_T_MAX)
-			maxsize = SHVStringUTF8::StrSizeInBytes(buffer);
+			maxsize = SHVStringUTF8::StrLenInBytes(buffer);
 		retVal = WriteBuffer(buffer, maxsize);
 	}
 	return retVal;

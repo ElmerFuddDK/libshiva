@@ -82,14 +82,14 @@ int SHVControlImplementerLabelGtk::GetSubType(SHVControl* owner)
  *************************************/
 SHVStringBuffer SHVControlImplementerLabelGtk::GetText()
 {
-SHVStringUTF8 retVal;
+SHVString retVal;
 
 	if (IsCreated())
 	{
-		retVal = gtk_label_get_text(GTK_LABEL (GetHandle()));
+		retVal = SHVStringUTF8C(gtk_label_get_text(GTK_LABEL (GetHandle()))).ToStrT();
 	}
 
-	return retVal.ToStrT();
+	return retVal.ReleaseBuffer();
 }
 
 /*************************************
@@ -101,7 +101,7 @@ void SHVControlImplementerLabelGtk::SetText(SHVControlLabel* owner, const SHVStr
 
 	if (IsCreated())
 	{
-		gtk_label_set_text(GTK_LABEL (GetHandle()), text.ToStrUTF8().GetSafeBuffer());
+		gtk_label_set_text(GTK_LABEL (GetHandle()), text.AsStrUTF8C().GetSafeBuffer());
 		
 		if (autoSize)
 		{

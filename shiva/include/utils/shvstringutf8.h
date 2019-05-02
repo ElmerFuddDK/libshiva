@@ -49,6 +49,7 @@ public:
 
 	// Buffer modification
 	void AddChars(const SHVChar* chars, size_t len);
+	void AddCharsInChars(const SHVChar* chars, size_t len);
 	void TrimLeft(const SHVChar* trimString = NULL);
 	void TrimRight(const SHVChar* trimString = NULL);
 	void Trim();

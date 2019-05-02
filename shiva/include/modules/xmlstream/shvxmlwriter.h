@@ -44,28 +44,34 @@ typedef SHVPtrContainer<SHVXmlWriter> SHVXmlWriterPtr;
 
 void SHVXmlWriter::WriteStartElement(SHVStreamOut& Streamout, const SHVStringC& elementName)
 {
-#ifdef UNICODE
-	WriteStartElement16(Streamout, elementName);
-#else
+#if __SHVSTRINGDEFAULT == 8
 	WriteStartElement8(Streamout, elementName);
+#elif __SHVSTRINGDEFAULT == 16
+	WriteStartElement16(Streamout, elementName);
+#elif __SHVSTRINGDEFAULT == utf8
+	WriteStartElementUTF8(Streamout, elementName);
 #endif
 }
 
 void SHVXmlWriter::WriteAttribute(SHVStreamOut& Streamout, const SHVStringC& attrName, const SHVStringC& value)
 {
-#ifdef UNICODE
-	WriteAttribute16(Streamout, attrName, value);
-#else
+#if __SHVSTRINGDEFAULT == 8
 	WriteAttribute8(Streamout, attrName, value);
+#elif __SHVSTRINGDEFAULT == 16
+	WriteAttribute16(Streamout, attrName, value);
+#elif __SHVSTRINGDEFAULT == utf8
+	WriteAttributeUTF8(Streamout, attrName, value);
 #endif
 }
 
 void SHVXmlWriter::WriteText(SHVStreamOut& Streamout, const SHVStringC& text)
 {
-#ifdef UNICODE
-	WriteText16(Streamout, text);
-#else
+#if __SHVSTRINGDEFAULT == 8
 	WriteText8(Streamout, text);
+#elif __SHVSTRINGDEFAULT == 16
+	WriteText16(Streamout, text);
+#elif __SHVSTRINGDEFAULT == utf8
+	WriteTextUTF8(Streamout, text);
 #endif
 }
 

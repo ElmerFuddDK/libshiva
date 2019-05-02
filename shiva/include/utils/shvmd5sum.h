@@ -86,7 +86,7 @@ private:
  */
 void SHVMd5Sum::CalculateString8(const SHVString8C str)
 {
-SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
+SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetLengthInBytes());
 	Calculate(&buf);
 }
 
@@ -100,7 +100,7 @@ SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
  */
 void SHVMd5Sum::CalculateStringUTF8(const SHVStringUTF8C str)
 {
-SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
+SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetLengthInBytes());
 	Calculate(&buf);
 }
 
@@ -114,7 +114,7 @@ SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
  */
 void SHVMd5Sum::CalculateString16(const SHVString16C str)
 {
-SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
+SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetLengthInBytes());
 	Calculate(&buf);
 }
 
@@ -128,7 +128,7 @@ SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
  */
 void SHVMd5Sum::CalculateString(const SHVStringC str)
 {
-SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
+SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetLengthInBytes());
 	Calculate(&buf);
 }
 

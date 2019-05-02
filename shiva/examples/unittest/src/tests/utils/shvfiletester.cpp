@@ -42,6 +42,7 @@ static const SHVTestBase::Action actions[] = {
 	{ ActionCreation, "creation", _S("Creation"), _S("This will test Creation"), &SHVFileTester::TestCreation },
 	{ ActionStorage, "storage", _S("Storage"), _S("This will test Storage"), &SHVFileTester::TestStorage },
 	{ ActionTextHandling, "texthandling", _S("TextHandling"), _S("This will test TextHandling"), &SHVFileTester::TestTextHandling },
+	{ ActionUnicodeFilenames, "unicodenames", _S("Unicode file names"), _S("This will test files with unicode in them"), &SHVFileTester::TestUnicodeFilenames },
 	{ 0, NULL, NULL, NULL, NULL } }; // Termination
 	
 	return actions;
@@ -170,4 +171,49 @@ SHVString16 tmpStr16;
 	self->AddLine(_S("Test result: %s"), self->Success(modules,ok).GetSafeBuffer());
 
 	return ok;
+}
+bool SHVFileTester::TestUnicodeFilenames(SHVModuleList& modules, SHVTestBase* self, int )
+{
+#ifdef __SHVSTRING_EXCLUDE_UNICODE
+	self->AddLine(_S("Test result: bypassed"));
+	return true;
+#else
+static const SHVWChar baseName16[] = { 0xE6, 0xF8, 0xE5, '.', 't', 'x', 't', '\0' };
+SHVString baseName(SHVString16C(baseName16).ToStrT());
+bool ok;
+SHVFile file1;
+SHVString dirName(modules.GetConfig().Find(SHVModuleList::DefaultCfgAppPath)->ToString());
+SHVString fileName(dirName + SHVDir::Delimiter() + baseName);
+	
+	ok = true;
+	
+	if (SHVDir::FileExist(fileName))
+		SHVDir::DeleteFile(fileName);
+
+	ok = (ok && ( !SHVDir::FileExist(fileName) ));
+	
+	ok = (ok && ( file1.Open(fileName,SHVFileBase::FlagCreate|SHVFileBase::FlagWrite) ));
+	
+	if (ok)
+	{
+	SHVFileList files;
+		file1.Close();
+		
+		ok = (ok && SHVDir::GetFileList(files,dirName,_S("*.txt")));
+		
+		if (ok)
+		{
+		SHVFileListIterator filesItr(files);
+			ok = false;
+			while (filesItr.MoveNext() && !ok)
+			{
+				ok = (filesItr.Get() == baseName);
+			}
+		}
+	}
+
+	self->AddLine(_S("Test result: %s"), self->Success(modules,ok).GetSafeBuffer());
+
+	return ok;
+#endif
 }

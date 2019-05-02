@@ -98,10 +98,12 @@ private:
  *************************************/
 SHVStringBuffer SHVXmlReader::GetElementName() const
 {
-#ifdef UNICODE
-	return GetElementName16();
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return GetElementName8();
+#elif __SHVSTRINGDEFAULT == 16
+	return GetElementName16();
+#elif __SHVSTRINGDEFAULT == utf8
+	return GetElementNameUTF8();
 #endif
 }
 
@@ -110,10 +112,12 @@ SHVStringBuffer SHVXmlReader::GetElementName() const
  *************************************/
 SHVStringBuffer SHVXmlReader::GetAttributeName(size_t idx) const
 {
-#ifdef UNICODE
-	return GetAttributeName16(idx);
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return GetAttributeName8(idx);
+#elif __SHVSTRINGDEFAULT == 16
+	return GetAttributeName16(idx);
+#elif __SHVSTRINGDEFAULT == utf8
+	return GetAttributeNameUTF8(idx);
 #endif
 }
 
@@ -122,10 +126,12 @@ SHVStringBuffer SHVXmlReader::GetAttributeName(size_t idx) const
  *************************************/
 SHVStringBuffer SHVXmlReader::GetAttributeValue(size_t idx) const
 {
-#ifdef UNICODE
-	return GetAttributeValue16(idx);
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return GetAttributeValue8(idx);
+#elif __SHVSTRINGDEFAULT == 16
+	return GetAttributeValue16(idx);
+#elif __SHVSTRINGDEFAULT == utf8
+	return GetAttributeValueUTF8(idx);
 #endif
 }
 
@@ -134,10 +140,12 @@ SHVStringBuffer SHVXmlReader::GetAttributeValue(size_t idx) const
  *************************************/
 SHVStringBuffer SHVXmlReader::GetAttributeValueByName(const SHVStringC& name) const
 {
-#ifdef UNICODE
-	return GetAttributeValueByName16(name);
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return GetAttributeValueByName8(name);
+#elif __SHVSTRINGDEFAULT == 16
+	return GetAttributeValueByName16(name);
+#elif __SHVSTRINGDEFAULT == utf8
+	return GetAttributeValueByNameUTF8(name);
 #endif
 }
 
@@ -146,10 +154,12 @@ SHVStringBuffer SHVXmlReader::GetAttributeValueByName(const SHVStringC& name) co
  *************************************/
 SHVStringBuffer SHVXmlReader::GetValue() const
 {
-#ifdef UNICODE
-	return GetValue16();
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return GetValue8();
+#elif __SHVSTRINGDEFAULT == 16
+	return GetValue16();
+#elif __SHVSTRINGDEFAULT == utf8
+	return GetValueUTF8();
 #endif
 }
 

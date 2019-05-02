@@ -50,18 +50,23 @@ SHVFontWin32::SHVFontWin32(HFONT font, bool owner) : Font(font), Owner(owner)
 }
 SHVFontWin32::SHVFontWin32(const SHVStringC fontName, int height, int styles)
 {
-LOGFONT lf;
+LOGFONTW lf;
+#if __SHVSTRINGDEFAULT == 16
+const SHVString16C fontNameW(fontName);
+#else
+SHVString16 fontNameW(fontName.ToStr16());
+#endif
 
 	Owner = true;
 
 	// Create font
-	memset(&lf, 0, sizeof(LOGFONT));
+	memset(&lf, 0, sizeof(LOGFONTW));
 	lf.lfHeight = -height;
 	lf.lfWeight = ( styles & SHVFont::StyleBold ? FW_BOLD : FW_NORMAL );
 	lf.lfItalic = ( styles & SHVFont::StyleItalic ? TRUE : FALSE );
 	lf.lfUnderline = ( styles & SHVFont::StyleUnderline ? TRUE : FALSE );
-	::memcpy( lf.lfFaceName, fontName.GetSafeBuffer(), (fontName.GetLength()+1)*sizeof(SHVTChar) );
-	SHVVERIFY(Font = ::CreateFontIndirect(&lf));
+	::memcpy( lf.lfFaceName, fontNameW.GetSafeBuffer(), (fontNameW.GetLength()+1)*sizeof(WCHAR) );
+	SHVVERIFY(Font = ::CreateFontIndirectW(&lf));
 	CellHeight = -1;
 	ApproximateWidth = -1;
 }
@@ -156,12 +161,17 @@ HDC dc = ::GetDC(NULL);
 int dcBackup = ::SaveDC(dc);
 SIZE sz;
 int retVal;
+#if __SHVSTRINGDEFAULT == 16
+const SHVString16C textW(text);
+#else
+SHVString16 textW(text.ToStr16());
+#endif
 
 	SHVASSERT(!Win32::CheckForNewlines(text));
 
 	::SelectObject(dc,Font);
 	
-	SHVVERIFY(::GetTextExtentPoint(dc,(const TCHAR*)text.GetSafeBuffer(),(int)text.GetLength(),&sz));
+	SHVVERIFY(::GetTextExtentPointW(dc,textW.GetSafeBufferWin32(),(int)textW.GetLength(),&sz));
 	retVal = sz.cx;
 
 	::RestoreDC(dc,dcBackup);
@@ -179,7 +189,15 @@ SHVString retVal;
 LOGFONT lf;
 	if  (::GDIGetObject(Font, sizeof(LOGFONT), &lf) != 0)
 	{
-		retVal = (const SHVTChar*)lf.lfFaceName;
+#if defined(UNICODE) && __SHVSTRINGDEFAULT == 16
+		retVal = SHVString16C::FromWin32(lf.lfFaceName);
+#elif !defined(UNICODE) && __SHVSTRINGDEFAULT == 8
+		retVal = SHVString8C(lf.lfFaceName);
+#elif defined(UNICODE)
+		retVal = SHVString16C::FromWin32(lf.lfFaceName).ToStrT();
+#else
+		retVal = SHVString8C(lf.lfFaceName).ToStrT();
+#endif
 	}
 	return retVal.ReleaseBuffer();
 }
@@ -190,15 +208,15 @@ LOGFONT lf;
 SHVFontWin32* SHVFontWin32::CreateSystemFont()
 {
 #if defined(__SHIVA_WINCE) && (_WIN32_WCE < 500)
-LOGFONT lf;
+LOGFONTW lf;
 
 	///\todo Implement a way to get the real message font from the system on windows CE
 
-	memset(&lf, 0, sizeof(LOGFONT));
+	memset(&lf, 0, sizeof(LOGFONTW));
 	lf.lfHeight = 13; // 8DPI size calculated to pixels from the windows PPI factor (96)
 	lf.lfWeight = FW_NORMAL;
-	_tcscpy(lf.lfFaceName, _T("MS Shell Dlg"));
-	return new SHVFontWin32(::CreateFontIndirect(&lf));
+	wcscpy(lf.lfFaceName, L"MS Shell Dlg");
+	return new SHVFontWin32(::CreateFontIndirectW(&lf));
 #elif defined(__SHIVA_WINCE)
 	///\todo Test if this method works for older wince's
 	return new SHVFontWin32((HFONT)::GetStockObject(SYSTEM_FONT),false);
@@ -241,7 +259,7 @@ int retVal;
 
 	::SelectObject(dc,font);
 	
-	SHVVERIFY(::GetTextExtentPoint(dc,_T(" "),1,&sz));
+	SHVVERIFY(::GetTextExtentPointW(dc,L" ",1,&sz));
 	retVal = sz.cy;
 
 	::RestoreDC(dc,dcBackup);

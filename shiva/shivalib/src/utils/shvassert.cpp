@@ -102,7 +102,11 @@ SHVVA_LIST args;
 	SHVVA_END(args);
 
 #if defined(__SHIVA_WIN32) && !defined(__MINGW32__)
-	::OutputDebugString((const TCHAR*)str.GetSafeBuffer());
+# if __SHVSTRINGDEFAULT == 8
+	::OutputDebugStringA(str.GetSafeBuffer());
+# else
+	::OutputDebugStringW(str.AsStr16C().GetSafeBufferWin32());
+# endif
 #elif defined(__SHIVA_EPOC)
 # ifdef __MINGW32__
 	if (str.Find(_S("\n")) >= 0)
@@ -133,7 +137,7 @@ int fd;
 		::write(fd,tStr.GetSafeBuffer(),tStr.GetLength());
 		::write(fd,"\n",1);
 		if (xtrainfo)
-			::write(fd,xtrainfo,SHVString8C::StrSizeInBytes(xtrainfo));
+			::write(fd,xtrainfo,SHVString8C::StrLenInBytes(xtrainfo));
 		size = ::backtrace(array, 10);
 		if (size > 1)
 		::backtrace_symbols_fd(array+1, size-1, fd);

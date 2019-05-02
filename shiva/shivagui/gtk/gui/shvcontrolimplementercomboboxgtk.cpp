@@ -139,19 +139,19 @@ bool retVal(SHVControlImplementerGtkWidget<SHVControlImplementerComboBox>::GetFl
  *************************************/
 SHVStringBuffer SHVControlImplementerComboBoxGtk::GetText(SHVControlComboBox* owner)
 {
-SHVStringUTF8 retVal;
+SHVString retVal;
 
 	SHVUNUSED_PARAM(owner);
 	if (IsCreated())
 	{
 #ifdef GTK_TYPE_COMBO_BOX_TEXT
-		retVal = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT (GetHandle()));
+		retVal = SHVStringUTF8C(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT (GetHandle()))).ToStrT();
 #else
-		retVal = gtk_combo_box_get_active_text(GTK_COMBO_BOX (GetHandle()));
+		retVal = SHVStringUTF8C(gtk_combo_box_get_active_text(GTK_COMBO_BOX (GetHandle()))).ToStrT();
 #endif
 	}
 
-	return retVal.ToStrT();
+	return retVal.ReleaseBuffer();
 }
 
 /*************************************
@@ -165,7 +165,9 @@ void SHVControlImplementerComboBoxGtk::SetText(SHVControlComboBox* owner, const 
 	GtkWidget* entry = gtk_bin_get_child(GTK_BIN (GetHandle()));
 		SHVASSERT(entry);
 		if (entry)
-			gtk_entry_set_text(GTK_ENTRY (entry), text.ToStrUTF8().GetSafeBuffer());
+		{
+			gtk_entry_set_text(GTK_ENTRY (entry), text.AsStrUTF8C().GetSafeBuffer());
+		}
 	}
 }
 
@@ -257,9 +259,9 @@ void SHVControlImplementerComboBoxGtk::AddItem(SHVControlComboBox* owner, const 
 	if (IsCreated())
 	{
 #ifdef GTK_TYPE_COMBO_BOX_TEXT
-		gtk_combo_box_text_append_text( GTK_COMBO_BOX_TEXT (GetHandle()), str.ToStrUTF8().GetSafeBuffer());
+		gtk_combo_box_text_append_text( GTK_COMBO_BOX_TEXT (GetHandle()), str.AsStrUTF8C().GetSafeBuffer());
 #else
-		gtk_combo_box_append_text(GTK_COMBO_BOX (GetHandle()), str.ToStrUTF8().GetSafeBuffer());
+		gtk_combo_box_append_text(GTK_COMBO_BOX (GetHandle()), str.AsStrUTF8C().GetSafeBuffer());
 #endif
 		ItemObjects.Add(data);
 	}

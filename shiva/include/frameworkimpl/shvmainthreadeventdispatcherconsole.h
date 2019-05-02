@@ -55,8 +55,8 @@ private:
 #if defined(__SHIVA_WINCE)
 friend class SHVConsole;
 
-	static void Print(const SHVStringC str);
-	void PrintInternal(const SHVStringC str);
+	static void Print(const SHVString16C str);
+	void PrintInternal(const SHVString16C str);
 	static int AlignDWord(int val) { return ((val + 3) & ~3); }
 	SHVBool CreateDlg();
 	void Resize();
@@ -68,7 +68,7 @@ friend class SHVConsole;
 # endif
 	SHVModuleList* ModuleList;
 	SHVMutex Lock;
-	SHVList<SHVString,SHVStringBuffer> StringBuffers;
+	SHVList<SHVString16,SHVStringBuffer16> StringBuffers;
 	int fontHeight, fontWidth;
 	SIZE boundaries;
 	HWND wndConsole;

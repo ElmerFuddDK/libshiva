@@ -122,7 +122,7 @@ private:
  *************************************/
 void SHVBase64Encoder::CalculateString8(const SHVString8C str)
 {
-SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
+SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetLengthInBytes());
 	Calculate(&buf);
 }
 
@@ -131,7 +131,7 @@ SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
  *************************************/
 void SHVBase64Encoder::CalculateStringUTF8(const SHVStringUTF8C str)
 {
-SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
+SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetLengthInBytes());
 	Calculate(&buf);
 }
 
@@ -140,7 +140,7 @@ SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
  *************************************/
 void SHVBase64Encoder::CalculateString16(const SHVString16C str)
 {
-SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
+SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetLengthInBytes());
 	Calculate(&buf);
 }
 
@@ -149,7 +149,7 @@ SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
  *************************************/
 void SHVBase64Encoder::CalculateString(const SHVStringC str)
 {
-SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
+SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetLengthInBytes());
 	Calculate(&buf);
 }
 
@@ -158,7 +158,7 @@ SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
  *************************************/
 SHVBool SHVBase64Decoder::CalculateString8(const SHVString8C str)
 {
-SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
+SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetLengthInBytes());
 	return Calculate(&buf);
 }
 
@@ -167,7 +167,7 @@ SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
  *************************************/
 SHVBool SHVBase64Decoder::CalculateStringUTF8(const SHVStringUTF8C str)
 {
-SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetSizeInBytes());
+SHVBufferCPtr buf((SHVByte*)str.GetSafeBuffer(),str.GetLengthInBytes());
 	return Calculate(&buf);
 }
 
@@ -184,12 +184,10 @@ SHVBool SHVBase64Decoder::CalculateString16(const SHVString16C str)
  *************************************/
 SHVBool SHVBase64Decoder::CalculateString(const SHVStringC str)
 {
-#if __SHVSTRINGDEFAULT == 8
-	return CalculateString8(str);
-#elif __SHVSTRINGDEFAULT == 16
-	return CalculateString8(str.ToStr8());
-#elif __SHVSTRINGDEFAULT == utf8
+#if __SHVSTRINGDEFAULT == utf8
 	return CalculateStringUTF8(str);
+#else
+	return CalculateString8(str.AsStr8C());
 #endif
 }
 

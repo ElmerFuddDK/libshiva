@@ -86,10 +86,12 @@ typedef SHVPtrContainer<SHVSubProcess> SHVSubProcessPtr;
  *************************************/
 SHVBool SHVSubProcess::ReadLine(SHVString& line, Streams stream)
 {
-#ifdef UNICODE
-	return ReadLine16(line,stream);
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return ReadLine8(line,stream);
+#elif __SHVSTRINGDEFAULT == 16
+	return ReadLine16(line,stream);
+#elif __SHVSTRINGDEFAULT == utf8
+	return ReadLineUTF8(line,stream);
 #endif
 }
 
@@ -98,10 +100,12 @@ SHVBool SHVSubProcess::ReadLine(SHVString& line, Streams stream)
  *************************************/
 SHVBool SHVSubProcess::WriteLine(const SHVStringC line)
 {
-#ifdef UNICODE
-	return WriteLine16(line);
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return WriteLine8(line);
+#elif __SHVSTRINGDEFAULT == 16
+	return WriteLine16(line);
+#elif __SHVSTRINGDEFAULT == utf8
+	return WriteLineUTF8(line);
 #endif
 }
 

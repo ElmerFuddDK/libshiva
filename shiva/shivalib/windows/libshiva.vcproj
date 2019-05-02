@@ -24,6 +24,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine="echo n | copy /-Y ..\..\include\shvconfig.h.template ..\..\include\shvconfig.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -102,6 +103,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine="echo n | copy /-Y ..\..\include\shvconfig.h.template ..\..\include\shvconfig.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -178,6 +180,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine="echo n | copy /-Y ..\..\include\shvconfig.h.template ..\..\include\shvconfig.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"

@@ -211,7 +211,7 @@ in_addr addr;
 #else
 in_addr addr = { ip };
 #endif
-#ifdef UNICODE
+#if __SHVSTRINGDEFAULT == 16
 SHVString8 tmpBuf = SHVString8C(::inet_ntoa(addr));
 	retVal = tmpBuf.ToStrT();
 #else

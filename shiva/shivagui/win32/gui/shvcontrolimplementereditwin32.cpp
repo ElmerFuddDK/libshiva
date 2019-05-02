@@ -127,7 +127,7 @@ SHVBool retVal(parent && owner && !IsCreated());
 		if ((flags & SHVControlEdit::FlagFlat))
 			exStyle = 0;
 		
-		SetHandle(::CreateWindowEx(exStyle,_T("EDIT"), _T(""), style,
+		SetHandle(::CreateWindowExW(exStyle,L"EDIT", L"", style,
 			0, 0, 0, 0, Win32::GetHandle(parent), NULL, Win32::GetInstance(owner), NULL));
 
 		OrigProc = (WNDPROC)GetWindowLongPtr(GetHandle(),GWLP_WNDPROC);

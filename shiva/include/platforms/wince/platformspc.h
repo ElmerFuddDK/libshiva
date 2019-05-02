@@ -4,8 +4,6 @@
 # undef DEBUGMSG
 #endif
 
-#define __SHIVA_WIN32
-
 #if defined(_WIN32_WCE_PSPC) || defined(WIN32_PLATFORM_PSPC)
 # define __SHIVA_POCKETPC
 #endif

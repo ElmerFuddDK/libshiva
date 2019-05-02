@@ -17,6 +17,7 @@ struct SHVJsonStack
 {
 public:
 	inline SHVJsonStack();
+	inline SHVJsonStack(const SHVJsonStack& obj);
 	SHVVector<SHVJsonKeyValuePair> KeyValuePairs;
 };
 
@@ -91,6 +92,9 @@ private:
 // ===================================== implementation - SHVJsonStack ====================================== //
 
 SHVJsonStack::SHVJsonStack()
+{
+}
+SHVJsonStack::SHVJsonStack(const SHVJsonStack& obj) : KeyValuePairs(((SHVJsonStack*)&obj)->KeyValuePairs.ReleaseBuffer())
 {
 }
 

@@ -31,7 +31,7 @@ public:
 		TDSErrorLevels Level;
 		SHVString Message;
 		inline TDSMessage() : Msgno(0), Severity(0), State(0), Level(LevelOK) {}
-		inline TDSMessage(int msgno, int severity, int state, TDSErrorLevels lvl, const SHVString8C msg) : Msgno(msgno), Severity(severity), State(state), Level(lvl), Message(msg.ToStrT()) {}
+		inline TDSMessage(int msgno, int severity, int state, TDSErrorLevels lvl, const SHVStringC msg) : Msgno(msgno), Severity(severity), State(state), Level(lvl), Message(msg) {}
 		inline TDSMessage(const TDSMessage& msg) : Msgno(msg.Msgno), Severity(msg.Severity), State(msg.State), Level(msg.Level), Message(((TDSMessage*)&msg)->Message.ReleaseBuffer()) {}
 		inline TDSMessage& operator=(const TDSMessage& msg) { Msgno = msg.Msgno; Severity = msg.Severity; State = msg.State; Level = msg.Level; Message = ((TDSMessage*)&msg)->Message.ReleaseBuffer(); return *this; }
 	};
@@ -98,11 +98,15 @@ SHVBool retVal = GetLong(lval, columnIdx);
 }
 SHVBool SHVFreeTDSResultset::GetString(SHVString& text, int columnIdx) const
 {
+#if __SHVSTRINGDEFAULT == utf8
+	return GetStringUTF8(text, columnIdx);
+#else
 SHVStringUTF8 res(NULL);
 SHVBool retVal = GetStringUTF8(res, columnIdx);
 	if (retVal)
 		text = res.ToStrT();
 	return retVal;
+#endif
 }
 
 /*************************************
@@ -110,10 +114,12 @@ SHVBool retVal = GetStringUTF8(res, columnIdx);
  *************************************/
 SHVBool SHVFreeTDSResultset::GetColumnName(SHVString& name, int columnIdx) const
 {
-#ifdef UNICODE
-	return GetColumnName16(name, columnIdx);
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return GetColumnName8(name, columnIdx);
+#elif __SHVSTRINGDEFAULT == 16
+	return GetColumnName16(name, columnIdx);
+#elif __SHVSTRINGDEFAULT == utf8
+	return GetColumnNameUTF8(name, columnIdx);
 #endif
 }
 
@@ -122,10 +128,12 @@ SHVBool SHVFreeTDSResultset::GetColumnName(SHVString& name, int columnIdx) const
  *************************************/
 SHVBool SHVFreeTDSResultset::GetColumnType(SHVString& colType, int columnIdx) const
 {
-#ifdef UNICODE
-	return GetColumnType16(colType, columnIdx);
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return GetColumnType8(colType, columnIdx);
+#elif __SHVSTRINGDEFAULT == 16
+	return GetColumnType16(colType, columnIdx);
+#elif __SHVSTRINGDEFAULT == utf8
+	return GetColumnTypeUTF8(colType, columnIdx);
 #endif
 }
 

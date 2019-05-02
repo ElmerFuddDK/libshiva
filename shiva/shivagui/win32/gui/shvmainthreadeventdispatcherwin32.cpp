@@ -187,7 +187,7 @@ void SHVMainThreadEventDispatcherWin32::StopEventLoop(SHVBool errors)
 	if (!errors) // errors during startup
 	{
 	SHVString errStr = Queue->GetModuleList().GetStartupErrors();
-		MessageBox(NULL,(const TCHAR*)errStr.GetSafeBuffer(),_T("Registering failed:"),MB_ICONERROR);
+		MessageBoxW(NULL,errStr.AsStr16C().GetSafeBufferWin32(),L"Registering failed:",MB_ICONERROR);
 	}
 		
 	::PostMessage(Win32::GetHandle(MainWindow),WM_DESTROY,0,0);

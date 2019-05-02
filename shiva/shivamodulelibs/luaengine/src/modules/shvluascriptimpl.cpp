@@ -176,11 +176,11 @@ SHVBool SHVLuaScriptImpl::Execute(const SHVStringC script)
 		if (SHVThreadBase::GetCurrentThreadID() == Queue.GetThreadID() && LuaState)
 		{
 			Executing++;
-			if (luaL_loadstring((lua_State*)LuaState,script.ToStr8().GetBufferConst()) != LUA_OK)
+			if (luaL_loadstring((lua_State*)LuaState,script.AsStrUTF8C().GetBufferConst()) != LUA_OK)
 			{
 				SHVASSERT(false);
 				Executing--;
-				return HandleError(ErrParsing, SHVString8C(lua_tostring((lua_State*)LuaState, -1)).ToStrT());
+				return HandleError(ErrParsing, SHVStringUTF8C(lua_tostring((lua_State*)LuaState, -1)).ToStrT());
 			}
 			else
 			{
@@ -188,7 +188,7 @@ SHVBool SHVLuaScriptImpl::Execute(const SHVStringC script)
 				{
 					SHVASSERT(false);
 					Executing--;
-					return HandleError(ErrExecuting, SHVString8C(lua_tostring((lua_State*)LuaState, -1)).ToStrT());
+					return HandleError(ErrExecuting, SHVStringUTF8C(lua_tostring((lua_State*)LuaState, -1)).ToStrT());
 				}
 				lua_settop((lua_State*)LuaState, 0); // Resets the stack
 			}
@@ -218,11 +218,11 @@ SHVBool SHVLuaScriptImpl::ExecuteFromFile(const SHVStringC fileName)
 		if (SHVThreadBase::GetCurrentThreadID() == Queue.GetThreadID() && LuaState)
 		{
 			Executing++;
-			if (luaL_loadfile((lua_State*)LuaState,fileName.ToStr8().GetBufferConst()) != LUA_OK)
+			if (luaL_loadfile((lua_State*)LuaState,fileName.AsStrUTF8C().GetBufferConst()) != LUA_OK)
 			{
 				SHVASSERT(false);
 				Executing--;
-				return HandleError(ErrParsing, SHVString8C(lua_tostring((lua_State*)LuaState, -1)).ToStrT());
+				return HandleError(ErrParsing, SHVStringUTF8C(lua_tostring((lua_State*)LuaState, -1)).ToStrT());
 			}
 			else
 			{
@@ -230,7 +230,7 @@ SHVBool SHVLuaScriptImpl::ExecuteFromFile(const SHVStringC fileName)
 				{
 					SHVASSERT(false);
 					Executing--;
-					return HandleError(ErrExecuting, SHVString8C(lua_tostring((lua_State*)LuaState, -1)).ToStrT());
+					return HandleError(ErrExecuting, SHVStringUTF8C(lua_tostring((lua_State*)LuaState, -1)).ToStrT());
 				}
 				lua_settop((lua_State*)LuaState, 0); // Resets the stack
 			}
@@ -291,7 +291,7 @@ SHVLuaValuesRef a(args);
 						lua_pushnumber((lua_State*)LuaState,val->AsDouble());
 						break;
 					case SHVLuaValue::TypeString:
-						lua_pushstring((lua_State*)LuaState,val->AsString().ToStr8().GetSafeBuffer());
+						lua_pushstring((lua_State*)LuaState,val->AsString().AsStrUTF8C().GetSafeBuffer());
 						break;
 					case SHVLuaValue::TypeBool:
 						lua_pushboolean((lua_State*)LuaState,val->AsBool() ? 1 : 0);
@@ -308,7 +308,7 @@ SHVLuaValuesRef a(args);
 			if (lua_pcall((lua_State*)LuaState, (args ? args->GetCount() : 0), LUA_MULTRET, 0) != LUA_OK)
 			{
 				SHVASSERT(false);
-				HandleError(ErrExecuting, SHVString8C(lua_tostring((lua_State*)LuaState, -1)).ToStrT());
+				HandleError(ErrExecuting, SHVStringUTF8C(lua_tostring((lua_State*)LuaState, -1)).ToStrT());
 				Executing--;
 				return retVal.ReleaseReference();
 			}

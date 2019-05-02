@@ -32,6 +32,9 @@
 #include "../../../include/platformspc.h"
 
 #include "../../../include/framework/shvconsole.h"
+#ifdef __SHIVA_WIN32
+# include "../../../include/utils/shvstring.h"
+#endif
 #ifdef __SHIVA_WINCE
 # ifndef __SHIVAWINCE_EXCLUDE_CONSOLE_SUPPORT
 #  include "../../../include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
@@ -52,12 +55,12 @@ void SHVConsole::Printf(const SHVTChar* str, ...)
 {
 SHVVA_LIST args;
 	SHVVA_START(args,str);
-#if defined(__SHIVA_WINCE)
-	vwprintf(str,args);
-#elif defined(UNICODE)
-	vwprintf((const TCHAR*)str,args);
+#if __SHVSTRINGDEFAULT == 16
+	SHVConsole::PrintfList16(str, args);
+#elif __SHVSTRINGDEFAULT == utf8
+	SHVConsole::PrintfListUTF8(str, args);
 #else
-	vprintf(str,args);
+	SHVConsole::PrintfList8(str, args);
 #endif
 	SHVVA_END(args);
 }
@@ -70,12 +73,12 @@ void SHVConsole::PrintfList(const SHVTChar* str, SHVVA_LIST args)
 {
 SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
-#if defined(__SHIVA_WINCE)
-	vwprintf(str,argList);
-#elif defined(UNICODE)
-	vwprintf((const TCHAR*)str,argList);
+#if __SHVSTRINGDEFAULT == 16
+	SHVConsole::PrintfList16(str, argList);
+#elif __SHVSTRINGDEFAULT == utf8
+	SHVConsole::PrintfListUTF8(str, argList);
 #else
-	vprintf(str,argList);
+	SHVConsole::PrintfList8(str, argList);
 #endif
 	SHVVA_END( argList );
 }
@@ -88,12 +91,12 @@ void SHVConsole::ErrPrintf(const SHVTChar* str, ...)
 {
 SHVVA_LIST args;
 	SHVVA_START(args,str);
-#if defined(__SHIVA_WINCE)
-	vfwprintf(stderr,str,args);
-#elif defined(UNICODE)
-	vfwprintf(stderr,(const TCHAR*)str,args);
+#if __SHVSTRINGDEFAULT == 16
+	SHVConsole::ErrPrintfList16(str, args);
+#elif __SHVSTRINGDEFAULT == utf8
+	SHVConsole::ErrPrintfListUTF8(str, args);
 #else
-	vfprintf(stderr,str,args);
+	SHVConsole::ErrPrintfList8(str, args);
 #endif
 	SHVVA_END(args);
 }
@@ -106,12 +109,12 @@ void SHVConsole::ErrPrintfList(const SHVTChar* str, SHVVA_LIST args)
 {
 SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
-#if defined(__SHIVA_WINCE)
-	vfwprintf(stderr,str,argList);
-#elif defined(UNICODE)
-	vfwprintf(stderr,(const TCHAR*)str,argList);
+#if __SHVSTRINGDEFAULT == 16
+	SHVConsole::ErrPrintfList16(str, argList);
+#elif __SHVSTRINGDEFAULT == utf8
+	SHVConsole::ErrPrintfListUTF8(str, argList);
 #else
-	vfprintf(stderr,str,argList);
+	SHVConsole::ErrPrintfList8(str, argList);
 #endif
 	SHVVA_END( argList );
 }
@@ -124,7 +127,14 @@ void SHVConsole::Printf8(const SHVChar* str, ...)
 {
 SHVVA_LIST args;
 	SHVVA_START(args,str);
-	vprintf(str,args);
+#if defined(__SHIVA_WIN32) || defined(__SHIVA_EPOC)
+	wprintf(L"%s", SHVString8C::FormatList(str, args).ToStr16().GetSafeBuffer());
+#else
+	if (SHVConsole::NativeEncodingIsUTF8())
+		printf("%s", SHVString8C::FormatList(str, args).ToStrUTF8().GetSafeBuffer());
+	else
+		vprintf(str,args);
+#endif
 	SHVVA_END(args);
 }
 
@@ -136,7 +146,14 @@ void SHVConsole::PrintfList8(const SHVChar* str, SHVVA_LIST args)
 {
 SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
-	vprintf(str,argList);
+#if defined(__SHIVA_WIN32) || defined(__SHIVA_EPOC)
+	wprintf(L"%s", SHVString8C::FormatList(str, argList).ToStr16().GetSafeBuffer());
+#else
+	if (SHVConsole::NativeEncodingIsUTF8())
+		printf("%s", SHVString8C::FormatList(str, argList).ToStrUTF8().GetSafeBuffer());
+	else
+		vprintf(str,argList);
+#endif
 	SHVVA_END( argList );
 }
 
@@ -148,7 +165,14 @@ void SHVConsole::ErrPrintf8(const SHVChar* str, ...)
 {
 SHVVA_LIST args;
 	SHVVA_START(args,str);
-	vfprintf(stderr,str,args);
+#if defined(__SHIVA_WIN32) || defined(__SHIVA_EPOC)
+	fwprintf(stderr, L"%s", SHVString8C::FormatList(str, args).ToStr16().GetSafeBuffer());
+#else
+	if (SHVConsole::NativeEncodingIsUTF8())
+		fprintf(stderr, "%s", SHVString8C::FormatList(str, args).ToStrUTF8().GetSafeBuffer());
+	else
+		vfprintf(stderr,str,args);
+#endif
 	SHVVA_END(args);
 }
 
@@ -160,7 +184,14 @@ void SHVConsole::ErrPrintfList8(const SHVChar* str, SHVVA_LIST args)
 {
 SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
-	vfprintf(stderr,str,argList);
+#if defined(__SHIVA_WIN32) || defined(__SHIVA_EPOC)
+	fwprintf(stderr, L"%s", SHVString8C::FormatList(str, argList).ToStr16().GetSafeBuffer());
+#else
+	if (SHVConsole::NativeEncodingIsUTF8())
+		fprintf(stderr, "%s", SHVString8C::FormatList(str, argList).ToStrUTF8().GetSafeBuffer());
+	else
+		vfprintf(stderr,str,argList);
+#endif
 	SHVVA_END( argList );
 }
 
@@ -171,7 +202,14 @@ void SHVConsole::PrintfUTF8(const SHVChar* str, ...)
 {
 SHVVA_LIST args;
 	SHVVA_START(args,str);
-	vprintf(str,args);
+#if defined(__SHIVA_WIN32) || defined(__SHIVA_EPOC)
+	wprintf(L"%s", SHVStringUTF8C::FormatList(str, args).ToStr16().GetSafeBuffer());
+#else
+	if (!SHVConsole::NativeEncodingIsUTF8())
+		printf("%s", SHVStringUTF8C::FormatList(str, args).ToStr8().GetSafeBuffer());
+	else
+		vprintf(str,args);
+#endif
 	SHVVA_END(args);
 }
 
@@ -182,7 +220,14 @@ void SHVConsole::PrintfListUTF8(const SHVChar* str, SHVVA_LIST args)
 {
 SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
-	vprintf(str,argList);
+#if defined(__SHIVA_WIN32) || defined(__SHIVA_EPOC)
+	wprintf(L"%s", SHVStringUTF8C::FormatList(str, argList).ToStr16().GetSafeBuffer());
+#else
+	if (!SHVConsole::NativeEncodingIsUTF8())
+		printf("%s", SHVStringUTF8C::FormatList(str, argList).ToStr8().GetSafeBuffer());
+	else
+		vprintf(str,argList);
+#endif
 	SHVVA_END( argList );
 }
 
@@ -193,7 +238,14 @@ void SHVConsole::ErrPrintfUTF8(const SHVChar* str, ...)
 {
 SHVVA_LIST args;
 	SHVVA_START(args,str);
-	vfprintf(stderr,str,args);
+#if defined(__SHIVA_WIN32) || defined(__SHIVA_EPOC)
+	fwprintf(stderr, L"%s", SHVStringUTF8C::FormatList(str, args).ToStr16().GetSafeBuffer());
+#else
+	if (!SHVConsole::NativeEncodingIsUTF8())
+		fprintf(stderr, "%s", SHVStringUTF8C::FormatList(str, args).ToStr8().GetSafeBuffer());
+	else
+		vfprintf(stderr,str,args);
+#endif
 	SHVVA_END(args);
 }
 
@@ -204,7 +256,14 @@ void SHVConsole::ErrPrintfListUTF8(const SHVChar* str, SHVVA_LIST args)
 {
 SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
-	vfprintf(stderr,str,argList);
+#if defined(__SHIVA_WIN32) || defined(__SHIVA_EPOC)
+	fwprintf(stderr, L"%s", SHVStringUTF8C::FormatList(str, argList).ToStr16().GetSafeBuffer());
+#else
+	if (!SHVConsole::NativeEncodingIsUTF8())
+		fprintf(stderr, "%s", SHVStringUTF8C::FormatList(str, argList).ToStr8().GetSafeBuffer());
+	else
+		vfprintf(stderr,str,argList);
+#endif
 	SHVVA_END( argList );
 }
 
@@ -218,8 +277,6 @@ SHVVA_LIST args;
 	SHVVA_START(args,str);
 #ifdef __SHIVA_POSIX
 	printf("%s", SHVString16C::FormatList(str, args).ToStrT().GetSafeBuffer());
-#elif defined(__SHIVA_WINCE)
-	vwprintf(str,args);
 #else
 	vwprintf((const WCHAR*)str,args);
 #endif
@@ -236,8 +293,6 @@ SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
 #ifdef __SHIVA_POSIX
 	printf("%s", SHVString16C::FormatList(str, argList).ToStrT().GetSafeBuffer());
-#elif defined(__SHIVA_WINCE)
-	vwprintf(str,argList);
 #else
 	vwprintf((const WCHAR*)str,argList);
 #endif
@@ -254,8 +309,6 @@ SHVVA_LIST args;
 	SHVVA_START(args,str);
 #ifdef __SHIVA_POSIX
 	fprintf(stderr, "%s", SHVString16C::FormatList(str, args).ToStrT().GetSafeBuffer());
-#elif defined(__SHIVA_WINCE)
-	vfwprintf(stderr,str,args);
 #else
 	vfwprintf(stderr,(const WCHAR*)str,args);
 #endif
@@ -272,8 +325,6 @@ SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
 #ifdef __SHIVA_POSIX
 	fprintf(stderr, "%s", SHVString16C::FormatList(str, argList).ToStrT().GetSafeBuffer());
-#elif defined(__SHIVA_WINCE)
-	vfwprintf(stderr,str,args);
 #else
 	vfwprintf(stderr,(const WCHAR*)str,args);
 #endif
@@ -318,12 +369,12 @@ static int NativeEncodingDetected;
 /*************************************
  * *printf overrides for CE
  *************************************/
-void SHVConsole::vwprintf(const SHVWChar* str, SHVVA_LIST args)
+void SHVConsole::vwprintf(const WCHAR* str, SHVVA_LIST args)
 {
 SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
 # ifndef __SHIVAWINCE_EXCLUDE_CONSOLE_SUPPORT
-	SHVMainThreadEventDispatcherConsole::Print(SHVString16C::FormatList(str,argList));
+	SHVMainThreadEventDispatcherConsole::Print(SHVString16C::FormatList((const SHVWChar*)str,argList));
 # endif
 	SHVVA_END( argList );
 }
@@ -337,12 +388,12 @@ SHVVA_LIST argList;
 	SHVVA_END( argList );
 }
 
-void SHVConsole::vfwprintf(FILE* f, const SHVWChar* str, SHVVA_LIST args)
+void SHVConsole::vfwprintf(FILE* f, const WCHAR* str, SHVVA_LIST args)
 {
 SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
 # ifndef __SHIVAWINCE_EXCLUDE_CONSOLE_SUPPORT
-	SHVMainThreadEventDispatcherConsole::Print(SHVString16C::FormatList(str,argList));
+	SHVMainThreadEventDispatcherConsole::Print(SHVString16C::FormatList((const SHVWChar*)str,argList));
 # endif
 	SHVVA_END( argList );
 }
@@ -355,6 +406,22 @@ SHVVA_LIST argList;
 	SHVMainThreadEventDispatcherConsole::Print(SHVString8C::FormatList(str,argList).ToStr16());
 # endif
 	SHVVA_END( argList );
+}
+
+void SHVConsole::wprintf(const WCHAR* str, ...)
+{
+SHVVA_LIST args;
+	SHVVA_START(args,str);
+	vwprintf(str,args);
+	SHVVA_END(args);
+}
+
+void SHVConsole::fwprintf(FILE* f, const WCHAR* str, ...)
+{
+SHVVA_LIST args;
+	SHVVA_START(args,str);
+	vfwprintf(f,str,args);
+	SHVVA_END(args);
 }
 
 ///\endcond

@@ -33,6 +33,7 @@
 
 #include "stdafx.h"
 #include "../../../include/platformspc.h"
+#include "../../../include/framework/shvconsole.h"
 #include "../../../include/utils/shvdll.h"
 #include "../../../include/utils/shvstring.h"
 #include "../../../include/sqlite/sqlitewrapper.h"
@@ -53,21 +54,21 @@ void DumpRow(SHVSQLiteStatement* statement)
 			if (statement->GetString(value, len, i))
 			{
 				if (columnType.Left(7) == _S("varchar"))
-					_tprintf(_T("%-20s "), value.GetSafeBuffer());
+					SHVConsole::Printf(_S("%-20s "), value.GetSafeBuffer());
 				else
 				{
 					if (statement->GetColumnAffinity(aff, i))
 					{
 						if (aff == SHVSQLiteWrapper::Affinity_Int)
-							_tprintf(_T("%10s "), value.GetSafeBuffer());
+							SHVConsole::Printf(_S("%10s "), value.GetSafeBuffer());
 						else
-							_tprintf(_T("%20s "), value.GetSafeBuffer());
+							SHVConsole::Printf(_S("%20s "), value.GetSafeBuffer());
 					}
 				}
 			}
 		}
 	}
-	_tprintf(_T("\r\n"));
+	SHVConsole::Printf(_S("\r\n"));
 }
 SHVBool DumpData(SHVSQLiteStatement* statement)
 {
@@ -81,18 +82,18 @@ short aff;
 		{
 			statement->GetColumnType(columnType, i);
 			if (columnType.Left(7) == _S("varchar"))
-				_tprintf(_T("%-20s "), columnName.GetSafeBuffer());
+				SHVConsole::Printf(_S("%-20s "), columnName.GetSafeBuffer());
 			else
 			if (statement->GetColumnAffinity(aff, i))
 			{
 				if (aff == SHVSQLiteWrapper::Affinity_Int)
-					_tprintf(_T("%10s "), columnName.GetSafeBuffer());
+					SHVConsole::Printf(_S("%10s "), columnName.GetSafeBuffer());
 				else
-					_tprintf(_T("%20s "), columnName.GetSafeBuffer());
+					SHVConsole::Printf(_S("%20s "), columnName.GetSafeBuffer());
 			}
 		}
 	}
-	_tprintf(_T("\r\n=======================================================================\r\n"));
+	SHVConsole::Printf(_S("\r\n=======================================================================\r\n"));
 	do 
 	{
 		DumpRow(statement);
@@ -155,7 +156,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			fileName = argv[1];
 
 		puts("SQLite tester");
-		if (sqlLite->Open((const SHVTChar*)fileName) == SHVSQLiteWrapper::SQLite_OK)
+		if (sqlLite->Open(_SHVTTOS(fileName)) == SHVSQLiteWrapper::SQLite_OK)
 		{
 			do
 			{
@@ -166,8 +167,8 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 				else
 				{
-					_tprintf(_T("=>"));
-					sql = (SHVTChar*)_getts_s<255>(input);
+					SHVConsole::Printf(_S("=>"));
+					sql = _SHVTTOS(_getts_s<255>(input));
 				}
 				if (sql != _S("exit") && sql != _S("cleanup"))
 				{
@@ -179,13 +180,13 @@ int _tmain(int argc, _TCHAR* argv[])
 						if (errorCode.GetError() != SHVSQLiteWrapper::SQLite_DONE)
 						{
 							reminder = _S("");
-							_tprintf(_T("Error %d: %s\r\n"), errorCode.GetError(), sqlLite->GetErrorMsg().GetSafeBuffer());
+							SHVConsole::Printf(_S("Error %d: %s\r\n"), errorCode.GetError(), sqlLite->GetErrorMsg().GetSafeBuffer());
 						}
 					}
 					if (errorCode.GetError() != SHVSQLiteWrapper::SQLite_DONE)
 					{
 						reminder = _S("");
-						_tprintf(_T("Error %d: %s\r\n"), errorCode.GetError(), sqlLite->GetErrorMsg().GetSafeBuffer());
+						SHVConsole::Printf(_S("Error %d: %s\r\n"), errorCode.GetError(), sqlLite->GetErrorMsg().GetSafeBuffer());
 					}
 				}
 				if (sql == _S("cleanup"))
@@ -194,7 +195,7 @@ int _tmain(int argc, _TCHAR* argv[])
 					sqlLite = (SHVSQLiteWrapper*) dll.CreateObjectInt(NULL, SHVDll::ClassTypeUser);
 					if (sqlLite->Open((const SHVTChar*)fileName) != SHVSQLiteWrapper::SQLite_OK)
 					{
-						_tprintf(_T("Could not open %s\r\n"), fileName);
+						SHVConsole::Printf(_S("Could not open %s\r\n"), fileName);
 						_tcscpy_s(input, 255, _T("exit"));
 					}
 				}
@@ -202,13 +203,12 @@ int _tmain(int argc, _TCHAR* argv[])
 			sqlLite = NULL;
 			statement = NULL;
 		}
-		_putts(_T("Done"));
+		SHVConsole::Printf(_S("Done\n"));
 	}
 	else
-		_putts(_T("Could not load sqlite"));
+		SHVConsole::Printf(_S("Could not load sqlite\n"));
 #ifdef DEBUG	
 	_CrtDumpMemoryLeaks();
 #endif
 	return 0;
 }
-

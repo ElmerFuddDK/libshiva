@@ -39,7 +39,7 @@
 #include "utils/shvdrawwin32.h"
 
 
-#define SHVWIN32CLASS_CONTAINERWND _T("SHV_CntWnd")
+#define SHVWIN32CLASS_CONTAINERWND L"SHV_CntWnd"
 #define SHVWIN32ATOM_CONTAINERWND _S("shv_containerwndatom")
 
 //=========================================================================================================
@@ -70,7 +70,7 @@ SHVBool SHVControlImplementerContainerWindowWin32::Create(SHVControl* owner, SHV
 {
 	if (!IsCreated() && parent && parent->IsCreated())
 	{
-		SetHandle(::CreateWindowEx(WS_EX_CONTROLPARENT,SHVWIN32CLASS_CONTAINERWND, _T(""), WS_CHILD|Win32::MapFlags(flags),
+		SetHandle(::CreateWindowExW(WS_EX_CONTROLPARENT,SHVWIN32CLASS_CONTAINERWND, L"", WS_CHILD|Win32::MapFlags(flags),
 			CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, Win32::GetHandle(parent), NULL, Win32::GetInstance(owner), NULL));
 
 		if (IsCreated())
@@ -164,8 +164,7 @@ SHVString retVal;
 	}
 	else
 	{
-		retVal.SetBufferSize( GetWindowTextLength(GetHandle())+1 );
-		GetWindowText(GetHandle(),(TCHAR*)retVal.GetBuffer(), (int)retVal.GetBufferLen());
+		retVal = GetWindowTextBase();
 	}
 	return retVal.ReleaseBuffer();
 }
@@ -185,7 +184,7 @@ void SHVControlImplementerContainerWindowWin32::SetTitle(SHVControlContainer* ow
 	}
 	else
 	{
-		SetWindowText(GetHandle(),(const TCHAR*)title.GetSafeBuffer());
+		SetWindowTextBase(title);
 	}
 }
 
@@ -215,10 +214,10 @@ void SHVControlImplementerContainerWindowWin32::RegisterClass(SHVGUIManager* man
 {
 ATOM clss;
 #ifdef __SHIVA_WINCE
-WNDCLASS wc;
+WNDCLASSW wc;
 #else
-WNDCLASSEX wc;
-	wc.cbSize = sizeof(WNDCLASSEX);
+WNDCLASSEXW wc;
+	wc.cbSize = sizeof(WNDCLASSEXW);
 	wc.hIconSm			= 0;
 #endif
 
@@ -234,9 +233,9 @@ WNDCLASSEX wc;
 	wc.lpszClassName	= SHVWIN32CLASS_CONTAINERWND;
 
 #ifdef __SHIVA_WINCE
-	SHVVERIFY(clss = ::RegisterClass(&wc));
+	SHVVERIFY(clss = ::RegisterClassW(&wc));
 #else
-	SHVVERIFY(clss = ::RegisterClassEx(&wc));
+	SHVVERIFY(clss = ::RegisterClassExW(&wc));
 #endif
 	manager->GetConfig().Set(SHVWIN32ATOM_CONTAINERWND, clss);
 }

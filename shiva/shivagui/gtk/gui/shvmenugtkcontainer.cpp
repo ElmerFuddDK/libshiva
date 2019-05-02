@@ -106,7 +106,7 @@ void SHVMenuGtkContainer::AddStringItem(SHVInt id, const SHVStringC name, int fl
 	
 	if (MenuBar)
 	{
-	GtkWidget* item = gtk_menu_item_new_with_label (name.ToStrUTF8().GetSafeBuffer());
+	GtkWidget* item = gtk_menu_item_new_with_label (name.AsStrUTF8C().GetSafeBuffer());
 
 		if (flags&FlagDisabled)
 			g_object_set(G_OBJECT (item), "sensitive", FALSE, NULL);
@@ -146,7 +146,7 @@ SHVMenuGtkSub* retVal = NULL;
 	{
 	GtkWidget* menuLabel;
 		
-		menuLabel = gtk_menu_item_new_with_label(name.ToStrUTF8().GetSafeBuffer());
+		menuLabel = gtk_menu_item_new_with_label(name.AsStrUTF8C().GetSafeBuffer());
 		retVal = new SHVMenuGtkSub(Manager,this);
 		gtk_menu_item_set_submenu(GTK_MENU_ITEM (menuLabel), retVal->EnsureMenuCreated());
 		

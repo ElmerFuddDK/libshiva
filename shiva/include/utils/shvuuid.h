@@ -126,19 +126,19 @@ void SHVUUID::SetNodeData(int data)
 }
 void SHVUUID::SetNodeDataString8AsMd5(const SHVString8C data)
 {
-	SetNodeDataAsMd5((void*)data.GetSafeBuffer(),data.GetSizeInBytes());
+	SetNodeDataAsMd5((void*)data.GetSafeBuffer(),data.GetLengthInBytes());
 }
 void SHVUUID::SetNodeDataStringUTF8AsMd5(const SHVStringUTF8C data)
 {
-	SetNodeDataAsMd5((void*)data.GetSafeBuffer(),data.GetSizeInBytes());
+	SetNodeDataAsMd5((void*)data.GetSafeBuffer(),data.GetLengthInBytes());
 }
 void SHVUUID::SetNodeDataString16AsMd5(const SHVString16C data)
 {
-	SetNodeDataAsMd5((void*)data.GetSafeBuffer(),data.GetSizeInBytes());
+	SetNodeDataAsMd5((void*)data.GetSafeBuffer(),data.GetLengthInBytes());
 }
 void SHVUUID::SetNodeDataStringAsMd5(const SHVStringC data)
 {
-	SetNodeDataAsMd5((void*)data.GetSafeBuffer(),data.GetSizeInBytes());
+	SetNodeDataAsMd5((void*)data.GetSafeBuffer(),data.GetLengthInBytes());
 }
 
 #endif

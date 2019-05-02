@@ -54,7 +54,7 @@ SHVBool SHVControlImplementerButtonWin32::Create(SHVControl* owner, SHVControlIm
 {
 	if (!IsCreated() && parent && parent->IsCreated())
 	{
-		SetHandle(CreateWindow(_T("BUTTON"), _T(""), WS_CHILD|WS_TABSTOP|Win32::MapFlags(flags)|BS_PUSHLIKE,
+		SetHandle(CreateWindowW(L"BUTTON", L"", WS_CHILD|WS_TABSTOP|Win32::MapFlags(flags)|BS_PUSHLIKE,
 			0, 0, 0, 0, Win32::GetHandle(parent), NULL, Win32::GetInstance(owner), NULL));
 
 		if (IsCreated())
@@ -85,14 +85,8 @@ int SHVControlImplementerButtonWin32::GetSubType(SHVControl* owner)
  *************************************/
 SHVStringBuffer SHVControlImplementerButtonWin32::GetText()
 {
-SHVString retVal;
-
 	SHVASSERT(IsCreated());
-
-	retVal.SetBufferSize( GetWindowTextLength(GetHandle())+1 );
-	GetWindowText(GetHandle(),(TCHAR*)retVal.GetBuffer(), (int)retVal.GetBufferLen());
-
-	return retVal.ReleaseBuffer();
+	return GetWindowTextBase();
 }
 
 /*************************************
@@ -102,7 +96,7 @@ void SHVControlImplementerButtonWin32::SetText(SHVControlButton* owner, const SH
 {
 	SHVASSERT(IsCreated());
 
-	SetWindowText(GetHandle(),(const TCHAR*)text.GetSafeBuffer());
+	SetWindowTextBase(text);
 
 	if (autoSize)
 	{

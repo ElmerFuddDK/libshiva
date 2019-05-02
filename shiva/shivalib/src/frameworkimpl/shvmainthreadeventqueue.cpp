@@ -60,30 +60,30 @@ bool resolvedAppPathAndName = false;
 
 #ifdef __SHIVA_WIN32
 	{
-	SHVString moduleFileName, appPath, appName;
+	SHVString16 moduleFileName, appPath, appName;
 	long i;
 
 
 		// Set up application path and name
 		moduleFileName.SetBufferSize(_MAX_PATH);
 
-		SHVVERIFY(::GetModuleFileName(NULL,(TCHAR*)moduleFileName.GetBuffer(),_MAX_PATH));
-		appPath = SHVDir::ExtractPath(moduleFileName);
-		appName = SHVDir::ExtractName(moduleFileName);
+		SHVVERIFY(::GetModuleFileNameW(NULL,moduleFileName.GetBufferWin32(),_MAX_PATH));
+		appPath = SHVDir::ExtractPath(moduleFileName.ToStrT()).ToStr16();
+		appName = SHVDir::ExtractName(moduleFileName.ToStrT()).ToStr16();
 
-		i = appName.ReverseFind(_S("."));
+		i = appName.ReverseFind((const SHVWChar*)L".");
 
 		if (i > 0)
 			appName[i] = 0;
 
-		Modules.GetConfig().Set(SHVModuleList::DefaultCfgAppPath,appPath);
- 		Modules.GetConfig().Set(SHVModuleList::DefaultCfgAppName,appName);
+		Modules.GetConfig().Set(SHVModuleList::DefaultCfgAppPath,appPath.ToStrT());
+		Modules.GetConfig().Set(SHVModuleList::DefaultCfgAppName,appName.ToStrT());
 		
 		resolvedAppPathAndName = true;
 	}
 #elif defined(__SHIVA_POSIX_LINUX)
 	{
-	SHVString8 moduleFileName;
+	SHVStringUTF8 moduleFileName;
 	long pathLen = 128;
 	long i;
 	
@@ -109,8 +109,8 @@ bool resolvedAppPathAndName = false;
 			
 			moduleFileName.GetBuffer()[i] = '\0';
 			
-			appPath = SHVDir::ExtractPath(moduleFileName.ToStrT()).ToStrT();
-			appName = SHVDir::ExtractName(moduleFileName.ToStrT()).ToStrT();
+			appPath = SHVDir::ExtractPath(moduleFileName.ToStrT());
+			appName = SHVDir::ExtractName(moduleFileName.ToStrT());
 
 			Modules.GetConfig().Set(SHVModuleList::DefaultCfgAppPath,appPath);
 			Modules.GetConfig().Set(SHVModuleList::DefaultCfgAppName,appName);

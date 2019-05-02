@@ -72,11 +72,15 @@ void* SHVMySQLResultSet::GetProvider()
  *************************************/
 SHVBool SHVMySQLResultSet::GetString(SHVString& val, int columnIdx) const
 {
-	SHVStringUTF8 res;
+#if __SHVSTRINGDEFAULT == utf8
+	return GetStringUTF8(val, columnIdx);
+#else
+SHVStringUTF8 res;
 	SHVBool retVal = GetStringUTF8(res, columnIdx);
 	if (retVal)
 		val = res.ToStrT();
 	return retVal;
+#endif
 }
 
 /*************************************
@@ -84,10 +88,12 @@ SHVBool SHVMySQLResultSet::GetString(SHVString& val, int columnIdx) const
  *************************************/
 SHVBool SHVMySQLResultSet::GetColumnName(SHVString& name, int columnIdx) const
 {
-#ifdef UNICODE
-	return GetColumnName16(name, columnIdx);
-#else
+#if __SHVSTRINGDEFAULT == 8
 	return GetColumnName8(name, columnIdx);
+#elif __SHVSTRINGDEFAULT == 16
+	return GetColumnName16(name, columnIdx);
+#elif __SHVSTRINGDEFAULT == utf8
+	return GetColumnNameUTF8(name, columnIdx);
 #endif
 }
 

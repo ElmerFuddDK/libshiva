@@ -7,7 +7,7 @@
 #include "../utils/shvrefobject.h"
 #include "../threadutils/shvmutex.h"
 
-#define __SHVSQLITEWRAPPER_CREATE_SYMBOL _T("CreateSHVSQLiteWrapper")
+#define __SHVSQLITEWRAPPER_CREATE_SYMBOL _SC("CreateSHVSQLiteWrapper")
 
 
 //-=========================================================================================================

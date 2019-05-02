@@ -379,6 +379,11 @@ SIZE sz;
 int mapoptions = DT_NOPREFIX;
 RECT rectNative(SHVDrawWin32::MapRect(rect));
 bool endEllipsis = ( (options&TextEndEllipsis) ? true : false );
+#if __SHVSTRINGDEFAULT == 16
+const SHVString16C txtW(txt);
+#else
+SHVString16 txtW(txt.ToStr16());
+#endif
 
 	if (font)
 		::SelectObject(hDC,SHVDrawWin32::GetFont(font));
@@ -411,35 +416,35 @@ bool endEllipsis = ( (options&TextEndEllipsis) ? true : false );
 		endEllipsis = false;
 	}
 
-	::GetTextExtentPoint(hDC,(const TCHAR*)txt.GetSafeBuffer(),(int)txt.GetLength(),&sz);
+	::GetTextExtentPointW(hDC,txtW.GetSafeBufferWin32(),(int)txt.GetLength(),&sz);
 	if (sz.cx > nWidth && endEllipsis)
 	{
-	SHVString strTemp;
 	size_t i;
+	SHVString16 strTemp;
 
 		// Text doesn't fit in rect. We have to truncate it and add ellipsis to the end.
 
 		// substract the 3 dots
-		::GetTextExtentPoint(hDC, _T("..."), 3, &sz);
+		::GetTextExtentPointW(hDC, L"...", 3, &sz);
 		nWidth -= sz.cx;
 
-		for(i=txt.GetLength(); i>0; i--)
+		for(i=txtW.GetLength(); i>0; i--)
 		{
-			::GetTextExtentPoint(hDC, (const TCHAR*)txt.GetSafeBuffer(), (int)i, &sz);
+			::GetTextExtentPointW(hDC, txtW.GetSafeBufferWin32(), (int)i, &sz);
 			if (sz.cx <= nWidth)
 				break;
 		}
 
-		strTemp = txt.Left(i) + SHVStringC(_S("..."));
+		strTemp = txtW.Left(i) + SHVString16C::FromWin32(L"...");
 
-		::DrawText(hDC, (const TCHAR*)strTemp.GetSafeBuffer(), (int)strTemp.GetLength(), &rectNative, mapoptions);
+		::DrawTextW(hDC, strTemp.GetSafeBufferWin32(), (int)strTemp.GetLength(), &rectNative, mapoptions);
 	}
 	else
 	{
-		::DrawText(hDC, (const TCHAR*)txt.GetSafeBuffer(), (int)txt.GetLength(), &rectNative, mapoptions);
+		::DrawTextW(hDC, txtW.GetSafeBufferWin32(), (int)txtW.GetLength(), &rectNative, mapoptions);
 	}
 
-//	for windows - maybe later -- ::DrawText( hDC, txt.GetSafeBuffer(), -1, &rectNative, mapoptions | (endEllipsis ? DT_END_ELLIPSIS : 0) );
+//	for windows - maybe later -- ::DrawTextW( hDC, txtW.GetSafeBufferWin32(), -1, &rectNative, mapoptions | (endEllipsis ? DT_END_ELLIPSIS : 0) );
 
 	::SetBkMode(hDC,oldBkMode);
 	::RestoreDC(hDC,dcBackup);

@@ -36,6 +36,10 @@ public:
 	SHVStringBuffer16 ReleaseBuffer();
 	inline SHVWChar* GetBuffer();
 	inline SHVWChar* SetBufferSize(size_t len);
+#ifdef __SHIVA_WIN32
+	inline WCHAR* GetBufferWin32();
+	inline WCHAR* SetBufferSizeWin32(size_t len);
+#endif
 	inline size_t   GetBufferLen();
 	void SetToNull();
 
@@ -84,6 +88,10 @@ private:
 SHVWChar* SHVString16::GetBuffer() { return Buffer; }
 SHVWChar* SHVString16::SetBufferSize(size_t len) { AllocBuffer(len); return Buffer; }
 size_t   SHVString16::GetBufferLen() { return BufferLen; }  ///< returns length of buffer in characters, including null termination
+#ifdef __SHIVA_WIN32
+WCHAR* SHVString16::GetBufferWin32() { return (WCHAR*)Buffer; }
+WCHAR* SHVString16::SetBufferSizeWin32(size_t len) { AllocBuffer(len); return (WCHAR*)Buffer; }
+#endif
 
 SHVStringBuffer16 SHVString16::ToUpper() {SHVString16 str(*this); str.MakeUpper(); return str.ReleaseBuffer(); }
 SHVStringBuffer16 SHVString16::ToLower() {SHVString16 str(*this); str.MakeLower(); return str.ReleaseBuffer(); }

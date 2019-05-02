@@ -116,7 +116,7 @@ size_t count = Pages.CalculateCount();
 	Pages.Add(item);
 	page->Create(item->Container, NULL, 0);
 	
-	gtk_notebook_insert_page(GTK_NOTEBOOK(GetHandle()), page->GetHandle(), gtk_label_new(name.ToStrUTF8().GetSafeBuffer()), atIndex < count ? (int)atIndex : -1);
+	gtk_notebook_insert_page(GTK_NOTEBOOK(GetHandle()), page->GetHandle(), gtk_label_new(name.AsStrUTF8C().GetSafeBuffer()), atIndex < count ? (int)atIndex : -1);
 	SelectPage(owner,count);
 	
 	return item->Container;

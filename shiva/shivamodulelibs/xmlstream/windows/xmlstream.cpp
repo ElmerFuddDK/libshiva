@@ -53,7 +53,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	if (ul_reason_for_call == DLL_PROCESS_ATTACH &&
 		!SHVModuleList::CheckVersion(__SHIVA_VERSION_MAJOR,__SHIVA_VERSION_MINOR,__SHIVA_VERSION_RELEASE))
 	{
-		::MessageBox(NULL,_T("Invalid version of libshiva.dll in module library xmlstream"),_T("Error"),MB_ICONERROR);
+		::MessageBoxA(NULL,"Invalid version of libshiva.dll in module library xmlstream","Error",MB_ICONERROR);
 		return FALSE;
 	}
 

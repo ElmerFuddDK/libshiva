@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "shiva/include/platformspc.h"
 #include "shiva/include/utils/shvmath.h"
+#include "shiva/include/framework/shvconsole.h"
 
 #include "shvfreetdswrapperimpl.h"
 
@@ -480,7 +481,7 @@ TDSErrorLevels newLvl;
 	if (newLvl > SqlErrorLevel)
 		SqlErrorLevel = newLvl;
 
-	SqlMessages.AddTail(TDSMessage(msgno,severity,msgstate,newLvl,SHVString8C(msgtext)));
+	SqlMessages.AddTail(TDSMessage(msgno,severity,msgstate,newLvl,SHVStringUTF8C(msgtext).ToStrT()));
 }
 
 /*************************************

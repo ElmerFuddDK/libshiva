@@ -56,7 +56,7 @@ public:
 	
 	SHVBool Register()
 	{
-		printf("In register\n");
+		SHVConsole::PrintfUTF8("In register\n");
 		
 		if (!SHVModuleResolver<SHVSocketServer>(Modules,SocketServer,"SocketServer"))
 			return false;
@@ -87,7 +87,7 @@ public:
 			case SHVSocket::StateError:
 				if (SHVSocketServer::SocketFromEvent(event) == Socket)
 				{
-					printf("Main socket Error\n");
+					SHVConsole::PrintfUTF8("Main socket Error\n");
 					ClientSockets.RemoveAll();
 					Socket = NULL;
 				}
@@ -95,11 +95,11 @@ public:
 				{
 				SHVListPos pos = ClientSockets.Find(SHVSocketServer::SocketFromEvent(event));
 				
-					printf("SocketError\n");
+					SHVConsole::PrintfUTF8("SocketError\n");
 					
 					if (pos)
 					{
-						printf("Removing client socket\n");
+						SHVConsole::PrintfUTF8("Removing client socket\n");
 						ClientSockets.RemoveAt(pos);
 					}
 				}
@@ -107,7 +107,7 @@ public:
 			case SHVSocket::StateDisconnected:
 				if (SHVSocketServer::SocketFromEvent(event) == Socket)
 				{
-					printf("Main socket disconnected\n");
+					SHVConsole::PrintfUTF8("Main socket disconnected\n");
 					ClientSockets.RemoveAll();
 					Socket = NULL;
 				}
@@ -115,23 +115,23 @@ public:
 				{
 				SHVListPos pos = ClientSockets.Find(SHVSocketServer::SocketFromEvent(event));
 				
-					printf("Socket disconnected\n");
+					SHVConsole::PrintfUTF8("Socket disconnected\n");
 					
 					if (pos)
 					{
-						printf("Removing client socket\n");
+						SHVConsole::PrintfUTF8("Removing client socket\n");
 						ClientSockets.RemoveAt(pos);
 					}
 				}
 				break;
 			case SHVSocket::StateConnecting:
-				printf("Connecting ...\n");
+				SHVConsole::PrintfUTF8("Connecting ...\n");
 				break;
 			case SHVSocket::StateConnected:
-				printf("Connected\n");
+				SHVConsole::PrintfUTF8("Connected\n");
 				break;
 			case SHVSocket::StateListening:
-				printf("Listening\n");
+				SHVConsole::PrintfUTF8("Listening\n");
 				break;
 			}
 		}
@@ -144,17 +144,17 @@ public:
 		SHVSocket* socket = SHVSocketServer::SocketFromEvent(event);
 			for (buffer = socket->PopReceiveBuffer(bytesRead,fromIP,fromPort); !buffer.IsNull(); buffer = socket->PopReceiveBuffer(bytesRead,fromIP,fromPort))
 			{
-			SHVString str;
+			SHVStringUTF8 str;
 				str.AddChars(buffer->GetBufferConst(),bytesRead);
 				if (fromIP)
-					printf("Received from (%s,%d): %s\n", SocketServer->Inetv4ToAddr(fromIP).GetSafeBuffer(), fromPort, str.GetSafeBuffer());
+					SHVConsole::Printf(_S("Received from (%s,%d): %s\n"), SocketServer->Inetv4ToAddr(fromIP).GetSafeBuffer(), fromPort, str.ToStrT().GetSafeBuffer());
 				else
-					printf("Received : %s\n", str.GetSafeBuffer());
+					SHVConsole::Printf(_S("Received : %s\n"), str.ToStrT().GetSafeBuffer());
 			}
 		}
 		else if (SHVEvent::Equals(event,SHVSocketServer::EventSockIncomingConn))
 		{
-			printf("Incomming connection ...\n");
+			SHVConsole::PrintfUTF8("Incomming connection ...\n");
 			ClientSockets.AddTail(SHVSocketServer::NewSocketFromEvent(event));
 		}
 	}
@@ -167,27 +167,27 @@ public:
 		}
 		else if (SHVEventString::Equals(event,__EVENT_GLOBAL_STDIN))
 		{
-		SHVString8 str(SHVEventStdin::StdinFromEvent8(event));
+		SHVStringUTF8 str(SHVEventStdin::StdinFromEventUTF8(event));
 		
-			if (str == SHVString8C("/quit"))
+			if (str == SHVStringUTF8C("/quit"))
 			{
 				Modules.CloseApp();
 			}
-			else if (str == SHVString8C("/close"))
+			else if (str == SHVStringUTF8C("/close"))
 			{
 				if (!Socket.IsNull())
 				{
-					printf("Closing socket\n");
+					SHVConsole::PrintfUTF8("Closing socket\n");
 					Socket->Close();
 					Socket = NULL;
 				}
 			}
 			else if (str.GetSafeBuffer()[0] == '/')
 			{
-				if (str.Left(8) == SHVString8C("/server "))
+				if (str.Left(8) == SHVStringUTF8C("/server "))
 				{
 				SHVChar* c;
-				SHVIPv4Port port = SHVString8C::StrToL(str.GetSafeBuffer() + 8, &c);
+				SHVIPv4Port port = SHVStringUTF8C::StrToL(str.GetSafeBuffer() + 8, &c);
 				
 					if (!Socket.IsNull())
 					{
@@ -196,13 +196,13 @@ public:
 					}
 					
 					Socket = SocketServer->CreateSocket(SocketSubscriber);
-					printf("Attempting to start server at %d\n", port);
+					SHVConsole::PrintfUTF8("Attempting to start server at %d\n", port);
 					SHVVERIFY(Socket->BindAndListen(port ? port : 1234));
 				}
-				else if (str.Left(11) == SHVString8C("/serverssl "))
+				else if (str.Left(11) == SHVStringUTF8C("/serverssl "))
 				{
 				SHVChar* c;
-				SHVIPv4Port port = SHVString8C::StrToL(str.GetSafeBuffer() + 11, &c);
+				SHVIPv4Port port = SHVStringUTF8C::StrToL(str.GetSafeBuffer() + 11, &c);
 
 					if (!Socket.IsNull())
 					{
@@ -213,7 +213,7 @@ public:
 					Socket = SocketServer->CreateSocket(SocketSubscriber, SHVSocket::TypeSSL);
 					if (Socket.IsNull())
 					{
-						printf("SSL not supported\n");
+						SHVConsole::PrintfUTF8("SSL not supported\n");
 					}
 					else
 					{
@@ -221,18 +221,18 @@ public:
 														 Modules.GetConfig().Find(SHVModuleList::DefaultCfgAppPath)->ToString() + SHVDir::Delimiter() + _S("server.crt")))
 						{
 							Socket = NULL;
-							printf("Error setting up certificate\n");
+							SHVConsole::PrintfUTF8("Error setting up certificate\n");
 						}
 						else
 						{
-							printf("Attempting to start server at %d\n", port);
+							SHVConsole::PrintfUTF8("Attempting to start server at %d\n", port);
 							SHVVERIFY(Socket->BindAndListen(port ? port : 1234));
 						}
 					}
 				}
-				else if (str.Left(12) == SHVString8C("/serverunix "))
+				else if (str.Left(12) == SHVStringUTF8C("/serverunix "))
 				{
-				SHVString8 filepath(str.Mid(12));
+				SHVStringUTF8 filepath(str.Mid(12));
 
 					if (!Socket.IsNull())
 					{
@@ -243,31 +243,31 @@ public:
 					Socket = SocketServer->CreateSocket(SocketSubscriber, SHVSocket::TypeUnix);
 					if (Socket.IsNull())
 					{
-						printf("Unix socket not supported\n");
+						SHVConsole::PrintfUTF8("Unix socket not supported\n");
 					}
 					else
 					{
 						Socket->SetSocketOption(SHVSocket::SockOptReuseAddr,1);
-						printf("Attempting to start server at \"%s\"\n", filepath.GetSafeBuffer());
+						SHVConsole::PrintfUTF8("Attempting to start server at \"%s\"\n", filepath.GetSafeBuffer());
 						SHVVERIFY(Socket->BindAndListenUnix(filepath.ToStrT()));
 					}
 				}
-				else if (str.Left(9) == SHVString8C("/connect "))
+				else if (str.Left(9) == SHVStringUTF8C("/connect "))
 				{
-				SHVString8 ip(str.GetSafeBuffer()+9);
+				SHVStringUTF8 ip(str.GetSafeBuffer()+9);
 				SHVIPv4Port port = 0;
 				int space;
 				
 					if ( (space = ip.ReverseFind(_S(" "))) > 0)
 					{
 					SHVChar* c;
-						port = SHVString8C::StrToL(ip.GetSafeBuffer() + space, &c);
-						ip[space] = 0;
+						port = SHVStringUTF8C::StrToL(ip.GetSafeBuffer() + space, &c);
+						ip.GetBuffer()[space] = 0;
 					}
 					
 					if (!Socket.IsNull() && Socket->GetType() == SHVSocket::TypeUDP)
 					{
-						UdpIP = SocketServer->Inetv4ResolveHost(ip);
+						UdpIP = SocketServer->Inetv4ResolveHost(ip.ToStrT());
 						UdpPort = port;
 						
 						if (Socket->GetState() == SHVSocket::StateNone) // not connected
@@ -282,21 +282,21 @@ public:
 						}
 						
 						Socket = SocketServer->CreateSocket(SocketSubscriber);
-						printf("Attempting connect to \"%s\" port %d\n", ip.GetSafeBuffer(), port);
+						SHVConsole::PrintfUTF8("Attempting connect to \"%s\" port %d\n", ip.GetSafeBuffer(), port);
 						SHVVERIFY(Socket->Connect(SocketServer->InetResolveHost(ip.ToStrT()),port ? port : 1234));
 					}
 				}
-				else if (str.Left(12) == SHVString8C("/sslconnect "))
+				else if (str.Left(12) == SHVStringUTF8C("/sslconnect "))
 				{
-				SHVString8 ip(str.GetSafeBuffer()+12);
+				SHVStringUTF8 ip(str.GetSafeBuffer()+12);
 				SHVIPv4Port port = 0;
 				int space;
 
 					if ( (space = ip.ReverseFind(_S(" "))) > 0)
 					{
 					SHVChar* c;
-						port = SHVString8C::StrToL(ip.GetSafeBuffer() + space, &c);
-						ip[space] = 0;
+						port = SHVStringUTF8C::StrToL(ip.GetSafeBuffer() + space, &c);
+						ip.GetBuffer()[space] = 0;
 					}
 
 					if (!Socket.IsNull())
@@ -308,17 +308,17 @@ public:
 					Socket = SocketServer->CreateSocket(SocketSubscriber, SHVSocket::TypeSSL);
 					if (Socket.IsNull())
 					{
-						printf("SSL not supported\n");
+						SHVConsole::PrintfUTF8("SSL not supported\n");
 					}
 					else
 					{
-						printf("Attempting secure connect to \"%s\" port %d\n", ip.GetSafeBuffer(), port);
+						SHVConsole::PrintfUTF8("Attempting secure connect to \"%s\" port %d\n", ip.GetSafeBuffer(), port);
 						SHVVERIFY(Socket->Connect(SocketServer->InetResolveHost(ip.ToStrT()),port ? port : 1234));
 					}
 				}
-				else if (str.Left(13) == SHVString8C("/unixconnect "))
+				else if (str.Left(13) == SHVStringUTF8C("/unixconnect "))
 				{
-				SHVString8 filepath(str.Mid(13));
+				SHVStringUTF8 filepath(str.Mid(13));
 
 					if (!Socket.IsNull())
 					{
@@ -329,15 +329,15 @@ public:
 					Socket = SocketServer->CreateSocket(SocketSubscriber, SHVSocket::TypeUnix);
 					if (Socket.IsNull())
 					{
-						printf("Unix socket not supported\n");
+						SHVConsole::PrintfUTF8("Unix socket not supported\n");
 					}
 					else
 					{
-						printf("Attempting connect to \"%s\"\n", filepath.GetSafeBuffer());
-						SHVVERIFY(Socket->ConnectUnix(filepath));
+						SHVConsole::PrintfUTF8("Attempting connect to \"%s\"\n", filepath.GetSafeBuffer());
+						SHVVERIFY(Socket->ConnectUnix(filepath.ToStrT()));
 					}
 				}
-				else if (str == SHVString8C("/udp"))
+				else if (str == SHVStringUTF8C("/udp"))
 				{
 					UdpIP = 0;
 					UdpPort = 0;
@@ -349,12 +349,12 @@ public:
 					}
 					
 					Socket = SocketServer->CreateSocket(SocketSubscriber,SHVSocket::TypeUDP);
-					printf("Created a UDP client socket\n");
+					SHVConsole::PrintfUTF8("Created a UDP client socket\n");
 				}
-				else if (str.Left(5) == SHVString8C("/udp "))
+				else if (str.Left(5) == SHVStringUTF8C("/udp "))
 				{
 				SHVChar* c;
-				SHVIPv4Port port = SHVString8C::StrToL(str.GetSafeBuffer() + 5, &c);
+				SHVIPv4Port port = SHVStringUTF8C::StrToL(str.GetSafeBuffer() + 5, &c);
 				
 					UdpIP = 0;
 					UdpPort = 0;
@@ -366,20 +366,20 @@ public:
 					}
 					
 					Socket = SocketServer->CreateSocket(SocketSubscriber,SHVSocket::TypeUDP);
-					printf("Attempting to start UDP at %d\n", port);
+					SHVConsole::PrintfUTF8("Attempting to start UDP at %d\n", port);
 					SHVVERIFY(Socket->BindAndListen(port ? port : 1234));
 				}
-				else if (str.Left(12) == SHVString8C("/udpconnect "))
+				else if (str.Left(12) == SHVStringUTF8C("/udpconnect "))
 				{
-				SHVString8 ip(str.GetSafeBuffer()+12);
+				SHVStringUTF8 ip(str.GetSafeBuffer()+12);
 				SHVIPv4Port port = 0;
 				int space;
 				
 					if ( (space = ip.ReverseFind(_S(" "))) > 0)
 					{
 						SHVChar* c;
-						port = SHVString8C::StrToL(ip.GetSafeBuffer() + space, &c);
-						ip[space] = 0;
+						port = SHVStringUTF8C::StrToL(ip.GetSafeBuffer() + space, &c);
+						ip.GetBuffer()[space] = 0;
 					}
 					
 					if (!Socket.IsNull())
@@ -389,21 +389,21 @@ public:
 					}
 					
 					Socket = SocketServer->CreateSocket(SocketSubscriber,SHVSocket::TypeUDP);
-					printf("Attempting connect to \"%s\" port %d\n", ip.GetSafeBuffer(), port);
+					SHVConsole::PrintfUTF8("Attempting connect to \"%s\" port %d\n", ip.GetSafeBuffer(), port);
 					SHVVERIFY(Socket->Connect(SocketServer->InetResolveHost(ip.ToStrT()),port ? port : 1234));
 				}
-				else if (str.Left(9) == SHVString8C("/resolve "))
+				else if (str.Left(9) == SHVStringUTF8C("/resolve "))
 				{
-				SHVString8 host(str.GetSafeBuffer()+9);
+				SHVStringUTF8 host(str.GetSafeBuffer()+9);
 				SHVString ip(SocketServer->InetResolveHost(host.ToStrT()));
 					if (ip.IsEmpty())
-						printf("Failed resolving host %s\n", host.GetSafeBuffer());
+						SHVConsole::PrintfUTF8("Failed resolving host %s\n", host.GetSafeBuffer());
 					else
-						printf("Resolved host %s to %s\n", host.GetSafeBuffer(), ip.ToStr8().GetSafeBuffer());
+						SHVConsole::PrintfUTF8("Resolved host %s to %s\n", host.GetSafeBuffer(), ip.AsStrUTF8C().GetSafeBuffer());
 				}
-				else if (str == SHVString8C("/help"))
+				else if (str == SHVStringUTF8C("/help"))
 				{
-					printf("Commands available:\n"
+					SHVConsole::PrintfUTF8("Commands available:\n"
 						   " /server <port>            Will start a server at a given port\n"
 						   " /serverssl <port>         Will start a secure server at a given port\n"
 						   " /udp                      Will set udp mode\n"
@@ -417,7 +417,7 @@ public:
 				}
 				else
 				{
-					printf("Unknown command\n");
+					SHVConsole::PrintfUTF8("Unknown command\n");
 				}
 			}
 			else if (!Socket.IsNull())
@@ -447,7 +447,7 @@ public:
 
 	void Unregister()
 	{
-		printf("In unregister\n");
+		SHVConsole::PrintfUTF8("In unregister\n");
 		Socket = NULL;
 		ClientSockets.RemoveAll();
 		SHVModule::Unregister();
@@ -464,25 +464,20 @@ SHVDll socketlib;
 
 	if (!SHVModuleList::CheckVersion(__SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE))
 	{
-		fprintf(stderr,"WRONG SHIVA VERSION\n");
+		SHVConsole::ErrPrintf8("WRONG SHIVA VERSION\n");
 	}
 	else if (!socketlib.Load(socketlib.CreateLibFileName(_S("socketserver"))))
 	{
-		fprintf(stderr,"Could not load socket server\n");
+		SHVConsole::ErrPrintf8("Could not load socket server\n");
 	}
 	else
 	{
 	SHVMainThreadEventQueue mainqueue(new SHVMainThreadEventDispatcherConsole());
 	SHVModuleFactory* factory = (SHVModuleFactory*)socketlib.CreateObjectInt(&mainqueue.GetModuleList(),SHVDll::ClassTypeModuleFactory);
-	SHVString testStr;
 
 		mainqueue.GetModuleList().AddModule(new SHVTest(mainqueue.GetModuleList()));
 		factory->ResolveModules(__MODULESYMBOL_DEFAULTS);
 
-		testStr.Format(_S("This is a test %s %d.%d.%d\n"), _S("of SHIVA version"), __SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE);
-	
-		printf("%s", testStr.GetSafeBuffer());
-		
 		return mainqueue.Run().GetError();
 	}
 	
