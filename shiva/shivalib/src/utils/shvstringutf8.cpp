@@ -449,7 +449,8 @@ SHVStringUTF8 retVal;
 
 	if (!IsNull())
 	{
-	size_t strLen = SHVString8C::StrLen(Buffer);
+	size_t strLen = GetLength();
+		if (len>strLen) len=strLen;
 
 		retVal.SetBufferSize(len+1);
 		if (len > 0) memcpy(retVal.Buffer,Buffer+(strLen-len),len*sizeof(SHVChar));
@@ -463,7 +464,7 @@ SHVStringUTF8 retVal;
 
 	if (!IsNull())
 	{
-	size_t strLen = SHVString8C::StrLen(Buffer);
+	size_t strLen = GetLength();
 
 		len = SizeOfCharsReverse(Buffer,len);
 
@@ -483,6 +484,9 @@ SHVStringUTF8 retVal;
 
 	if (!IsNull())
 	{
+	size_t strLen = GetLength();
+		if (len>strLen) len=strLen;
+
 		retVal.SetBufferSize(len+1);
 		if (len>0) memcpy(retVal.Buffer,Buffer,len*sizeof(SHVChar));
 		retVal.Buffer[len] = '\0';
@@ -510,7 +514,7 @@ SHVStringUTF8 retVal;
 SHVStringBufferUTF8 SHVStringUTF8C::Mid(size_t first, size_t len) const
 {
 SHVStringUTF8 retVal;
-size_t strLen = SHVString8C::StrLen(Buffer);
+size_t strLen = GetLength();
 	
 	if (first>strLen)
 		; // return null string
