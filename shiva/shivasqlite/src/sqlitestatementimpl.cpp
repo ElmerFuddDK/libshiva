@@ -249,7 +249,8 @@ void SHVSQLiteStatementImpl::ClearAllParameters()
 {
 int cnt;
 	SHVTHREADCHECK(OwnerThread);
-	sqlite3_clear_bindings(Statement);
+	if (Statement)
+		sqlite3_clear_bindings(Statement);
 }
 
 /*************************************
