@@ -89,7 +89,7 @@ SHVSQLiteStatement* statement = GetCurrentStatement();
 /*************************************
  * GetStringUTF8
  *************************************/
-SHVBool SHVDataStatementImpl::GetStringUTF8(SHVStringUTF8C& text, int& len, int columnIdx) const
+SHVBool SHVDataStatementImpl::GetStringUTF8C(SHVStringUTF8C& text, int& len, int columnIdx) const
 {
 SHVSQLiteStatement* statement = GetCurrentStatement();
 
@@ -108,7 +108,22 @@ SHVSQLiteStatement* statement = GetCurrentStatement();
 /*************************************
  * GetColumnName*
  *************************************/
-SHVBool SHVDataStatementImpl::GetColumnNameUTF8(SHVStringUTF8C& name, int columnIdx) const
+SHVBool SHVDataStatementImpl::GetColumnNameUTF8C(SHVStringUTF8C& name, int columnIdx) const
+{
+SHVSQLiteStatement* statement = GetCurrentStatement();
+
+	if (statement)
+	{
+	SHVBool retVal;
+	SHVStringSQLite str(NULL);
+		retVal = statement->GetColumnNameUTF8(str,columnIdx);
+		name = str;
+		return retVal;
+	}
+	
+	return SHVBool::False;
+}
+SHVBool SHVDataStatementImpl::GetColumnNameUTF8(SHVStringUTF8& name, int columnIdx) const
 {
 SHVSQLiteStatement* statement = GetCurrentStatement();
 
@@ -159,7 +174,22 @@ SHVSQLiteStatement* statement = GetCurrentStatement();
 /*************************************
  * GetColumnType*
  *************************************/
-SHVBool SHVDataStatementImpl::GetColumnTypeUTF8(SHVStringUTF8C& colType, int columnIdx) const
+SHVBool SHVDataStatementImpl::GetColumnTypeUTF8C(SHVStringUTF8C& colType, int columnIdx) const
+{
+SHVSQLiteStatement* statement = GetCurrentStatement();
+
+	if (statement)
+	{
+	SHVBool retVal;
+	SHVStringSQLite str(NULL);
+		retVal = statement->GetColumnTypeUTF8(str,columnIdx);
+		colType = str;
+		return retVal;
+	}
+	
+	return SHVBool::False;
+}
+SHVBool SHVDataStatementImpl::GetColumnTypeUTF8(SHVStringUTF8& colType, int columnIdx) const
 {
 SHVSQLiteStatement* statement = GetCurrentStatement();
 

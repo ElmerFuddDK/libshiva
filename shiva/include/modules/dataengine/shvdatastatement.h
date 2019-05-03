@@ -42,18 +42,20 @@ public:
 	virtual SHVBool GetLong(long& val, int columnIdx) const = 0;
 	virtual SHVBool GetInt64(SHVInt64Val& val, int columnIdx) const = 0;
 	virtual SHVBool GetDouble(double& val, int columnIdx) const = 0;
-	virtual SHVBool GetStringUTF8(SHVStringUTF8C& text, int& len, int columnIdx) const = 0;
+	virtual SHVBool GetStringUTF8C(SHVStringUTF8C& text, int& len, int columnIdx) const = 0;
 	inline SHVBool GetString(SHVString& text, int& len, int columnIdx) const;
 
 	// GetColumnName
-	virtual SHVBool GetColumnNameUTF8(SHVStringUTF8C& name, int columnIdx) const = 0;
+	virtual SHVBool GetColumnNameUTF8C(SHVStringUTF8C& name, int columnIdx) const = 0;
+	virtual SHVBool GetColumnNameUTF8(SHVStringUTF8& name, int columnIdx) const = 0;
 	virtual SHVBool GetColumnName8(SHVString8& name, int columnIdx) const = 0;
 	virtual SHVBool GetColumnName16(SHVString16& name, int columnIdx) const = 0;
 	inline SHVBool GetColumnName(SHVString& name, int columnIdx) const;
 
 	// GetColumnType
 	virtual SHVBool GetColumnAffinity(short& type, int columnIdx) const = 0;
-	virtual SHVBool GetColumnTypeUTF8(SHVStringUTF8C& colType, int columnIdx) const = 0;
+	virtual SHVBool GetColumnTypeUTF8C(SHVStringUTF8C& colType, int columnIdx) const = 0;
+	virtual SHVBool GetColumnTypeUTF8(SHVStringUTF8& colType, int columnIdx) const = 0;
 	virtual SHVBool GetColumnType8(SHVString8& colType, int columnIdx) const = 0;
 	virtual SHVBool GetColumnType16(SHVString16& colType, int columnIdx) const = 0;
 	inline SHVBool GetColumnType(SHVString& colType, int columnIdx) const;
@@ -104,7 +106,7 @@ SHVBool retVal = GetLong(lval, columnIdx);
 SHVBool SHVDataStatement::GetString(SHVString& text, int& len, int columnIdx) const
 {
 SHVStringUTF8C res(NULL);
-	SHVBool retVal = GetStringUTF8(res, len, columnIdx);
+	SHVBool retVal = GetStringUTF8C(res, len, columnIdx);
 	if (retVal)
 		text = res.ToStrT();
 	return retVal;
@@ -134,11 +136,7 @@ SHVBool SHVDataStatement::GetColumnType(SHVString& colType, int columnIdx) const
 #elif __SHVSTRINGDEFAULT == 16
 	return GetColumnType16(colType, columnIdx);
 #elif __SHVSTRINGDEFAULT == utf8
-SHVStringUTF8C str(NULL);
-SHVBool retVal = GetColumnTypeUTF8(str, columnIdx);
-	if (retVal)
-		colType = str;
-	return retVal;
+	return GetColumnTypeUTF8(colType, columnIdx);
 #endif
 }
 
