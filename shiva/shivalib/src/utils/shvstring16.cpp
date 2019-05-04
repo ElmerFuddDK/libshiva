@@ -1212,8 +1212,14 @@ long pos = 0;
 			else
 			{
 			char buf[64];
-			int n = vsnprintf( buf, 63, fStr.GetSafeBuffer(), args );
+			int n;
+			SHVVA_LIST argList;
 			
+				SHVVA_COPY( argList, args );
+				n = vsnprintf( buf, 63, fStr.GetSafeBuffer(), argList );
+				SHVVA_END( argList );
+				SHVVA_ARG(args,int);
+				
 				if (n < 0)
 				{
 					fprintf(stderr, "ERROR IN SHVString16::FormatList - Buffer Overflow\n");

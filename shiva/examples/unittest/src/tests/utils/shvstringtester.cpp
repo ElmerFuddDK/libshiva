@@ -441,9 +441,9 @@ bool ok = true;
 		if (ok) // test integer formatting
 		{
 		SHVString8 s(_SHVS8("%d %20d %u"));
-		SHVString8 res(_SHVS8("1234                 1234 1234"));
-		int i = 1234;
-			str.Format(s.GetBufferConst(), i, i, i);
+		SHVString8 res(_SHVS8("1234                 1235 1236"));
+		int i = 1234, j=1235, k=1236;
+			str.Format(s.GetBufferConst(), i, j, k);
 			ok = (ok && (str == res));
 		}
 		if (ok) // test string formatting
