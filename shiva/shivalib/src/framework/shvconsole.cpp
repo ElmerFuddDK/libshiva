@@ -359,31 +359,35 @@ static int NativeEncodingDetected;
 	}
 	
 	return NativeEncodingDetected == 2;
+#elif defined(__SHIVA_WIN32) && !defined(__SHIVA_WINCE)
+	return (::GetConsoleCP() == CP_UTF8);
 #else
 	return false;
 #endif
 }
 
-#ifdef __SHIVA_WINCE
+#ifdef __SHIVA_WIN32
 ///\cond INTERNAL
 /*************************************
- * *printf overrides for CE
+ * *printf overrides for win32
  *************************************/
 void SHVConsole::vwprintf(const WCHAR* str, SHVVA_LIST args)
 {
 SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
-# ifndef __SHIVAWINCE_EXCLUDE_CONSOLE_SUPPORT
+# ifndef __SHIVA_WINCE
+	if (SHVConsole::NativeEncodingIsUTF8())
+	{
+	SHVString16 output(SHVString16C::FormatList(SHVString16C::FromWin32(str).GetSafeBuffer(), argList));
+	DWORD written;
+		WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE),output.GetSafeBuffer(),(DWORD)output.GetLength(),&written,NULL);
+	}
+	else
+	{
+		::vwprintf(str,args);
+	}
+# elif !defined(__SHIVAWINCE_EXCLUDE_CONSOLE_SUPPORT)
 	SHVMainThreadEventDispatcherConsole::Print(SHVString16C::FormatList((const SHVWChar*)str,argList));
-# endif
-	SHVVA_END( argList );
-}
-void SHVConsole::vprintf(const SHVChar* str, SHVVA_LIST args)
-{
-SHVVA_LIST argList;
-	SHVVA_COPY( argList, args );
-# ifndef __SHIVAWINCE_EXCLUDE_CONSOLE_SUPPORT
-	SHVMainThreadEventDispatcherConsole::Print(SHVString8C::FormatList(str,argList).ToStr16());
 # endif
 	SHVVA_END( argList );
 }
@@ -392,18 +396,35 @@ void SHVConsole::vfwprintf(FILE* f, const WCHAR* str, SHVVA_LIST args)
 {
 SHVVA_LIST argList;
 	SHVVA_COPY( argList, args );
-# ifndef __SHIVAWINCE_EXCLUDE_CONSOLE_SUPPORT
+# ifndef __SHIVA_WINCE
+bool handled = false;
+	if (SHVConsole::NativeEncodingIsUTF8())
+	{
+	HANDLE h = INVALID_HANDLE_VALUE;
+		if (f == stderr)
+		{
+			h = GetStdHandle(STD_ERROR_HANDLE);
+		}
+		else if (f == stdout)
+		{
+			h = GetStdHandle(STD_OUTPUT_HANDLE);
+		}
+		
+		if (h != INVALID_HANDLE_VALUE)
+		{
+		SHVString16 output(SHVString16C::FormatList(SHVString16C::FromWin32(str).GetSafeBuffer(), argList));
+		DWORD written;
+			WriteConsoleW(h,output.GetSafeBuffer(),(DWORD)output.GetLength(),&written,NULL);
+			handled=  true;
+		}
+	}
+	
+	if (handled)
+	{
+		::vfwprintf(f,str,args);
+	}
+# elif !defined(__SHIVAWINCE_EXCLUDE_CONSOLE_SUPPORT)
 	SHVMainThreadEventDispatcherConsole::Print(SHVString16C::FormatList((const SHVWChar*)str,argList));
-# endif
-	SHVVA_END( argList );
-}
-
-void SHVConsole::vfprintf(FILE* f, const SHVChar* str, SHVVA_LIST args)
-{
-SHVVA_LIST argList;
-	SHVVA_COPY( argList, args );
-# ifndef __SHIVAWINCE_EXCLUDE_CONSOLE_SUPPORT
-	SHVMainThreadEventDispatcherConsole::Print(SHVString8C::FormatList(str,argList).ToStr16());
 # endif
 	SHVVA_END( argList );
 }

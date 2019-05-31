@@ -31,6 +31,10 @@ public:
 	
 	bool IsValid();
 	
+#ifdef __SHIVA_WIN32
+	void SetDosEncoding(int win32cp = -1); ///\ only relevant for win32 - enables conversion to/from DOS encoding for Enc8 - defaults to CP_OEMCP which is standard dos encoding
+#endif
+	
 	const SHVByte* Convert(const SHVByte* inBuffer, void* outBuffer, size_t len, size_t* charsWritten = NULL);
 	
 
@@ -44,7 +48,8 @@ private:
 	const SHVWChar* Convert16ToUTF8(const SHVWChar* inBuffer, SHVChar* outBuffer, size_t len, size_t* charsWritten);
 	
 	Enc From, To;
-#ifdef __SHIVA_EPOC
+#ifdef __SHIVA_WIN32
+	int DosEncoding;
 #elif defined(__SHIVA_EPOC)
 	RFs fs;
 	void* convTo;

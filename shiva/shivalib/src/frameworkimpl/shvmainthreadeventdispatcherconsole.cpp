@@ -46,6 +46,7 @@ static SHVMainThreadEventDispatcherConsole* evDispatcherConsole;
 # include <io.h>
 # include <fcntl.h>
 # include "../../../include/utils/shvdllbase.h"
+# include "../../../include/utils/shvstringconv.h"
 # define EventInternalSdin -1
 #else
 # include <unistd.h>
@@ -104,14 +105,9 @@ TCHAR name[MAX_PATH];
 		freopen("CON", "w", stdout);
 		freopen("CON", "w", stderr);
 		freopen("CONIN$", "r", stdin);
+	}
 
-		StdinHandle = INVALID_HANDLE_VALUE;
-	}
-	else
-	{
-		// got a console already - must be console application
-		::DuplicateHandle(GetCurrentProcess(),GetStdHandle(STD_INPUT_HANDLE),GetCurrentProcess(),&StdinHandle,0,FALSE,DUPLICATE_SAME_ACCESS);
-	}
+	::DuplicateHandle(GetCurrentProcess(),GetStdHandle(STD_INPUT_HANDLE),GetCurrentProcess(),&StdinHandle,0,FALSE,DUPLICATE_SAME_ACCESS);
 
 #else
 	// Initialize pipe signaller for the select statement
@@ -352,7 +348,11 @@ void SHVMainThreadEventDispatcherConsole::StopEventLoop(SHVBool errors)
 void SHVMainThreadEventDispatcherConsole::HandleStdin()
 {
 size_t newline;
+#if defined(__SHIVA_WIN32)
+	if (true)
+#else
 	if (SHVConsole::NativeEncodingIsUTF8())
+#endif
 	{
 	SHVStringUTF8 str;
 
@@ -387,8 +387,27 @@ size_t newline;
 			
 #if defined(__SHIVA_WIN32) && !defined(__SHIVA_WINCE)
 			if (bufSize > 1 && str.GetBuffer()[bufSize-1] == '\r')
+			{
 				str.GetBuffer()[bufSize-1] = '\0';
-			this->selfSubs->EmitNow(*ModuleList,new SHVEvent(this,EventInternalSdin,SHVInt(),new SHVEventStdin(NULL,str.ToStrUTF8())));
+			}
+			{
+			SHVStringUTF8 strUTF8;
+			SHVStringConv conv(SHVStringConv::Enc8,SHVStringConv::EncUtf8);
+			size_t len;
+			
+				conv.SetDosEncoding(GetConsoleCP());
+			
+				if (*conv.Convert((const SHVByte*)str.GetBufferConst(),NULL,len,&len) == 0)
+				{
+					conv.Convert((const SHVByte*)str.GetBufferConst(),strUTF8.SetBufferSize(len+1),len,&len);
+					strUTF8.GetBuffer()[len] = '\0';
+					this->selfSubs->EmitNow(*ModuleList,new SHVEvent(this,EventInternalSdin,SHVInt(),new SHVEventStdin(NULL,strUTF8.ReleaseBuffer())));
+				}
+				else
+				{
+					SHVASSERT(false);
+				}
+			}
 #else
 			Queue->GetModuleList().EmitEvent(new SHVEventStdin(NULL,str.ToStrUTF8()));
 #endif
@@ -788,38 +807,27 @@ LRESULT retVal = 0;
 
 #elif defined(__SHIVA_WIN32)
 /*************************************
- * OnEvent
+ * StdinFunc
  *************************************/
 void SHVMainThreadEventDispatcherConsole::StdinFunc()
 {
 SHVBufferRef readBuf;
+SHVWChar readBufW[StdinBufSize+1];
+SHVStringUTF8 readBufUTF8;
+SHVStringConv conv(SHVStringConv::Enc16,SHVStringConv::EncUtf8);
 size_t bufReadPos = 0;
 int retVal;
+
+	readBufUTF8.SetBufferSize(StdinBufSize*4+1);
 
 	StdinPos = 0;
 	while (Running() || Initializing)
 	{
-		if (bufReadPos == StdinBufSize || readBuf.IsNull())
-		{
-			readBuf = new SHVBufferChunk<StdinBufSize+1>();
-			::memset(readBuf->GetBuffer(),0,StdinBufSize);
-			bufReadPos = 0;
-			
-			StdinStream.AddBuffer(readBuf);
-		}
-
-		if (QuirksMode)
-		{
-			retVal = (int)fread(readBuf->GetBuffer()+bufReadPos, 1, 1 /*StdinBufSize-bufReadPos*/, stdin);
-		}
-		else
-		{
-		DWORD bytesRead;
-		bool eofFlag = (ReadFile(StdinHandle,readBuf->GetBuffer()+bufReadPos,(DWORD)(StdinBufSize-bufReadPos),&bytesRead,NULL) ? true : false);
-			if (eofFlag && bytesRead < 0)
-				bytesRead = 0;
-			retVal = (int)bytesRead;
-		}
+	DWORD bytesRead;
+	bool eofFlag = (ReadConsoleW(StdinHandle,readBufW,StdinBufSize,&bytesRead,NULL) ? false : true);
+		if (eofFlag && bytesRead < 0)
+			bytesRead = 0;
+		retVal = (int)bytesRead;
 		
 		if (retVal <=0)
 		{
@@ -830,9 +838,44 @@ int retVal;
 		}
 		else
 		{
-			bufReadPos += retVal;
-			readBuf->GetBuffer()[bufReadPos] = '\0'; // clear any unwanted Xtra newline
-			HandleStdin();
+		size_t utf8len,utf8pos;
+			readBufW[retVal] = 0;
+			if (*conv.Convert((const SHVByte*)readBufW,NULL,0,&utf8len) == 0)
+			{
+				if (utf8len >= readBufUTF8.GetBufferLen())
+					readBufUTF8.SetBufferSize(utf8len+1);
+				conv.Convert((const SHVByte*)readBufW,readBufUTF8.GetBuffer(),utf8len);
+				readBufUTF8.GetBuffer()[utf8len] = '\0';
+
+				for (utf8pos=0; utf8pos<utf8len;)
+				{
+					if (bufReadPos == StdinBufSize || readBuf.IsNull())
+					{
+						readBuf = new SHVBufferChunk<StdinBufSize+1>();
+						StdinStream.AddBuffer(readBuf);
+						bufReadPos = 0;
+					}
+					if ( (StdinBufSize-bufReadPos) >= (utf8len-utf8pos) )
+					{
+						::memcpy(readBuf->GetBuffer()+bufReadPos,readBufUTF8.GetBufferConst()+utf8pos,(utf8len-utf8pos));
+						bufReadPos += (utf8len-utf8pos);
+						utf8pos = utf8len;
+					}
+					else
+					{
+						::memcpy(readBuf->GetBuffer()+bufReadPos,readBufUTF8.GetBufferConst()+utf8pos,(StdinBufSize-bufReadPos));
+						utf8pos += (StdinBufSize-bufReadPos);
+						bufReadPos = StdinBufSize;
+					}
+					readBuf->GetBuffer()[bufReadPos] = '\0'; // clear any unwanted Xtra newline
+				}
+
+				HandleStdin();
+			}
+			else
+			{
+				///\todo error handling
+			}
 		}
 	}
 }

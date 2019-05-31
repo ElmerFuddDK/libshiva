@@ -108,6 +108,7 @@ const char* retVal = getenv("CHARSET");
 SHVStringConv::SHVStringConv(Enc from, Enc to) : From(from), To(to)
 {
 #ifdef __SHIVA_WIN32
+	DosEncoding = 0;
 #elif defined(__SHIVA_EPOC)
 	convTo = convFrom = NULL;
 	fs.Connect();
@@ -275,6 +276,16 @@ bool SHVStringConv::IsValid()
 }
 
 /*************************************
+ * SetDosEncoding
+ *************************************/
+#ifdef __SHIVA_WIN32
+void SHVStringConv::SetDosEncoding(int win32cp)
+{
+	DosEncoding = (win32cp == -1 ? CP_OEMCP : win32cp);
+}
+#endif
+
+/*************************************
  * Convert
  *************************************/
 /// Converts between the 2 encodings
@@ -379,10 +390,18 @@ size_t written;
 #ifdef __SHIVA_WIN32
 	if (len)
 	{
-		*charsWritten = ::mbstowcs((wchar_t*)outBuffer,inBuffer,len);
-		SHVASSERT(*charsWritten != (size_t)-1);
-		if (*charsWritten == (size_t)-1) // invalid char encountered
-			*charsWritten = 0;
+		if (DosEncoding)
+		{
+			*charsWritten = (size_t)::MultiByteToWideChar(DosEncoding,0,inBuffer,(int)len,(LPWSTR)outBuffer,(int)len);
+			SHVASSERT(*charsWritten != 0);
+		}
+		else
+		{
+			*charsWritten = ::mbstowcs((wchar_t*)outBuffer,inBuffer,len);
+			SHVASSERT(*charsWritten != (size_t)-1);
+			if (*charsWritten == (size_t)-1) // invalid char encountered
+				*charsWritten = 0;
+		}
 	}
 	inBuffer += *charsWritten;
 #elif defined(__SHIVA_EPOC)
@@ -450,6 +469,7 @@ bool retVal = *conv.Convert((const SHVByte*)Buffer,outBuffer,len,&len) == 0;
 }
 const SHVWChar* SHVStringConv::Convert16To8(const SHVWChar* inBuffer, SHVChar* outBuffer, size_t len, size_t* charsWritten)
 {
+	///\todo Correctly handle writing to DOS encoding on win32 - caveat being if DOS encoding is UTF8, as outbuffer might not be big enough
 size_t written;
 	if (!charsWritten) charsWritten = &written;
 	*charsWritten = 0;
@@ -534,6 +554,7 @@ bool retVal = *conv.Convert((const SHVByte*)Buffer,buffer,len,&len) == 0;
 }
 const SHVChar* SHVStringConv::ConvertUTF8To8(const SHVChar* inBuffer, SHVChar* outBuffer, size_t len, size_t* charsWritten)
 {
+	///\todo Correctly handle writing to DOS encoding on win32 - caveat being if DOS encoding is UTF8, as outbuffer might not be big enough
 size_t written;
 	if (!charsWritten) charsWritten = &written;
 	*charsWritten = 0;
@@ -771,7 +792,7 @@ size_t oLeft;
 		else
 		{
 #ifdef __SHIVA_WIN32
-			MultiByteToWideChar(CP_ACP,0,inBuffer,1,&ch,1);
+			MultiByteToWideChar( (DosEncoding ? DosEncoding : CP_ACP) ,0,inBuffer,1,&ch,1);
 			bytes = WideCharToMultiByte(CP_UTF8,0,&ch,1,outBuffer ? outBuffer : utf8Str, outBuffer ? int(len-*charsWritten) : 4,NULL,NULL);
 			if (bytes)
 			{

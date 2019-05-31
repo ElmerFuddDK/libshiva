@@ -6,14 +6,22 @@
 
 #ifdef __SHIVA_WINCE
 # define GUIMAIN() int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
-# define GUIPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVStringC((const SHVTChar*)lpCmdLine))
+# ifdef UNICODE
+#  define GUIPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVString16C::FromWin32(lpCmdLine).ToStrT())
+# else
+#  define GUIPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVString8C(lpCmdLine).ToStrT())
+# endif
 #elif defined(__SHIVA_WIN32)
 # ifdef  __MINGW32__
 #   define GUIMAIN() int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-#   define GUIPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVString8C((const SHVChar*)lpCmdLine).ToStrT())
+#   define GUIPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVString8C(lpCmdLine).ToStrT())
 # else
 #   define GUIMAIN() int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
-#   define GUIPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVStringC((const SHVTChar*)lpCmdLine))
+#   ifdef UNICODE
+#    define GUIPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVString16C::FromWin32(lpCmdLine).ToStrT())
+#   else
+#    define GUIPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVString8C(lpCmdLine).ToStrT())
+#   endif
 # endif
 #else
 # define GUIMAIN() int main(int argc, char *argv[])

@@ -230,7 +230,12 @@ SHVBool retVal(SHVBool::True);
 SHVStringUTF8 param, val;
 bool utf8mode = false;
 
+#ifdef __SHIVA_WIN32
+	// win32 does not adhere to the utf8 flag when it comes to arguments, and is always native 8 bit
+	utf8mode = false;
+#else
 	utf8mode = SHVConsole::NativeEncodingIsUTF8();
+#endif
 
 	for (int i=1; i<argc && retVal; i++)
 	{

@@ -3,10 +3,13 @@
 
 #include "../utils/shvstringc.h"
 
-// use this define on windows CE in order to enable the fake console window
 #ifdef __SHIVA_WINCE
 # define CONSOLEMAIN() int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
-# define CONSOLEPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVStringC((const SHVTChar*)lpCmdLine))
+# ifdef UNICODE
+#  define CONSOLEPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVString16C::FromWin32(lpCmdLine).ToStrT())
+# else
+#  define CONSOLEPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVString8C(lpCmdLine).ToStrT())
+# endif
 #else
 # define CONSOLEMAIN() int main(int argc, char *argv[])
 # define CONSOLEPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,argc,argv)
@@ -48,13 +51,11 @@ public:
 	static bool NativeEncodingIsUTF8();
 	
 	
-#ifdef __SHIVA_WINCE
+#ifdef __SHIVA_WIN32
 private:
 	///\cond INTERNAL
 	static void vwprintf(const WCHAR* str, SHVVA_LIST args);
-	static void vprintf(const SHVChar* str, SHVVA_LIST args);
 	static void vfwprintf(FILE* f, const WCHAR* str, SHVVA_LIST args);
-	static void vfprintf(FILE* f, const SHVChar* str, SHVVA_LIST args);
 	static void wprintf(const WCHAR* str, ...);
 	static void fwprintf(FILE* f, const WCHAR* str, ...);
 	///\endcond
