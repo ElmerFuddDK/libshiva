@@ -109,37 +109,7 @@ SHVBool retVal(SHVDir::FileExist(fileName));
 			moduleLib->LibraryPath = SHVDir::ExtractPath(fileName);
 			moduleLib->LibraryName = SHVDir::ExtractName(fileName);
 
-			if (moduleLib->ModuleFactory.IsNull())
-			{
-				retVal = SHVBool::False;
-
-				moduleLib->Library.Unload();
-				delete moduleLib;
-			}
-			else
-			{
-				moduleLib->Name = moduleLib->ModuleFactory->GetName();
-				moduleLib->Description = moduleLib->ModuleFactory->GetDescription();
-				moduleLib->VersionMajor = moduleLib->ModuleFactory->GetMajor();
-				moduleLib->VersionMinor = moduleLib->ModuleFactory->GetMinor();
-				moduleLib->VersionRelease = moduleLib->ModuleFactory->GetRelease();
-				moduleLib->Build = moduleLib->ModuleFactory->GetBuild();
-
-				if (ModuleNameMap.Find(moduleLib->Name))
-				{
-					retVal = SHVBool::False;
-
-					moduleLib->ModuleFactory = NULL;
-					moduleLib->Library.Unload();
-					delete moduleLib;
-				}
-				else
-				{
-					ModuleLibs.AddTail(moduleLib);
-					ModuleNameMap[moduleLib->Name] = moduleLib;
-					UnusedModules[moduleLib] = 1;
-				}
-			}
+			retVal = AddModuleLibInternal(moduleLib);
 		}
 		else
 		{
@@ -147,6 +117,21 @@ SHVBool retVal(SHVDir::FileExist(fileName));
 		}
 	}
 
+	return retVal;
+}
+
+/*************************************
+ * AddModuleLoader
+ *************************************/
+SHVBool SHVModuleLoaderImpl::AddModuleFactory(SHVModuleFactory* moduleFactory)
+{
+SHVBool retVal(moduleFactory ? true : false);
+	if (retVal)
+	{
+	SHVModuleLibraryImpl* moduleLib = new SHVModuleLibraryImpl();
+		moduleLib->ModuleFactory = moduleFactory;
+		retVal = AddModuleLibInternal(moduleLib);
+	}
 	return retVal;
 }
 
@@ -238,6 +223,49 @@ SHVBool inUse;
 
 	return retVal;
 }
+
+///\cond INTERNAL
+/*************************************
+ * AddModuleLibInternal
+ *************************************/
+SHVBool SHVModuleLoaderImpl::AddModuleLibInternal(SHVModuleLibraryImpl* moduleLib)
+{
+SHVBool retVal(SHVBool::True);
+
+	if (moduleLib->ModuleFactory.IsNull())
+	{
+		retVal = SHVBool::False;
+
+		moduleLib->Library.Unload();
+		delete moduleLib;
+	}
+	else
+	{
+		moduleLib->Name = moduleLib->ModuleFactory->GetName();
+		moduleLib->Description = moduleLib->ModuleFactory->GetDescription();
+		moduleLib->VersionMajor = moduleLib->ModuleFactory->GetMajor();
+		moduleLib->VersionMinor = moduleLib->ModuleFactory->GetMinor();
+		moduleLib->VersionRelease = moduleLib->ModuleFactory->GetRelease();
+		moduleLib->Build = moduleLib->ModuleFactory->GetBuild();
+
+		if (ModuleNameMap.Find(moduleLib->Name))
+		{
+			retVal = SHVBool::False;
+
+			moduleLib->ModuleFactory = NULL;
+			moduleLib->Library.Unload();
+			delete moduleLib;
+		}
+		else
+		{
+			ModuleLibs.AddTail(moduleLib);
+			ModuleNameMap[moduleLib->Name] = moduleLib;
+			UnusedModules[moduleLib] = 1;
+		}
+	}
+	return retVal;
+}
+///\endcond
 
 
 //=========================================================================================================

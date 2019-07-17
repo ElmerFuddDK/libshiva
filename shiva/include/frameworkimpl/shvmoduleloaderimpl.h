@@ -31,6 +31,7 @@ public:
 	// Module library load functions
 	virtual void AddModuleLibs(const SHVStringC modulePath);
 	virtual SHVBool AddModuleLib(const SHVStringC fileName);
+	virtual SHVBool AddModuleFactory(SHVModuleFactory* moduleFactory);
 	virtual SHVModuleLibIterator* GetIterator();
 	virtual SHVModuleLibrary* GetModuleLib(const SHVStringC name);
 
@@ -48,6 +49,8 @@ private:
 friend class SHVModuleLibIteratorImpl;
 
 	///\cond INTERNAL
+	SHVBool AddModuleLibInternal(SHVModuleLibraryImpl* moduleLib);
+	
 	SHVList<SHVString8,const SHVString8C> ModuleSymbols;
 
 	SHVList<SHVModuleLibraryImplPtr,SHVModuleLibraryImpl*> ModuleLibs;

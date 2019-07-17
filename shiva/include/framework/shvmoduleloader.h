@@ -22,6 +22,7 @@ public:
 	// Module library load functions
 	virtual void AddModuleLibs(const SHVStringC modulePath) = 0;
 	virtual SHVBool AddModuleLib(const SHVStringC fileName) = 0;
+	virtual SHVBool AddModuleFactory(SHVModuleFactory* moduleFactory) = 0;
 	virtual SHVModuleLibIterator* GetIterator() = 0;
 	virtual SHVModuleLibrary* GetModuleLib(const SHVStringC name) = 0;
 
