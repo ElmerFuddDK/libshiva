@@ -99,7 +99,7 @@ size_t len;
 		w.WriteChar(':');
 	}
 	w.WriteChar8('"');
-	len = val.GetSizeInBytes();
+	len = val.GetLengthInBytes();
 	for (size_t i = 0; i < len; i++)
 	{
 		switch (val.GetBufferConst()[i])
