@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if test "$BASH" != "/bin/bash"
+if test "$BASH" != "/usr/local/bin/bash" -a "$BASH" != "/bin/bash" -a "$BASH" != "/usr/bin/bash"
 then
 	# Not run by bash, fixing ...
 	bash "$0" "$@"
