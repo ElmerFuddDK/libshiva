@@ -10,7 +10,12 @@
 
 extern "C"
 {
-
+#ifdef SHIVASTATICMODULELIB
+SHVModuleFactory* SHVModuleFactory_DataEngineNew(SHVModuleList* list)
+{
+	return new SHVModuleFactoryDataEngine(*list);
+}
+#else
 void* CreateObjectInt(SHVModuleList* list, int id)
 {
 	switch (id)
@@ -28,5 +33,5 @@ void* CreateObjectString(SHVModuleList* list, const SHVTChar* classname)
 	SHVUNUSED_PARAM(classname);
 	return NULL;
 }
-
+#endif
 }

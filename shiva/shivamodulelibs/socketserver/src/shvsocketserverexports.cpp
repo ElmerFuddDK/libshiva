@@ -39,6 +39,12 @@
 extern "C"
 {
 
+#ifdef SHIVASTATICMODULELIB
+SHVModuleFactory* SHVModuleFactory_SocketServerNew(SHVModuleList* list)
+{
+	return new SHVModuleFactorySocketServer(*list);
+}
+#else
 void* CreateObjectInt(SHVModuleList* list, int id)
 {
 	SHVUNUSED_PARAM(list);
@@ -60,5 +66,6 @@ void* CreateObjectString(SHVModuleList* list, const SHVTChar* classname)
 	
 	return NULL;
 }
+#endif
 
 }

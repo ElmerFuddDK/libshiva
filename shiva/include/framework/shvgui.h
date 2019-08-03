@@ -4,6 +4,14 @@
 #include "../utils/shvstringc.h"
 #include "../utils/shvdll.h"
 
+#ifdef SHIVASTATICMODULELIB
+class SHVMainThreadEventDispatcher;
+extern "C"
+{
+extern SHVMainThreadEventDispatcher* SHVGUI_CreateStaticGuiDispatcher();
+}
+#endif
+
 #ifdef __SHIVA_WINCE
 # define GUIMAIN() int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
 # ifdef UNICODE

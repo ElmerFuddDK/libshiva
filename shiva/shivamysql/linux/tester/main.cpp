@@ -48,10 +48,13 @@
 
 int main(int argc, char *argv[])
 {
-SHVDll dll;
 SHVMySQLConnectionParmsRef Parms = new SHVMySQLConnectionParms("192.168.1.42", "cowdetect", "KoKasse", "CowDetect", 0);
 SHVMySQLConnectionRef Connection;
 SHVMySQLResultSetRef Result;
+#ifdef SHIVASTATICMODULELIB
+	Connection = SHVMySQLConnection::New();
+#else
+SHVDll dll;
 	printf("%s\n", dll.CreateLibFileName(_S("shivamysql")).GetSafeBuffer());
 	if (!dll.Load(dll.CreateLibFileName(_S("shivamysql"))))
 	{
@@ -60,6 +63,7 @@ SHVMySQLResultSetRef Result;
 	else 
 		printf("Success!!!!!!\n");	
 	Connection = (SHVMySQLConnection*) dll.CreateObjectInt(NULL, SHVDll::ClassTypeUser);
+#endif
 	if (Connection->Connect(Parms))
 	{
 		printf("Hooray\r\n");
@@ -80,5 +84,5 @@ SHVMySQLResultSetRef Result;
 		}
 	}
 	else
-		printf("Error %s", Connection->GetError().GetSafeBuffer());
+		printf("Error %s\n", Connection->GetError().GetSafeBuffer());
 }

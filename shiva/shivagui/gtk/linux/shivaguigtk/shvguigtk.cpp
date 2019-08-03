@@ -38,7 +38,12 @@
 
 extern "C"
 {
-
+#ifdef SHIVASTATICMODULELIB
+SHVMainThreadEventDispatcher* SHVGUI_CreateStaticGuiDispatcher()
+{
+	return new SHVMainThreadEventDispatcherGtk();
+}
+#else
 void* CreateObjectInt(SHVModuleList* list, int id)
 {
 	SHVUNUSED_PARAM(list);
@@ -60,5 +65,5 @@ void* CreateObjectString(SHVModuleList* list, const SHVTChar* classname)
 	
 	return NULL;
 }
-
+#endif
 }

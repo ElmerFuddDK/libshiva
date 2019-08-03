@@ -8,6 +8,12 @@
 extern "C"
 {
 
+#ifdef SHIVASTATICMODULELIB
+SHVModuleFactory* SHVModuleFactory_JsonStreamNew(SHVModuleList* list)
+{
+	return new SHVModuleFactoryJsonStream(*list);
+}
+#else
 void* CreateObjectInt(SHVModuleList* list, int id)
 {
 	SHVUNUSED_PARAM(list);
@@ -29,5 +35,6 @@ void* CreateObjectString(SHVModuleList* list, const SHVTChar* classname)
 
 	return NULL;
 }
+#endif
 
 }

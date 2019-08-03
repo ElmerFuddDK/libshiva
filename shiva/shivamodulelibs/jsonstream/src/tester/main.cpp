@@ -7,6 +7,8 @@
 #include "shiva/include/framework/shvconsole.h"
 #include "shiva/include/utils/shvdll.h"
 #include "shiva/include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
+#include "shiva/include/frameworkimpl/shvmoduleloaderimpl.h"
+#include "shiva/include/modules/shvmodulefactories.h"
 
 #include "shvjsonstreamtester.h"
 
@@ -19,22 +21,24 @@ SHVDll jsonstreamlib;
 	{
 		SHVConsole::ErrPrintf(_S("WRONG SHIVA VERSION\n"));
 	}
-	else if (!jsonstreamlib.Load(jsonstreamlib.CreateLibFileName(_S("jsonstream"))))
-	{
-		SHVConsole::ErrPrintf(_S("Could not load jsonstream library\n"));
-	}
 	else
 	{
 	// Initialize the main thread event queue - we are a console application
 	SHVMainThreadEventQueue mainqueue(new SHVMainThreadEventDispatcherConsole());
 	// Initialize module factory
-	SHVModuleFactoryPtr factory = (SHVModuleFactory*)jsonstreamlib.CreateObjectInt(&mainqueue.GetModuleList(),SHVDll::ClassTypeModuleFactory);
+	SHVModuleLoaderImpl loader(mainqueue.GetModuleList());
+#ifdef SHIVASTATICMODULELIB
+		loader.AddModuleFactory(SHVModuleFactory_JsonStreamNew(&mainqueue.GetModuleList()));
+#else
+		loader.AddModuleLib(jsonstreamlib.CreateLibFileName(_S("jsonstream")));
+#endif
 
 		// Parse any command line arguments into default config
 		CONSOLEPARSEARGS(mainqueue.GetModuleList().GetConfig());
 
 		// Resolve default modules from the factory
-		factory->ResolveModules(__MODULESYMBOL_DEFAULTS);
+		loader.AddSymbol(__MODULESYMBOL_DEFAULTS);
+		loader.LoadModules();
 
 		// Add our application modules
 		mainqueue.GetModuleList().AddModule(new SHVJsonStreamTester(mainqueue.GetModuleList()));

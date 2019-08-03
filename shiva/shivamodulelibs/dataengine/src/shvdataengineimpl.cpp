@@ -36,7 +36,7 @@
 #include "../include/shvdatafactoryimpl.h"
 #include "../../../include/utils/shvdir.h"
 
-#ifdef __SHIVA_POSIX_IPHONEOS
+#ifdef SHIVASTATICMODULELIB
 
 #include "../../../shivasqlite/include/sqlitewrapperimpl.h"
 
@@ -57,7 +57,7 @@ SHVString driverPath;
 	else
 		datapath += SHVDir::Delimiter() + database;
 
-#ifndef __SHIVA_POSIX_IPHONEOS
+#ifndef SHIVASTATICMODULELIB
 
 	driverPath = SQLiteDll.CreateLibFileName(_S("shivasqlite"),modules.GetConfig().Find(SHVModuleList::DefaultCfgAppPath)->ToString());
 
@@ -248,7 +248,7 @@ SHVSQLiteWrapper* SHVDataEngineImpl::CreateConnection(SHVBool& Ok, const SHVStri
 //SHVSQLiteWrapperRef retVal = (SHVSQLiteWrapper*) SQLiteDll.CreateObjectInt(&Modules, SHVDll::ClassTypeUser);
 SHVSQLiteWrapperRef retVal;
 
-#ifdef __SHIVA_POSIX_IPHONEOS
+#ifdef SHIVASTATICMODULELIB
 	retVal = new SHVSQLiteWrapperImpl();
 #else
 	retVal = (SHVSQLiteWrapper*) SQLiteDll.CreateObjectInt(&Modules, SHVDll::ClassTypeUser);

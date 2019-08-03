@@ -31,10 +31,12 @@
 #include "../../../../include/platformspc.h"
 #include "../../../../include/framework/shvmodule.h"
 #include "../../../../include/framework/shvmodulefactory.h"
+#include "../../../../include/frameworkimpl/shvmoduleloaderimpl.h"
 #include "../../../../include/frameworkimpl/shvmainthreadeventdispatchergeneric.h"
 #include "../../../../include/shvversion.h"
 #include "../../../../include/utils/shvdll.h"
 #include "../../../../include/utils/shvdir.h"
+#include "../../../../include/modules/shvmodulefactories.h"
 #include "../../../../include/modules/socketserver/shvsocketserver.h"
 
 #include "../../../../include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
@@ -466,17 +468,19 @@ SHVDll socketlib;
 	{
 		SHVConsole::ErrPrintf8("WRONG SHIVA VERSION\n");
 	}
-	else if (!socketlib.Load(socketlib.CreateLibFileName(_S("socketserver"))))
-	{
-		SHVConsole::ErrPrintf8("Could not load socket server\n");
-	}
 	else
 	{
 	SHVMainThreadEventQueue mainqueue(new SHVMainThreadEventDispatcherConsole());
-	SHVModuleFactory* factory = (SHVModuleFactory*)socketlib.CreateObjectInt(&mainqueue.GetModuleList(),SHVDll::ClassTypeModuleFactory);
+	SHVModuleLoaderImpl loader(mainqueue.GetModuleList());
+#ifdef SHIVASTATICMODULELIB
+		loader.AddModuleFactory(SHVModuleFactory_SocketServerNew(&mainqueue.GetModuleList()));
+#else
+		loader.AddModuleLib(socketlib.CreateLibFileName(_S("socketserver")));
+#endif
 
 		mainqueue.GetModuleList().AddModule(new SHVTest(mainqueue.GetModuleList()));
-		factory->ResolveModules(__MODULESYMBOL_DEFAULTS);
+		loader.AddSymbol(__MODULESYMBOL_DEFAULTS);
+		loader.LoadModules();
 
 		return mainqueue.Run().GetError();
 	}

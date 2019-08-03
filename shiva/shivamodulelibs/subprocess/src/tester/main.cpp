@@ -7,6 +7,8 @@
 #include "shiva/include/framework/shvconsole.h"
 #include "shiva/include/utils/shvdll.h"
 #include "shiva/include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
+#include "shiva/include/frameworkimpl/shvmoduleloaderimpl.h"
+#include "shiva/include/modules/shvmodulefactories.h"
 
 #include "shvsubprocesstester.h"
 
@@ -19,22 +21,24 @@ SHVDll subprocesslib;
 	{
 		SHVConsole::ErrPrintf(_S("WRONG SHIVA VERSION\n"));
 	}
-	else if (!subprocesslib.Load(subprocesslib.CreateLibFileName(_S("subprocess"))))
-	{
-		SHVConsole::ErrPrintf(_S("Could not load subprocess library\n"));
-	}
 	else
 	{
 	// Initialize the main thread event queue - we are a console application
 	SHVMainThreadEventQueue mainqueue(new SHVMainThreadEventDispatcherConsole());
 	// Initialize module factory
-	SHVModuleFactoryPtr factory = (SHVModuleFactory*)subprocesslib.CreateObjectInt(&mainqueue.GetModuleList(),SHVDll::ClassTypeModuleFactory);
+	SHVModuleLoaderImpl loader(mainqueue.GetModuleList());
+#ifdef SHIVASTATICMODULELIB
+		loader.AddModuleFactory(SHVModuleFactory_SubProcessNew(&mainqueue.GetModuleList()));
+#else
+		loader.AddModuleLib(subprocesslib.CreateLibFileName(_S("subprocess")));
+#endif
 
 		// Parse any command line arguments into default config
 		CONSOLEPARSEARGS(mainqueue.GetModuleList().GetConfig());
 
 		// Resolve default modules from the factory
-		factory->ResolveModules(__MODULESYMBOL_DEFAULTS);
+		loader.AddSymbol(__MODULESYMBOL_DEFAULTS);
+		loader.LoadModules();
 
 		// Add our application modules
 		mainqueue.GetModuleList().AddModule(new SHVSubProcessTester(mainqueue.GetModuleList()));

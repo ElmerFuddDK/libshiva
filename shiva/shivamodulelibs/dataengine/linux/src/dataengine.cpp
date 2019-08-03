@@ -7,6 +7,8 @@
 #include "../../../../include/modules/dataengine/shvdataengine.h"
 #include "../../../../include/modules/dataengine/shvdatastruct.h"
 #include "../../../../include/modules/dataengine/shvdatarowlist.h"
+#include "../../../../include/frameworkimpl/shvmoduleloaderimpl.h"
+#include "../../../../include/modules/shvmodulefactories.h"
 
 
 class SHVTest : public SHVModule
@@ -258,17 +260,19 @@ SHVDll dataenginelib;
 	{
 		fprintf(stderr,"WRONG SHIVA VERSION\n");
 	}
-	else if (!dataenginelib.Load(dataenginelib.CreateLibFileName(_S("dataengine"))))
-	{
-		fprintf(stderr,"Could not load dataengine\n");
-	}
 	else
 	{
 	SHVMainThreadEventQueue mainqueue(new SHVMainThreadEventDispatcherConsole());
-	SHVModuleFactory* factory = (SHVModuleFactory*)dataenginelib.CreateObjectInt(&mainqueue.GetModuleList(),SHVDll::ClassTypeModuleFactory);
+	SHVModuleLoaderImpl loader(mainqueue.GetModuleList());
+#ifdef SHIVASTATICMODULELIB
+		loader.AddModuleFactory(SHVModuleFactory_DataEngineNew(&mainqueue.GetModuleList()));
+#else
+		loader.AddModuleLib(dataenginelib.CreateLibFileName(_S("dataengine")));
+#endif
 
 		mainqueue.GetModuleList().AddModule(new SHVTest(mainqueue.GetModuleList()));
-		factory->ResolveModules(__MODULESYMBOL_DEFAULTS);
+		loader.AddSymbol(__MODULESYMBOL_DEFAULTS);
+		loader.LoadModules();
 
 		return mainqueue.Run().GetError();
 	}

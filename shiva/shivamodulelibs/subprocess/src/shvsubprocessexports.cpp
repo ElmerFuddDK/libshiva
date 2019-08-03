@@ -9,6 +9,12 @@
 extern "C"
 {
 
+#ifdef SHIVASTATICMODULELIB
+SHVModuleFactory* SHVModuleFactory_SubProcessNew(SHVModuleList* list)
+{
+	return new SHVModuleFactorySubProcess(*list);
+}
+#else
 void* CreateObjectInt(SHVModuleList* list, int id)
 {
 	SHVUNUSED_PARAM(list);
@@ -30,5 +36,6 @@ void* CreateObjectString(SHVModuleList* list, const SHVTChar* classname)
 	
 	return NULL;
 }
+#endif
 
 }

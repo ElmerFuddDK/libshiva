@@ -104,3 +104,7 @@ SHVStringBuffer SHVMySQLConnectionImpl::GetError()
 	else
 		return SHVString(_S("Not connected")).ReleaseBuffer();
 }
+
+#ifdef SHIVASTATICMODULELIB
+SHVMySQLConnection* SHVMySQLConnection::New() { return new SHVMySQLConnectionImpl(); }
+#endif

@@ -60,6 +60,10 @@ public:
   virtual SHVMySQLResultSet* Query(const SHVStringUTF8 query) = 0;
   virtual SHVBool Execute(const SHVStringUTF8 sql) = 0;
   virtual SHVStringBuffer GetError() = 0;
+
+#ifdef SHIVASTATICMODULELIB
+  static SHVMySQLConnection* New();
+#endif
 protected:
 
 

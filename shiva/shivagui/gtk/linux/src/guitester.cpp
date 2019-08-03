@@ -31,8 +31,10 @@
 #include "../../../../include/platformspc.h"
 #include "../../../../include/shvversion.h"
 #include "../../../../include/utils/shvmath.h"
+#include "../../../../include/utils/shvmath.h"
 #include "../../../../include/threadutils/shvthread.h"
 
+#include "../../../../include/framework/shvgui.h"
 #include "../../../../include/frameworkimpl/shvmainthreadeventqueue.h"
 #include "../../../../include/utils/shvdll.h"
 
@@ -369,7 +371,9 @@ public:
 
 int main(int argc, char *argv[])
 {
+#ifndef SHIVASTATICMODULELIB
 SHVDll guilib;
+#endif
 int retVal = -1;
 
 	SHVUNUSED_PARAM(argc);
@@ -379,13 +383,19 @@ int retVal = -1;
 	{
 		::fprintf(stderr,"Invalid version of libshiva.dll\n");
 	}
+#ifndef SHIVASTATICMODULELIB
 	else if (!guilib.Load(guilib.CreateLibFileName(_S("shivaguigtk"))))
 	{
 		::fprintf(stderr,"Could not load GUI module library shivaguigtk\n");
 	}
+#endif
 	else
 	{
+#ifdef SHIVASTATICMODULELIB
+	SHVMainThreadEventQueue mainqueue(SHVGUI_CreateStaticGuiDispatcher());
+#else
 	SHVMainThreadEventQueue mainqueue((SHVMainThreadEventDispatcher*)guilib.CreateObjectInt(NULL,SHVDll::ClassTypeMainThreadDispatcher));
+#endif
 	SHVRegisterBitmap(mainqueue.GetModuleList(),1,(char**)heyyou_xpm);
 
 // 		mainqueue.GetModuleList().AddModule(new SHVControlTester(mainqueue.GetModuleList()));
@@ -394,7 +404,9 @@ int retVal = -1;
 		retVal = mainqueue.Run();
 	}
 
+#ifndef SHIVASTATICMODULELIB
 	guilib.Unload();
+#endif
 
 	return retVal;
 }

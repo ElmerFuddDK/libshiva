@@ -7,6 +7,8 @@
 #include "shiva/include/framework/shvconsole.h"
 #include "shiva/include/utils/shvdll.h"
 #include "shiva/include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
+#include "shiva/include/frameworkimpl/shvmoduleloaderimpl.h"
+#include "shiva/include/modules/shvmodulefactories.h"
 
 #include "shvluaenginetester.h"
 
@@ -20,25 +22,26 @@ SHVDll luaenginelib;
 	{
 		SHVConsole::ErrPrintf(_S("WRONG SHIVA VERSION\n"));
 	}
-	else if (!luaenginelib.Load(luaenginelib.CreateLibFileName(_S("luaengine"))))
-	{
-		SHVConsole::ErrPrintf(_S("Could not load luaengine library\n"));
-	}
 	else
 	{
 	// Initialize the main thread event queue - we are a console application
 	SHVMainThreadEventQueue mainqueue(new SHVMainThreadEventDispatcherConsole());
 	// Initialize module factory
-	SHVModuleFactoryPtr factory = (SHVModuleFactory*)luaenginelib.CreateObjectInt(&mainqueue.GetModuleList(),SHVDll::ClassTypeModuleFactory);
+	SHVModuleLoaderImpl loader(mainqueue.GetModuleList());
+#ifdef SHIVASTATICMODULELIB
+		loader.AddModuleFactory(SHVModuleFactory_LuaEngineNew(&mainqueue.GetModuleList()));
+#else
+		loader.AddModuleLib(luaenginelib.CreateLibFileName(_S("luaengine")));
+#endif
 
 		CONSOLEPARSEARGS(mainqueue.GetModuleList().GetConfig());
-	
-		// Resolve default modules from the factory
-		factory->ResolveModules(__MODULESYMBOL_DEFAULTS);
 
+		loader.AddSymbol(__MODULESYMBOL_DEFAULTS);
+		loader.LoadModules();
+		
 		// Add our application modules
 		mainqueue.GetModuleList().AddModule(new SHVLuaEngineTester(mainqueue.GetModuleList()));
-
+		
 		// run the application and return
 		return mainqueue.Run().GetError();
 	}
