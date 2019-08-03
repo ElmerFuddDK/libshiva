@@ -17,5 +17,6 @@ Makefile
 ArmRel
 Debug
 Release
+build*
 .qmake.stash
 *.pro.user*
