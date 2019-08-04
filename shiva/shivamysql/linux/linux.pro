@@ -1,4 +1,4 @@
 TEMPLATE = subdirs
 
-SUBDIRS += tester/tester.pro \
- src
+SUBDIRS += src \
+tester/tester.pro

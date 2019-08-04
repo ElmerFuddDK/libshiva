@@ -17,9 +17,11 @@ debug
 CONFIG -= qt \
 thread \
 release
-LIBS += -L../../../../shivalib/linux/libshiva/ \
-$$QMAKE_LIBS_DYNLOAD \
--lshiva
+shivastaticlib {
+  CONFIG += staticlib shivastaticlib
+}
+LIBS += $$QMAKE_LIBS_DYNLOAD \
+  -L../../../../shivalib/linux/libshiva -lshiva
 HEADERS += ../../include/shvxmlreaderimpl.h \
 ../../include/shvxmlstreamimpl.h \
 ../../include/shvxmlwriterimpl.h \
@@ -48,9 +50,4 @@ SOURCES -= ../../src/expat/xmltok_impl.c \
   QMAKE_LIBS_PRIVATE -= -lgnustl_shared
   QMAKE_INCDIR -= $$ANDROID_SOURCES_CXX_STL_INCDIR
   QMAKE_LIBDIR -= $$ANDROID_SOURCES_CXX_STL_LIBDIR
-}
-
-ios {
-	CONFIG += staticlib
-	LIBS -= -lshiva
 }

@@ -5,15 +5,22 @@ SOURCES = ../../src/tester/main.cpp \
 HEADERS += ../../src/tester/shvluaenginetester.h
 TARGET =../bin/luaenginetester
 TEMPLATE = app
-LIBS += -L../../../../../shiva/shivalib/linux/libshiva \
-$$QMAKE_LIBS_DYNLOAD \
--lshiva
+
+shivastaticlib {
+  LIBS += -lpthread
+  LIBS += -L../bin -lluaengine
+}
+
+LIBS += $$QMAKE_LIBS_DYNLOAD \
+  -L../../../../../shiva/shivalib/linux/libshiva -lshiva
 
 CONFIG -= release \
  qt
 
 CONFIG += debug
-QMAKE_POST_LINK = ../bin/copydeps.sh
+!shivastaticlib {
+  QMAKE_POST_LINK = ../bin/copydeps.sh
+}
 
 INCLUDEPATH += ../../../../..
 
@@ -26,9 +33,4 @@ QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN\''
   QMAKE_LIBS_PRIVATE -= -lgnustl_shared
   QMAKE_INCDIR -= $$ANDROID_SOURCES_CXX_STL_INCDIR
   QMAKE_LIBDIR -= $$ANDROID_SOURCES_CXX_STL_LIBDIR
-}
-
-ios {
-	CONFIG += staticlib
-	LIBS -= -lshiva
 }

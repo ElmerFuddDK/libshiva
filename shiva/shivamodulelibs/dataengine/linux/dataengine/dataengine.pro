@@ -9,10 +9,17 @@ ios {
   CONFIG -= qt
   CONFIG += dll staticlib
 } else {
-  CONFIG = $$QMAKE_PLATFORM \
-         debug \
-         warn_on \
-         dll
+  shivastaticlib {
+    CONFIG = $$QMAKE_PLATFORM \
+           debug \
+           warn_on \
+           dll staticlib shivastaticlib
+  } else {
+    CONFIG = $$QMAKE_PLATFORM \
+           debug \
+           warn_on \
+           dll
+  }
 }
 TEMPLATE = lib 
 HEADERS += ../../../../include/modules/dataengine/shvdataengine.h \
@@ -63,9 +70,9 @@ SOURCES += dataengine.cpp \
  ../../src/shvdatafunctionimpl.cpp \
  ../../src/shvdatastatementimpl.cpp
 
-LIBS += -L../../../../shivalib/linux/libshiva/ \
-  -lshiva \
-  $$QMAKE_LIBS_DYNLOAD
+LIBS += $$QMAKE_LIBS_DYNLOAD \
+  -L../../../../shivalib/linux/libshiva -lshiva
+
 TARGET = dataengine
 
 
@@ -78,8 +85,4 @@ DESTDIR = ../bin
   QMAKE_LIBS_PRIVATE -= -lgnustl_shared
   QMAKE_INCDIR -= $$ANDROID_SOURCES_CXX_STL_INCDIR
   QMAKE_LIBDIR -= $$ANDROID_SOURCES_CXX_STL_LIBDIR
-}
-
-ios {
-	LIBS -= -lshiva
 }

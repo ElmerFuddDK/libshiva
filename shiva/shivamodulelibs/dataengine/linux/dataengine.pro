@@ -3,6 +3,6 @@
 # Subdir relative project main directory: .
 # Target is a subdirs project 
 
-SUBDIRS += src \
-           dataengine 
+SUBDIRS += dataengine \
+           src
 TEMPLATE=subdirs

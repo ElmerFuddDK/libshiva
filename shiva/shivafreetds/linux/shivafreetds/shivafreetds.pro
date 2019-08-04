@@ -2,12 +2,15 @@ include(../../../../shiva/include/shiva.pri)
 
 TEMPLATE = lib
 
-CONFIG = dll \
-debug \
- warn_on
+CONFIG -= release \
+qt
+CONFIG += debug \
+dll
+
+shivastaticlib { CONFIG += staticlib }
+
 LIBS += $$QMAKE_LIBS_DYNLOAD \
- -lshiva \
- -L../../../../shiva/shivalib/linux/libshiva
+  -L../../../../shiva/shivalib/linux/libshiva -lshiva
 
 TARGET =../bin/shivafreetds
 

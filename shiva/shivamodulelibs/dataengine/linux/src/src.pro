@@ -5,14 +5,19 @@
 include(../../../../../shiva/include/shiva.pri)
 
 INCLUDEPATH += ../../ 
+shivastaticlib { LIBS += -lpthread
+  LIBS += -L../bin -ldataengine
+  LIBS += -L../../../../shivasqlite/linux/bin -lshivasqlite
+}
+
 CONFIG = debug \
           warn_on 
 TEMPLATE = app 
 SOURCES += dataengine.cpp
 
-LIBS = -L../../../../shivalib/linux/libshiva/ \
-  $$QMAKE_LIBS_DYNLOAD \
-  -lshiva
+LIBS += $$QMAKE_LIBS_DYNLOAD \
+  -L../../../../shivalib/linux/libshiva -lshiva
+
 
 TARGET = tester
 

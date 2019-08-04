@@ -7,6 +7,7 @@ include(../../../../shiva/include/shiva.pri)
 #TARGETDEPS += ../libshiva/libshiva.so 
 LIBS += $$QMAKE_LIBS_DYNLOAD \
         -lshiva 
+shivastaticlib { LIBS += -lpthread }
 QMAKE_LIBDIR += ../libshiva 
 TARGET = ../bin/shiva 
 CONFIG = debug \

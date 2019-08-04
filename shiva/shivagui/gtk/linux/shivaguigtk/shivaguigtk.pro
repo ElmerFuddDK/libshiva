@@ -7,13 +7,20 @@ include(../../../../../shiva/include/shiva.pri)
 LIBS += -lgdk-x11-2.0 \
         -lgtk-x11-2.0 \
         $$QMAKE_LIBS_DYNLOAD \
-        -lshiva 
-QMAKE_LIBDIR = ../../../../shivalib/linux/libshiva
+        -L../../../../shivalib/linux/libshiva -lshiva
 # QMAKE_LFLAGS = -Wl
-DEFINES = __SHIVA_GTK
-CONFIG = debug \
+DEFINES += __SHIVA_GTK
+shivastaticlib {
+  CONFIG = $$QMAKE_PLATFORM \
+         debug \
          warn_on \
-         dll 
+         dll staticlib shivastaticlib
+} else {
+  CONFIG = $$QMAKE_PLATFORM \
+         debug \
+         warn_on \
+         dll
+}
 TEMPLATE = lib 
 HEADERS += ../../../gui/shvformimpl.h \
            ../../../gui/shvguimanagerimpl.h \

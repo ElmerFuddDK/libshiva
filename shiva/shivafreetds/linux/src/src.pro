@@ -8,15 +8,22 @@ HEADERS += \
 
 TARGET =../bin/shivafreetdstester
 TEMPLATE = app
-LIBS += -L../../../../shiva/shivalib/linux/libshiva \
-$$QMAKE_LIBS_DYNLOAD \
--lshiva
+
+shivastaticlib {
+  LIBS += -lpthread -lsybdb
+  LIBS += -L../bin -lshivafreetds
+}
+LIBS += $$QMAKE_LIBS_DYNLOAD \
+  -L../../../../shiva/shivalib/linux/libshiva -lshiva
 
 CONFIG -= release \
  qt
 
 CONFIG += debug
-QMAKE_POST_LINK = ../bin/copydeps.sh
+
+!shivastaticlib {
+  QMAKE_POST_LINK = ../bin/copydeps.sh
+}
 
 QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN\''
 

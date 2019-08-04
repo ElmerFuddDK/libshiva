@@ -1,6 +1,6 @@
 include(../../../../shiva/include/shiva.pri)
 
-SOURCES =shivasqlite.cpp \
+SOURCES = ../../src/shvshivasqliteexports.cpp \
 ../../src/sqlite/sqlite3.c \
 ../../src/sqlitestatementimpl.cpp \
 ../../src/sqlitewrapperimpl.cpp
@@ -22,6 +22,8 @@ CONFIG += debug \
 dll
 TEMPLATE = lib
 
+shivastaticlib { CONFIG += staticlib }
+
 SQLITE_FTS = -DSQLITE_ENABLE_FTS3 -DSQLITE_ENABLE_FTS3_PARENTHESIS
 
 HEADERS += ../../../include/sqlite/shvstringsqlite.h \
@@ -40,9 +42,4 @@ QMAKE_CXXFLAGS += $$SQLITE_FTS -DSHIVASQLITE_EXPORTS
   QMAKE_LIBS_PRIVATE -= -lgnustl_shared
   QMAKE_INCDIR -= $$ANDROID_SOURCES_CXX_STL_INCDIR
   QMAKE_LIBDIR -= $$ANDROID_SOURCES_CXX_STL_LIBDIR
-}
-
-ios {
-	CONFIG += staticlib
-	LIBS -= -lshiva
 }

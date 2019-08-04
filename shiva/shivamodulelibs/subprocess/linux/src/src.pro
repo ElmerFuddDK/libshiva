@@ -11,10 +11,18 @@ $$QMAKE_LIBS_DYNLOAD \
 
 CONFIG -= release \
  qt
-
 CONFIG += debug
-QMAKE_POST_LINK = ../bin/copydeps.sh
+shivastaticlib {
+  LIBS += -lpthread
+  LIBS += -L../bin -lsubprocess
+}
 
+!shivastaticlib {
+  QMAKE_POST_LINK = ../bin/copydeps.sh
+}
+
+LIBS += $$QMAKE_LIBS_DYNLOAD \
+  -L../../../../shivalib/linux/libshiva -lshiva
 INCLUDEPATH += ../../../../..
 
 !isEmpty(ANDROID_PLATFORM) {
@@ -24,9 +32,4 @@ INCLUDEPATH += ../../../../..
   QMAKE_LIBS_PRIVATE -= -lgnustl_shared
   QMAKE_INCDIR -= $$ANDROID_SOURCES_CXX_STL_INCDIR
   QMAKE_LIBDIR -= $$ANDROID_SOURCES_CXX_STL_LIBDIR
-}
-
-ios {
-	CONFIG += staticlib
-	LIBS -= -lshiva
 }

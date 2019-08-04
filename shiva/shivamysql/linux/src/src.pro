@@ -7,12 +7,14 @@ CONFIG += dll \
 CONFIG -= qt \
  release
 
+shivastaticlib { CONFIG += staticlib }
+
+LIBS += $$QMAKE_LIBS_DYNLOAD \
+  -L../../../shivalib/linux/libshiva -lshiva
+
 INCLUDEPATH += /usr/include/mysql/
 
-LIBS += -L/usr/lib \
--L../../../shivalib/linux/libshiva/ \
--lmysqlclient \
--lshiva
+LIBS += -lmysqlclient
 TARGET = shivamysql
 
 SOURCES += ../../src/shvmysqlconnectionimpl.cpp \

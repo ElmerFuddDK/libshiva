@@ -4,6 +4,11 @@
 # Target is an application:  ../bin/guitester
 include(../../../../../shiva/include/shiva.pri)
 
+shivastaticlib { LIBS += -lpthread
+  LIBS += -lgdk-x11-2.0 -lgtk-x11-2.0 -lpango-1.0 -lgdk_pixbuf-2.0 -lgobject-2.0
+  LIBS += -L../shivaguigtk -lshivaguigtk
+}
+
 HEADERS += modules/shvcontroltester.h \
     modules/shvtabtestpageform.h \
     modules/shvtabtestform.h
@@ -12,8 +17,7 @@ SOURCES += guitester.cpp \
     modules/shvtabtestpageform.cpp \
     modules/shvtabtestform.cpp
 LIBS += $$QMAKE_LIBS_DYNLOAD \
--lshiva
-QMAKE_LIBDIR = ../../../../shivalib/linux/libshiva
+  -L../../../../shivalib/linux/libshiva -lshiva
 TARGET = ../bin/guitester
 CONFIG = debug \
 warn_on

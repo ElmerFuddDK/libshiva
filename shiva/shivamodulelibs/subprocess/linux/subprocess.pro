@@ -1,3 +1,3 @@
 TEMPLATE =subdirs
-SUBDIRS =src \
-subprocess
+SUBDIRS =subprocess \
+src

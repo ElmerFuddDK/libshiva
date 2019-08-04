@@ -154,10 +154,17 @@ ios {
   CONFIG -= qt
   CONFIG += dll staticlib
 } else {
-  CONFIG = $$QMAKE_PLATFORM \
-         debug \
-         warn_on \
-         dll
+  shivastaticlib {
+    CONFIG = $$QMAKE_PLATFORM \
+           debug \
+           warn_on \
+           dll staticlib
+  } else {
+    CONFIG = $$QMAKE_PLATFORM \
+           debug \
+           warn_on \
+           dll
+  }
 }
 TEMPLATE = lib 
 LIBS += -lm \

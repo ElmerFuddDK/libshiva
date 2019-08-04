@@ -1,13 +1,24 @@
 include(../../../../../shiva/include/shiva.pri)
 
+ios {
+  CONFIG -= qt
+  CONFIG += dll staticlib
+} else {
+  shivastaticlib {
+    CONFIG = $$QMAKE_PLATFORM \
+           debug \
+           warn_on \
+           dll staticlib shivastaticlib
+  } else {
+    CONFIG = $$QMAKE_PLATFORM \
+           debug \
+           warn_on \
+           dll
+  }
+}
 TEMPLATE = lib
-
-CONFIG = dll \
-debug \
- warn_on
 LIBS += $$QMAKE_LIBS_DYNLOAD \
- -lshiva \
- -L../../../../shivalib/linux/libshiva
+  -L../../../../shivalib/linux/libshiva -lshiva
 
 TARGET =../bin/jsonstream
 

@@ -4,13 +4,13 @@ SOURCES += main.cpp
 
 TEMPLATE = app
 
-INCLUDEPATH += /usr/include/mysql/
-
-LIBS += -L/usr/lib \
-  -L../../../shivalib/linux/libshiva \
-  -lmysqlclient \
-  -lshiva \
-  $$QMAKE_LIBS_DYNLOAD
+shivastaticlib {
+  LIBS += -lpthread
+  LIBS += -lmysqlclient
+  LIBS += -L../bin -lshivamysql
+}
+LIBS += $$QMAKE_LIBS_DYNLOAD \
+  -L../../../shivalib/linux/libshiva -lshiva
 
 DESTDIR = ../bin
 

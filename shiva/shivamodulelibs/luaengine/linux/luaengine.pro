@@ -1,3 +1,3 @@
 TEMPLATE =subdirs
-SUBDIRS =src \
-luaengine
+SUBDIRS =luaengine \
+src

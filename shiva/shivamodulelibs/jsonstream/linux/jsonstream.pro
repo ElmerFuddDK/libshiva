@@ -1,3 +1,3 @@
 TEMPLATE =subdirs
-SUBDIRS =src \
-jsonstream
+SUBDIRS = jsonstream \
+src
