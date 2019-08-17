@@ -9,6 +9,7 @@ QMAKE_LIBDIR += $$_PRO_FILE_PWD_/../../../../$${SHVBUILDFOLDER}
 
 shivastaticlib {
   LIBS += -lpthread
+  LIBS += -lshivaguigtk
 } else {
   unix {
     QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN\''
@@ -33,3 +34,10 @@ HEADERS += ../../../src/tester/modules/shvcontroltester.h \
   ../../../src/tester/modules/shvtabtestpageform.h
 
 DEFINES += __SHIVA_GTK
+
+shivastaticlib {
+  unix {
+    CONFIG += link_pkgconfig
+    PKGCONFIG += gtk+-x11-2.0
+  }
+}

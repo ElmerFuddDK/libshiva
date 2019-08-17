@@ -10,6 +10,7 @@ QMAKE_LIBDIR += $$_PRO_FILE_PWD_/../../../$${SHVBUILDFOLDER}
 
 shivastaticlib {
   LIBS += -lpthread
+  LIBS += -lshivafreetds -lsybdb
 } else {
   unix {
     QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN\''

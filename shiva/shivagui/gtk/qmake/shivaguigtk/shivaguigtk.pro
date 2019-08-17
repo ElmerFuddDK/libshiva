@@ -131,23 +131,6 @@ LIBS += -lgdk-x11-2.0 -lgtk-x11-2.0
 DEFINES += __SHIVA_GTK
 
 unix {
-  INCLUDEPATH += /usr/lib64/gtk-2.0/include \
-    /usr/lib64/glib-2.0/include \
-    /usr/include/atk-1.0 \
-    /usr/include/gtk-2.0 \
-    /usr/include/cairo \
-    /usr/lib/glib-2.0/include \
-    /usr/include/pango-1.0 \
-    /usr/include/glib-2.0 \
-    /usr/include/gdk-pixbuf-2.0 \
-    /usr/lib/gtk-2.0/include
-  system(test "`uname`" = "FreeBSD") {
-	INCLUDEPATH += /usr/local/include/gtk-2.0 \
-	  /usr/local/include/glib-2.0 \
-	  /usr/local/include/atk-1.0 \
-	  /usr/local/include/pango-1.0 \
-	  /usr/local/include/gdk-pixbuf-2.0 \
-	  /usr/local/include/cairo
-	QMAKE_LIBDIR += /usr/local/lib
-  }
+  CONFIG += link_pkgconfig
+  PKGCONFIG += gtk+-x11-2.0
 }
