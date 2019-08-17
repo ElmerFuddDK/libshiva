@@ -1,0 +1,5 @@
+LIBRARY	"dataengine"
+
+EXPORTS
+  CreateObjectInt
+  CreateObjectString

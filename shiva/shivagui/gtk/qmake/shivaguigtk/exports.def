@@ -1,0 +1,5 @@
+LIBRARY	"shivaguigtk"
+
+EXPORTS
+  CreateObjectInt
+  CreateObjectString

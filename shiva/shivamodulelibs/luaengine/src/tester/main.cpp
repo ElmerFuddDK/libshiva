@@ -6,6 +6,7 @@
 #include "shiva/include/framework/shvmodulefactory.h"
 #include "shiva/include/framework/shvconsole.h"
 #include "shiva/include/utils/shvdll.h"
+#include "shiva/include/utils/shvdir.h"
 #include "shiva/include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
 #include "shiva/include/frameworkimpl/shvmoduleloaderimpl.h"
 #include "shiva/include/modules/shvmodulefactories.h"
@@ -31,6 +32,9 @@ SHVDll luaenginelib;
 #ifdef SHIVASTATICMODULELIB
 		loader.AddModuleFactory(SHVModuleFactory_LuaEngineNew(&mainqueue.GetModuleList()));
 #else
+		// Load from subdir
+		loader.AddModuleLibs(mainqueue.GetModuleList().GetConfig().Find(SHVModuleList::DefaultCfgAppPath)->ToString() + SHVDir::Delimiter() + _S("modules"));
+		// Or load from application path
 		loader.AddModuleLib(luaenginelib.CreateLibFileName(_S("luaengine")));
 #endif
 

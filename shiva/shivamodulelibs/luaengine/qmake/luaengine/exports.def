@@ -1,0 +1,5 @@
+LIBRARY	"luaengine"
+
+EXPORTS
+  CreateObjectInt
+  CreateObjectString

@@ -1,0 +1,5 @@
+LIBRARY	"subprocess"
+
+EXPORTS
+  CreateObjectInt
+  CreateObjectString

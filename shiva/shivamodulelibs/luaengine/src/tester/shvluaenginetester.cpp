@@ -136,7 +136,7 @@ void SHVLuaEngineTester::LuaTestFunc(SHVLuaScript* script, SHVLuaFuncArgs &args)
 	if (args.ArgCount())
 		SHVConsole::Printf8("  Param 1 as int %d\n", args.ArgAsInt(0).IfNull(-1));
 	args.PushDouble(1.245);
-	args.PushString(_S("NOGET"));
+	args.PushString(_S("Something"));
 	args.PushRef(new SHVRefInt(512)); // just a regular refobject, not validatable by SHVLuaRefInt
 	args.PushRef(SHVLuaRefInt().Obj(new SHVRefInt(512)));
 }

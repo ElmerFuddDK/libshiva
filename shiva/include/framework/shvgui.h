@@ -24,10 +24,11 @@ extern SHVMainThreadEventDispatcher* SHVGUI_CreateStaticGuiDispatcher();
 #   define GUIMAIN() int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 #   define GUIPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVString8C(lpCmdLine).ToStrT())
 # else
-#   define GUIMAIN() int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
 #   ifdef UNICODE
+#    define GUIMAIN() int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR pCmdLine, int nCmdShow)
 #    define GUIPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVString16C::FromWin32(lpCmdLine).ToStrT())
 #   else
+#    define GUIMAIN() int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 #    define GUIPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVString8C(lpCmdLine).ToStrT())
 #   endif
 # endif

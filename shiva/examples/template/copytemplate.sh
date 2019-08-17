@@ -27,7 +27,7 @@ function Help()
 	echo "  -h|--help|help   This menu"
 	echo "  -l|--list        List available templates"
 	echo "  -n|--nowin       Don't use windows newlines on windows specific files"
-	echo "  -t|--targetdir   Directory to place the project in (default"
+	echo "  -t|--targetdir   Directory to place the project in (default: $TargetPrefix)"
 	echo 
 	
 	exit 1

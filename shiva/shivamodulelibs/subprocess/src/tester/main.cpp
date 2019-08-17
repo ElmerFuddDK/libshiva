@@ -6,6 +6,7 @@
 #include "shiva/include/framework/shvmodulefactory.h"
 #include "shiva/include/framework/shvconsole.h"
 #include "shiva/include/utils/shvdll.h"
+#include "shiva/include/utils/shvdir.h"
 #include "shiva/include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
 #include "shiva/include/frameworkimpl/shvmoduleloaderimpl.h"
 #include "shiva/include/modules/shvmodulefactories.h"
@@ -30,6 +31,9 @@ SHVDll subprocesslib;
 #ifdef SHIVASTATICMODULELIB
 		loader.AddModuleFactory(SHVModuleFactory_SubProcessNew(&mainqueue.GetModuleList()));
 #else
+		// Load from subdir
+		loader.AddModuleLibs(mainqueue.GetModuleList().GetConfig().Find(SHVModuleList::DefaultCfgAppPath)->ToString() + SHVDir::Delimiter() + _S("modules"));
+		// Or load from application path
 		loader.AddModuleLib(subprocesslib.CreateLibFileName(_S("subprocess")));
 #endif
 

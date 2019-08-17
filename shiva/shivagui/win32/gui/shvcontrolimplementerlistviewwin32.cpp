@@ -37,6 +37,16 @@
 
 #include <commctrl.h>
 
+#ifndef LVM_SETEXTENDEDLISTVIEWSTYLE
+# define LVM_SETEXTENDEDLISTVIEWSTYLE (LVM_FIRST+54)
+#endif
+#ifndef LVS_EX_FULLROWSELECT
+# define LVS_EX_FULLROWSELECT 32
+#endif
+#ifndef LVS_EX_HEADERDRAGDROP
+# define LVS_EX_HEADERDRAGDROP 16
+#endif
+
 
 //=========================================================================================================
 // SHVControlImplementerListViewWin32 - listview implementation

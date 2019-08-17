@@ -141,7 +141,7 @@ void SHVMenuWin32::AddSeparator()
 {
 	EnsureMenuCreated();
 	if (hMenu)
-		::AppendMenu(hMenu,MF_SEPARATOR,0,TEXT(""));
+		::AppendMenuW(hMenu,MF_SEPARATOR,0,L"");
 }
 
 /*************************************
