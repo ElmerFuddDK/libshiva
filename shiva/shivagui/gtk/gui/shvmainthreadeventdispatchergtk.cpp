@@ -256,7 +256,7 @@ SHVMainThreadEventDispatcherGtk* self = (SHVMainThreadEventDispatcherGtk*)data;
 void SHVMainThreadEventDispatcherGtk::on_eventsignal( gpointer data,gint source,GdkInputCondition condition)
 {
 SHVMainThreadEventDispatcherGtk* self = (SHVMainThreadEventDispatcherGtk*)data;
-char dummyBuffer[2];
+char dummyBuffer[50];
 
 	SHVUNUSED_PARAM(source);
 	SHVUNUSED_PARAM(condition);
