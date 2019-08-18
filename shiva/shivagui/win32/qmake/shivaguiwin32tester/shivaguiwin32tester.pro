@@ -8,7 +8,8 @@ DESTDIR = $$_PRO_FILE_PWD_/../../../../$${SHVBUILDFOLDER}
 QMAKE_LIBDIR += $$_PRO_FILE_PWD_/../../../../$${SHVBUILDFOLDER}
 
 shivastaticlib {
-  LIBS += -lpthread
+  LIBS += -lshivaguiwin32
+  LIBS += -lpthread -lcomctl32 -lgdi32
 } else {
   unix {
     QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN\''

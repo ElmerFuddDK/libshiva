@@ -55,9 +55,6 @@ SHVDll guilib;
 #endif
 int retVal = -1;
 
-	SHVUNUSED_PARAM(argc);
-	SHVUNUSED_PARAM(argv);
-
 	if (!SHVModuleList::CheckVersion(__SHIVA_VERSION_MAJOR,__SHIVA_VERSION_MINOR,__SHIVA_VERSION_RELEASE))
 	{
 		::fprintf(stderr,"Invalid version of libshiva.dll\n");
@@ -82,6 +79,8 @@ int retVal = -1;
 	SHVRegisterBitmap::Registration regs[] = { {IDB_HEYYOU,1}, {0,SHVInt()} };
 	SHVRegisterBitmap(mainqueue.GetModuleList(), regs);
 #endif
+
+		GUIPARSEARGS(mainqueue.GetModuleList().GetConfig());
 
 		mainqueue.GetModuleList().AddModule(new SHVControlTester(mainqueue.GetModuleList()));
 

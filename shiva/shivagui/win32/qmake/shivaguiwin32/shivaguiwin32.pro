@@ -131,3 +131,4 @@ HEADERS += ../../gui/shvwin32.h \
   ../../../../include/databinder/shvdatabinder.h
 
 LIBS += -lcomctl32 -lgdi32
+DEFINES += _WIN32_WINNT=0x0501 _WIN32_IE=0x0400

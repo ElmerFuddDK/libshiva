@@ -11,6 +11,9 @@ QMAKE_LIBDIR += $$_PRO_FILE_PWD_/../../../../$${SHVBUILDFOLDER}
 shivastaticlib {
   LIBS += -lpthread
   LIBS += -L$$_PRO_FILE_PWD_/../../../../$${SHVBUILDFOLDER}/modules -lsocketserver
+  win32 {
+    LIBS += -lws2_32
+  }
 } else {
   unix {
     QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN\''
@@ -23,3 +26,4 @@ LIBS += $$QMAKE_LIBS_DYNLOAD \
 include(../../../../../shiva/include/shiva-postconfig.pri)
 
 SOURCES = main.cpp
+

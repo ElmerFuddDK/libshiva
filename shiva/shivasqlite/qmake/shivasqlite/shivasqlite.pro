@@ -12,8 +12,7 @@ shivastaticlib {
 }
 
 LIBS += $$QMAKE_LIBS_DYNLOAD \
-  -lshiva \
-  -lpthread
+  -lshiva
 
 include(../../../../shiva/include/shiva-postconfig.pri)
 
