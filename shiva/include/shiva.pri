@@ -20,3 +20,11 @@ shivastaticlib {
 unix {
 	include(./platforms/linux/shiva.pri)
 }
+
+win32-msvc* {
+	QMAKE_CFLAGS_RELEASE ~= "s/-MD//"
+	QMAKE_CFLAGS_RELEASE *= "-MT"
+	QMAKE_CXXFLAGS_RELEASE ~= "s/-MD//"
+	QMAKE_CXXFLAGS_RELEASE *= "-MT"
+	DEFINES *= _WINDOWS
+}

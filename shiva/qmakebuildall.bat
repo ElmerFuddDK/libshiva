@@ -30,9 +30,14 @@ IF "%1"=="static" (
 	SET StaticFlags=CONFIG+=shivastaticlib
 )
 IF "%1"=="vs" (
-	SET VsMode=1
+	SET VsMode=vs
 	SET Found=1
 	SET VsFlags=-tp vc
+)
+IF "%1"=="nmake" (
+	SET VsMode=nmake
+	SET Found=1
+	SET VsFlags=-platform win32-msvc
 )
 IF "%1"=="clean" (
 	SET CleanMode=1
@@ -46,6 +51,7 @@ IF "%Found%"=="0" (
 	ECHO   static           compile static libs
 	ECHO   clean            cleans before building
 	ECHO   vs               Compiles with visual studio
+	ECHO   nmake            Compiles with nmake and VC++
 	GOTO :done
 )
 SHIFT
@@ -58,7 +64,7 @@ IF "%StaticMode%"=="1" (SET BuildDir=%BuildDir%-static)
 
 IF "%CleanMode%"=="1"  (RMDIR /S /Q %BuildDir% > NUL 2>&1)
 
-IF "%VsMode%"=="1"  (SET BuildDir=%BuildDir%-vs)
+IF "%VsMode%"=="vs"  (SET BuildDir=%BuildDir%-vs)
 IF "%DebugMode%"=="1" (SET VsConfig=Debug) ELSE (SET VsConfig=Release)
 
 REM Compile the projects
@@ -82,11 +88,15 @@ FOR %%G IN ( shivalib,
 	CD %BuildDir%
 	REM For visual studio: qmake -r -tp vc
 	qmake -r  %VsFlags% ..\qmake\*.pro %DebugFlags% %StaticFlags% > %StartDir%\log-%BuildDir%-%%~nG.txt 2>&1
-	IF "%VsMode%"=="1" (
+	IF "%VsMode%"=="vs" (
 		FOR /F %%S IN ('dir *.sln /B /O:-D') DO (
 			devenv.exe %%S /rebuild %VsConfig% /out %StartDir%\log-%BuildDir%-%%~nG.txt && DEL %StartDir%\log-%BuildDir%-%%~nG.txt || echo    Build failed
 		)
-	) ELSE (
+	)
+	IF "%VsMode%"=="nmake" (
+		nmake.exe %VsConfig% >> %StartDir%\log-%BuildDir%-%%~nG.txt 2>&1 && DEL %StartDir%\log-%BuildDir%-%%~nG.txt || echo    Build failed
+	)
+	IF "%VsMode%"=="0" (
 		mingw32-make.exe -w >> %StartDir%\log-%BuildDir%-%%~nG.txt 2>&1 && DEL %StartDir%\log-%BuildDir%-%%~nG.txt || echo    Build failed
 	)
 	CD %StartDir%

@@ -14,6 +14,7 @@ shivastaticlib {
 
 win32 {
   LIBS += -lWs2_32
+  LIBS *= -luser32 -lshell32
 } else {
   LIBS += -lm \
     -lrt \
