@@ -16,6 +16,8 @@ LIBS += $$QMAKE_LIBS_DYNLOAD \
 
 include(../../../../shiva/include/shiva-postconfig.pri)
 
+DEF_FILE = $$_PRO_FILE_PWD_/exports.def
+
 SOURCES += ../../src/shvshivasqliteexports.cpp \
   ../../src/sqlite/sqlite3.c \
   ../../src/sqlitestatementimpl.cpp \

@@ -19,6 +19,8 @@ include(../../../../shiva/include/shiva-postconfig.pri)
 
 INCLUDEPATH += ../../../..
 
+DEF_FILE = $$_PRO_FILE_PWD_/exports.def
+
 LIBS += -lsybdb
 
 DEF_FILE = shivafreetds.def
