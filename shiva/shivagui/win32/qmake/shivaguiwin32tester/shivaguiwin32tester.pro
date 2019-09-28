@@ -9,7 +9,8 @@ QMAKE_LIBDIR += $$_PRO_FILE_PWD_/../../../../$${SHVBUILDFOLDER}
 
 shivastaticlib {
   LIBS += -lshivaguiwin32
-  LIBS += -lpthread -lcomctl32 -lgdi32
+  LIBS += -lpthread
+  isEmpty(CE_SDK) { LIBS += -lcomctl32 -lgdi32 } else { LIBS += -lcommctrl }
 } else {
   unix {
     QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN\''

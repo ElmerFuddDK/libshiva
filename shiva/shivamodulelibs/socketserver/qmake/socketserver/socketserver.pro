@@ -34,5 +34,9 @@ HEADERS += ../../include/shvsocketimpl.h \
 
 win32 {
   DEFINES += _WIN32_WINNT=0x0501
-  LIBS += -lws2_32
+  isEmpty(CE_SDK) {
+    LIBS += -lws2_32
+  } else {
+    LIBS += -lws2
+  }
 }

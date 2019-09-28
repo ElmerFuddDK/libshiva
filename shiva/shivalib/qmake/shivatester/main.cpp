@@ -104,9 +104,6 @@ public:
 
 CONSOLEMAIN()
 {
-	SHVUNUSED_PARAM(argc);
-	SHVUNUSED_PARAM(argv);
-
 	if (!SHVModuleList::CheckVersion(__SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE))
 	{
 		SHVConsole::ErrPrintf8("WRONG SHIVA VERSION\n");

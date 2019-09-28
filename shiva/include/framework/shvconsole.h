@@ -4,7 +4,7 @@
 #include "../utils/shvstringc.h"
 
 #ifdef __SHIVA_WINCE
-# define CONSOLEMAIN() int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
+# define CONSOLEMAIN() int WINAPI WinMain( HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPTSTR lpCmdLine, int /*nCmdShow*/)
 # ifdef UNICODE
 #  define CONSOLEPARSEARGS(cfg) SHVModuleListImpl::ParseArgs(cfg,SHVString16C::FromWin32(lpCmdLine).ToStrT())
 # else

@@ -432,12 +432,9 @@ public:
 };
 
 
-int main(int argc, char *argv[])
+CONSOLEMAIN()
 {
 SHVDll socketlib;
-	
-	SHVUNUSED_PARAM(argc);
-	SHVUNUSED_PARAM(argv);
 
 	if (!SHVModuleList::CheckVersion(__SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE))
 	{
@@ -452,6 +449,8 @@ SHVDll socketlib;
 	SHVMainThreadEventQueue mainqueue(new SHVMainThreadEventDispatcherConsole());
 	SHVModuleFactory* factory = (SHVModuleFactory*)socketlib.CreateObjectInt(&mainqueue.GetModuleList(),SHVDll::ClassTypeModuleFactory);
 	SHVString testStr;
+
+		CONSOLEPARSEARGS(mainqueue.GetModuleList().GetConfig());
 
 		mainqueue.GetModuleList().AddModule(new SHVTest(mainqueue.GetModuleList()));
 		factory->ResolveModules(__MODULESYMBOL_DEFAULTS);

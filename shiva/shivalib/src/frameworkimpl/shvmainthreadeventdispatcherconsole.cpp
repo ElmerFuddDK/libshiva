@@ -38,6 +38,7 @@
 #include "../../../include/framework/shveventstdin.h"
 
 #if defined(__SHIVA_WINCE)
+# include <aygshell.h>
 # include "../../../include/threadutils/shvmutexlocker.h"
 # define WM_SHV_DISPATCHMESSAGES    0x8001
 # define WM_SHV_PRINT               0x8002

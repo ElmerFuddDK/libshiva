@@ -2,7 +2,7 @@ include(../../../../shiva/include/shiva.pri)
 
 TEMPLATE = app
 QT -= core gui qt
-CONFIG += console
+isEmpty(CE_SDK) { CONFIG += console }
 CONFIG -= qt
 
 DESTDIR = $$_PRO_FILE_PWD_/../../../$${SHVBUILDFOLDER}

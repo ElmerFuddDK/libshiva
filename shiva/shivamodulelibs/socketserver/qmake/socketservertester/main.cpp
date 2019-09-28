@@ -457,12 +457,9 @@ public:
 };
 
 
-int main(int argc, char *argv[])
+CONSOLEMAIN()
 {
 SHVDll socketlib;
-	
-	SHVUNUSED_PARAM(argc);
-	SHVUNUSED_PARAM(argv);
 
 	if (!SHVModuleList::CheckVersion(__SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE))
 	{
@@ -477,6 +474,8 @@ SHVDll socketlib;
 #else
 		loader.AddModuleLibs(mainqueue.GetModuleList().GetConfig().Find(SHVModuleList::DefaultCfgAppPath)->ToString() + SHVDir::Delimiter() + _S("modules"));
 #endif
+
+		CONSOLEPARSEARGS(mainqueue.GetModuleList().GetConfig());
 
 		mainqueue.GetModuleList().AddModule(new SHVTest(mainqueue.GetModuleList()));
 		loader.AddSymbol(__MODULESYMBOL_DEFAULTS);

@@ -100,8 +100,10 @@ SHVBool retVal(parent == NULL && !IsCreated());
 #ifdef __SHIVA_WINCE
 	DWORD styles = WS_VISIBLE|Win32::MapFlags(flags);
 	WCHAR* title = L"SHIVA Application";
+# ifdef __SHIVA_POCKETPC
 		memset (&s_sai, 0, sizeof(s_sai));
 		s_sai.cbSize = sizeof(s_sai);
+# endif
 #else
 	DWORD styles = WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU|WS_MINIMIZEBOX|WS_MAXIMIZEBOX|Win32::MapFlags(flags);
 	WCHAR* title = L"";

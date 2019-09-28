@@ -130,5 +130,9 @@ HEADERS += ../../gui/shvwin32.h \
   ../../../../include/gui/utils/shvregion.h \
   ../../../../include/databinder/shvdatabinder.h
 
-LIBS += -lcomctl32 -lgdi32
+isEmpty(CE_SDK) {
+  LIBS += -lcomctl32 -lgdi32 -luser32
+} else {
+  LIBS += -lcommctrl
+}
 DEFINES += _WIN32_WINNT=0x0501 _WIN32_IE=0x0400

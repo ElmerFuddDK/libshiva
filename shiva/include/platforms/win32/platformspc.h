@@ -39,10 +39,12 @@
 
 #ifdef LIBSHIVA_EXPORTS
 # define SHVAPI __declspec(dllexport)
+# pragma warning( disable: 4251 )
 #elif defined(NOLIBSHIVA)
 # define SHVAPI
 #else
 # define SHVAPI __declspec(dllimport)
+# pragma warning( disable: 4251 )
 #endif
 
 #ifdef GetObject

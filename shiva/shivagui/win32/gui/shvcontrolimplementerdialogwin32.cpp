@@ -83,8 +83,10 @@ SHVBool SHVControlImplementerDialogWin32::Create(SHVControl* owner, SHVControlIm
 	{
 #ifdef __SHIVA_WINCE
 	DWORD styles = WS_VISIBLE|Win32::MapFlags(flags);
+# ifdef __SHIVA_POCKETPC
 		memset (&s_sai, 0, sizeof(s_sai));
 		s_sai.cbSize = sizeof(s_sai);
+# endif
 
 		SetHandle(::CreateWindowExW(WS_EX_CONTROLPARENT, SHVWIN32CLASS_DIALOG, L" ", styles,
 			CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, Win32::GetInstance(owner), NULL));

@@ -92,11 +92,8 @@ public:
 	}
 };
 
-int main(int argc, char *argv[])
+CONSOLEMAIN()
 {
-	SHVUNUSED_PARAM(argc);
-	SHVUNUSED_PARAM(argv);
-
 	if (!SHVModuleList::CheckVersion(__SHIVA_VERSION_MAJOR, __SHIVA_VERSION_MINOR, __SHIVA_VERSION_RELEASE))
 	{
 		fprintf(stderr,"WRONG SHIVA VERSION\n");

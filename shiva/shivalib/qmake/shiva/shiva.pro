@@ -13,8 +13,12 @@ shivastaticlib {
 }
 
 win32 {
-  LIBS += -lWs2_32
-  LIBS *= -luser32 -lshell32
+  isEmpty(CE_SDK) {
+    LIBS += -lWs2_32
+    LIBS *= -luser32 -lshell32
+  } else {
+    LIBS += -lws2 -laygshell
+  }
 } else {
   LIBS += -lm \
     -lrt \
