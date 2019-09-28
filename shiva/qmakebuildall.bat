@@ -37,7 +37,11 @@ IF "%1"=="vs" (
 IF "%1"=="nmake" (
 	SET VsMode=nmake
 	SET Found=1
-	SET VsFlags=-platform win32-msvc
+	IF "%QMAKESPEC%"=="" (
+		SET VsFlags=-platform win32-msvc
+	) ELSE (
+		SET VsFlags=-platform win32-msvc -spec %QMAKESPEC%
+	)
 )
 IF "%1"=="clean" (
 	SET CleanMode=1
@@ -67,6 +71,8 @@ IF "%CleanMode%"=="1"  (RMDIR /S /Q %BuildDir% > NUL 2>&1)
 IF "%VsMode%"=="vs"  (SET BuildDir=%BuildDir%-vs)
 IF "%DebugMode%"=="1" (SET VsConfig=Debug) ELSE (SET VsConfig=Release)
 
+SET StartDir=%CD%
+
 REM Compile the projects
 FOR %%G IN ( shivalib,
              shivagui\win32
@@ -78,7 +84,6 @@ FOR %%G IN ( shivalib,
              shivamodulelibs\subprocess,
              shivamodulelibs\xmlstream
            ) DO (
-	SET StartDir=%CD%
 	CD %%G
 	echo Building %%G
 	IF "%CleanMode%"=="1"  (
