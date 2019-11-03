@@ -17,6 +17,10 @@ shivastaticlib {
 	SHVBUILDFOLDER = $${SHVBUILDFOLDER}-static
 }
 
+shivanortti {
+  QMAKE_CXXFLAGS += -fno-rtti
+}
+
 unix {
 	include(./platforms/linux/shiva.pri)
 }
