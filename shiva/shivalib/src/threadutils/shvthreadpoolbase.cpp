@@ -166,7 +166,7 @@ bool retVal = false;
 
 	if (maxCount < 0)
 		maxCount = initialCount;
-	SHVASSERT(initialCount > 0 && maxCount > 0 && initialCount <= maxCount);
+	SHVASSERT(initialCount >= 0 && maxCount > 0 && initialCount <= maxCount);
 	
 	Lock.Lock();
 	if (!Running && initialCount >= 0)
