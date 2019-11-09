@@ -1,13 +1,17 @@
 include(../../../shiva/include/shiva.pri)
 
+QT       -= core gui
+
+# Use Visual studio compiled libs
+CONFIG += shivafreetdsvslib
+
+LIBS += -L. \
+        -lshiva
+QMAKE_PRE_LINK = copydeps.bat
+
+TARGET = shivafreetds
 TEMPLATE = lib
 
-CONFIG = dll \
-debug \
- warn_on
-LIBS += $$QMAKE_LIBS_DYNLOAD \
- -lshiva \
- -L.
 QMAKE_PRE_LINK = copydeps.bat
 
 SOURCES += \
@@ -21,8 +25,14 @@ HEADERS += \
  ../src/shvfreetdstransactionimpl.h \
  ../src/shvfreetdscommon.h
 
-INCLUDEPATH += ../../.. freetds/include
 
-LIBS += -lsybdb -Lfreetds/lib
+shivafreetdsvslib {
+  INCLUDEPATH += ../../.. freetds-vs/include
+  LIBS += -lsybdb -Lfreetds-vs/lib
+  DEFINES += __SHIVA_FREETDSVSLIBHACK
+} else {
+  INCLUDEPATH += ../../.. freetds/include
+  LIBS += -lsybdb -Lfreetds/lib
+}
 
 DEF_FILE = shivafreetds.def

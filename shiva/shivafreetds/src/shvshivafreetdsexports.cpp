@@ -29,4 +29,9 @@ void* CreateObjectString(SHVModuleList* list, const SHVTChar* classname)
 	return NULL;
 }
 
+#ifdef  __SHIVA_FREETDSVSLIBHACK
+// HACK: Enables compilation agains VS compiled sybdb for mingw
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow) { return 0; }
+#endif
+
 }
