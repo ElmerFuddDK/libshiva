@@ -322,9 +322,19 @@ MSG msg;
 
 #if defined(__SHIVA_WIN32) && !defined(__SHIVA_WINCE)
 	if (QuirksMode)
+	{
 		::FreeConsole();
+	}
 	else
+	{
+	SHVDllBase kernel32;
+	BOOL (WINAPI *CancelIoEx)(HANDLE hFile,LPOVERLAPPED lpOverlapped) = NULL;
+		if (kernel32.Load(_S("kernel32")) && kernel32.Resolve((void**)&CancelIoEx,_S("CancelIoEx")))
+		{
+			(*CancelIoEx)(StdinHandle,NULL);
+		}
 		::CloseHandle(StdinHandle);
+	}
 	for (int i=10;StdinThread.IsRunning();i+=10)
 		SHVThreadBase::Sleep(i);
 #endif
