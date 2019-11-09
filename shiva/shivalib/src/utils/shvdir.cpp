@@ -836,7 +836,7 @@ SHVFileListIterator itr(args);
 #elif defined(__SHIVA_EPOC)
 	///\todo Implement SHVDir::Execute for symbian
 #elif defined(FSUSEPOSIXSPAWN)
-const char** argv = (const char**)malloc(sizeof(const char*)*args.GetCount()+2);
+const char** argv = (const char**)malloc(sizeof(const char*)*(args.GetCount()+2));
 int i=0;
 SHVListPos pos=NULL;
 pid_t pid;
@@ -937,7 +937,7 @@ SHVString tmpArg;
 #elif defined(__SHIVA_EPOC)
 	///\todo Implement SHVDir::Execute for symbian
 #elif defined(FSUSEPOSIXSPAWN)
-const char** argv = (const char**)malloc(sizeof(const char*)*args.GetCount()+2);
+const char** argv = (const char**)malloc(sizeof(const char*)*(args.GetCount()+2));
 int i=0;
 SHVListPos pos=NULL;
 pid_t pid;
