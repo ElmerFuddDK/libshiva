@@ -353,7 +353,11 @@ bool SHVTime::CalculateIsDst() // Is daylight savings
 	// test if the dst needs to be calculated
 	if (Time.tm_isdst == -1)
 	{
-		MkTime(&Time);
+	SHVTime convTime(*this);
+		if (!convTime.LocalTime)
+			convTime.SetLocalTime(true);
+		MkTime(&convTime.Time);
+		Time.tm_isdst = convTime.Time.tm_isdst;
 	}
 
 	return Time.tm_isdst == 1;
@@ -825,6 +829,115 @@ time_t ttime;
 		Time.tm_isdst = -1;
 	}
 
+}
+
+/*************************************
+ * CalculateDstBoundaries
+ *************************************/
+void SHVTime::CalculateDstBoundaries(SHVTimeDstBoundaryList& list, SHVTime from, SHVTime to)
+{
+SHVTime boundaryTime(from);
+bool localTimeInResult = from.IsLocalTime();
+
+	list.RemoveAll();
+
+	boundaryTime.SetLocalTime(true);
+	boundaryTime.SetMinute(0).SetSecond(0).SetMillisecond(0); // We assume that all boundaries start by the hour
+
+	from.SetLocalTime(true);
+	to.SetLocalTime(true);
+
+	if (from >= to || from.IsNull() || to.IsNull())
+		return;
+
+	while (boundaryTime < to)
+	{
+	SHVTimeDstBoundary workBoundary(boundaryTime);
+
+		// Search forward for a period with a boundary
+		workBoundary.To.AddSeconds(SHVTime::DayInSeconds*30);
+		workBoundary.ToIsDst = workBoundary.To.CalculateIsDst();
+		while (workBoundary.To < to && workBoundary.ToIsDst == workBoundary.FromIsDst)
+		{
+			boundaryTime = workBoundary.To;
+			workBoundary.To.AddSeconds(SHVTime::DayInSeconds*30);
+			workBoundary.ToIsDst = workBoundary.To.CalculateIsDst();
+		}
+
+		// If we have crossed a boundary, use binary search to find the boundary time
+		if (workBoundary.ToIsDst != workBoundary.FromIsDst)
+		{
+		bool boundaryIsDst = workBoundary.FromIsDst;
+		int hourDiff;
+
+			boundaryTime.SetLocalTime(false,false);
+			workBoundary.To.SetLocalTime(false,false);
+			hourDiff = SHVTime::GapInSeconds(boundaryTime,workBoundary.To)/SHVTime::HourInSeconds;
+			boundaryTime.SetLocalTime(true,false);
+			workBoundary.To.SetLocalTime(true,false);
+
+			while (hourDiff > 1)
+			{
+				hourDiff = (hourDiff+1)/2;
+				if (boundaryIsDst != workBoundary.ToIsDst)
+				{
+					boundaryTime.SetLocalTime(false,false);
+					boundaryTime.AddSeconds( hourDiff*SHVTime::HourInSeconds );
+					boundaryTime.SetLocalTime(true,false);
+					boundaryIsDst = boundaryTime.CalculateIsDst();
+				}
+				else
+				{
+					boundaryTime.SetLocalTime(false,false);
+					boundaryTime.AddSeconds( -hourDiff*SHVTime::HourInSeconds );
+					boundaryTime.SetLocalTime(true,false);
+					boundaryIsDst = boundaryTime.CalculateIsDst();
+				}
+			}
+			if (boundaryIsDst != workBoundary.ToIsDst)
+			{
+				boundaryTime.SetLocalTime(false,false);
+				boundaryTime.AddSeconds( SHVTime::HourInSeconds );
+				boundaryTime.SetLocalTime(true,false);
+				boundaryTime.CalculateIsDst();
+			}
+#ifdef __SHIVA_POSIX
+			// in POSIX the boundary time that is present locally twice is represented as not in DST
+			if (workBoundary.ToIsDst)
+			{
+				boundaryTime.SetLocalTime(false,false);
+				boundaryTime.AddSeconds( SHVTime::HourInSeconds );
+				boundaryTime.SetLocalTime(true,false);
+				boundaryTime.CalculateIsDst();
+			}
+#endif
+			if (boundaryTime < to)
+			{
+				workBoundary.To = boundaryTime;
+			}
+			else
+			{
+				boundaryTime = workBoundary.To = to;
+				workBoundary.ToIsDst = to.CalculateIsDst();
+			}
+		}
+		// Otherwise we have reached the end
+		else
+		{
+			boundaryTime = workBoundary.To = to;
+		}
+		list.AddTail(workBoundary);
+		list.GetLast().From.SetLocalTime(localTimeInResult);
+		list.GetLast().To.SetLocalTime(localTimeInResult);
+	}
+
+	// Reapply the from time, in case it wasn't aligned to the hour
+	if (list.GetCount())
+	{
+		list.GetFirst().From.SetMinute(from.GetMinute())
+				.SetSecond(from.GetSecond())
+				.SetMillisecond(from.GetMillisecond());
+	}
 }
 
 /*************************************

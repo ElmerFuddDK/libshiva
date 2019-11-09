@@ -2,6 +2,7 @@
 #define __SHIVA_UTILS_TIME_H
 
 #include "shvstring.h"
+#include "shvlist.h"
 
 #ifndef __SHIVA_WINCE
 #include <time.h>
@@ -19,6 +20,8 @@ struct tm {
         int tm_isdst;   /* daylight savings time flag */
         };
 #endif
+struct SHVTimeDstBoundary;
+typedef SHVList<SHVTimeDstBoundary> SHVTimeDstBoundaryList;
 
 
 //-=========================================================================================================
@@ -93,6 +96,10 @@ public:
 	void AddSeconds(int seconds);
 
 
+	// Dst boundary stuff
+	static void CalculateDstBoundaries(SHVTimeDstBoundaryList& list, SHVTime from, SHVTime to);
+
+
 	// Set system time
 	bool SetSystemTime();
 
@@ -139,6 +146,12 @@ private:
 	static int GetDateFormatS(LCID Locale, DWORD dwFlags, CONST SYSTEMTIME *lpDate, const SHVTChar* lpFormat, SHVTChar* lpDateStr, int cchDate);
 	#endif
 	///\endcond
+};
+
+struct SHVTimeDstBoundary {
+	SHVTime From, To;
+	bool FromIsDst, ToIsDst;
+	inline SHVTimeDstBoundary(SHVTime& wt) : From(wt), To(wt) { FromIsDst = From.CalculateIsDst(); }
 };
 
 #endif
