@@ -12,8 +12,7 @@ shivastaticlib {
 }
 
 LIBS += $$QMAKE_LIBS_DYNLOAD \
-  -lshiva \
-  -lpthread
+  -lshiva
 
 include(../../../../shiva/include/shiva-postconfig.pri)
 
@@ -22,8 +21,6 @@ INCLUDEPATH += ../../../..
 DEF_FILE = $$_PRO_FILE_PWD_/exports.def
 
 LIBS += -lsybdb
-
-DEF_FILE = shivafreetds.def
 
 SOURCES += ../../src/shvshivafreetdsexports.cpp \
   ../../src/shvfreetdswrapperimpl.cpp \
@@ -36,5 +33,5 @@ HEADERS += ../../src/shvfreetdswrapperimpl.h \
 
 win32 {
   INCLUDEPATH += freetds/include
-  LIBS += -Lfreetds/lib
+  LIBS += -L$$_PRO_FILE_PWD_/freetds/lib
 }
