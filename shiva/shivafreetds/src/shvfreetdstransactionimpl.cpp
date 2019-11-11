@@ -404,7 +404,7 @@ const char *SHVFreeTDSTransactionImpl::GetIsolationLevelString()
 	case SHVFreeTDSWrapper::IsolationLevelReadUncommitted:
 		return "SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;";
 	case SHVFreeTDSWrapper::IsolationLevelReadCommitted:
-		return "SET TRANSACTION ISOLATION READ COMMITTED;";
+		return "SET TRANSACTION ISOLATION LEVEL READ COMMITTED;";
 	case SHVFreeTDSWrapper::IsolationLevelRepeatableRead:
 		return "SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;";
 	case SHVFreeTDSWrapper::IsolationLevelSerializable:
