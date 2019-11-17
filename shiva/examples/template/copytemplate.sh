@@ -15,7 +15,8 @@ unset Template
 RootDir=$(cd "`dirname \"$0\"`" && pwd)
 ShivaDir=$(cd "`dirname \"$0\"`/../../.." && pwd)
 TargetPrefix="$RootDir/.."
-WinNewLines="1"
+unset WinNewLines
+AllProjects="0"
 
 function Help()
 {
@@ -24,10 +25,11 @@ function Help()
 	echo "   `basename $0` <options> template NameOfApp"
 	echo " "
 	echo "Options"
-	echo "  -h|--help|help   This menu"
-	echo "  -l|--list        List available templates"
-	echo "  -n|--nowin       Don't use windows newlines on windows specific files"
-	echo "  -t|--targetdir   Directory to place the project in (default: $TargetPrefix)"
+	echo "  -h|--help|help    This menu"
+	echo "  -l|--list         List available templates"
+	echo "  -w|--win          Use windows newlines on windows specific files"
+	echo "  -t|--targetdir    Directory to place the project in (default: $TargetPrefix)"
+	echo "  -A|--allprojects  Include old projects, not only qmake"
 	echo 
 	
 	exit 1
@@ -66,9 +68,13 @@ do
 		List
 		exit
 	} ;;
-	( "--nowin" | "-n" )
+	( "--win" | "-w" )
 	{
-		unset WinNewLines
+		WinNewLines="1"
+	} ;;
+	( "--allprojects" | "-A" )
+	{
+		AllProjects="1"
 	} ;;
 	( "--targetdir" | "-t" )
 	{
@@ -188,13 +194,35 @@ function CheckIgnore()
 	echo "$1" | awk 'BEGIN { retval=1 } /\~$/ { retval=0} END { exit retval }'
 }
 
+function FileFiltered()
+{
+	awk -v fname="$1" -v AllProjects="$AllProjects" 'BEGIN {
+	
+		ignorednames["./windows"] = 1
+		ignorednames["./wince3"] = 1
+		ignorednames["./winmobile5"] = 1
+		ignorednames["./linux"] = 1
+		
+		for(name in ignorednames)
+		{
+			if (fname ~ "^" name "/" || fname == name) { exit AllProjects }
+		}
+
+		exit 1
+	}'
+}
+
 test -d "$TargetDir" && Error "Target dir $TargetDir exists" || mkdir "$TargetDir" || Error "Could not create $TargetDir"
 
 cd "$TemplateDir" 
 
 find ./ | grep -v "/CVS/" | while read f
 do
-	if test "$f" != "./"
+	if FileFiltered "$f"
+	then
+		true
+		#echo "Filtering : $f"
+	elif test "$f" != "./"
 	then
 		unset printfile
 		tof="$TargetDir/`ConvertString \"$f\" | cut -d '/' -f 2-`"
