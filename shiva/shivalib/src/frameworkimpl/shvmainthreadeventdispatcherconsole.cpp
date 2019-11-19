@@ -824,45 +824,90 @@ void SHVMainThreadEventDispatcherConsole::StdinFunc()
 {
 SHVBufferRef readBuf;
 SHVWChar readBufW[StdinBufSize+1];
+SHVStringConv convW(SHVStringConv::Enc16,SHVStringConv::EncUtf8);
+SHVChar readBufDos[StdinBufSize+1];
+SHVStringConv convDos(SHVStringConv::Enc8,SHVStringConv::EncUtf8);
 SHVStringUTF8 readBufUTF8;
-SHVStringConv conv(SHVStringConv::Enc16,SHVStringConv::EncUtf8);
 size_t bufReadPos = 0;
 int retVal;
+bool firstRun = true;
+bool readConsoleMode = true;
 
 	readBufUTF8.SetBufferSize(StdinBufSize*4+1);
+	convDos.SetDosEncoding(GetConsoleCP());
 
 	StdinPos = 0;
 	while (Running() || Initializing)
 	{
 	DWORD bytesRead;
-	bool eofFlag = (ReadConsoleW(StdinHandle,readBufW,StdinBufSize,&bytesRead,NULL) ? false : true);
+	bool eofFlag;
+		if (readConsoleMode)
+		{
+			eofFlag = (ReadConsoleW(StdinHandle,readBufW,StdinBufSize,&bytesRead,NULL) ? false : true);
+			if (eofFlag && firstRun) // Attempt to fall back to ReadFile
+			{
+				readConsoleMode = false;
+				firstRun = false;
+			}
+		}
+
+		if (!readConsoleMode)
+		{
+			eofFlag = (ReadFile(StdinHandle,readBufDos,StdinBufSize,&bytesRead,NULL) ? true : false);
+		}
+
 		if (eofFlag && bytesRead < 0)
 			bytesRead = 0;
 		retVal = (int)bytesRead;
-		
+
 		if (retVal <=0)
 		{
 			if (!Running())
 				continue;
+
 			printf("Error in main event loop whilst processing stdin\n");
 			break;
 		}
 		else
 		{
 		size_t utf8len,utf8pos;
-			readBufW[retVal] = 0;
-			if (*conv.Convert((const SHVByte*)readBufW,NULL,0,&utf8len) == 0)
-			{
-				if (utf8len >= readBufUTF8.GetBufferLen())
-					readBufUTF8.SetBufferSize(utf8len+1);
-				conv.Convert((const SHVByte*)readBufW,readBufUTF8.GetBuffer(),utf8len);
-				readBufUTF8.GetBuffer()[utf8len] = '\0';
+		bool converted = false;
 
+			firstRun = false;
+
+			if (readConsoleMode)
+			{
+				readBufW[retVal] = 0;
+				if (*convW.Convert((const SHVByte*)readBufW,NULL,0,&utf8len) == 0)
+				{
+					converted = true;
+					if (utf8len >= readBufUTF8.GetBufferLen())
+						readBufUTF8.SetBufferSize(utf8len+1);
+					convW.Convert((const SHVByte*)readBufW,readBufUTF8.GetBuffer(),utf8len);
+					readBufUTF8.GetBuffer()[utf8len] = '\0';
+				}
+			}
+			else
+			{
+				readBufDos[retVal] = 0;
+				if (*convDos.Convert((const SHVByte*)readBufDos,NULL,0,&utf8len) == 0)
+				{
+					converted = true;
+					if (utf8len >= readBufUTF8.GetBufferLen())
+						readBufUTF8.SetBufferSize(utf8len+1);
+					convDos.Convert((const SHVByte*)readBufDos,readBufUTF8.GetBuffer(),utf8len);
+					readBufUTF8.GetBuffer()[utf8len] = '\0';
+				}
+			}
+
+			if (converted)
+			{
 				for (utf8pos=0; utf8pos<utf8len;)
 				{
 					if (bufReadPos == StdinBufSize || readBuf.IsNull())
 					{
 						readBuf = new SHVBufferChunk<StdinBufSize+1>();
+						::memset(readBuf->GetBuffer(),0,StdinBufSize+1);
 						StdinStream.AddBuffer(readBuf);
 						bufReadPos = 0;
 					}
@@ -878,7 +923,6 @@ int retVal;
 						utf8pos += (StdinBufSize-bufReadPos);
 						bufReadPos = StdinBufSize;
 					}
-					readBuf->GetBuffer()[bufReadPos] = '\0'; // clear any unwanted Xtra newline
 				}
 
 				HandleStdin();
