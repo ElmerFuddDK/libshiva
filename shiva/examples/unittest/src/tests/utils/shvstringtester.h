@@ -20,6 +20,7 @@ public:
 		ActionReplaceFormat = 0x20,
 		ActionUTF8Encoding = 0x40,
 		ActionStreaming = 0x80,
+		ActionUTF16 = 0x100,
 	};
 
 	virtual const SHVString8C GetGroup() const;
@@ -37,6 +38,7 @@ private:
 	static bool TestReplaceFormat(SHVModuleList& modules, SHVTestBase* self, int flag);
 	static bool TestUTF8Encoding(SHVModuleList& modules, SHVTestBase* self, int flag);
 	static bool TestStringStream(SHVModuleList& modules, SHVTestBase* self, int flag);
+	static bool TestUTF16(SHVModuleList& modules, SHVTestBase* self, int flag);
 
 	// helpers
 private:

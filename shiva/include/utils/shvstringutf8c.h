@@ -62,12 +62,15 @@ public:
 	static size_t CalculateUTF8Len8(const SHVChar* str);
 	static size_t CalculateUTF8Len16(const SHVWChar* str);
 
+	static SHVUChar DecodeChar(const SHVChar* str, size_t* len = NULL);
+	static bool EncodeChar(SHVUChar ch, SHVChar* outBuffer, size_t len, size_t* charsWritten = NULL);
+
 	SHVStringBuffer8 ToStr8() const;
 	SHVStringBuffer16 ToStr16() const;
 	SHVStringBufferUTF8 ToStrUTF8() const;
 	inline SHVStringBuffer ToStrT() const;
 	bool ConvertBufferToChar(SHVChar* buffer, size_t len) const;
-	bool ConvertBufferToWChar(SHVWChar* buffer, size_t len) const;
+	bool ConvertBufferToWChar(SHVWChar* buffer, size_t& len) const;
 	inline const SHVStringBuffer8 AsStr8C() const;
 	inline const SHVStringBuffer16 AsStr16C() const;
 	inline const SHVStringUTF8C AsStrUTF8C() const;

@@ -78,6 +78,9 @@ public:
 	inline TPtrC16 ToPtr() const;
 #endif
 
+	// For UTF-16
+	static SHVUChar DecodeChar(const SHVWChar* str, size_t* len = NULL);
+	static bool EncodeChar(SHVUChar ch, SHVWChar* outBuffer, size_t len, size_t* charsWritten = NULL);
 
 	// buffer checks
 	inline bool IsNull() const;

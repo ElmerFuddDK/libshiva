@@ -42,6 +42,7 @@ static const SHVTestBase::Action actions[] = {
 	{ ActionReplaceFormat, "replaceformat", _S("ReplaceFormat"), _S("This will test replace and format"), &SHVStringTester::TestReplaceFormat },
 	{ ActionUTF8Encoding, "utf8encoding", _S("UTF8Encoding"), _S("Tests utf8 encoding handling"), &SHVStringTester::TestUTF8Encoding },
 	{ ActionStreaming, "stream", _S("Stream"), _S("Tests SHVStringStream"), &SHVStringTester::TestStringStream },
+	{ ActionUTF16, "utf16", _S("UTF16"), _S("Tests conversion of UTF16 surrogates"), &SHVStringTester::TestUTF16 },
 	{ 0, NULL, NULL, NULL, NULL } }; // Termination
 	
 	return actions;
@@ -646,6 +647,45 @@ bool ok = true;
 		ok = (ok && stream.ToStr16() == ucs2result);
 	}
 #endif
+
+	self->AddLine(_S("Test result: %s"), self->Success(modules,ok).GetSafeBuffer());
+
+	return ok;
+}
+bool SHVStringTester::TestUTF16(SHVModuleList& modules, SHVTestBase* self, int flag)
+{
+bool ok = true;
+
+	{
+	const char* testBufUtf8 = "\xF0\x90\x90\xB7";
+	const char* testBufUtf16 = "\x01\xD8\x37\xDC";
+	const char* checkMarkUtf8 = "\xE2\x9C\x94";
+	const SHVWChar checkMarkUtf16[] = { 0x2714, 0 };
+	size_t len;
+	SHVUChar val;
+	SHVUChar checkMark = 0x00002714;
+	char outBuf8[10];
+	SHVWChar outBuf16[10];
+	size_t written;
+
+		val = SHVStringUTF8C::DecodeChar(testBufUtf8,&len);
+		ok = (ok && val == 0x10437);
+		ok = (ok && len == 4);
+
+		SHVStringUTF8C::EncodeChar(checkMark,outBuf8,10,&written);
+		outBuf8[written] = '\0';
+		ok = (ok && written == 3);
+		ok = (ok && SHVStringUTF8C(outBuf8) == SHVStringUTF8C(checkMarkUtf8));
+
+		val = SHVString16C::DecodeChar((const SHVWChar*)testBufUtf16,&len);
+		ok = (ok && val == 0x10437);
+		ok = (ok && len == 2);
+
+		SHVString16C::EncodeChar(checkMark,outBuf16,10,&written);
+		outBuf16[written] = '\0';
+		ok = (ok && written == 1);
+		ok = (ok && SHVString16C(outBuf16) == SHVString16C(checkMarkUtf16));
+	}
 
 	self->AddLine(_S("Test result: %s"), self->Success(modules,ok).GetSafeBuffer());
 

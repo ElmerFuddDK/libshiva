@@ -630,8 +630,10 @@ SHVString16 retVal;
 
 	if (!IsNull())
 	{
-	size_t len = GetLength();
-		ConvertBufferToWChar(retVal.SetBufferSize(len+1), len);
+	size_t len;
+
+		if (ConvertBufferToWChar(NULL,len))
+			ConvertBufferToWChar(retVal.SetBufferSize(len+1), len);
 	}
 	
 	return retVal.ReleaseBuffer();
@@ -640,7 +642,7 @@ SHVString16 retVal;
 /*************************************
  * ConvertBufferToWChar
  *************************************/
-bool SHVStringUTF8C::ConvertBufferToWChar(SHVWChar* buffer, size_t len) const
+bool SHVStringUTF8C::ConvertBufferToWChar(SHVWChar* buffer, size_t& len) const
 {
 SHVStringConv conv(SHVStringConv::EncUtf8,SHVStringConv::Enc16);
 bool retVal = *conv.Convert((const SHVByte*)Buffer,buffer,len,&len) == 0;
@@ -654,58 +656,29 @@ size_t written;
 	if (!charsWritten) charsWritten = &written;
 	*charsWritten = 0;
 	if (!IsValid()) return inBuffer;
-	if (!outBuffer) { *charsWritten = SHVStringUTF8C::StrLen(inBuffer); return inBuffer + SHVString8C::StrLen(inBuffer); } // lazy solution
-const char* endch;
-size_t bytes;
-size_t charLen;
-#ifdef __SHIVA_WIN32
-#elif defined(__SHIVA_EPOC)
-#else
-const char* iBuf;
-char* oBuf;
-size_t iLeft;
-size_t oLeft;
-#endif
+
+SHVUChar ch;
+size_t chLen;
+size_t writeLen;
+
+	// hack to make sure we can ignore outBuffer in the while check
+	if (!outBuffer)
+		len = SIZE_T_MAX;
 
 	while (*inBuffer && *charsWritten < len)
 	{
-		(*charsWritten)++;
-		charLen = SHVStringUTF8C::GetUTF8CharLen(*inBuffer);
-		if (charLen < 2)
+		ch = SHVStringUTF8C::DecodeChar(inBuffer,&chLen);
+		// Returns false if length is too short
+		if (!SHVString16C::EncodeChar(ch,outBuffer,len,&writeLen))
 		{
-			*outBuffer = *inBuffer;
-			outBuffer++;
-			inBuffer++;
+			break;
 		}
-		else
+		*charsWritten += writeLen;
+		if (outBuffer)
 		{
-			endch = inBuffer+1;
-			for (bytes=1;charLen && ((*(inBuffer+bytes))&0xC0) == 0x80;bytes++, charLen--) endch++;
-
-#ifdef __SHIVA_WIN32
-			MultiByteToWideChar(CP_UTF8,0,inBuffer,(int)bytes,(WCHAR*)outBuffer,1);
-#elif defined(__SHIVA_EPOC)
-			aState = CCnvCharacterSetConverter::KStateDefault;
-			{
-			TPtr16 unicodePtr((TUint16*)outBuffer,1);
-				if (cnvToUnicode->ConvertToUnicode( unicodePtr, TPtrC8((const TUint8*)inBuffer,bytes), aState ) != 0)
-				{
-					*buffer = '?';
-				}
-			}
-#else
-			iBuf = (char*)inBuffer;
-			oBuf = (char*)outBuffer;
-			iLeft  = bytes;
-			oLeft  = 2;
-
-			if ( iconv((iconv_t)iconvData,(ICONV_IBUFTYPE)&iBuf,&iLeft,&oBuf,&oLeft) == ICONV_ERR)
-				*outBuffer = '?';
-#endif
-
-			outBuffer++;
-			inBuffer=endch;
+			outBuffer += writeLen;
 		}
+		inBuffer += chLen;
 	}
 
 	return inBuffer;
@@ -913,7 +886,100 @@ size_t retVal = 0;
 	return retVal;
 }
 
+/*************************************
+ * DecodeChar
+ *************************************/
+SHVUChar SHVStringUTF8C::DecodeChar(const SHVChar* str, size_t* len)
+{
+size_t utf8Len;
+SHVUChar retVal;
 
+	utf8Len = SHVStringUTF8C::GetUTF8CharLen(*str);
+
+	if (len)
+		*len = utf8Len;
+
+
+	if (utf8Len < 2)
+	{
+		retVal = *str;
+	}
+	else
+	{
+		switch(utf8Len)
+		{
+		case 2: retVal = (*str)&0x1F; break;
+		case 3: retVal = (*str)&0x0F; break;
+		case 4: retVal = (*str)&0x07; break;
+		case 5: retVal = (*str)&0x03; break;
+		default:
+			SHVASSERT(false);
+		case 6: retVal = (*str)&0x01; break;
+		}
+
+		str++;
+		for (utf8Len--;utf8Len;utf8Len--,str++)
+		{
+			if ( ((*str)&0xC0) != 0x80 )
+			{
+				SHVASSERT(false);
+				retVal = '?';
+				break;
+			}
+
+			retVal <<= 6;
+			retVal |= (*str)&0x3F;
+		}
+	}
+
+	return retVal;
+}
+
+/*************************************
+ * EncodeChar
+ *************************************/
+bool SHVStringUTF8C::EncodeChar(SHVUChar ch, SHVChar* outBuffer, size_t len, size_t* charsWritten)
+{
+size_t utf8Len;
+size_t dummyWritten;
+SHVUChar mask;
+
+	if (!charsWritten)
+		charsWritten = &dummyWritten;
+
+	if (ch < 0x80)
+	{ mask = 0x0;  utf8Len = 1; }
+	else if (ch < 0x00000800)
+	{ mask = 0xC0; utf8Len = 2; }
+	else if (ch < 0x00010000)
+	{ mask = 0xE0; utf8Len = 3; }
+	else if (ch < 0x00200000)
+	{ mask = 0xF0; utf8Len = 4; }
+	else if (ch < 0x04000000)
+	{ mask = 0xF8; utf8Len = 5; }
+	else
+	{ mask = 0xFC; utf8Len = 6; }
+
+	*charsWritten = utf8Len;
+
+	if (outBuffer && len < utf8Len)
+	{
+		*charsWritten = 0;
+		return false;
+	}
+	else if (outBuffer)
+	{
+		utf8Len--;
+		for (outBuffer += utf8Len; utf8Len; utf8Len--,outBuffer--)
+		{
+			*outBuffer = (SHVChar)((ch&0x3F) | 0x80);
+			ch >>= 6;
+		}
+		*outBuffer = (SHVChar)(ch | mask);
+	}
+
+	return true;
+}
 
 
 
@@ -937,111 +1003,118 @@ size_t written;
 	if (!charsWritten) charsWritten = &written;
 	*charsWritten = 0;
 	if (!IsValid()) return inBuffer;
-char utf8Str[5];
-#ifdef __SHIVA_WIN32
-int bytes;
-#elif defined(__SHIVA_EPOC)
-#else
-const char* iBuf;
-char* oBuf;
-size_t iLeft;
-size_t oLeft;
-#endif
+
+SHVUChar ch;
+size_t chLen;
+size_t writeLen;
 
 	// hack to make sure we can ignore outBuffer in the while check
 	if (!outBuffer)
 		len = SIZE_T_MAX;
-	
+
 	while (*inBuffer && *charsWritten < len)
 	{
-		if ( !((*inBuffer)&0xFF80) )
+		ch = SHVString16C::DecodeChar(inBuffer,&chLen);
+		// Returns false if length is too short
+		if (!SHVStringUTF8C::EncodeChar(ch,outBuffer,len,&writeLen))
 		{
-			if (outBuffer)
-			{
-				*outBuffer = (const char)*inBuffer;
-				outBuffer++;
-			}
-			inBuffer++;
-			(*charsWritten)++;
+			break;
 		}
-		else
+		*charsWritten += writeLen;
+		if (outBuffer)
 		{
-#ifdef __SHIVA_WIN32
-			bytes = WideCharToMultiByte(CP_UTF8,0,(const WCHAR*)inBuffer,1,outBuffer ? outBuffer : utf8Str, outBuffer ? int(len-*charsWritten) : 4,NULL,NULL);
-			if (bytes)
-			{
-				*charsWritten += bytes;
-				if (outBuffer)
-					outBuffer += bytes;
-			}
-			else
-			{
-				if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
-				{
-					break;
-				}
-				else if (outBuffer)
-				{
-					*outBuffer = '?';
-					outBuffer++;
-				}
-				(*charsWritten)++;
-			}
-#elif defined(__SHIVA_EPOC)
-			aState = CCnvCharacterSetConverter::KStateDefault;
-			{
-			TPtr16 unicodePtr((TUint16*)inBuffer,1);
-			TPtr8 utf8Ptr((TUint8*)(outBuffer ? outBuffer : utf8Str),outBuffer ? len-*charsWritten : 4);
-			TInt errNo = ((CCnvCharacterSetConverter*)convTo)->ConvertFromUnicode( utf8Ptr, TPtrC16((const TUint16*)&ch,1), aState );
-				if (errNo < 0)
-				{
-					///\todo detect lack of output buffer and break
-					SHVASSERT(false);
-					(*charsWritten)++;
-					if (outBuffer)
-					{
-						*outBuffer = '?';
-						outBuffer++;
-					}
-				}
-				else
-				{
-					*charsWritten += 4-errNo;
-					if (outBuffer)
-						outBuffer += 4-errNo;
-				}
-			}
-#else
-			iBuf = (char*)inBuffer;
-			oBuf = (char*)(outBuffer ? outBuffer : utf8Str);
-			iLeft  = 2;
-			oLeft  = outBuffer ? len-*charsWritten : 4;
-
-			if ( iconv((iconv_t)iconvData,(ICONV_IBUFTYPE)&iBuf,&iLeft,&oBuf,&oLeft) == ICONV_ERR)
-			{
-				if (errno == E2BIG)
-				{
-					break;
-				}
-				(*charsWritten)++;
-				if (outBuffer)
-				{
-					*outBuffer = '?';
-					outBuffer++;
-				}
-			}
-			else
-			{
-				if (outBuffer)
-					outBuffer += len-*charsWritten - oLeft;
-				*charsWritten += (outBuffer ? len-*charsWritten : 4) - oLeft;
-			}
-#endif
-			inBuffer++;
+			outBuffer += writeLen;
 		}
+		inBuffer += chLen;
 	}
 
 	return inBuffer;
+}
+
+/*************************************
+ * DecodeChar
+ *************************************/
+SHVUChar SHVString16C::DecodeChar(const SHVWChar* str, size_t* len)
+{
+SHVUChar retVal;
+
+	if (*str <= 0xD7FF || *str >= 0xE000)
+	{
+		if (len)
+			*len = 1;
+
+		retVal = *str;
+	}
+	else
+	{
+		if (len)
+			*len = 2;
+
+		if (   str[0] >= 0xD800 && str[0] <= 0xDBFF
+			&& str[1] >= 0xDC00 && str[1] <= 0xDFFF)
+		{
+			retVal = 0x10000;
+			retVal += (str[0] & 0x03FF) << 10;
+			retVal += (str[1] & 0x03FF);
+		}
+		else
+		{
+			SHVASSERT(false);
+			retVal = '?';
+		}
+	}
+
+	return retVal;
+}
+
+/*************************************
+ * EncodeChar
+ *************************************/
+bool SHVString16C::EncodeChar(SHVUChar ch, SHVWChar* outBuffer, size_t len, size_t* charsWritten)
+{
+bool retVal = true;
+
+	if (ch < 0x10000)
+	{
+		if (charsWritten)
+			*charsWritten = 1;
+
+		if (outBuffer && len < 1)
+		{
+			*charsWritten = 0;
+			retVal = false;
+		}
+		else if (outBuffer)
+		{
+			if (ch >= 0xD800 && ch <= 0xDFFF)
+			{
+				*outBuffer = '?';
+			}
+			else
+			{
+				*outBuffer = (SHVWChar)ch;
+			}
+		}
+	}
+	else
+	{
+		if (charsWritten)
+			*charsWritten = 2;
+
+		if (outBuffer && len < 2)
+		{
+			*charsWritten = 0;
+			retVal = false;
+		}
+		else if (outBuffer)
+		{
+			ch = (ch - 0x10000);
+			outBuffer[0] = 0xD800 | (ch >> 10);
+			outBuffer[1] = 0xDC00 | (ch & 0x3FF);
+		}
+	}
+
+	return retVal;
 }
 
 #endif

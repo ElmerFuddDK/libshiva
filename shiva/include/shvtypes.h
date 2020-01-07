@@ -6,6 +6,7 @@
 typedef char SHVByte;
 typedef char SHVChar;
 typedef unsigned short SHVWChar;
+typedef unsigned long SHVUChar;
 #if defined(__SHIVA_WINCE) && (_WIN32_WCE < 500)
  typedef __int64 SHVInt64Val;
 #else
