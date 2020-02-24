@@ -363,6 +363,31 @@ bool SHVTime::CalculateIsDst() // Is daylight savings
 	return Time.tm_isdst == 1;
 }
 
+/*************************************
+ * CheckValid
+ *************************************/
+SHVBool SHVTime::CheckValid() const
+{
+SHVTime validTime(*this);
+
+	validTime.MakeValid();
+	
+	return  validTime.GetYear() == GetYear() &&
+			validTime.GetMonth() == GetMonth() &&
+			validTime.GetDay() == GetDay() &&
+			validTime.GetHour() == GetHour() &&
+			validTime.GetMinute() == GetMinute() &&
+			validTime.GetSecond() == GetSecond();
+}
+
+/*************************************
+ * MakeValid
+ *************************************/
+void SHVTime::MakeValid()
+{
+	MkTime(&Time);
+}
+
 
 
 // functions

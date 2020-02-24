@@ -87,6 +87,11 @@ public:
 	bool CalculateIsDst(); // Is daylight savings
 
 
+	// validation
+	SHVBool CheckValid() const;
+	void MakeValid();
+
+
 	// functions
 	SHVBool SetFromDateString(const SHVStringC& dateStr);
 	SHVStringBuffer ToDateString(MillisecFlags msFlag = MillisecAuto) const;
