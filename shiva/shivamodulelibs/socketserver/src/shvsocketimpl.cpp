@@ -229,7 +229,7 @@ SHVSocket::Types SHVSocketImpl::GetType()
 /*************************************
  * BindAndListen
  *************************************/
-SHVBool SHVSocketImpl::BindAndListen(SHVIPv4Port port)
+SHVBool SHVSocketImpl::BindAndListen(SHVIPv4Port port, int backlog)
 {
 SHVBool retVal;
 
@@ -281,7 +281,7 @@ SHVBool retVal;
 		{
 			if (!status)
 			{
-				status = ::listen(Socket, 5);
+				status = ::listen(Socket, backlog);
 
 				if (!status)
 				{

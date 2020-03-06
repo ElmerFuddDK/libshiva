@@ -45,7 +45,7 @@ public:
 	
 	
 	// Operations
-	virtual SHVBool BindAndListen(SHVIPv4Port port);
+	virtual SHVBool BindAndListen(SHVIPv4Port port, int backlog = 5);
 	virtual SHVBool BindAndListenUnix(const SHVStringC fileName);
 	virtual SHVBool Close();
 	virtual SHVBool Shutdown();
