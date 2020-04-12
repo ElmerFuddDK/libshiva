@@ -334,6 +334,48 @@ int pIdx;
 }
 
 /*************************************
+ * GetParameterName
+ *************************************/
+SHVBool SHVSQLiteStatementImpl::GetParameterNameUTF8(SHVStringSQLite& name, int columnIdx) const
+{
+	SHVTHREADCHECK(OwnerThread);
+	if (columnIdx < sqlite3_bind_parameter_count(Statement) && columnIdx >= 0)
+	{
+		name = sqlite3_bind_parameter_name(Statement, columnIdx+1);
+		return SHVBool(SHVSQLiteWrapper::SQLite_OK);
+	}
+	else
+		return SHVBool(SHVSQLiteWrapper::SQLite_ERROR);
+}
+SHVBool SHVSQLiteStatementImpl::GetParameterName8(SHVString8& name, int columnIdx) const
+{
+SHVStringSQLite res(NULL);
+SHVBool retVal;
+	retVal = GetParameterNameUTF8(res, columnIdx);
+	if (retVal)
+		name = res.ToStr8();
+	return retVal;
+}
+SHVBool SHVSQLiteStatementImpl::GetParameterName16(SHVString16& name, int columnIdx) const
+{
+SHVStringSQLite res(NULL);
+SHVBool retVal;
+	retVal = GetParameterNameUTF8(res, columnIdx);
+	if (retVal)
+		name = res.ToStr16();
+	return retVal;
+}
+
+/*************************************
+ * GetParameterCount
+ *************************************/
+int SHVSQLiteStatementImpl::GetParameterCount() const
+{
+	SHVTHREADCHECK(OwnerThread);
+	return sqlite3_bind_parameter_count(Statement);
+}
+
+/*************************************
  * NextResult
  *************************************/
 SHVBool SHVSQLiteStatementImpl::NextResult()

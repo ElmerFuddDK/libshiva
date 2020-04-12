@@ -63,6 +63,13 @@ public:
 	virtual SHVBool SetParameterNullUTF8(const SHVStringUTF8C& name) = 0;
 	inline SHVBool SetParameterNull(SHVStringC& name);
 
+	virtual SHVBool GetParameterNameUTF8(SHVStringSQLite& name, int columnIdx) const = 0;
+	virtual SHVBool GetParameterName8(SHVString8& name, int columnIdx) const = 0;
+	virtual SHVBool GetParameterName16(SHVString16& name, int columnIdx) const = 0;
+	inline SHVBool GetParameterName(SHVString& name, int columnIdx) const;
+
+	virtual int GetParameterCount() const = 0;
+
 	// Iteration methods
 	virtual SHVBool NextResult() = 0;
 	virtual SHVBool Reset() = 0;
@@ -162,6 +169,24 @@ SHVBool SHVSQLiteStatement::SetParameterString(const SHVStringC& name, const SHV
 SHVBool SHVSQLiteStatement::SetParameterNull(SHVStringC& name)
 {
 	return SetParameterNullUTF8(name.ToStrUTF8());
+}
+
+/*************************************
+ * GetParameterName
+ *************************************/
+SHVBool SHVSQLiteStatement::GetParameterName(SHVString& name, int columnIdx) const
+{
+#if __SHVSTRINGDEFAULT == 8
+	return GetParameterName8(name, columnIdx);
+#elif __SHVSTRINGDEFAULT == 16
+	return GetParameterName16(name, columnIdx);
+#elif __SHVSTRINGDEFAULT == utf8
+SHVStringSQLite str(NULL);
+SHVBool retVal = GetParameterNameUTF8(str, columnIdx);
+	if (retVal)
+		name = str;
+	return retVal;
+#endif
 }
 
 #endif

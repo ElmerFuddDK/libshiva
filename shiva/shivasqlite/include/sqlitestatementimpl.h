@@ -40,6 +40,12 @@ public:
 	virtual SHVBool SetParameterStringUTF8(const SHVStringUTF8C& name, const SHVStringUTF8C& val);
 	virtual SHVBool SetParameterNullUTF8(const SHVStringUTF8C& name);
 
+	virtual SHVBool GetParameterNameUTF8(SHVStringSQLite& name, int columnIdx) const;
+	virtual SHVBool GetParameterName8(SHVString8& name, int columnIdx) const;
+	virtual SHVBool GetParameterName16(SHVString16& name, int columnIdx) const;
+
+	virtual int GetParameterCount() const;
+
 	virtual SHVBool NextResult();
 	virtual SHVBool Reset();
 private:

@@ -17,6 +17,16 @@ SHVSQLiteStatementRef statement = sqlite->PrepareUTF8(Ok,query,unparsed);
 	SHVStringUTF8 oldQuery, query;
 		Statements.Add(statement);
 		
+		if (statement)
+		{
+			for (int i=0; i<statement->GetParameterCount(); i++)
+			{
+			SHVStringSQLite param(NULL);
+				if (statement->GetParameterNameUTF8(param,i))
+					Parameters.Add(new SHVStringUTF8(param));
+			}
+		}
+		
 		query = unparsed;
 		while (Ok && !query.IsEmpty())
 		{
@@ -25,6 +35,23 @@ SHVSQLiteStatementRef statement = sqlite->PrepareUTF8(Ok,query,unparsed);
 			if (Ok)
 			{
 				Statements.Add(statement);
+				for (int i=0; i<statement->GetParameterCount(); i++)
+				{
+				SHVStringSQLite param(NULL);
+					if (statement->GetParameterNameUTF8(param,i))
+					{
+					size_t j,count=Parameters.CalculateCount();
+						for (j=0; j<count; j++)
+						{
+							if (*Parameters[j] == param)
+								break;
+						}
+						if (j==count)
+						{
+							Parameters.Add(new SHVStringUTF8(param));
+						}
+					}
+				}
 			}
 			// Ensures the buffer doesn't get deleted before query is refilled - unparsed points into query
 			oldQuery = query.ReleaseBuffer();
@@ -34,7 +61,10 @@ SHVSQLiteStatementRef statement = sqlite->PrepareUTF8(Ok,query,unparsed);
 	}
 	
 	if (!Ok)
+	{
 		Statements.Clear();
+		Parameters.Clear();
+	}	
 	
 	CurrentStatement = SIZE_T_MAX;
 }
@@ -370,6 +400,58 @@ bool set = false;
 		retVal.SetError(SHVSQLiteWrapper::SQLite_ERROR);
 	
 	return retVal;
+}
+
+/*************************************
+ * GetParameterName
+ *************************************/
+SHVBool SHVDataStatementImpl::GetParameterNameUTF8C(SHVStringUTF8C& name, int columnIdx) const
+{
+	if (columnIdx>=0 && columnIdx<GetParameterCount())
+	{
+		name = *Parameters[(size_t)columnIdx];
+		return SHVBool::True;
+	}
+	
+	return SHVBool::False;
+}
+SHVBool SHVDataStatementImpl::GetParameterNameUTF8(SHVStringUTF8& name, int columnIdx) const
+{
+	if (columnIdx>=0 && columnIdx<GetParameterCount())
+	{
+		name = *Parameters[(size_t)columnIdx];
+		return SHVBool::True;
+	}
+	
+	return SHVBool::False;
+}
+SHVBool SHVDataStatementImpl::GetParameterName8(SHVString8& name, int columnIdx) const
+{
+	if (columnIdx>=0 && columnIdx<GetParameterCount())
+	{
+		name = Parameters[(size_t)columnIdx]->ToStr8();
+		return SHVBool::True;
+	}
+	
+	return SHVBool::False;
+}
+SHVBool SHVDataStatementImpl::GetParameterName16(SHVString16& name, int columnIdx) const
+{
+	if (columnIdx>=0 && columnIdx<GetParameterCount())
+	{
+		name = Parameters[(size_t)columnIdx]->ToStr16();
+		return SHVBool::True;
+	}
+	
+	return SHVBool::False;
+}
+
+/*************************************
+ * GetParameterCount
+ *************************************/
+int SHVDataStatementImpl::GetParameterCount() const
+{
+	return (int)Parameters.CalculateCount();
 }
 
 /*************************************
