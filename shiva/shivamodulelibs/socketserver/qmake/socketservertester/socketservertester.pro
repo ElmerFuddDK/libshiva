@@ -9,8 +9,8 @@ DESTDIR = $$_PRO_FILE_PWD_/../../../../$${SHVBUILDFOLDER}
 QMAKE_LIBDIR += $$_PRO_FILE_PWD_/../../../../$${SHVBUILDFOLDER}
 
 shivastaticlib {
-  LIBS += -lpthread
   LIBS += -L$$_PRO_FILE_PWD_/../../../../$${SHVBUILDFOLDER}/modules -lsocketserver
+  LIBS += -lpthread
   win32 {
     LIBS += -lws2_32
   }
