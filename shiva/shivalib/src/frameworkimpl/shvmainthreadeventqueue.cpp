@@ -235,6 +235,28 @@ bool SHVMainThreadEventQueue::RunAsync()
 	return RunReturnVal;
 }
 
+/*************************************
+ * ForceStopApp
+ *************************************/
+void SHVMainThreadEventQueue::ForceStopApp()
+{
+	if (Modules.CheckEmergencyShutdown())
+	{
+	int c=0;
+
+		SHVASSERT(false);
+		SHVTHREADCHECK(Modules.GetThreadID());
+
+		do
+		{
+			SHVThreadBase::Sleep(50);
+			Dispatcher->DispatchEvents();
+		}
+		while (c++ < 600 && Modules.CheckEmergencyShutdown());
+
+	}
+}
+
 
 /*************************************
  * EnqueueEvent

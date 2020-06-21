@@ -26,6 +26,7 @@ public:
 
 
 protected:
+friend class SHVMainThreadEventQueue;
 	inline SHVMainThreadEventDispatcher();
 
 	virtual void OnEvent(SHVEvent* event) = 0;

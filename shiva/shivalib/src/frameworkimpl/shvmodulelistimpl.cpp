@@ -646,6 +646,32 @@ void SHVModuleListImpl::OnEvent(SHVEvent* event)
 }
 
 /*************************************
+ * CheckEmergencyShutdown
+ *************************************/
+bool SHVModuleListImpl::CheckEmergencyShutdown()
+{
+	Lock.Lock();
+	if (State > StateInitialized && State < StateUnregistered)
+	{
+		if (State > StateInitialized && State < StateUnregistering)
+		{
+			Lock.Unlock();
+			UnregisterModules();
+		}
+		else
+		{
+			Lock.Unlock();
+		}
+		return true;
+	}
+	else
+	{
+		Lock.Unlock();
+	}
+	return false;
+}
+
+/*************************************
  * RegisterModules
  *************************************/
 SHVBool SHVModuleListImpl::RegisterModules()

@@ -98,12 +98,15 @@ protected:
 
 private:
 
+	bool CheckEmergencyShutdown();
+
 	SHVBool RegisterModules();
 	void PreUnregisterModules();
 	void UnregisterModules();
 
 	///\cond INTERNAL
 friend class SHVModuleListIteratorImpl;
+friend class SHVMainThreadEventQueue;
 
 	// Constants and typedefs
 	enum States {

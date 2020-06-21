@@ -45,6 +45,8 @@ public:
 	virtual SHVBool Run();
 	virtual bool RunAsync();
 
+	// enforce shutdown in case event loop was not properly shut down
+	virtual void ForceStopApp();
 
 	// from SHVEventQueue
 	virtual void EnqueueEvent(SHVEvent* event, SHVEventSubscriberBase* subscriber);
