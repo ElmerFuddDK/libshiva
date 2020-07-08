@@ -20,6 +20,11 @@ IF "%1"=="debug" (
 	SET Found=1
 	SET DebugFlags=CONFIG+=debug
 )
+IF "%1"=="nodebugdll" (
+	SET DebugMode=1
+	SET Found=1
+	SET DebugFlags=CONFIG+=shivanodebugdll
+)
 IF "%1"=="strip" (
 	SET StripMode=1
 	SET Found=1

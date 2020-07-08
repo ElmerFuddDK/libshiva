@@ -31,6 +31,13 @@ win32-msvc* {
 	QMAKE_CXXFLAGS_RELEASE ~= "s/-MD//"
 	QMAKE_CXXFLAGS_RELEASE *= "-MT"
 	DEFINES *= _WINDOWS
+	
+	shivanodebugdll {
+		QMAKE_CFLAGS_DEBUG ~= "s/-MDd//"
+		QMAKE_CFLAGS_DEBUG *= "-MTd"
+		QMAKE_CXXFLAGS_DEBUG ~= "s/-MDd//"
+		QMAKE_CXXFLAGS_DEBUG *= "-MTd"
+	}
 }
 
 wince-*msvc* {
@@ -38,4 +45,11 @@ wince-*msvc* {
 	QMAKE_CFLAGS_RELEASE *= "-MT"
 	QMAKE_CXXFLAGS_RELEASE ~= "s/-MD//"
 	QMAKE_CXXFLAGS_RELEASE *= "-MT"
+	
+	shivanodebugdll {
+		QMAKE_CFLAGS_DEBUG ~= "s/-MDd//"
+		QMAKE_CFLAGS_DEBUG *= "-MTd"
+		QMAKE_CXXFLAGS_DEBUG ~= "s/-MDd//"
+		QMAKE_CXXFLAGS_DEBUG *= "-MTd"
+	}
 }
