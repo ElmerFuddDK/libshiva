@@ -10,7 +10,7 @@ QMAKE_LIBDIR += $$_PRO_FILE_PWD_/../../../../$${SHVBUILDFOLDER}
 
 shivastaticlib {
   LIBS += -L$$_PRO_FILE_PWD_/../../../../$${SHVBUILDFOLDER}/modules -lsocketserver
-  LIBS += -lpthread
+  !msvc { LIBS += -lpthread }
   win32 {
     LIBS += -lws2_32
   }

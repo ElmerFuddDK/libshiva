@@ -10,7 +10,7 @@ QMAKE_LIBDIR += $$_PRO_FILE_PWD_/../../../SHVRelPathSHV/shiva/$${SHVBUILDFOLDER}
 
 shivastaticlib {
   LIBS += -L$$_PRO_FILE_PWD_/../../../SHVRelPathSHV/shiva/$${SHVBUILDFOLDER}/modules -lshvtemplateshv
-  LIBS += -lpthread
+  !msvc { LIBS += -lpthread }
 } else {
   unix {
     QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN\''
