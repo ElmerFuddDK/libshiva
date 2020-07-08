@@ -12,6 +12,7 @@
     shivanortti {
       QMAKE_INCDIR -= $$ANDROID_SOURCES_CXX_STL_INCDIR
       QMAKE_LIBDIR -= $$ANDROID_SOURCES_CXX_STL_LIBDIR
+      QMAKE_CXXFLAGS += -fno-rtti
     }
   }
   QMAKE_CFLAGS += -fno-exceptions
