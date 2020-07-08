@@ -67,15 +67,25 @@ bool SHVAPI SHVAssert::ReportError(const char* fileName, int lineNo)
 	return true;
 #elif defined(__SHIVA_WIN32) && !defined(__MINGW32__)
 # ifdef DEBUG
-	// we remove WM_QUIT because if it is in the queue then the message box
-	// won't display
-	MSG msg;
-	BOOL bQuit = PeekMessage(&msg, NULL, WM_QUIT, WM_QUIT, PM_REMOVE);
-	BOOL bResult = _CrtDbgReport(_CRT_ASSERT, fileName, lineNo, NULL, NULL);
+char* brkEnv = ::getenv("SHVBREAKONASSERT");
+	if (brkEnv)
+	{
+		SHVConsole::ErrPrintf8("ASSERTION FAILED IN %s, LINE %d\n", fileName, lineNo);
+		fflush(stderr);
+		return (::strcmp(brkEnv, "0") ? true : false);
+	}
+	else
+	{
+		// we remove WM_QUIT because if it is in the queue then the message box
+		// won't display
+		MSG msg;
+		BOOL bQuit = PeekMessage(&msg, NULL, WM_QUIT, WM_QUIT, PM_REMOVE);
+		BOOL bResult = _CrtDbgReport(_CRT_ASSERT, fileName, lineNo, NULL, NULL);
 
-	if (bQuit)
-		PostQuitMessage((int)msg.wParam);
-	return (bResult ? true : false);
+		if (bQuit)
+			PostQuitMessage((int)msg.wParam);
+		return (bResult ? true : false);
+	}
 # endif
 #else
 	SHVConsole::ErrPrintf8("ASSERTION FAILED IN %s, LINE %d\n",fileName,lineNo);
