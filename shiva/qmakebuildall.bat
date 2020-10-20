@@ -9,6 +9,8 @@ SET CleanMode=0
 SET QMakeFlags=
 SET VsMode=0
 SET VsFlags=
+SET BuildPrefixFlags=
+SET BuildDir=build
 
 :parseargs
 IF "%1"=="" (
@@ -19,6 +21,11 @@ IF "%1"=="debug" (
 	SET DebugMode=1
 	SET Found=1
 	SET DebugFlags=CONFIG+=debug
+)
+IF "%1"=="buildprefix" (
+	SET BuildPrefixFlags=SHVBUILDFOLDERPREFIX=%2%
+	SET BuildDir=build-%2%
+	SHIFT
 )
 IF "%1"=="nodebugdll" (
 	SET DebugMode=1
@@ -55,19 +62,19 @@ IF "%1"=="clean" (
 IF "%Found%"=="0" (
 	ECHO Usage: qmakebuildall options
 	ECHO Options
-	ECHO   debug            compile in debug mode
-	ECHO   strip            strip debugging symbols
-	ECHO   static           compile static libs
-	ECHO   clean            cleans before building
-	ECHO   vs               Compiles with visual studio
-	ECHO   nmake            Compiles with nmake and VC++
+	ECHO   debug               compile in debug mode
+	ECHO   strip               strip debugging symbols
+	ECHO   static              compile static libs
+	ECHO   clean               cleans before building
+	ECHO   vs                  compiles with visual studio
+	ECHO   nmake               compiles with nmake and VC++
+	ECHO   buildprefix <name>  sets build prefix to build-<name>
 	GOTO :done
 )
 SHIFT
 GOTO :parseargs
 :argsparsed
 
-SET BuildDir=build
 IF "%DebugMode%"=="1"  (SET BuildDir=%BuildDir%-debug)
 IF "%StaticMode%"=="1" (SET BuildDir=%BuildDir%-static)
 
@@ -97,7 +104,7 @@ FOR %%G IN ( shivalib,
 	MKDIR %BuildDir% > NUL 2>&1
 	CD %BuildDir%
 	REM For visual studio: qmake -r -tp vc
-	qmake -r  %VsFlags% ..\qmake\*.pro %DebugFlags% %StaticFlags% > %StartDir%\log-%BuildDir%-%%~nG.txt 2>&1
+	qmake -r  %VsFlags% ..\qmake\*.pro %DebugFlags% %StaticFlags% %BuildPrefixFlags% > %StartDir%\log-%BuildDir%-%%~nG.txt 2>&1
 	IF "%VsMode%"=="vs" (
 		FOR /F %%S IN ('dir *.sln /B /O:-D') DO (
 			devenv.exe %%S /rebuild %VsConfig% /out %StartDir%\log-%BuildDir%-%%~nG.txt && DEL %StartDir%\log-%BuildDir%-%%~nG.txt || echo    Build failed

@@ -7,6 +7,8 @@ unset CleanMode
 unset LibIconv
 unset QMakeFlags
 
+BuildDir="build"
+
 test -n "$QMake" || QMake="qmake"
 
 # check for command line input
@@ -14,6 +16,7 @@ test -n "$QMake" || QMake="qmake"
 while test -n "$1"
 do
 	case "$1" in
+	("buildprefix")	QMakeFlags="$QMakeFlags SHVBUILDFOLDERPREFIX=$2"; BuildDir="build-$2"; shift ;;
 	( "debug"  )	DebugMode=1; QMakeFlags="$QMakeFlags CONFIG-=release CONFIG+=debug" ;;
 	( "strip"  )	StripMode=1 ;;
 	( "static" )	StaticMode=1; QMakeFlags="$QMakeFlags CONFIG+=shivastaticlib" ;;
@@ -25,11 +28,12 @@ do
 		echo "   `basename $0` <options>"
 		echo " "
 		echo "Options"
-		echo "  --help|-h|help   This menu"
-		echo "  debug            compile in debug mode (default is release)"
-		echo "  strip            strip debugging symbols"
-		echo "  static           compile static libs"
-		echo "  clean            cleans before building"
+		echo "  --help|-h|help      This menu"
+		echo "  debug               compile in debug mode (default is release)"
+		echo "  strip               strip debugging symbols"
+		echo "  static              compile static libs"
+		echo "  clean               cleans before building"
+		echo "  buildprefix <name>  sets build prefix to build-<name>"
 		echo " "
 		
 		exit
@@ -39,7 +43,6 @@ do
 	shift
 done
 
-BuildDir="build"
 test -n "$DebugMode" && BuildDir="$BuildDir-debug"
 test -n "$StaticMode" && BuildDir="$BuildDir-static"
 
@@ -55,14 +58,18 @@ function Compile()
 {
 	echo "Building $1"
 	
+	logFile="$LogDir/$(echo $1 | sed 's|/|-|g').log"
+	
 	cd "$1" || exit
 	
 	test -d "$BuildDir" -a -n "$CleanMode" && rm -rf "$BuildDir"
 	mkdir -p "$BuildDir"
 	cd "$BuildDir" || exit
 	
-	$QMake -r ../qmake $QMakeFlags &>/dev/null && make &>/dev/null || EchoError "  Error building $1"
+	$QMake -r ../qmake $QMakeFlags &>"$logFile" && make &>>"$logFile" && rm -f "$logFile" || EchoError "  Error building $1"
 }
+
+LogDir="$(cd "$(dirname "$0")" && pwd)"
 
 (Compile shivalib)
 (Compile shivagui/gtk)
