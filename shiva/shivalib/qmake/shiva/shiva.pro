@@ -185,6 +185,7 @@ mac {
 !isEmpty(ANDROID_PLATFORM){
   DEFINES += __SHIVA_NO_TIMEGM __SHIVA_SYSINFOSYSCALL
   CONFIG *= shivastaticunicode
+  DEFINES += HAVE_MEMMOVE
   LIBS -= -llog
 #  QMAKE_LIBS += -lgnustl_static
 } else {
