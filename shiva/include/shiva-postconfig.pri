@@ -17,7 +17,9 @@
   }
   QMAKE_CFLAGS += -fno-exceptions
   QMAKE_CXXFLAGS += -fno-exceptions
-  !shivanortti {
-    QMAKE_LIBS *= -lgnustl_static
+  *-g++* {
+    !shivanortti {
+      QMAKE_LIBS *= -lgnustl_static
+    }
   }
 }

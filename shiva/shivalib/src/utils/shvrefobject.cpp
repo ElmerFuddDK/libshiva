@@ -37,8 +37,10 @@
 #if __APPLE__
 # include <libkern/OSAtomic.h>
 #else
-#ifdef ANDROID
-#include <sys/atomics.h>
+#ifdef __clang__
+#include <atomic>
+#elif defined(ANDROID)
+# include <sys/atomics.h>
 #elif defined(__GNUC__)
 # if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 2))
 #   include <ext/atomicity.h>
@@ -126,6 +128,8 @@ void SHVRefObject::LockedIncrement(volatile int* ref)
 {
 #ifdef __SHIVA_REFOBJ_APPLE
 	OSAtomicAdd32(1,ref);
+#elif defined(__clang__)
+	::__atomic_add_fetch(ref,1,__ATOMIC_SEQ_CST);
 #elif defined(__SHIVA_REFOBJ_ANDROID)
 	__atomic_inc(ref);
 #elif defined(__SHIVA_REFOBJ_GNUC)
@@ -149,6 +153,8 @@ void SHVRefObject::LockedDecrement(volatile int* ref)
 
 #ifdef __SHIVA_REFOBJ_APPLE
 	OSAtomicAdd32(-1,ref);
+#elif defined(__clang__)
+	::__atomic_add_fetch(ref,-1,__ATOMIC_SEQ_CST);
 #elif defined(__SHIVA_REFOBJ_ANDROID)
 	__atomic_dec(ref);
 #elif defined(__SHIVA_REFOBJ_GNUC)
@@ -173,6 +179,8 @@ bool retVal;
 
 # ifdef __SHIVA_REFOBJ_APPLE
 	retVal = (OSAtomicAdd32(-1,&References) <= 0);
+# elif defined(__clang__)
+	retVal = (::__atomic_add_fetch(&References,-1,__ATOMIC_SEQ_CST) <= 0);
 # elif defined(__SHIVA_REFOBJ_ANDROID)
 	retVal = (__atomic_dec(&References) <= 1);
 # elif defined(__SHIVA_REFOBJ_GNUC)
