@@ -43,6 +43,12 @@
 # include <sys/time.h>
 #endif
 
+#if defined(ANDROID) && (!defined(__ANDROID_API__) || __ANDROID_API__ < 21)
+# define SHIVA_ANDROID_DYNMAP_GETCLOCK
+# include <dlfcn.h>
+# include <android/log.h>
+#endif
+
 #ifdef __MACH__
 #include <mach/clock.h>
 #include <mach/mach.h>
@@ -113,6 +119,7 @@ SHVListIterator<SHVQueuedThread,SHVQueuedThread&> i(Queue);
  * If the timeout parameter is given, the thread will wait for the given delay
  * before giving up and returning false, unless the mutex is unlocked by
  * another thread within the duration.
+ *\note On Windows prior to Windows 8 suspended CPU is included in wait time
  */
 bool SHVMutexBase::Lock(int timeout)
 {
@@ -231,32 +238,89 @@ bool retVal = false;
 	timespec spc;
 	SHVListPos pos;
 
-		// initialize wait object
-		pthread_cond_init(&queue,NULL);
 		if (timeout != Infinite)
 		{
-
-#if _POSIX_TIMERS > 0
-			if (clock_gettime(CLOCK_REALTIME, &spc))
-			{
-				fprintf(stderr,"MUTEX TIMER ERROR\n");
-				abort();
-			}
+		pthread_condattr_t* attrPtr = NULL;
+#ifdef __SHIVA_POSIX_OSX
+			spc.tv_sec  = timeout/1000;
+			spc.tv_nsec = (timeout%1000)*1000000UL;
 #else
-#warning "Review the implementation"
-			struct timeval tv;
+# if _POSIX_TIMERS > 0
+		pthread_condattr_t attr;
+# if defined(SHIVA_ANDROID_DYNMAP_GETCLOCK)
+		typedef int (*pthread_condattr_setclock_func)(pthread_condattr_t* __attr, clockid_t __clock);
+		static int functionResolved;
+		static pthread_condattr_setclock_func pthread_condattr_setclock_ptr;
+			// https://github.com/denoland/chromium_build/commit/f8b66ca0502ff87d44b1c5a922321b337c6fb478
+			if (!functionResolved)
+			{
+			void* lib = dlopen("libc.so",RTLD_NOW);
+				if (lib)
+				{
+					pthread_condattr_setclock_ptr = (pthread_condattr_setclock_func)dlsym(lib,"pthread_condattr_setclock");
+					//dlclose(lib);
+				}
+				functionResolved = 1;
+				// __android_log_print(ANDROID_LOG_INFO, "Shiva", "pthread_condattr_setclock resolved : %s", pthread_condattr_setclock_ptr ? "yes" : "no");
+			}
+# endif
+			pthread_condattr_init(&attr);
+			if (
+# if defined(SHIVA_ANDROID_DYNMAP_GETCLOCK)
+					!pthread_condattr_setclock_ptr || (*pthread_condattr_setclock_ptr)(&attr, CLOCK_MONOTONIC_RAW)
+# else
+					pthread_condattr_setclock(&attr, CLOCK_MONOTONIC_RAW)
+# endif
+					|| clock_gettime(CLOCK_MONOTONIC_RAW, &spc)
+				)
+			{
+				if (
+# if defined(SHIVA_ANDROID_DYNMAP_GETCLOCK)
+						!pthread_condattr_setclock_ptr || (*pthread_condattr_setclock_ptr)(&attr, CLOCK_MONOTONIC)
+# else
+						pthread_condattr_setclock(&attr, CLOCK_MONOTONIC)
+# endif
+						|| clock_gettime(CLOCK_MONOTONIC, &spc)
+					)
+				{
+					if (clock_gettime(CLOCK_REALTIME, &spc))
+					{
+						fprintf(stderr,"MUTEX TIMER ERROR\n");
+						abort();
+					}
+				}
+				else
+				{
+					attrPtr = &attr;
+				}
+			}
+			else
+			{
+				attrPtr = &attr;
+			}
+# else
+# warning "Review the implementation"
+		struct timeval tv;
 			gettimeofday(&tv, NULL);
 			spc.tv_sec = tv.tv_sec;
 			spc.tv_nsec = tv.tv_usec*1000;
-#endif
+# endif
 			spc.tv_sec  += timeout/1000;
 			spc.tv_nsec += (timeout%1000)*1000000UL;
+#endif
 			if ( spc.tv_nsec >= 1000000000L )
 			{
 				spc.tv_sec  += 1;
 				spc.tv_nsec -= 1000000000UL;
 			}
 
+			// initialize wait object
+			pthread_cond_init(&queue,attrPtr);
+		}
+		else
+		{
+			// initialize wait object
+			pthread_cond_init(&queue,NULL);
 		}
 
 		// add it to the fifo queue
@@ -267,7 +331,11 @@ bool retVal = false;
 		if (timeout == Infinite)
 			pthread_cond_wait(&queue,&Locker);
 		else
+#ifdef __SHIVA_POSIX_OSX
+			pthread_cond_timedwait_relative_np(&queue,&Locker,&spc);
+#else
 			pthread_cond_timedwait(&queue,&Locker,&spc);
+#endif
 
 		// did we get the lock ?
 		retVal = (NewOwner == &queue);
