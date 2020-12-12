@@ -20,6 +20,11 @@ SHVSSLSocketFactory::SHVSSLSocketFactory(): Supported(false)
 	Supported = OpenSSL.Load(OpenSSL.CreateLibFileName(_S("ssleay32")));
 	if (!Supported)
 		Supported = OpenSSL.Load(OpenSSL.CreateLibFileName(_S("libssl32")));
+#elif defined(__SHIVA_POSIX)
+	if (!Supported)
+		Supported = OpenSSL.Load(_S("libssl.so.1.0.0"));
+	if (!Supported)
+		Supported = OpenSSL.Load(_S("libssl.so.1.0"));
 #endif
 	if (!Supported)
 		Supported = OpenSSL.Load(OpenSSL.CreateLibFileName(_S("ssl")));
