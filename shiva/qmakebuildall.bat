@@ -68,7 +68,7 @@ IF "%Found%"=="0" (
 	ECHO   clean               cleans before building
 	ECHO   vs                  compiles with visual studio
 	ECHO   nmake               compiles with nmake and VC++
-	ECHO   buildprefix <name>  sets build prefix to build-<name>
+	ECHO   buildprefix name    sets build prefix to build-name
 	GOTO :done
 )
 SHIFT
