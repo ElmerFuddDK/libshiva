@@ -73,6 +73,8 @@ public:
 	
 	// Operations
 	virtual SHVBool BindAndListen(SHVIPv4Port port, int backlog = 5) = 0;
+	virtual SHVBool BindAndListen4(SHVIPv4Addr ip, SHVIPv4Port port, int backlog = 5) = 0;
+	virtual SHVBool BindAndListen6(SHVIPv6Addr ip, SHVIPv6Port port, int backlog = 5) = 0;
 	virtual SHVBool BindAndListenUnix(const SHVStringC fileName) = 0;
 	virtual SHVBool Close() = 0;
 	virtual SHVBool Shutdown() = 0;

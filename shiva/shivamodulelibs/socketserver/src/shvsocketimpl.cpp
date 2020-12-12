@@ -276,46 +276,7 @@ SHVBool retVal;
 			status = ::bind(Socket, (sockaddr*) &sockAddr, sizeof(sockaddr_in6));
 		}
 #endif
-		
-		if (Type == SHVSocket::TypeTCP || Type == SHVSocket::TypeSSL)
-		{
-			if (!status)
-			{
-				status = ::listen(Socket, backlog);
-
-				if (!status)
-				{
-					State = SHVSocket::StateListening;
-#ifdef __SHIVASOCKETS_NOSELECTMODE
-					StartReadThread();
-#endif
-					retVal = SHVBool::True;
-				}
-				else
-				{
-					retVal = SetError(SHVSocket::ErrListening);
-				}
-			}
-			else
-			{
-				retVal = SetError(SHVSocket::ErrBinding);
-			}
-		}
-		else
-		{
-			if (!status)
-			{
-				State = SHVSocket::StateConnected;
-#ifdef __SHIVASOCKETS_NOSELECTMODE
-					StartReadThread();
-#endif
-				retVal = SHVBool::True;
-			}
-			else
-			{
-				retVal = SetError(SHVSocket::ErrBinding);
-			}
-		}
+		retVal = ListenInternal(status,backlog);
 	}
 	else
 	{
@@ -328,6 +289,166 @@ SHVBool retVal;
 		SocketServer->SocketServerThread.SignalDispatcher();
 	}
 	
+	return retVal;
+}
+SHVBool SHVSocketImpl::BindAndListen4(SHVIPv4Addr ip, SHVIPv4Port port, int backlog)
+{
+SHVBool retVal;
+
+	if (Type == SHVSocket::TypeUnix)
+		return SHVBool(SHVSocket::ErrInvalidOperation);
+
+	SocketServer->SocketServerLock.Lock();
+	if (State == SHVSocket::StateNone)
+	{
+	int status;
+#ifndef __SHIVASOCKETS_IPV6DISABLED
+		if (!SocketServer->IPv6Supported())
+#endif
+		{
+#ifdef __SHIVA_WIN32
+		SOCKADDR_IN sockAddr;
+#else
+		sockaddr_in sockAddr;
+#endif
+
+			retVal = SHVSocket::ErrNone;
+
+			sockAddr.sin_port   = htons(port);
+			sockAddr.sin_family = AF_INET;
+#ifdef __SHIVA_WIN32
+			sockAddr.sin_addr.S_un.S_addr = ip;
+			status = ::bind(Socket, (LPSOCKADDR) &sockAddr, sizeof(SOCKADDR_IN));
+#else
+			sockAddr.sin_addr.s_addr = ip;
+			status = ::bind(Socket, (sockaddr*) &sockAddr, sizeof(sockaddr_in));
+#endif
+		}
+#ifndef __SHIVASOCKETS_IPV6DISABLED
+		else
+		{
+		sockaddr_in6 sockAddr;
+
+			retVal = SHVSocket::ErrNone;
+
+			::memset(&sockAddr, 0, sizeof(sockaddr_in6));
+
+			sockAddr.sin6_port   = htons(port);
+			sockAddr.sin6_family = AF_INET6;
+			if (ip != INADDR_ANY)
+			{
+			SHVIPv6Addr ip6 = SocketServer->IPv4ToIPv6(ip);
+				sockAddr.sin6_addr = *(in6_addr*)&ip6;
+			}
+			status = ::bind(Socket, (sockaddr*) &sockAddr, sizeof(sockaddr_in6));
+		}
+#endif
+		retVal = ListenInternal(status,backlog);
+	}
+	else
+	{
+		retVal = SHVSocket::ErrInvalidOperation;
+	}
+	SocketServer->SocketServerLock.Unlock();
+
+	if (retVal == SHVBool::True)
+	{
+		SocketServer->SocketServerThread.SignalDispatcher();
+	}
+
+	return retVal;
+}
+SHVBool SHVSocketImpl::BindAndListen6(SHVIPv6Addr ip, SHVIPv6Port port, int backlog)
+{
+SHVBool retVal;
+
+#ifdef __SHIVASOCKETS_IPV6DISABLED
+	retVal = SHVSocket::ErrInvalidOperation;
+#else
+
+	if (Type == SHVSocket::TypeUnix)
+		return SHVBool(SHVSocket::ErrInvalidOperation);
+
+	SocketServer->SocketServerLock.Lock();
+	if (State == SHVSocket::StateNone)
+	{
+	int status;
+		if (!SocketServer->IPv6Supported())
+		{
+			retVal = SHVSocket::ErrInvalidOperation;
+		}
+		else
+		{
+		sockaddr_in6 sockAddr;
+
+			retVal = SHVSocket::ErrNone;
+
+			::memset(&sockAddr, 0, sizeof(sockaddr_in6));
+
+			sockAddr.sin6_port   = htons(port);
+			sockAddr.sin6_family = AF_INET6;
+			sockAddr.sin6_addr = *(in6_addr*)&ip;
+			status = ::bind(Socket, (sockaddr*) &sockAddr, sizeof(sockaddr_in6));
+		}
+		retVal = ListenInternal(status,backlog);
+	}
+	else
+	{
+		retVal = SHVSocket::ErrInvalidOperation;
+	}
+	SocketServer->SocketServerLock.Unlock();
+
+	if (retVal == SHVBool::True)
+	{
+		SocketServer->SocketServerThread.SignalDispatcher();
+	}
+
+#endif
+	return retVal;
+}
+SHVBool SHVSocketImpl::ListenInternal(int& status, int backlog)
+{
+SHVBool retVal;
+	if (Type == SHVSocket::TypeTCP || Type == SHVSocket::TypeSSL)
+	{
+		if (!status)
+		{
+			status = ::listen(Socket, backlog);
+
+			if (!status)
+			{
+				State = SHVSocket::StateListening;
+	#ifdef __SHIVASOCKETS_NOSELECTMODE
+				StartReadThread();
+	#endif
+				retVal = SHVBool::True;
+			}
+			else
+			{
+				retVal = SetError(SHVSocket::ErrListening);
+			}
+		}
+		else
+		{
+			retVal = SetError(SHVSocket::ErrBinding);
+		}
+	}
+	else
+	{
+		if (!status)
+		{
+			State = SHVSocket::StateConnected;
+	#ifdef __SHIVASOCKETS_NOSELECTMODE
+				StartReadThread();
+	#endif
+			retVal = SHVBool::True;
+		}
+		else
+		{
+			retVal = SetError(SHVSocket::ErrBinding);
+		}
+	}
+
 	return retVal;
 }
 

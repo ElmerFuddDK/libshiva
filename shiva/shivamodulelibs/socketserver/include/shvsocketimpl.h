@@ -46,6 +46,8 @@ public:
 	
 	// Operations
 	virtual SHVBool BindAndListen(SHVIPv4Port port, int backlog = 5);
+	virtual SHVBool BindAndListen4(SHVIPv4Addr ip, SHVIPv4Port port, int backlog = 5);
+	virtual SHVBool BindAndListen6(SHVIPv6Addr ip, SHVIPv6Port port, int backlog = 5);
 	virtual SHVBool BindAndListenUnix(const SHVStringC fileName);
 	virtual SHVBool Close();
 	virtual SHVBool Shutdown();
@@ -84,6 +86,7 @@ friend class SHVSSLSocket;
 	
 	enum { InvalidSocket = -1 };
 	
+	SHVBool ListenInternal(int& status, int backlog);
 	SHVBool SendToInternal(const SHVBufferC& buf, void* host, size_t hostLen);
 	
 	void PerformEvent();
