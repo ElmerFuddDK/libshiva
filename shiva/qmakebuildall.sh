@@ -43,6 +43,8 @@ do
 	shift
 done
 
+test "$(uname)" = "Darwin" -a -z "$DebugMode" &&  QMakeFlags="$QMakeFlags CONFIG-=debug CONFIG*=release"
+
 test -n "$DebugMode" && BuildDir="$BuildDir-debug"
 test -n "$StaticMode" && BuildDir="$BuildDir-static"
 
@@ -66,7 +68,7 @@ function Compile()
 	mkdir -p "$BuildDir"
 	cd "$BuildDir" || exit
 	
-	$QMake -r ../qmake $QMakeFlags &>"$logFile" && make &>>"$logFile" && rm -f "$logFile" || EchoError "  Error building $1"
+	$QMake -r ../qmake $QMakeFlags &>"$logFile" && make >>"$logFile" 2>&1 && rm -f "$logFile" || EchoError "  Error building $1"
 }
 
 LogDir="$(cd "$(dirname "$0")" && pwd)"
