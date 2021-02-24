@@ -43,6 +43,9 @@
 #  define SHELLEXECUTEINFOW SHELLEXECUTEINFO
 #  define ShellExecuteExW ShellExecuteEx
 # endif
+# if defined(_MSC_VER) && defined(SHIVASTATICMODULELIB)
+#  pragma comment(lib, "shell32.lib")
+# endif
 # ifndef INVALID_FILE_ATTRIBUTES
 #  define INVALID_FILE_ATTRIBUTES ((DWORD)-1)
 # endif
