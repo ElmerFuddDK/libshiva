@@ -39,7 +39,7 @@ public:
 	static double SHVAPI Eval(const SHVStringC str);
 	static double SHVAPI Eval(const SHVStringC str, SHVString& err);
 	static double SHVAPI EvalList(const SHVStringC formatStr, ...);
-	static double SHVAPI EvalListErr(const SHVStringC formatStr, SHVString& err, ...);
+	static double SHVAPI EvalListErr(const SHVStringC formatStr, SHVString* err, ...);
 	static double SHVAPI EvalMap(const SHVStringC str, SHVMathTokenMap& map);
 	static double SHVAPI EvalMap(const SHVStringC str, SHVMathTokenMap& map, SHVString& err);
 };

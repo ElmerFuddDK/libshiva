@@ -237,7 +237,7 @@ SHVVA_LIST args;
  \return result of evaluation
  \see Eval
  */
-double SHVMath::EvalListErr(const SHVStringC formatStr, SHVString& err, ...)
+double SHVMath::EvalListErr(const SHVStringC formatStr, SHVString* err, ...)
 {
 	SHVString str;
 	SHVVA_LIST args;
@@ -246,7 +246,7 @@ double SHVMath::EvalListErr(const SHVStringC formatStr, SHVString& err, ...)
 	str.FormatList(formatStr.GetSafeBuffer(),args);
 	SHVVA_END(args);
 	
-	return SHVMath::Eval(str,err);
+	return SHVMath::Eval(str,*err);
 }
 
 /*************************************
