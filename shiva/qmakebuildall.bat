@@ -104,7 +104,7 @@ FOR %%G IN ( shivalib,
 	MKDIR %BuildDir% > NUL 2>&1
 	CD %BuildDir%
 	REM For visual studio: qmake -r -tp vc
-	qmake -r  %VsFlags% ..\qmake\*.pro %DebugFlags% %StaticFlags% %BuildPrefixFlags% > %StartDir%\log-%BuildDir%-%%~nG.txt 2>&1
+	qmake -r  %VsFlags% ..\qmake\ %DebugFlags% %StaticFlags% %BuildPrefixFlags% > %StartDir%\log-%BuildDir%-%%~nG.txt 2>&1
 	IF "%VsMode%"=="vs" (
 		FOR /F %%S IN ('dir *.sln /B /O:-D') DO (
 			devenv.exe %%S /rebuild %VsConfig% /out %StartDir%\log-%BuildDir%-%%~nG.txt && DEL %StartDir%\log-%BuildDir%-%%~nG.txt || echo    Build failed
