@@ -24,6 +24,10 @@
 # define DEBUG
 #endif
 
+#if defined(SHIVA_QT_PREINCLUDE) && defined(__cplusplus)
+# include <QtCore/qlist.h>
+#endif
+
 
 // include main platform headers
 
