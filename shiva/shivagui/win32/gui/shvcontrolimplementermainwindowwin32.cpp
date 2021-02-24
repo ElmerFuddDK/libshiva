@@ -106,7 +106,7 @@ SHVBool retVal(parent == NULL && !IsCreated());
 # endif
 #else
 	DWORD styles = WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU|WS_MINIMIZEBOX|WS_MAXIMIZEBOX|Win32::MapFlags(flags);
-	WCHAR* title = L"";
+	const WCHAR* title = L"";
 #endif
 		SetHandle(::CreateWindowExW(WS_EX_CONTROLPARENT,SHVWIN32CLASS_MAINWND, title, styles,
 			CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL));
