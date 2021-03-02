@@ -41,6 +41,11 @@
 # endif
 #endif
 
+#ifdef _MSC_VER
+# include <stdio.h>
+# include <io.h>
+#endif
+
 
 //=========================================================================================================
 // SHVConsole class - console output static class
@@ -360,7 +365,11 @@ static int NativeEncodingDetected;
 	
 	return NativeEncodingDetected == 2;
 #elif defined(__SHIVA_WIN32) && !defined(__SHIVA_WINCE)
+# ifdef _MSC_VER
+	return (isatty(fileno(stdout)) && ::GetConsoleCP() == CP_UTF8);
+# else
 	return (::GetConsoleCP() == CP_UTF8);
+# endif
 #else
 	return false;
 #endif
@@ -384,7 +393,13 @@ SHVVA_LIST argList;
 	}
 	else
 	{
-		::vwprintf(str,args);
+# ifdef _MSC_VER
+		::vfwprintf(stdout, str, args);
+		if (!isatty(fileno(stdout)))
+			::fflush(stdout);
+# else 
+		::vwprintf(str, args);
+# endif
 	}
 # elif !defined(__SHIVAWINCE_EXCLUDE_CONSOLE_SUPPORT)
 	SHVMainThreadEventDispatcherConsole::Print(SHVString16C::FormatList((const SHVWChar*)str,argList));
@@ -419,9 +434,13 @@ bool handled = false;
 		}
 	}
 	
-	if (handled)
+	if (!handled)
 	{
-		::vfwprintf(f,str,args);
+		::vfwprintf(f, str, args);
+# ifdef _MSC_VER
+		if (!isatty(fileno(stderr)))
+			::fflush(stderr);
+# endif
 	}
 # elif !defined(__SHIVAWINCE_EXCLUDE_CONSOLE_SUPPORT)
 	SHVMainThreadEventDispatcherConsole::Print(SHVString16C::FormatList((const SHVWChar*)str,argList));

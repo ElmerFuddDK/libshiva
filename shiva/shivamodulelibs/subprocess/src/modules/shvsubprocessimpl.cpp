@@ -51,7 +51,9 @@
 # else
 #  pragma message("SubProcess does not support memusage - define PSAPI_VERSION=1 and link with psapi")
 # endif
-# define EWOULDBLOCK EAGAIN
+# ifndef EWOULDBLOCK
+#  define EWOULDBLOCK EAGAIN
+# endif
 #else
 # error Not supported for current platform
 #endif
@@ -359,6 +361,20 @@ SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
 		}
 		SHVUNUSED_PARAM(nonBlocking);
 
+# ifdef _MSC_VER
+		if ((streams&StdOut) && (streams&StdIn))
+		{
+		char* reservedBuffer = (char*)malloc(6 + sizeof(HANDLE) * 2);
+		char rsFlags = 0x01 | 0x40; // FOPEN = 0x01, FDEV = 0x40
+		DWORD rsLen = 2;
+			memcpy(reservedBuffer, &rsLen, sizeof(DWORD));
+			reservedBuffer[4] = reservedBuffer[5] = rsFlags;
+			memcpy(reservedBuffer + 6, &hStdIn, sizeof(HANDLE));
+			memcpy(reservedBuffer + 6 + sizeof(HANDLE), &hStdOut, sizeof(HANDLE));
+			si.cbReserved2 = sizeof(6 + sizeof(HANDLE) * 2);
+			si.lpReserved2 = (LPBYTE)reservedBuffer;
+		}
+# endif
 
 		if (cmdLine.Find(_S(" ")) >= 0)
 		{
@@ -402,6 +418,10 @@ SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
 			::CloseHandle(si.hStdError);
 		if (streams&StdIn)
 			::CloseHandle(si.hStdInput);
+# ifdef _MSC_VER
+		if (si.lpReserved2)
+			::free(si.lpReserved2);
+# endif
 #endif
 	
 		retVal = LastError;
