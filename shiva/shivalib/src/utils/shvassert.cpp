@@ -36,6 +36,9 @@
 
 #if defined(__SHIVA_WIN32) && !defined(__SHIVA_WINCE) && !defined(__MINGW32__)
 # include <crtdbg.h>
+# if defined(_MSC_VER) && defined(DEBUG) && defined(SHIVASTATICMODULELIB)
+#  pragma comment(lib, "user32.lib")
+# endif
 #elif !defined(__SHIVA_WINCE) && !defined(__MINGW32__)
 # include <signal.h>
 #endif
