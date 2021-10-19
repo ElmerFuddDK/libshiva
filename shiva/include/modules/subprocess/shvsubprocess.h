@@ -35,6 +35,12 @@ public:
 		ErrUnknownProgram,
 		ErrAlreadyRunning
 	};
+	enum Flags {
+		FlagNone = 0,
+		FlagLineBuffer = 1,
+		FlagNonBlocking = 2,
+		FlagStartDefaults = FlagLineBuffer
+	};
 
 	typedef size_t ProcessID;
 
@@ -55,8 +61,8 @@ public:
 
 
 	// Startup and shutdown
-	virtual SHVBool Start(const SHVStringC program, const SHVStringC args = NULL, int streams = StreamDefaults, bool nonBlocking = false) = 0;
-	virtual SHVBool Start(const SHVStringC program, SHVFileList& args, int streams = StreamDefaults, bool nonBlocking = false) = 0;
+	virtual SHVBool Start(const SHVStringC program, const SHVStringC args = NULL, int streams = StreamDefaults, int flags = FlagStartDefaults) = 0;
+	virtual SHVBool Start(const SHVStringC program, SHVFileList& args, int streams = StreamDefaults, int flags = FlagStartDefaults) = 0;
 	virtual void Shutdown() = 0;
 	virtual void Kill() = 0;
 	virtual void WaitForTermination() = 0;
