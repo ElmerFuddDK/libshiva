@@ -39,11 +39,11 @@
 # ifndef __SHIVAWINCE_EXCLUDE_CONSOLE_SUPPORT
 #  include "../../../include/frameworkimpl/shvmainthreadeventdispatcherconsole.h"
 # endif
-#endif
-
-#ifdef _MSC_VER
-# include <stdio.h>
-# include <io.h>
+#else
+# ifdef _MSC_VER
+#  include <stdio.h>
+#  include <io.h>
+# endif
 #endif
 
 
