@@ -51,12 +51,13 @@ SHVDataFactoryImpl::SHVDataFactoryImpl(SHVDataEngine& engine, const SHVStringC& 
 /*************************************
  * RegisterTable
  *************************************/
-SHVBool SHVDataFactoryImpl::RegisterTable(const SHVDataStructC* dataStruct, SHVDataSession* useSession, bool strict)
+SHVBool SHVDataFactoryImpl::RegisterTable(const SHVDataStructC* dataStruct, SHVDataSession* useSession, bool strict, int flags)
 {
 SHVDataFactoryExclusiveLocker lock(this);
 size_t found;
 bool create = false;
 bool drop   = false;
+bool expand = false;
 SHVStringSQLite rest(NULL);
 SHVStringUTF8 sql;
 SHVSQLiteStatementRef statement;
@@ -68,21 +69,46 @@ SHVDataStructRef newStruct = GetInternalStruct((SHVDataStructC*) dataStruct);
 	found = InternalFindStruct(dataStruct->GetTableName());
 	if (found != SIZE_T_MAX)
 	{
-		drop = create = !dataStruct->IsEqual(Schema[found],strict);
+	SHVBool isEq(dataStruct->IsEqual(Schema[found],strict));
+		if (isEq.GetError() == SHVDataEngine::ErrIsEqualPartialLess && (flags&SHVDataEngine::FlagExpandCols))
+			expand = true;
+		else
+			drop = create = !isEq;
 		orgStruct = GetInternalStruct((SHVDataStructC*) Schema[found]);
 		Schema.Replace(found, newStruct);
 	}
 	else
 	{
 	SHVDataStructCRef dbStruct = RetrieveStruct(dataStruct->GetTableName(), useSession);
+	SHVBool isEq(SHVBool::False);
 		if (!dbStruct)
 			orgStruct = NULL;
 		else
 			orgStruct = GetInternalStruct(dbStruct);
-		if (orgStruct.IsNull() || !orgStruct->IsEqual(dataStruct,strict))
+		if (!orgStruct.IsNull())
+		{
+			isEq = orgStruct->IsEqual(dataStruct,strict);
+			if (isEq.GetError() == SHVDataEngine::ErrIsEqualPartialLess && (flags&SHVDataEngine::FlagExpandCols))
+				expand = true;
+			else
+				drop = create = !isEq;
+		}
+		else
+		{
 			create = true;
-		if (create && !orgStruct.IsNull())
-			drop = true;
+		}
+	}
+	if (expand)
+	{
+		InternalBeginTransaction(SQLite);
+		retVal = ExpandTable(SQLite, orgStruct, dataStruct);
+		if (retVal)
+		{
+			SchemaHasChanged = true;
+			InternalEndTransaction(SQLite);
+		}
+		else
+			InternalRollbackTransaction(SQLite);
 	}
 	if (!drop && !orgStruct.IsNull())
 	{
@@ -111,7 +137,11 @@ SHVDataStructRef newStruct = GetInternalStruct((SHVDataStructC*) dataStruct);
 			}
 		}
 	}
-	if (create && retVal)
+	if (drop && (flags&SHVDataEngine::FlagSuppressDrop))
+	{
+		retVal.SetError(SHVDataEngine::ErrWouldDrop);
+	}
+	else if (create && retVal)
 	{
 		InternalBeginTransaction(SQLite);
 		if (drop)
@@ -140,12 +170,13 @@ SHVDataStructRef newStruct = GetInternalStruct((SHVDataStructC*) dataStruct);
 		else
 			InternalRollbackTransaction(SQLite);
 	}
-	if (retVal && found == SIZE_T_MAX)
+	if (retVal)
 	{
-		Schema.Add((SHVDataStructC*) dataStruct);
+		if (found == SIZE_T_MAX)
+			Schema.Add((SHVDataStructC*) dataStruct);
+		if (!dataStruct->GetIsMultiInstance() && !InternalFindAlias(dataStruct->GetTableName()))
+			Alias.AddTail(SHVDataStructReg(dataStruct->GetTableName(), -1, dataStruct));
 	}
-	if (!dataStruct->GetIsMultiInstance() && !InternalFindAlias(dataStruct->GetTableName()))
-		Alias.AddTail(SHVDataStructReg(dataStruct->GetTableName(), -1, dataStruct));
 	return retVal;
 }
 
@@ -280,7 +311,6 @@ SHVDataStructReg* aliasfound;
 SHVBool SHVDataFactoryImpl::DropAlias(const SHVString8C& table, const SHVString8C& alias, SHVDataSession* useSession)
 {
 SHVDataFactoryExclusiveLocker lock(this);
-SHVBool retVal = SHVBool::False;
 SHVDataStructReg* aliasfound;
 
 	aliasfound = InternalFindAlias(alias);	
@@ -653,6 +683,64 @@ SHVBool ok;
 	
 	SHVSQLiteStatementRef statement = sqlite->ExecuteUTF8(ok, query, notparsed);
 	return SHVBool(ok.GetError() == SHVSQLiteWrapper::SQLite_DONE);
+}
+
+/*************************************
+ * ExpandTable
+ *************************************/
+SHVBool SHVDataFactoryImpl::ExpandTable(SHVSQLiteWrapper* sqlite, const SHVDataStructC* oldStruct, const SHVDataStructC* newStruct)
+{
+SHVDataFactoryExclusiveLocker(this);
+SHVStringUTF8 query;
+SHVStringUTF8 type;
+SHVStringSQLite notparsed("");
+SHVBool ok;
+SHVBool result = true;
+size_t j;
+
+	for (size_t i = 0; i < newStruct->GetColumnCount() && result; i++)
+	{
+	bool exists = false;
+	SHVSQLiteStatementRef statement;
+
+		for (j = 0; j < oldStruct->GetColumnCount() && !exists; j++)
+		{
+			exists = ((*oldStruct)[j]->GetColumnName() == (*newStruct)[i]->GetColumnName());
+		}
+
+		if (exists)
+			continue;
+
+		switch ((*newStruct)[i]->GetDataType())
+		{
+			case SHVDataVariant::TypeInt:
+				type = __SQLITE_TYPE_INT;
+				break;
+			case SHVDataVariant::TypeInt64:
+				type = __SQLITE_TYPE_INT64;
+				break;
+			case SHVDataVariant::TypeBool:
+				type = __SQLITE_TYPE_BOOL;
+				break;
+			case SHVDataVariant::TypeDouble:
+				type = __SQLITE_TYPE_DOUBLE;
+				break;
+			case SHVDataVariant::TypeString:
+				type.Format("%s(%d)", __SQLITE_TYPE_STRING, (*newStruct)[i]->GetDataLength());
+				break;
+			case SHVDataVariant::TypeTime:
+				type = __SQLITE_TYPE_DATETIME;
+		}
+		query.Format("alter table [%s] add \"%s\" %s;"
+					 ,newStruct->GetTableName().GetSafeBuffer()
+					 ,(*newStruct)[i]->GetColumnName().GetSafeBuffer()
+					 ,type.GetSafeBuffer()
+					 );
+		statement = sqlite->ExecuteUTF8(ok, query, notparsed);
+		result = (ok.GetError() == SHVSQLiteWrapper::SQLite_DONE);
+	}
+
+	return result;
 }
 
 /*************************************

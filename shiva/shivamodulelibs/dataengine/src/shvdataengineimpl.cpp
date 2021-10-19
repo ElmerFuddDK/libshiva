@@ -99,9 +99,9 @@ void SHVDataEngineImpl::Unregister()
 /*************************************
  * RegisterTable
  *************************************/
-SHVBool SHVDataEngineImpl::RegisterTable(const SHVDataStructC* dataStruct, SHVDataSession* useSession, bool strict)
+SHVBool SHVDataEngineImpl::RegisterTable(const SHVDataStructC* dataStruct, SHVDataSession* useSession, bool strict, int flags)
 {
-	return Factory->RegisterTable(dataStruct, useSession, strict);
+	return Factory->RegisterTable(dataStruct, useSession, strict, flags);
 }
 
 /*************************************

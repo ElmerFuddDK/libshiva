@@ -60,6 +60,7 @@ public:
 			{
 			SHVDataStructRef table = DataEngine->CreateStruct();
 			SHVDataRowKeyRef key = DataEngine->CreateKey();
+			SHVBool retVal;
 				table->Add("key", SHVDataVariant::TypeInt);
 				table->Add("col1", SHVDataVariant::TypeString);
 				table->Add("col2", SHVDataVariant::TypeString);
@@ -68,8 +69,20 @@ public:
 				key->AddKey("key", false);
 				table->SetPrimaryIndex(key);
 				table->SetIsMultiInstance(false);
-				DataEngine->RegisterTable(table);
-				printf("Done\n");
+				retVal = DataEngine->RegisterTable(table,NULL,false,SHVDataEngine::FlagExpandCols|SHVDataEngine::FlagSuppressDrop);
+				if (retVal.GetError() == SHVDataEngine::ErrWouldDrop)
+				{
+					printf(" -> dropping old table\n");
+					retVal = DataEngine->RegisterTable(table,NULL,false,SHVDataEngine::FlagExpandCols);
+				}
+				if (retVal)
+				{
+					printf("Done\n");
+				}
+				else
+				{
+					printf("Error %d\n", retVal.GetError());
+				}
 			}
 			else
 			if (str == SHVString8C("/insert"))

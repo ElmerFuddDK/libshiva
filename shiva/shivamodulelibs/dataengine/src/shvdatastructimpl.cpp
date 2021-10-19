@@ -32,6 +32,7 @@
 #include "../../../include/platformspc.h"
 #include "../include/shvdatastructimpl.h"
 #include "../include/shvdatarowkeyimpl.h"
+#include "../../../include/modules/dataengine/shvdataengine.h"
 
 // =============================== implementation SHVDataStructColumnImpl ====================================
 /*************************************
@@ -306,14 +307,16 @@ void SHVDataStructImpl::SetPrimaryIndex(const SHVDataRowKey* key)
  *************************************/
 SHVBool SHVDataStructImpl::IsEqual(const SHVDataStructC* dataStruct, bool strict) const
 {
-SHVBool retVal = SHVBool::False;
+SHVBool retVal(SHVDataEngine::ErrGeneric);
 const SHVDataStructC& This = *this;
 const SHVDataStructC& Struct = *dataStruct;
+size_t colCount = Struct.GetColumnCount() > GetColumnCount() ? GetColumnCount() : Struct.GetColumnCount();
+bool partial = (Struct.GetColumnCount() != GetColumnCount());
 
-	if (Struct.GetColumnCount() == GetColumnCount() && Struct.GetIsMultiInstance() == GetIsMultiInstance())
+	if (Struct.GetIsMultiInstance() == GetIsMultiInstance())
 	{
 		retVal = SHVBool::True;
-		for (size_t i = 0; i < GetColumnCount() && retVal; i++)
+		for (size_t i = 0; i < colCount && retVal; i++)
 		{
 		size_t j;
 			if (strict)
@@ -324,7 +327,7 @@ const SHVDataStructC& Struct = *dataStruct;
 			{
 				for (j = 0; j < Struct.GetColumnCount() && This[i]->GetColumnName() != Struct[j]->GetColumnName(); j++);
 				if (j == dataStruct->GetColumnCount())
-					retVal = SHVBool::False;
+					retVal.SetError(SHVDataEngine::ErrGeneric);
 			}
 			retVal = retVal &&
 				This[i]->GetColumnName() == Struct[j]->GetColumnName() &&
@@ -332,9 +335,15 @@ const SHVDataStructC& Struct = *dataStruct;
 				This[i]->GetDataLength() == Struct[j]->GetDataLength();
 		}
 		if (retVal && Struct.IndexCount() > 0 && IndexCount() > 0)
+		{
 			retVal = Struct.GetPrimaryIndex()->KeyDefEquals(GetPrimaryIndex());
+			if (retVal && partial)
+				retVal.SetError(GetColumnCount() < Struct.GetColumnCount() ? SHVDataEngine::ErrIsEqualPartialLess : SHVDataEngine::ErrIsEqualPartialMore);
+		}
 		else
-			retVal = false;
+		{
+			retVal.SetError(SHVDataEngine::ErrGeneric);
+		}
 	}
 	return retVal;
 }

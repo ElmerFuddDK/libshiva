@@ -28,9 +28,23 @@ public:
 		EventBeginningTransaction,
 		EventFinishedTransaction  ///< SubID is 1 if transaction committed
 	};
-	
+
+	enum Flags {
+		FlagNone = 0,
+		FlagExpandCols = 1,
+		FlagSuppressDrop = 2,
+	};
+
+	enum Errors {
+		ErrOk = SHVBool::True,
+		ErrWouldDrop = 1,
+		ErrIsEqualPartialLess = 2,
+		ErrIsEqualPartialMore = 3,
+		ErrGeneric = SHVBool::False
+	};
+
 	virtual ~SHVDataEngine() {}
-	virtual SHVBool RegisterTable(const SHVDataStructC* dataStruct, SHVDataSession* useSession = NULL, bool strict = false) = 0;
+	virtual SHVBool RegisterTable(const SHVDataStructC* dataStruct, SHVDataSession* useSession = NULL, bool strict = false, int flags = FlagNone) = 0;
 	virtual SHVBool RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear = false, SHVDataSession* useSession = NULL) = 0;
 	virtual size_t RegisterIndex(const SHVString8C& table, SHVDataRowKey* IndexKey, SHVDataSession* useSession = NULL) = 0;
 	virtual SHVBool UnregisterAlias(const SHVString8C& alias, SHVDataSession* useSession = NULL) = 0;

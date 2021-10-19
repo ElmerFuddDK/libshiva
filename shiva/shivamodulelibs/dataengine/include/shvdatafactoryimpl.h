@@ -46,7 +46,7 @@ public:
 	SHVDataFactoryImpl(SHVDataEngine& engine, const SHVStringC& database);
 
 	// from SHVDataFactory
-	virtual SHVBool RegisterTable(const SHVDataStructC* dataStruct, SHVDataSession* useSession = NULL, bool strict = false);
+	virtual SHVBool RegisterTable(const SHVDataStructC* dataStruct, SHVDataSession* useSession = NULL, bool strict = false, int flags = 0);
 	virtual SHVBool RegisterAlias(const SHVString8C& table, const SHVString8C& alias, bool clear = false, SHVDataSession* useSession = NULL);
 	virtual size_t RegisterIndex(const SHVString8C& table, SHVDataRowKey* IndexKey, SHVDataSession* useSession = NULL);
 	virtual SHVBool UnregisterAlias(const SHVString8C& alias, SHVDataSession* useSession = NULL);
@@ -82,6 +82,7 @@ public:
 protected:
 	virtual ~SHVDataFactoryImpl();
 	virtual SHVBool CreateTable(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct);
+	virtual SHVBool ExpandTable(SHVSQLiteWrapper* sqlite, const SHVDataStructC* oldStruct, const SHVDataStructC* newStruct);
 	virtual SHVBool CreateView(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct, const SHVString8C& viewName, int& id);
 	virtual SHVBool CreateIndex(SHVSQLiteWrapper* sqlite, const SHVDataStructC* dataStruct, size_t index);
 	virtual int GetAliasID(SHVSQLiteWrapper* sqlite, const SHVString8C& alias, bool create);
