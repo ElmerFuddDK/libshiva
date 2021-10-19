@@ -58,6 +58,7 @@ public:
 
 	virtual SHVBool WriteString8(const SHVChar* buffer, size_t maxlen = SIZE_T_MAX);
 	virtual SHVBool WriteChar8(const SHVChar ch);
+	virtual SHVBool Flush();
 	virtual void Close();
 private:
 	SHVFile File;

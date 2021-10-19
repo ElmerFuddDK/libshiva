@@ -44,6 +44,16 @@
  *************************************/
 SHVSubProcessServerImpl::SHVSubProcessServerImpl(SHVModuleList& modules) : SHVSubProcessServer(modules)
 {
+#ifdef __SHIVA_WIN32
+	if (Kernel32.Load(_S("kernel32")))
+		Kernel32.Resolve((void**)&CancelIoEx, _S("CancelIoEx"));
+	else
+		CancelIoEx = NULL;
+	Running = true;
+	hThreadSignaller = CreateEvent(NULL, FALSE, FALSE, NULL);
+	ActiveProcessLock.Lock();
+	ActiveProcessMonitorThread.Start(this, &SHVSubProcessServerImpl::ActiveProcessMonitor);
+#endif
 }
 
 /*************************************
@@ -51,6 +61,15 @@ SHVSubProcessServerImpl::SHVSubProcessServerImpl(SHVModuleList& modules) : SHVSu
  *************************************/
 SHVSubProcessServerImpl::~SHVSubProcessServerImpl()
 {
+#ifdef __SHIVA_WIN32
+	SHVASSERT(ActiveProcesses.GetCount() == 0);
+
+	Running = false;
+	SetEvent(hThreadSignaller);
+	while (ActiveProcessMonitorThread.IsRunning())
+		SHVThreadBase::Sleep(10);
+	CloseHandle(hThreadSignaller);
+#endif
 }
 
 /*************************************
@@ -82,5 +101,161 @@ void SHVSubProcessServerImpl::Unregister()
  *************************************/
 SHVSubProcess* SHVSubProcessServerImpl::New()
 {
-	return new SHVSubProcessImpl();
+	return new SHVSubProcessImpl(*this);
 }
+
+#ifdef __SHIVA_WIN32
+void SHVSubProcessServerImpl::ActiveProcessMonitor()
+{
+HANDLE* handles;
+int handleCount, handleSize;
+
+	handleCount = 1;
+	handleSize = 10;
+
+	handles = (HANDLE*)malloc(sizeof(HANDLE)*handleSize);
+	handles[0] = hThreadSignaller;
+
+	ActiveProcessLock.Unlock();
+
+	while (Running)
+	{
+	DWORD dResult = WaitForMultipleObjects(handleCount, handles, FALSE, INFINITE);
+	SHVListPos pos;
+
+		if (dResult == 0 + WAIT_OBJECT_0) // The signal
+		{
+		int i;
+			ActiveProcessLock.Lock();
+			// First close all the closing process threads
+			for (pos = ActiveProcesses.GetHeadPosition(); pos;)
+			{
+				if (ActiveProcesses.GetAt(pos).Closing && ActiveProcesses.GetAt(pos).Owner)
+				{
+					if (!ActiveProcesses.GetAt(pos).Owner->IsRunning())
+					{
+						ActiveProcesses.GetAt(pos).Owner->WaitForTermination();
+						ActiveProcesses.GetAt(pos).Owner = NULL;
+					}
+				}
+				if (!ActiveProcesses.GetAt(pos).Owner)
+				{
+					for (i = 1; i < handleCount; i++)
+					{
+						if (handles[i] == ActiveProcesses.GetAt(pos).hListenProcess)
+						{
+							::CloseHandle(handles[i]);
+							if (i < handleCount - 1)
+							{
+								handles[i] = handles[handleCount - 1];
+							}
+							handleCount--;
+						}
+					}
+					ActiveProcesses.RemoveAt(pos);
+				}
+				else
+				{
+					ActiveProcesses.MoveNext(pos);
+				}
+			}
+			// Finally add any new handles
+			for (pos = NULL; ActiveProcesses.MoveNext(pos);)
+			{
+				if (ActiveProcesses.GetAt(pos).hListenProcess == INVALID_HANDLE_VALUE)
+				{
+					if (handleCount == handleSize)
+					{
+					HANDLE* oldHandles = handles;
+					int oldHandleSize = handleSize;
+						handleSize += 10;
+						handles = (HANDLE*)malloc(sizeof(HANDLE)*handleSize);
+						memcpy(handles, oldHandles, sizeof(HANDLE)*oldHandleSize);
+						free(oldHandles);
+					}
+					::DuplicateHandle(GetCurrentProcess(), ActiveProcesses.GetAt(pos).hProcess, GetCurrentProcess(), &handles[handleCount], 0, FALSE, DUPLICATE_SAME_ACCESS);
+					ActiveProcesses.GetAt(pos).hListenProcess = handles[handleCount];
+					handleCount++;
+				}
+			}
+			ActiveProcessLock.Unlock();
+		}
+		else
+		{
+		int idx = dResult - WAIT_OBJECT_0;
+		bool found = false;
+			if (idx > 0 && idx < handleCount)
+			{
+				ActiveProcessLock.Lock();
+				for (pos = NULL; !found && ActiveProcesses.MoveNext(pos);)
+				{
+					if (ActiveProcesses.GetAt(pos).hListenProcess == handles[idx])
+					{
+						::CloseHandle(handles[idx]);
+						found = true;
+
+						if (idx < handleCount - 1)
+						{
+							handles[idx] = handles[handleCount-1];
+						}
+						handleCount--;
+						ActiveProcesses.GetAt(pos).hListenProcess = INVALID_HANDLE_VALUE;
+						ActiveProcesses.GetAt(pos).Closing = true;
+
+						if (ActiveProcesses.GetAt(pos).Owner)
+						{
+							if (!ActiveProcesses.GetAt(pos).Owner->IsRunning())
+							{
+								ActiveProcesses.GetAt(pos).Owner->WaitForTermination();
+								ActiveProcesses.GetAt(pos).Owner = NULL;
+							}
+						}
+					}
+				}
+				ActiveProcessLock.Unlock();
+			}
+		}
+	}
+
+	///\todo free all handles
+
+	free(handles);
+}
+
+void SHVSubProcessServerImpl::AddActiveProcess(HANDLE hProcess, SHVSubProcessImpl* owner)
+{
+	if (CancelIoEx)
+	{
+		SHVASSERT(ActiveProcessMonitorThread.IsRunning());
+
+		ActiveProcessLock.Lock();
+		ActiveProcesses.AddTail(ActiveProcess(hProcess, owner));
+		ActiveProcessLock.Unlock();
+
+		SetEvent(hThreadSignaller);
+	}
+}
+void SHVSubProcessServerImpl::RemoveActiveProcess(HANDLE /*hProcess*/, SHVSubProcessImpl* owner)
+{
+	if (CancelIoEx && SHVThreadBase::GetCurrentThreadID() != ActiveProcessMonitorThread.GetThreadID())
+	{
+		bool found = false;
+
+		SHVASSERT(ActiveProcessMonitorThread.IsRunning());
+
+		ActiveProcessLock.Lock();
+		for (SHVListPos pos = NULL; !found && ActiveProcesses.MoveNext(pos);)
+		{
+			if (ActiveProcesses.GetAt(pos).Owner == owner)
+			{
+				ActiveProcesses.GetAt(pos).Owner = NULL;
+				found = true;
+			}
+		}
+		ActiveProcessLock.Unlock();
+
+		SetEvent(hThreadSignaller);
+	}
+}
+
+#endif

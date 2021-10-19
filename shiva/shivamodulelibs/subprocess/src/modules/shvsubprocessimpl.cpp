@@ -32,6 +32,7 @@
 #include "../../../../include/platformspc.h"
 
 #include "shvsubprocessimpl.h"
+#include "shvsubprocessserverimpl.h"
 #include "../../../../include/utils/shvbuffer.h"
 
 #ifdef __SHIVA_POSIX
@@ -66,9 +67,9 @@
 /*************************************
  * Constructor
  *************************************/
-SHVSubProcessImpl::SHVSubProcessImpl() : SHVSubProcess(), LastError(ErrNone)
+SHVSubProcessImpl::SHVSubProcessImpl(SHVSubProcessServerImpl& server) : SHVSubProcess(), Server(server), LastError(ErrNone)
 {
-	NonBlocking = false;
+	StartFlags = 0;
 #ifdef __SHIVA_POSIX
 	StreamStdOut = new SHVSubProcessStreamIn(PipeStdOut[0]);
 	StreamStdErr = new SHVSubProcessStreamIn(PipeStdErr[0]);
@@ -80,8 +81,8 @@ SHVSubProcessImpl::SHVSubProcessImpl() : SHVSubProcess(), LastError(ErrNone)
 
 	///\todo Stream support on windows will duplicate all shareable handles to the sub process at the moment ...
 	hStdOut = hStdErr = hStdIn = INVALID_HANDLE_VALUE;
-	StreamStdOut = new SHVSubProcessStreamIn(hStdOut);
-	StreamStdErr = new SHVSubProcessStreamIn(hStdErr);
+	StreamStdOut = new SHVSubProcessStreamIn(Server.CancelIoEx,hStdOut);
+	StreamStdErr = new SHVSubProcessStreamIn(Server.CancelIoEx,hStdErr);
 	StreamStdIn = new SHVSubProcessStreamOut(hStdIn);
 #endif
 }
@@ -91,7 +92,10 @@ SHVSubProcessImpl::SHVSubProcessImpl() : SHVSubProcess(), LastError(ErrNone)
  *************************************/
 SHVSubProcessImpl::~SHVSubProcessImpl()
 {
-	WaitForTermination();
+#ifdef __SHIVA_WIN32
+	Server.RemoveActiveProcess(Process.hProcess,this);
+#endif
+	SHVSubProcessImpl::WaitForTermination();
 	delete StreamStdOut;
 	delete StreamStdErr;
 	delete StreamStdIn;
@@ -102,6 +106,7 @@ SHVSubProcessImpl::~SHVSubProcessImpl()
  *************************************/
 SHVBool SHVSubProcessImpl::IsRunning()
 {
+	Server.StatusLock.Lock();
 #ifdef __SHIVA_POSIX
 SHVBool retVal( Pid != -1 ? ErrNone : (LastError ? ErrGeneric : LastError) );
 	if (retVal)
@@ -111,11 +116,20 @@ SHVBool retVal( Pid != -1 ? ErrNone : (LastError ? ErrGeneric : LastError) );
 		{
 			waitpid(Pid,&status,0);
 			Pid = -1;
+			Server.StatusLock.Unlock();
 			StreamStdOut->Close();
 			StreamStdErr->Close();
 			StreamStdIn->Close();
 			retVal.SetError(ErrGeneric);
 		}
+		else
+		{
+			Server.StatusLock.Unlock();
+		}
+	}
+	else
+	{
+		Server.StatusLock.Unlock();
 	}
 	return retVal;
 #elif defined(__SHIVA_WIN32)
@@ -125,15 +139,25 @@ SHVBool retVal( Process.hProcess ? ErrNone : (LastError ? ErrGeneric : LastError
 		if (WaitForSingleObject(Process.hProcess,0) == WAIT_OBJECT_0)
 		{
 		DWORD exitCode;
+			Server.RemoveActiveProcess(Process.hProcess,this);
 			GetExitCodeProcess(Process.hProcess,&exitCode);
 			CloseHandle(Process.hProcess);
 			CloseHandle(Process.hThread);
 			memset(&Process,0,sizeof(Process));
+			Server.StatusLock.Unlock();
 			StreamStdOut->Close();
 			StreamStdErr->Close();
 			StreamStdIn->Close();
 			retVal.SetError(ErrGeneric);
 		}
+		else
+		{
+			Server.StatusLock.Unlock();
+		}
+	}
+	else
+	{
+		Server.StatusLock.Unlock();
 	}
 	return retVal;
 #else
@@ -217,22 +241,23 @@ SHVInt64 retVal;
 /*************************************
  * Start
  *************************************/
-SHVBool SHVSubProcessImpl::Start(const SHVStringC program, const SHVStringC args, int streams, bool nonBlocking)
+SHVBool SHVSubProcessImpl::Start(const SHVStringC program, const SHVStringC args, int streams, int flags)
 {
 SHVFileList argList;
 	ParseArgs(argList,args);
-	return Start(program,argList,streams,nonBlocking);
+	return Start(program,argList,streams,flags);
 }
 
 /*************************************
  * Start
  *************************************/
-SHVBool SHVSubProcessImpl::Start(const SHVStringC program, SHVFileList& args, int streams, bool nonBlocking)
+SHVBool SHVSubProcessImpl::Start(const SHVStringC program, SHVFileList& args, int streams, int flags)
 {
 SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
 	
 	if (retVal)
 	{
+		StartFlags = flags;
 #ifdef __SHIVA_POSIX
 
 		if (streams&StdOut)
@@ -242,7 +267,7 @@ SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
 		if (streams&StdIn)
 			pipe(PipeStdIn);
 		
-		if ((nonBlocking = NonBlocking))
+		if ((StartFlags&FlagNonBlocking))
 		{
 			fcntl(PipeStdIn[1], F_SETFL, O_NONBLOCK);
 		}
@@ -268,13 +293,15 @@ SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
 			{
 				dup2(PipeStdOut[1], 1); // stdout
 				close(PipeStdOut[1]);
-				setlinebuf(stdout);
+				if ((flags&FlagLineBuffer))
+					setlinebuf(stdout);
 			}
 			if (PipeStdErr[1])
 			{
 				dup2(PipeStdErr[1], 2); // stderr
 				close(PipeStdErr[1]);
-				setlinebuf(stderr);
+				if ((flags&FlagLineBuffer))
+					setlinebuf(stderr);
 			}
 #ifdef F_CLOSEM
 			fcntl(3, F_CLOSEM);
@@ -357,12 +384,11 @@ SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
 			::CreatePipe(&si.hStdInput,&hStdInTmp,&sa,0);
 			::DuplicateHandle(GetCurrentProcess(),hStdInTmp,GetCurrentProcess(),&hStdIn,0,FALSE,DUPLICATE_SAME_ACCESS);
 			::CloseHandle(hStdInTmp);
-			SHVASSERT(!nonBlocking);
+			SHVASSERT(!(StartFlags&FlagNonBlocking));
 		}
-		SHVUNUSED_PARAM(nonBlocking);
 
 # ifdef _MSC_VER
-		if ((streams&StdOut) && (streams&StdIn))
+		if (((streams&StdOut) && (streams&StdIn)) && (flags&FlagLineBuffer))
 		{
 		char* reservedBuffer = (char*)malloc(6 + sizeof(HANDLE) * 2);
 		char rsFlags = 0x01 | 0x40; // FOPEN = 0x01, FDEV = 0x40
@@ -405,6 +431,7 @@ SHVBool retVal(IsRunning() ? ErrAlreadyRunning : ErrNone);
 		if (::CreateProcessW(NULL,cmdLineW.GetBufferWin32(),NULL,NULL,streams ? TRUE : FALSE,0,NULL,NULL,&si,&Process))
 # endif
 		{
+			Server.AddActiveProcess(Process.hProcess, this);
 			LastError.SetError(ErrNone);
 		}
 		else
@@ -479,6 +506,7 @@ void SHVSubProcessImpl::WaitForTermination()
 		Pid = -1;
 #elif defined(__SHIVA_WIN32)
 	DWORD exitCode;
+		Server.RemoveActiveProcess(Process.hProcess, this);
 		WaitForSingleObject(Process.hProcess,INFINITE);
 		GetExitCodeProcess(Process.hProcess,&exitCode);
 		CloseHandle(Process.hProcess);
@@ -695,7 +723,7 @@ void SHVSubProcessImpl::SafeCloseFd(int& fd)
 #ifdef __SHIVA_POSIX
 SHVSubProcessStreamIn::SHVSubProcessStreamIn(int& fd) : Fd(fd)
 #elif defined(__SHIVA_WIN32)
-SHVSubProcessStreamIn::SHVSubProcessStreamIn(HANDLE& fd) : Fd(fd)
+SHVSubProcessStreamIn::SHVSubProcessStreamIn(BOOL(WINAPI *cancelIoEx)(HANDLE hFile, LPOVERLAPPED lpOverlapped), HANDLE& fd) : CancelIoEx(cancelIoEx), Fd(fd)
 #endif
 {
 	EofFlag = false;
@@ -901,6 +929,10 @@ void SHVSubProcessStreamIn::Close()
 		close(Fd);
 		Fd = 0;
 #elif defined(__SHIVA_WIN32)
+		if (CancelIoEx)
+		{
+			(*CancelIoEx)(Fd, NULL);
+		}
 		CloseHandle(Fd);
 		Fd = INVALID_HANDLE_VALUE;
 #endif
@@ -1146,6 +1178,23 @@ SHVBool SHVSubProcessStreamOut::WriteStringUTF8(const SHVChar* buffer, size_t ma
 SHVBool SHVSubProcessStreamOut::WriteCharUTF8(const SHVChar ch)
 {
 	return (WriteBuffer(&ch,sizeof(SHVChar)));
+}
+
+/*************************************
+ * Flush
+ *************************************/
+SHVBool SHVSubProcessStreamOut::Flush()
+{
+	if (IsOk())
+	{
+#ifdef __SHIVA_POSIX
+		fsync(Fd);
+#elif defined(__SHIVA_WIN32)
+		FlushFileBuffers(Fd);
+#endif
+		return true;
+	}
+	return false;
 }
 
 /*************************************

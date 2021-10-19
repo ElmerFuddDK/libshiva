@@ -5,6 +5,7 @@
 ///\cond INTERNAL
 class SHVSubProcessStreamIn;
 class SHVSubProcessStreamOut;
+class SHVSubProcessServerImpl;
 ///\endcond
 
 //-=========================================================================================================
@@ -19,7 +20,7 @@ public:
 
 
 	// Constructor
-	SHVSubProcessImpl();
+	SHVSubProcessImpl(SHVSubProcessServerImpl& server);
 	~SHVSubProcessImpl();
 
 
@@ -36,8 +37,8 @@ public:
 
 
 	// Startup and shutdown
-	virtual SHVBool Start(const SHVStringC program, const SHVStringC args = NULL, int streams = StreamDefaults, bool nonBlocking = false);
-	virtual SHVBool Start(const SHVStringC program, SHVFileList& args, int streams = StreamDefaults, bool nonBlocking = false);
+	virtual SHVBool Start(const SHVStringC program, const SHVStringC args = NULL, int streams = StreamDefaults, int flags = FlagStartDefaults);
+	virtual SHVBool Start(const SHVStringC program, SHVFileList& args, int streams = StreamDefaults, int flags = FlagStartDefaults);
 	virtual void Shutdown();
 	virtual void Kill();
 	virtual void WaitForTermination();
@@ -57,10 +58,12 @@ private:
 	void ParseArgs(SHVFileList& argList, const SHVStringC args);
 	void Trim(const SHVTChar*& ch);
 
+	SHVSubProcessServerImpl& Server;
+
 	SHVSubProcessStreamIn *StreamStdOut, *StreamStdErr;
 	SHVSubProcessStreamOut *StreamStdIn;
 	SHVBool LastError;
-	bool NonBlocking;
+	int StartFlags;
 #ifdef __SHIVA_POSIX
 	pid_t Pid;
 	int PipeStdOut[2], PipeStdErr[2], PipeStdIn[2];
@@ -86,7 +89,7 @@ public:
 #ifdef __SHIVA_POSIX
 	SHVSubProcessStreamIn(int& fd);
 #elif defined(__SHIVA_WIN32)
-	SHVSubProcessStreamIn(HANDLE& fd);
+	SHVSubProcessStreamIn(BOOL(WINAPI *cancelIoEx)(HANDLE hFile, LPOVERLAPPED lpOverlapped), HANDLE& fd);
 #endif
 	
 	virtual bool Eof() const;
@@ -115,6 +118,7 @@ private:
 #ifdef __SHIVA_POSIX
 	int& Fd;
 #elif defined(__SHIVA_WIN32)
+	BOOL(WINAPI *CancelIoEx)(HANDLE hFile, LPOVERLAPPED lpOverlapped);
 	HANDLE& Fd;
 #endif
 	bool EofFlag;
@@ -147,6 +151,8 @@ public:
 	virtual SHVBool WriteStringUTF8(const SHVChar* buffer, size_t maxlen = SIZE_T_MAX);
 	virtual SHVBool WriteCharUTF8(const SHVChar ch);
 	
+	virtual SHVBool Flush();
+
 	virtual void Close();
 
 private:

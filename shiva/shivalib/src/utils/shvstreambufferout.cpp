@@ -148,3 +148,11 @@ void SHVStreamBufferOut::Close()
 {
 	Buffer = NULL;
 }
+
+/*************************************
+ * Flush
+ *************************************/
+SHVBool SHVStreamBufferOut::Flush()
+{
+	return true;
+}

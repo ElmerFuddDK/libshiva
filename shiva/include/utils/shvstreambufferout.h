@@ -25,6 +25,8 @@ public:
 	
 	virtual SHVBool WriteStringUTF8(const SHVChar* buffer, size_t maxsize = SIZE_T_MAX);
 	virtual SHVBool WriteCharUTF8(const SHVChar ch);
+
+	virtual SHVBool Flush();
 	
 	virtual void Close();
 	inline const SHVBufferC* GetBuffer();

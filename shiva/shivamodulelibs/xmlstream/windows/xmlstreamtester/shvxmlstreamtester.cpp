@@ -259,6 +259,11 @@ SHVBool SHVStreamOutTest::WriteChar8(const SHVChar ch)
 	return Ok;
 }
 
+SHVBool SHVStreamOutTest::Flush()
+{
+	return true;
+}
+
 void SHVStreamOutTest::Close()
 {
 	File.Close();
