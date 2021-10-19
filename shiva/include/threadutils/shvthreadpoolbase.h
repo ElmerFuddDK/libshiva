@@ -26,6 +26,8 @@ public:
 	bool Start(int initialCount = 5, int maxCount = 25, short priority = SHVThreadBase::PrioNormal, SHVInt stackSize = SHVInt());
 	void Stop();
 
+	void WaitIdle();
+
 	SHVThreadBase::ThreadID Execute(SHVThreadBase::ThreadFunc func, void* data);
 
 

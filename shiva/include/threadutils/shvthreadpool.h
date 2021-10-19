@@ -28,6 +28,7 @@ public:
 	bool Start(int initialCount = 5, int maxCount = 25, short priority = SHVThreadBase::PrioNormal, SHVInt stackSize = SHVInt());
 	void Stop();
 
+	void WaitIdle();
 
 	SHVThreadBase::ThreadID Execute(T* owner, ThreadFunc func, O o);
 
@@ -97,6 +98,15 @@ template<class T,class O>
 void SHVThreadPool<T,O>::Stop()
 {
 	SHVThreadPoolBase::Stop();
+}
+
+/*************************************
+ * WaitIdle
+ *************************************/
+template<class T,class O>
+void SHVThreadPool<T,O>::WaitIdle()
+{
+	SHVThreadPoolBase::WaitIdle();
 }
 
 /*************************************

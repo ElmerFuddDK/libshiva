@@ -249,6 +249,41 @@ void SHVThreadPoolBase::Stop()
 	Lock.Unlock();
 }
 
+/*************************************
+ * WaitIdle
+ *************************************/
+/// Waits until all threads are idle
+/**
+ * Will wait for all the threads to stop before returning.
+ * Only use when you have a safe way to ensure nothing is started afterwards
+ */
+void SHVThreadPoolBase::WaitIdle()
+{
+	Lock.Lock();
+	if (Running)
+	{
+	int runningThreads;
+
+		do
+		{
+			runningThreads = WaitQueue.GetCount();
+			for (size_t i=0; i<ThreadPool.CalculateCount() && runningThreads == 0; i++)
+			{
+				if (ThreadPool[i]->Thread.IsRunning() && ThreadPool[i]->Func != NULL)
+				{
+					runningThreads++;
+				}
+			}
+			Lock.Unlock();
+			if (runningThreads)
+				SHVThreadBase::Sleep(50);
+			Lock.Lock();
+		}
+		while (runningThreads && Running);
+	}
+	Lock.Unlock();
+}
+
 ///\cond INTERNAL
 /*************************************
  * PoolTheadFunc
